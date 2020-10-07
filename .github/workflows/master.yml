@@ -1,0 +1,68 @@
+name: Bygg og deploy
+
+on:
+  push:
+    branches:
+      - master
+
+env:
+  DOCKER_IMAGE_NAME: docker.pkg.github.com/${{ github.repository }}/fritakAGP
+  LATEST_TAG: docker.pkg.github.com/${{ github.repository }}/fritakAGP:latest
+  IMAGE: docker.pkg.github.com/${{ github.repository }}/fritakAGP:${{ github.sha }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-java@v1
+        with:
+          java-version: '11.x'
+      - name: Cache Gradle wrapper
+        uses: actions/cache@v2
+        with:
+          path: ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-wrapper-
+      - name: Cache Gradle packages
+        uses: actions/cache@v2
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-cache-${{ hashFiles('build.gradle') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-cache-
+      - name: compose up
+        run: cd docker/local && docker-compose up -d && sleep 15
+      - name: test and build
+        run: bash ./gradlew --console=plain build test slowTests jacocoTestReport sonarqube
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          ORG_GRADLE_PROJECT_githubUser: x-access-token
+          ORG_GRADLE_PROJECT_githubPassword: ${{ secrets.GITHUB_TOKEN }}
+      #- name: Build and publish Docker image
+      #  env:
+      #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #  run: |
+      #    docker build --tag ${IMAGE} --tag ${LATEST_TAG} .
+      #   docker login docker.pkg.github.com -u ${GITHUB_REPOSITORY} -p ${GITHUB_TOKEN}
+      #    docker push ${DOCKER_IMAGE_NAME}
+
+  #deploy:
+  #  name: Deploy to PREPROD og PROD
+  #  needs: build
+  #  if: github.ref == 'refs/heads/master'
+  #  runs-on: ubuntu-latest
+  #  steps:
+  #    - uses: actions/checkout@v1
+  #    - uses: nais/deploy/actions/deploy@v1
+  #      env:
+  #        APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
+  #        CLUSTER: dev-fss
+  #        RESOURCE: deploy/dev.yaml
+  #    - uses: nais/deploy/actions/deploy@v1
+  #      env:
+  #        APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
+  #        CLUSTER: prod-fss
+  #        RESOURCE: deploy/prod.yaml

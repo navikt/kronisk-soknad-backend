@@ -1,7 +1,7 @@
 apiVersion: "nais.io/v1alpha1"
 kind: "Application"
 metadata:
-  name: sporenstreks
+  name: fritakAGP
   namespace: default
   labels:
     team: helsearbeidsgiver
@@ -21,7 +21,7 @@ spec:
     periodSeconds: 5
     failureThreshold: 10
   ingresses:
-    - https://sporenstreks.nais.preprod.local
+    - https://fritakagp.nais.preprod.local
   prometheus:
     enabled: true
   replicas:
@@ -34,15 +34,6 @@ spec:
     requests:
       cpu: 400m
       memory: 200Mi
-  vault:
-    enabled: true
-    paths:
-      - mountPath: /var/run/secrets/nais.io/vault
-        kvPath: /kv/preprod/fss/sporenstreks/default
-      - mountPath: /var/run/secrets/nais.io/apigw/altinn
-        kvPath: /apikey/apigw/dev/eksternapp.altinn.serviceowner/sporenstreks_q1
-      - mountPath: /var/run/secrets/nais.io/service_user
-        kvPath: /serviceuser/data/dev/srvsporenstreks
   webproxy: true
   leaderElection: true
   env:
@@ -53,7 +44,7 @@ spec:
     - name: DATABASE_PORT
       value: "5432"
     - name: DATABASE_NAME
-      value: sporenstreks
+      value: fritakAGP
     - name: VAULT_MOUNTPATH
       value: postgresql/preprod-fss/
     - name: OIDC_ISSUER_NAME

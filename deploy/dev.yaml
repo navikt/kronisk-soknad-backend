@@ -39,3 +39,9 @@ spec:
   env:
     - name: KOIN_PROFILE
       value: PREPROD
+  gcp:
+    sqlInstances:
+      - type: POSTGRES_11
+        databases:
+          - name: spinnsyn-db
+            diskAutoresize: true

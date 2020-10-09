@@ -1,7 +1,7 @@
 apiVersion: "nais.io/v1alpha1"
 kind: "Application"
 metadata:
-  name: fritakAGP
+  name: fritakagp
   namespace: helsearbeidsgiver
   labels:
     team: helsearbeidsgiver
@@ -43,5 +43,5 @@ spec:
     sqlInstances:
       - type: POSTGRES_11
         databases:
-          - name: spinnsyn-db
+          - name: fritakagp-db
             diskAutoresize: true

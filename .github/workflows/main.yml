@@ -6,9 +6,9 @@ on:
       - main
 
 env:
-  DOCKER_IMAGE_NAME: docker.pkg.github.com/${{ github.repository }}/fritakAGP
-  LATEST_TAG: docker.pkg.github.com/${{ github.repository }}/fritakAGP:latest
-  IMAGE: docker.pkg.github.com/${{ github.repository }}/fritakAGP:${{ github.sha }}
+  DOCKER_IMAGE_NAME: docker.pkg.github.com/${{ github.repository }}/fritakagp
+  LATEST_TAG: docker.pkg.github.com/${{ github.repository }}/fritakagp:latest
+  IMAGE: docker.pkg.github.com/${{ github.repository }}/fritakagp:${{ github.sha }}
 
 jobs:
   build:

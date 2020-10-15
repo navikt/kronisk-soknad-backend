@@ -39,7 +39,8 @@ class PostgresRepository(val ds: DataSource, val mapper: ObjectMapper) : Reposit
         val json = """ {'tekst' : '$testString'}"""
         ds.connection.use {
             it.prepareStatement(saveStatement).apply {
-                setString(1, json)
+                setInt(1, id)
+                setString(2, json)
             }.executeUpdate()
         }
         return getById(id)

@@ -1,4 +1,4 @@
-package no.nav.helse.fritak.web.api
+package no.nav.helse.fritakagp.web.api
 
 import io.ktor.application.*
 import io.ktor.http.*

@@ -1,4 +1,4 @@
-package no.nav.helse.fritak.web
+package no.nav.helse.fritakagp.web
 
 import com.fasterxml.jackson.databind.JsonMappingException
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -12,12 +12,12 @@ import io.ktor.locations.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.util.*
-import no.nav.helse.fritak.nais.nais
-import no.nav.helse.fritak.web.api.fritakAGP
-import no.nav.helse.fritak.web.dto.validation.Problem
-import no.nav.helse.fritak.web.dto.validation.ValidationProblem
-import no.nav.helse.fritak.web.dto.validation.ValidationProblemDetail
-import no.nav.helse.fritak.web.dto.validation.getContextualMessage
+import no.nav.helse.fritakagp.nais.nais
+import no.nav.helse.fritakagp.web.api.fritakAGP
+import no.nav.helse.fritakagp.web.dto.validation.Problem
+import no.nav.helse.fritakagp.web.dto.validation.ValidationProblem
+import no.nav.helse.fritakagp.web.dto.validation.ValidationProblemDetail
+import no.nav.helse.fritakagp.web.dto.validation.getContextualMessage
 import org.koin.ktor.ext.Koin
 import org.koin.ktor.ext.get
 import org.slf4j.LoggerFactory

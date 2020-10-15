@@ -1,4 +1,4 @@
-package no.nav.helse.fritak.web
+package no.nav.helse.fritakagp.web
 
 import com.typesafe.config.ConfigFactory
 import io.ktor.config.*

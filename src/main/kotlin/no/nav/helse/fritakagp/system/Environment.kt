@@ -1,8 +1,8 @@
-package no.nav.helse.fritak.system
+package no.nav.helse.fritakagp.system
 
 import io.ktor.config.*
 import io.ktor.util.*
-import no.nav.helse.fritak.web.getString
+import no.nav.helse.fritakagp.web.getString
 
 enum class AppEnv {
     TEST,

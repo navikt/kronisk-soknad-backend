@@ -106,9 +106,9 @@ fun ApplicationConfig.getString(path: String): String {
 @KtorExperimentalAPI
 fun ApplicationConfig.getjdbcUrlFromProperties(): String {
     return String.format("jdbc:postgresql://%s:%s/%s?reWriteBatchedInserts=true",
-            this.property("NAIS_DATABASE_FRITAKAGP_FRITAKAGP_DB_HOST").getString(),
-            this.property("NAIS_DATABASE_FRITAKAGP_FRITAKAGP_DB_PORT").getString(),
-            this.property("NAIS_DATABASE_FRITAKAGP_FRITAKAGP_DB_DATABASE").getString())
+            this.property("database.host").getString(),
+            this.property("database.port").getString(),
+            this.property("database.name").getString())
 }
 
 inline fun <reified T : Any> Koin.getAllOfType(): Collection<T> =

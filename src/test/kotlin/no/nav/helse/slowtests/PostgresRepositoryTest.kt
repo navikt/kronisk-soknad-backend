@@ -16,28 +16,6 @@ import org.koin.core.get
 
 class PostgresRepositoryTest : KoinComponent {
 
-    lateinit var repo: PostgresRepository
-    lateinit var testString: String
-
-    @BeforeEach
-    internal fun setUp() {
-        startKoin {
-            loadKoinModules(common)
-
-        }
-        repo = PostgresRepository(get(), get())
-        testString = repo.insert("Privyet mir", 4)
-    }
-
-    @AfterEach
-    internal fun tearDown() {
-        repo.delete(4)
-        stopKoin()
-    }
-
-    @Test
-    fun `Finner teststrengen`() {
-        assertThat(repo.getById(4)).isEqualTo("Privyet mir")
-    }
+//TODO: få opp lokal database til testing og lokal kjøring, og så skrive tester
 
 }

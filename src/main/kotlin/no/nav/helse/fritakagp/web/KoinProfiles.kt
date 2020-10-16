@@ -17,6 +17,7 @@ import io.ktor.client.features.json.*
 import io.ktor.config.*
 import io.ktor.util.*
 import no.nav.helse.arbeidsgiver.kubernetes.KubernetesProbeManager
+import no.nav.helse.fritakagp.db.DbTest
 import no.nav.helse.fritakagp.db.PostgresRepository
 import no.nav.helse.fritakagp.db.Repository
 import no.nav.helse.fritakagp.db.createHikariConfig
@@ -88,7 +89,8 @@ fun localDevConfig(config: ApplicationConfig) = module {
 @KtorExperimentalAPI
 fun preprodConfig(config: ApplicationConfig) = module {
     single { HikariDataSource(createHikariConfig(config.getjdbcUrlFromProperties())) as DataSource }
-    single { PostgresRepository(get(), get()) } as Repository
+    single { PostgresRepository(get(), get()) as Repository}
+    single { DbTest(get()) } // TODO: fjern når vi har etabklert kontakt med db :)
 }
 
 @KtorExperimentalAPI

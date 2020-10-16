@@ -9,6 +9,7 @@ import kotlinx.coroutines.runBlocking
 import no.nav.helse.arbeidsgiver.kubernetes.KubernetesProbeManager
 import no.nav.helse.arbeidsgiver.kubernetes.LivenessComponent
 import no.nav.helse.arbeidsgiver.kubernetes.ReadynessComponent
+import no.nav.helse.fritakagp.db.DbTest
 import org.koin.ktor.ext.getKoin
 import org.slf4j.LoggerFactory
 
@@ -26,6 +27,7 @@ fun main() {
         val koin = app.application.getKoin()
         runBlocking { autoDetectProbeableComponents(koin) }
         mainLogger.info("La til probeable komponenter")
+        koin.get<DbTest>()
 
         Runtime.getRuntime().addShutdownHook(Thread {
             app.stop(1000, 1000)

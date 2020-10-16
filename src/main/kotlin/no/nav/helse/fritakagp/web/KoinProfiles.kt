@@ -83,6 +83,9 @@ fun buildAndTestConfig() = module {
 
 @KtorExperimentalAPI
 fun localDevConfig(config: ApplicationConfig) = module {
+    single { HikariDataSource(createHikariConfig(config.getjdbcUrlFromProperties(), config.getString("database.username"), config.getString("database.password"))) as DataSource }
+    single { PostgresRepository(get(), get()) as Repository}
+    single { DbTest(get()) } // TODO: fjern når vi har etabklert kontakt med db :)
 
 }
 
@@ -110,6 +113,7 @@ fun ApplicationConfig.getjdbcUrlFromProperties(): String {
             this.property("database.port").getString(),
             this.property("database.name").getString())
 }
+
 
 inline fun <reified T : Any> Koin.getAllOfType(): Collection<T> =
         let { koin ->

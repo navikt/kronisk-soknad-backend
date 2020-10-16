@@ -24,7 +24,7 @@ class PostgresRepository(val ds: DataSource, val mapper: ObjectMapper) : Reposit
         ds.connection.use {
             val existingList = ArrayList<String>()
             val res = it.prepareStatement(getByIdStatement).apply {
-                setString(1, id.toString())
+                setInt(1, id)
             }.executeQuery()
 
             while (res.next()) {
@@ -36,7 +36,7 @@ class PostgresRepository(val ds: DataSource, val mapper: ObjectMapper) : Reposit
     }
 
     override fun insert(testString: String, id: Int): String {
-        val json = """ {'tekst' : '$testString'}"""
+        val json = """ {"tekst" : "$testString"}"""
         ds.connection.use {
             it.prepareStatement(saveStatement).apply {
                 setInt(1, id)
@@ -51,7 +51,7 @@ class PostgresRepository(val ds: DataSource, val mapper: ObjectMapper) : Reposit
     override fun delete(id: Int): Int {
         ds.connection.use {
             return it.prepareStatement(deleteStatement).apply {
-                setString(1, id.toString())
+                setInt(1, id)
             }.executeUpdate()
         }
     }

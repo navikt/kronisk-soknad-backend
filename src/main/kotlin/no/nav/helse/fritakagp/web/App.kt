@@ -10,6 +10,8 @@ import no.nav.helse.arbeidsgiver.kubernetes.KubernetesProbeManager
 import no.nav.helse.arbeidsgiver.kubernetes.LivenessComponent
 import no.nav.helse.arbeidsgiver.kubernetes.ReadynessComponent
 import no.nav.helse.fritakagp.db.DbTest
+import no.nav.helse.fritakagp.db.PostgresRepository
+import no.nav.helse.fritakagp.db.Repository
 import org.koin.ktor.ext.getKoin
 import org.slf4j.LoggerFactory
 
@@ -28,6 +30,7 @@ fun main() {
         runBlocking { autoDetectProbeableComponents(koin) }
         mainLogger.info("La til probeable komponenter")
         koin.get<DbTest>().lagre()
+
 
         Runtime.getRuntime().addShutdownHook(Thread {
             app.stop(1000, 1000)

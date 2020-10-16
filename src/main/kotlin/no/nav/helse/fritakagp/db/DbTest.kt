@@ -2,7 +2,7 @@ package no.nav.helse.fritakagp.db
 
 import org.slf4j.LoggerFactory
 
-class DbTest(val repo: PostgresRepository) {
+class DbTest(val repo: Repository) {
     val logger = LoggerFactory.getLogger("main")
 
     fun lagre() {

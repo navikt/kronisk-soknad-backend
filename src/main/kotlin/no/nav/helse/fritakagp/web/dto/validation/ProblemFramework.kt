@@ -39,5 +39,5 @@ class ValidationProblemDetail(
         val validationType: String, val message: String, val propertyPath: String, val invalidValue: Any?)
 
 fun ConstraintViolation.getContextualMessage(): String {
-        this.toMessage().message
+       return this.toMessage().message
 }

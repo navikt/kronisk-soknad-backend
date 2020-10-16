@@ -27,7 +27,7 @@ fun main() {
         val koin = app.application.getKoin()
         runBlocking { autoDetectProbeableComponents(koin) }
         mainLogger.info("La til probeable komponenter")
-        koin.get<DbTest>()
+        koin.get<DbTest>().lagre()
 
         Runtime.getRuntime().addShutdownHook(Thread {
             app.stop(1000, 1000)

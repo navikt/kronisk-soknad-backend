@@ -1,4 +1,4 @@
-package no.nav.helse.fritak.web.dto.validation
+package no.nav.helse.fritakagp.web.dto.validation
 
 import org.valiktor.ConstraintViolation
 import org.valiktor.i18n.toMessage
@@ -39,7 +39,5 @@ class ValidationProblemDetail(
         val validationType: String, val message: String, val propertyPath: String, val invalidValue: Any?)
 
 fun ConstraintViolation.getContextualMessage(): String {
-    return when {
-        else -> this.toMessage().message
-    }
+       return this.toMessage().message
 }

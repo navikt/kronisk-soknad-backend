@@ -1,4 +1,4 @@
-package no.nav.helse.fritak.web
+package no.nav.helse.fritakagp.web
 
 import com.typesafe.config.ConfigFactory
 import io.ktor.config.*
@@ -9,6 +9,9 @@ import kotlinx.coroutines.runBlocking
 import no.nav.helse.arbeidsgiver.kubernetes.KubernetesProbeManager
 import no.nav.helse.arbeidsgiver.kubernetes.LivenessComponent
 import no.nav.helse.arbeidsgiver.kubernetes.ReadynessComponent
+import no.nav.helse.fritakagp.db.DbTest
+import no.nav.helse.fritakagp.db.PostgresRepository
+import no.nav.helse.fritakagp.db.Repository
 import org.koin.ktor.ext.getKoin
 import org.slf4j.LoggerFactory
 
@@ -26,6 +29,8 @@ fun main() {
         val koin = app.application.getKoin()
         runBlocking { autoDetectProbeableComponents(koin) }
         mainLogger.info("La til probeable komponenter")
+        koin.get<DbTest>().lagre()
+
 
         Runtime.getRuntime().addShutdownHook(Thread {
             app.stop(1000, 1000)

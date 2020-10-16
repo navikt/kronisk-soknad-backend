@@ -1,4 +1,4 @@
-package no.nav.helse.fritak.nais
+package no.nav.helse.fritakagp.nais
 
 import io.ktor.application.*
 import io.ktor.http.*

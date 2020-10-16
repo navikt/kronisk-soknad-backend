@@ -10,6 +10,8 @@ jobs:
       - uses: actions/setup-java@v1
         with:
           java-version: '11.x'
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
       - name: Cache Gradle wrapper
         uses: actions/cache@v2
         with:
@@ -33,7 +35,7 @@ jobs:
       - name: compose up
         run: cd docker/local && docker-compose up -d && sleep 15
       - name: test and build
-        run: ./gradlew --console=plain build test slowTests jacocoTestReport sonarqube
+        run: ./gradlew --console=plain build test slowTests jacocoTestReport
         env:
           ORG_GRADLE_PROJECT_githubUser: x-access-token
           ORG_GRADLE_PROJECT_githubPassword: ${{ secrets.GITHUB_TOKEN }}

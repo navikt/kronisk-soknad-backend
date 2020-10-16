@@ -1,4 +1,4 @@
-package no.nav.helse.fritak.web
+package no.nav.helse.fritakagp.web
 
 import com.fasterxml.jackson.core.util.DefaultIndenter
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter
@@ -9,16 +9,23 @@ import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
+import com.zaxxer.hikari.HikariDataSource
+import com.zaxxer.hikari.metrics.prometheus.PrometheusMetricsTrackerFactory
 import io.ktor.client.*
 import io.ktor.client.engine.apache.*
 import io.ktor.client.features.json.*
 import io.ktor.config.*
 import io.ktor.util.*
 import no.nav.helse.arbeidsgiver.kubernetes.KubernetesProbeManager
+import no.nav.helse.fritakagp.db.DbTest
+import no.nav.helse.fritakagp.db.PostgresRepository
+import no.nav.helse.fritakagp.db.Repository
+import no.nav.helse.fritakagp.db.createHikariConfig
 import org.koin.core.Koin
 import org.koin.core.definition.Kind
 import org.koin.core.module.Module
 import org.koin.dsl.module
+import javax.sql.DataSource
 
 
 @KtorExperimentalAPI
@@ -71,14 +78,22 @@ val common = module {
 }
 
 fun buildAndTestConfig() = module {
+
 }
 
 @KtorExperimentalAPI
 fun localDevConfig(config: ApplicationConfig) = module {
+    single { HikariDataSource(createHikariConfig(config.getjdbcUrlFromProperties(), config.getString("database.username"), config.getString("database.password"))) as DataSource }
+    single { PostgresRepository(get(), get()) as Repository}
+    single { DbTest(get()) } // TODO: fjern når vi har etabklert kontakt med db :)
+
 }
 
 @KtorExperimentalAPI
 fun preprodConfig(config: ApplicationConfig) = module {
+    single { HikariDataSource(createHikariConfig(config.getjdbcUrlFromProperties())) as DataSource }
+    single { PostgresRepository(get(), get()) as Repository}
+    single { DbTest(get()) } // TODO: fjern når vi har etabklert kontakt med db :)
 }
 
 @KtorExperimentalAPI
@@ -98,6 +113,7 @@ fun ApplicationConfig.getjdbcUrlFromProperties(): String {
             this.property("database.port").getString(),
             this.property("database.name").getString())
 }
+
 
 inline fun <reified T : Any> Koin.getAllOfType(): Collection<T> =
         let { koin ->

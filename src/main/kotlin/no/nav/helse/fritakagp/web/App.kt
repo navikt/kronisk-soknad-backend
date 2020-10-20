@@ -32,7 +32,7 @@ fun main() {
         runBlocking { autoDetectProbeableComponents(koin) }
         mainLogger.info("La til probeable komponenter")
 
-        Timer("TestConnection", false).schedule(50000) {
+        Timer("TestConnection", false).schedule(100000) {
             koin.get<DbTest>().lagre()
         }
 

@@ -23,3 +23,6 @@ enum class Role {
 
     override fun toString() = name.toLowerCase()
 }
+
+fun createTestHikariConfig() =
+        createHikariConfig("jdbc:postgresql://localhost:5432/fritakagp_db", "fritakagp", "fritakagp", null)

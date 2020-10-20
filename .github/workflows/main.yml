@@ -6,6 +6,7 @@ on:
       - main
 
 env:
+  APP: fritakagp
   DOCKER_IMAGE_NAME: docker.pkg.github.com/${{ github.repository }}/fritakagp
   LATEST_TAG: docker.pkg.github.com/${{ github.repository }}/fritakagp:latest
   IMAGE: docker.pkg.github.com/${{ github.repository }}/fritakagp:${{ github.sha }}

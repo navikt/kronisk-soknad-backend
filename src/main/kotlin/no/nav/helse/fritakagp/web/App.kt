@@ -14,6 +14,8 @@ import no.nav.helse.fritakagp.db.PostgresRepository
 import no.nav.helse.fritakagp.db.Repository
 import org.koin.ktor.ext.getKoin
 import org.slf4j.LoggerFactory
+import java.util.Timer
+import kotlin.concurrent.schedule
 
 
 val mainLogger = LoggerFactory.getLogger("main")
@@ -29,12 +31,16 @@ fun main() {
         val koin = app.application.getKoin()
         runBlocking { autoDetectProbeableComponents(koin) }
         mainLogger.info("La til probeable komponenter")
-        koin.get<DbTest>().lagre()
 
+        Timer("TestConnection", false).schedule(50000) {
+            koin.get<DbTest>().lagre()
+        }
 
         Runtime.getRuntime().addShutdownHook(Thread {
             app.stop(1000, 1000)
         })
+
+
     }
 }
 

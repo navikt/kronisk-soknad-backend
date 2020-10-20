@@ -91,7 +91,7 @@ fun localDevConfig(config: ApplicationConfig) = module {
 
 @KtorExperimentalAPI
 fun preprodConfig(config: ApplicationConfig) = module {
-    single { HikariDataSource(createHikariConfig(config.getjdbcUrlFromProperties())) as DataSource }
+    single { HikariDataSource(createHikariConfig(config.getjdbcUrlFromProperties(), config.getString("database.username"), config.getString("database.password"))) as DataSource }
     single { PostgresRepository(get(), get()) as Repository}
     single { DbTest(get()) } // TODO: fjern når vi har etabklert kontakt med db :)
 }

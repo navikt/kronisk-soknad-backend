@@ -10,12 +10,8 @@ import no.nav.helse.arbeidsgiver.kubernetes.KubernetesProbeManager
 import no.nav.helse.arbeidsgiver.kubernetes.LivenessComponent
 import no.nav.helse.arbeidsgiver.kubernetes.ReadynessComponent
 import no.nav.helse.fritakagp.db.DbTest
-import no.nav.helse.fritakagp.db.PostgresRepository
-import no.nav.helse.fritakagp.db.Repository
 import org.koin.ktor.ext.getKoin
 import org.slf4j.LoggerFactory
-import java.util.Timer
-import kotlin.concurrent.schedule
 
 
 val mainLogger = LoggerFactory.getLogger("main")
@@ -23,8 +19,8 @@ val mainLogger = LoggerFactory.getLogger("main")
 @KtorExperimentalAPI
 fun main() {
 
-    mainLogger.info("Sover i 15s i håp om at sidecars er klare")
-    Thread.sleep(15000)
+    mainLogger.info("Sover i 30s i håp om at sidecars er klare")
+    Thread.sleep(30000)
 
     Thread.currentThread().setUncaughtExceptionHandler { thread, err ->
         mainLogger.error("uncaught exception in thread ${thread.name}: ${err.message}", err)

@@ -22,6 +22,10 @@ val mainLogger = LoggerFactory.getLogger("main")
 
 @KtorExperimentalAPI
 fun main() {
+
+    mainLogger.info("Sover i 15s i håp om at sidecars er klare")
+    Thread.sleep(15000)
+
     Thread.currentThread().setUncaughtExceptionHandler { thread, err ->
         mainLogger.error("uncaught exception in thread ${thread.name}: ${err.message}", err)
     }
@@ -32,9 +36,7 @@ fun main() {
         runBlocking { autoDetectProbeableComponents(koin) }
         mainLogger.info("La til probeable komponenter")
 
-        Timer("TestConnection", false).schedule(100000) {
-            koin.get<DbTest>().lagre()
-        }
+        koin.get<DbTest>().lagre()
 
         Runtime.getRuntime().addShutdownHook(Thread {
             app.stop(1000, 1000)

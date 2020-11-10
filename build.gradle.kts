@@ -1,6 +1,6 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-val ktorVersion = "1.4.0"
+val ktorVersion = "1.4.1"
 val logback_version = "1.2.1"
 val logback_contrib_version = "0.1.5"
 val jacksonVersion = "2.10.3"
@@ -12,7 +12,7 @@ val assertJVersion = "3.12.2"
 val mockKVersion = "1.9.3"
 val tokenSupportVersion = "1.3.0"
 val koinVersion = "2.0.1"
-val valiktorVersion = "0.10.0"
+val valiktorVersion = "0.12.0"
 
 val githubPassword: String by project
 
@@ -34,7 +34,6 @@ buildscript {
 }
 
 dependencies {
-
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
     implementation("io.ktor:ktor-jackson:$ktorVersion")
     implementation("io.ktor:ktor-client-core:$ktorVersion")
@@ -54,6 +53,7 @@ dependencies {
     implementation("org.koin:koin-ktor:$koinVersion")
     implementation("no.nav.security:token-validation-ktor:$tokenSupportVersion")
     implementation("no.nav.security:token-validation-test-support:$tokenSupportVersion")
+    implementation("no.nav.helsearbeidsgiver:helse-arbeidsgiver-felles-backend:2020.11.10-11-35-e35d5")
 
     implementation(kotlin("stdlib"))
 
@@ -76,9 +76,6 @@ dependencies {
 
     implementation("io.prometheus:simpleclient_common:$prometheusVersion")
     implementation("io.prometheus:simpleclient_hotspot:$prometheusVersion")
-
-
-    implementation("no.nav.helsearbeidsgiver:helse-arbeidsgiver-felles-backend:2020.09.30-11-08-93059")
 
     testImplementation("org.koin:koin-test:$koinVersion")
     implementation("com.github.javafaker:javafaker:1.0.2") // flytt denne til test når generatorene ikke er nødvendige i prod-koden lenger

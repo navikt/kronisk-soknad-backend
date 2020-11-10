@@ -3,7 +3,7 @@ package no.nav.helse.slowtests
 import com.zaxxer.hikari.HikariDataSource
 import no.nav.helse.fritakagp.db.PostgresRepository
 import no.nav.helse.fritakagp.db.createTestHikariConfig
-import no.nav.helse.fritakagp.web.common
+import no.nav.helse.fritakagp.koin.common
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach

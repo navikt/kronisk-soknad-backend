@@ -1,4 +1,4 @@
-package no.nav.helse.fritakagp.web
+package no.nav.helse.fritakagp.koin
 
 import com.fasterxml.jackson.core.util.DefaultIndenter
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter
@@ -10,7 +10,6 @@ import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.zaxxer.hikari.HikariDataSource
-import com.zaxxer.hikari.metrics.prometheus.PrometheusMetricsTrackerFactory
 import io.ktor.client.*
 import io.ktor.client.engine.apache.*
 import io.ktor.client.features.json.*

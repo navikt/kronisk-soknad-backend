@@ -1,7 +1,10 @@
 package no.nav.helse.fritakagp.db
 
+import no.nav.helse.fritakagp.domain.SoeknadGravid
+import java.util.*
+
 interface Repository {
-    fun insert(testString: String, id: Int): String
-    fun delete(id: Int): Int
-    fun getById(id: Int): String?
+    fun insert(soeknad: SoeknadGravid): UUID
+    fun delete(id: UUID): Int
+    fun getById(id: UUID): SoeknadGravid?
 }

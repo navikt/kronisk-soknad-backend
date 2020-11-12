@@ -154,6 +154,6 @@ fun Application.fritakModule(config: ApplicationConfig = environment.config) {
     nais()
 
     routing {
-        fritakAGP()
+        fritakAGP(get())
     }
 }

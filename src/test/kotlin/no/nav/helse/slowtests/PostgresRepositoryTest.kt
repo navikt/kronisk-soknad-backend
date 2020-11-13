@@ -3,7 +3,10 @@ package no.nav.helse.slowtests
 import com.zaxxer.hikari.HikariDataSource
 import no.nav.helse.fritakagp.db.PostgresRepository
 import no.nav.helse.fritakagp.db.createTestHikariConfig
-import no.nav.helse.fritakagp.web.common
+import no.nav.helse.fritakagp.domain.Omplassering
+import no.nav.helse.fritakagp.domain.SoeknadGravid
+import no.nav.helse.fritakagp.domain.Tiltak
+import no.nav.helse.fritakagp.koin.common
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
@@ -13,11 +16,20 @@ import org.koin.core.context.loadKoinModules
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.koin.core.get
+import java.time.LocalDate
 
 class PostgresRepositoryTest : KoinComponent {
 
     lateinit var repo: PostgresRepository
-    val testString = "TestString"
+    val testSoeknad = SoeknadGravid(
+            dato = LocalDate.now(),
+            fnr = "12345",
+            sendtAv = "12345678911",
+            omplassering = Omplassering.JA,
+            tilrettelegge = true,
+            tiltak = listOf(Tiltak.ANNET),
+            tiltakBeskrivelse = "tiltakBeskrivelse"
+    )
 
     @BeforeEach
     internal fun setUp() {
@@ -26,21 +38,20 @@ class PostgresRepositoryTest : KoinComponent {
 
         }
         repo = PostgresRepository(HikariDataSource(createTestHikariConfig()), get())
-        repo.insert(testString, 10)
+        repo.insert(testSoeknad)
 
     }
 
     @AfterEach
     internal fun tearDown() {
-        repo.delete(10)
+       repo.delete(testSoeknad.id)
         stopKoin()
     }
 
-
     @Test
     fun `finner data i db`() {
-        val resultString = repo.getById(10)
-        assertThat(resultString).isEqualTo(testString)
+        val soeknadGravidResult = repo.getById(testSoeknad.id)
+        assertThat(soeknadGravidResult).isEqualTo(testSoeknad)
     }
 
 }

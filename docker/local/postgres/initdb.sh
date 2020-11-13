@@ -9,8 +9,7 @@ psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-E
 EOSQL
 
 psql -v ON_ERROR_STOP=1 --username "fritakagp" --dbname "fritakagp_db" <<-EOSQL
-    CREATE TABLE test (
-                          id int unique not null,
+    CREATE TABLE soeknadgravid (
                           data jsonb not null
     );
 

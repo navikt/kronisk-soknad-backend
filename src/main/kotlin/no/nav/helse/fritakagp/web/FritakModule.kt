@@ -12,11 +12,12 @@ import io.ktor.locations.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.util.*
+import no.nav.helse.arbeidsgiver.web.validation.Problem
+import no.nav.helse.arbeidsgiver.web.validation.ValidationProblem
+import no.nav.helse.arbeidsgiver.web.validation.ValidationProblemDetail
+import no.nav.helse.fritakagp.koin.selectModuleBasedOnProfile
 import no.nav.helse.fritakagp.nais.nais
 import no.nav.helse.fritakagp.web.api.fritakAGP
-import no.nav.helse.fritakagp.web.dto.validation.Problem
-import no.nav.helse.fritakagp.web.dto.validation.ValidationProblem
-import no.nav.helse.fritakagp.web.dto.validation.ValidationProblemDetail
 import no.nav.helse.fritakagp.web.dto.validation.getContextualMessage
 import org.koin.ktor.ext.Koin
 import org.koin.ktor.ext.get
@@ -133,25 +134,16 @@ fun Application.fritakModule(config: ApplicationConfig = environment.config) {
         }
 
         exception<JsonMappingException> { cause ->
-            // Siden valideringen foregår i init {} blokken vil
-            // Jackson kunne støte på constrainViolations under de-serialisering.
-            // disse vil vi vise til klienten som valideringsfeil
-
-            when (cause.cause) {
-                is ConstraintViolationException -> handleValidationError(call, cause.cause as ConstraintViolationException)
-                else -> {
-                    val errorId = UUID.randomUUID()
-                    val userAgent = call.request.headers.get("User-Agent") ?: "Ukjent"
-                    val locale = call.request.headers.get("Accept-Language") ?: "Ukjent"
-                    LOGGER.warn("$errorId : $userAgent : $locale", cause)
-                    val problem = Problem(
-                            title = "Feil ved prosessering av JSON-dataene som ble oppgitt",
-                            detail = cause.message,
-                            instance = URI.create("urn:fritak:json-mapping-error:$errorId")
-                    )
-                    call.respond(HttpStatusCode.BadRequest, problem)
-                }
-            }
+            val errorId = UUID.randomUUID()
+            val userAgent = call.request.headers.get("User-Agent") ?: "Ukjent"
+            val locale = call.request.headers.get("Accept-Language") ?: "Ukjent"
+            LOGGER.warn("$errorId : $userAgent : $locale", cause)
+            val problem = Problem(
+                    title = "Feil ved prosessering av JSON-dataene som ble oppgitt",
+                    detail = cause.message,
+                    instance = URI.create("urn:fritak:json-mapping-error:$errorId")
+            )
+            call.respond(HttpStatusCode.BadRequest, problem)
         }
 
         exception<ConstraintViolationException> { cause ->
@@ -162,6 +154,6 @@ fun Application.fritakModule(config: ApplicationConfig = environment.config) {
     nais()
 
     routing {
-        fritakAGP()
+        fritakAGP(get())
     }
 }

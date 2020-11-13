@@ -3,7 +3,9 @@ package no.nav.helse.slowtests
 import com.zaxxer.hikari.HikariDataSource
 import no.nav.helse.fritakagp.db.PostgresRepository
 import no.nav.helse.fritakagp.db.createTestHikariConfig
+import no.nav.helse.fritakagp.domain.Omplassering
 import no.nav.helse.fritakagp.domain.SoeknadGravid
+import no.nav.helse.fritakagp.domain.Tiltak
 import no.nav.helse.fritakagp.koin.common
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
@@ -23,9 +25,9 @@ class PostgresRepositoryTest : KoinComponent {
             dato = LocalDate.now(),
             fnr = "12345",
             sendtAv = "12345678911",
-            omplassering = "omplassering",
+            omplassering = Omplassering.JA,
             tilrettelegge = true,
-            tiltak = "tiltak",
+            tiltak = listOf(Tiltak.ANNET),
             tiltakBeskrivelse = "tiltakBeskrivelse"
     )
 

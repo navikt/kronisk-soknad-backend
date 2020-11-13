@@ -9,6 +9,7 @@ import io.ktor.util.*
 import no.nav.helse.arbeidsgiver.web.validation.isValidIdentitetsnummer
 import no.nav.helse.fritakagp.db.Repository
 import no.nav.helse.fritakagp.domain.SoeknadGravid
+import no.nav.helse.fritakagp.domain.Tiltak
 import no.nav.helse.fritakagp.domain.getOmplasseringValue
 import no.nav.helse.fritakagp.domain.getTiltakValue
 import no.nav.helse.fritakagp.web.api.resreq.GravideSoknadRequest

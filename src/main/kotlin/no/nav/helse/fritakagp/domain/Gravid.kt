@@ -27,5 +27,12 @@ data class SoeknadGravid(
         val oppgaveId: String? = null
 )
 
+fun getTiltakValue(req : List<String>) : List<Tiltak> {
+        return req.map { it -> Tiltak.valueOf(it.toUpperCase()) }
+}
+fun getOmplasseringValue(req : String) : Omplassering {
+    return Omplassering.valueOf(req.toUpperCase())
+}
+
 enum class Tiltak {TILPASSET_ARBEIDSTID, HJEMMEKONTOR, TILPASSEDE_ARBEIDSOPPGAVER, ANNET }
 enum class Omplassering {JA, NEI, MOTSETTER, FAAR_IKKE_KONTAKT, IKKE_ANDRE_OPPGAVER, HELSETILSTAND}

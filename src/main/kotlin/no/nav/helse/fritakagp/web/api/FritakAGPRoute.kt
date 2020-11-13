@@ -9,6 +9,8 @@ import io.ktor.util.*
 import no.nav.helse.arbeidsgiver.web.validation.isValidIdentitetsnummer
 import no.nav.helse.fritakagp.db.Repository
 import no.nav.helse.fritakagp.domain.SoeknadGravid
+import no.nav.helse.fritakagp.domain.getOmplasseringValue
+import no.nav.helse.fritakagp.domain.getTiltakValue
 import no.nav.helse.fritakagp.web.api.resreq.GravideSoknadRequest
 import no.nav.helse.fritakagp.web.hentIdentitetsnummerFraLoginToken
 import org.valiktor.validate
@@ -26,7 +28,7 @@ fun Route.fritakAGP(repo:Repository) {
                     validate(GravideSoknadRequest::fnr).isValidIdentitetsnummer()
 
                     // Her trengs sikkert flere valideringer etterhvert
-                    validate(GravideSoknadRequest::)
+
                 }
 
                 val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
@@ -35,9 +37,9 @@ fun Route.fritakAGP(repo:Repository) {
                     dato = request.dato,
                     fnr = request.fnr,
                     sendtAv = innloggetFnr,
-                    omplassering = request.omplassering,
+                    omplassering = getOmplasseringValue(request.omplassering),
                     tilrettelegge = request.tilrettelegge,
-                    tiltak = request.tiltak,
+                    tiltak = getTiltakValue(request.tiltak),
                     tiltakBeskrivelse = request.tiltakBeskrivelse
                 )
                 try {

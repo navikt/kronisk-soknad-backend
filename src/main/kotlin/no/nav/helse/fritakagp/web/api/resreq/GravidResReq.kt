@@ -6,7 +6,7 @@ data class GravideSoknadRequest(
     val dato: LocalDate,
     val fnr: String,
     val tilrettelegge: Boolean,
-    val tiltak: String,
+    val tiltak: List<String>,
     val tiltakBeskrivelse: String?,
     val omplassering: String
 )

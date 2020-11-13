@@ -12,6 +12,7 @@ import no.nav.helse.fritakagp.domain.SoeknadGravid
 import no.nav.helse.fritakagp.web.api.resreq.GravideSoknadRequest
 import no.nav.helse.fritakagp.web.hentIdentitetsnummerFraLoginToken
 import org.valiktor.validate
+import java.sql.SQLException
 
 @KtorExperimentalAPI
 fun Route.fritakAGP(repo:Repository) {
@@ -25,6 +26,7 @@ fun Route.fritakAGP(repo:Repository) {
                     validate(GravideSoknadRequest::fnr).isValidIdentitetsnummer()
 
                     // Her trengs sikkert flere valideringer etterhvert
+                    validate(GravideSoknadRequest::)
                 }
 
                 val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
@@ -38,8 +40,12 @@ fun Route.fritakAGP(repo:Repository) {
                     tiltak = request.tiltak,
                     tiltakBeskrivelse = request.tiltakBeskrivelse
                 )
-                
-                repo.insert(soeknad)
+                try {
+                    repo.insert(soeknad)
+                } catch (ex: SQLException) {
+                    call.respond(HttpStatusCode.UnprocessableEntity)
+                }
+
 
                 // TODO: Opprette en bakgrunnsjobb som sender søknaden videre
 

@@ -11,9 +11,9 @@ data class SoeknadGravid(
         val dato: LocalDate,
         val fnr: String,
         val tilrettelegge: Boolean,
-        val tiltak: String,
-        val tiltakBeskrivelse: String,
-        val omplassering: String,
+        val tiltak: List<Tiltak>? = null,
+        val tiltakBeskrivelse: String? = null,
+        val omplassering: Omplassering? = null,
         val sendtAv: String,
 
         /**
@@ -26,3 +26,6 @@ data class SoeknadGravid(
          */
         val oppgaveId: String? = null
 )
+
+enum class Tiltak {TILPASSET_ARBEIDSTID, HJEMMEKONTOR, TILPASSEDE_ARBEIDSOPPGAVER, ANNET }
+enum class Omplassering {JA, NEI, MOTSETTER, FAAR_IKKE_KONTAKT, IKKE_ANDRE_OPPGAVER, HELSETILSTAND}

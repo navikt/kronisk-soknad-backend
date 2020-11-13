@@ -7,6 +7,6 @@ data class GravideSoknadRequest(
     val fnr: String,
     val tilrettelegge: Boolean,
     val tiltak: String,
-    val tiltakBeskrivelse: String,
+    val tiltakBeskrivelse: String?,
     val omplassering: String
 )

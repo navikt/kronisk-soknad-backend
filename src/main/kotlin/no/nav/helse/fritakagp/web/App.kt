@@ -10,6 +10,7 @@ import no.nav.helse.arbeidsgiver.kubernetes.KubernetesProbeManager
 import no.nav.helse.arbeidsgiver.kubernetes.LivenessComponent
 import no.nav.helse.arbeidsgiver.kubernetes.ReadynessComponent
 import no.nav.helse.fritakagp.koin.getAllOfType
+import no.nav.helse.fritakagp.web.auth.localCookieDispenser
 import org.koin.ktor.ext.getKoin
 import org.slf4j.LoggerFactory
 
@@ -61,6 +62,7 @@ fun createApplicationEnvironment() = applicationEngineEnvironment {
     }
 
     module {
+        localCookieDispenser(config)
         fritakModule(config)
     }
 }

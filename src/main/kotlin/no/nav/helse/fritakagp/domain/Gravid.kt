@@ -13,7 +13,8 @@ data class SoeknadGravid(
         val tilrettelegge: Boolean,
         val tiltak: List<Tiltak>? = null,
         val tiltakBeskrivelse: String? = null,
-        val omplassering: Omplassering? = null,
+        val omplassering: String,
+        val omplasseringAarsak: String? = null,
         val sendtAv: String,
 
         /**
@@ -28,11 +29,32 @@ data class SoeknadGravid(
 )
 
 fun getTiltakValue(req : List<String>) : List<Tiltak> {
-        return req.map { it -> Tiltak.valueOf(it.toUpperCase()) }
-}
-fun getOmplasseringValue(req : String) : Omplassering {
-    return Omplassering.valueOf(req.toUpperCase())
+    return req.map { it -> Tiltak.valueOf(it.toUpperCase()) }
 }
 
-enum class Tiltak {TILPASSET_ARBEIDSTID, HJEMMEKONTOR, TILPASSEDE_ARBEIDSOPPGAVER, ANNET }
-enum class Omplassering {JA, NEI, MOTSETTER, FAAR_IKKE_KONTAKT, IKKE_ANDRE_OPPGAVER, HELSETILSTAND}
+fun getTiltakerBeskrivelse(req : List<String>) : List<String> {
+    return req.map { it -> Tiltak.valueOf(it.toUpperCase()).beskrivelse }
+}
+fun getOmplasseringValue(req : String) : OmplasseringAarsak {
+    return OmplasseringAarsak.valueOf(req.toUpperCase())
+}
+fun getOmplasseringBeskrivelse(req : String) : String {
+    return OmplasseringAarsak.valueOf(req.toUpperCase()).beskrivelse
+}
+
+enum class Omplassering {
+    JA, NEI, IKKE_MULIG
+}
+enum class Tiltak(val beskrivelse : String) {
+    TILPASSET_ARBEIDSTID("Fleksibel eller tilpasset arbeidstid"),
+    HJEMMEKONTOR("Hjemmekontor"),
+    TILPASSEDE_ARBEIDSOPPGAVER("Tilpassede arbeidsoppgaver"),
+    ANNET("Annet")
+}
+
+enum class OmplasseringAarsak(val beskrivelse : String) {
+    MOTSETTER("Den ansatte motsetter seg omplassering"),
+    FAAR_IKKE_KONTAKT("Vi får ikke kontakt med den ansatte"),
+    IKKE_ANDRE_OPPGAVER("Vi har ikke andre oppgaver eller arbeidssteder å tilby"),
+    HELSETILSTANDEN("Den ansatte vil ikke fungere i en annen jobb på grunn av helsetilstanden")
+}

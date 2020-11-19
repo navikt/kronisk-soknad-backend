@@ -24,24 +24,17 @@ fun Route.fritakAGP(repo:Repository) {
         route("/gravid/soeknad") {
             post {
                 val request = call.receive<GravideSoknadRequest>()
-
-                validate(request) {
-                    validate(GravideSoknadRequest::fnr).isValidIdentitetsnummer()
-
-                    // Her trengs sikkert flere valideringer etterhvert
-
-                }
-
                 val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
 
                 val soeknad = SoeknadGravid(
-                    dato = request.dato,
-                    fnr = request.fnr,
-                    sendtAv = innloggetFnr,
-                    omplassering = getOmplasseringValue(request.omplassering),
-                    tilrettelegge = request.tilrettelegge,
-                    tiltak = getTiltakValue(request.tiltak),
-                    tiltakBeskrivelse = request.tiltakBeskrivelse
+                        dato = request.dato,
+                        fnr = request.fnr,
+                        sendtAv = innloggetFnr,
+                        omplassering = request.omplassering,
+                        omplasseringAarsak = request.omplasseringAarsak,
+                        tilrettelegge = request.tilrettelegge,
+                        tiltak = getTiltakValue(request.tiltak),
+                        tiltakBeskrivelse = request.tiltakBeskrivelse
                 )
                 try {
                     repo.insert(soeknad)

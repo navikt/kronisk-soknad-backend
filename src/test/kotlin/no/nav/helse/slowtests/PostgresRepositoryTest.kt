@@ -25,7 +25,8 @@ class PostgresRepositoryTest : KoinComponent {
             dato = LocalDate.now(),
             fnr = "12345",
             sendtAv = "12345678911",
-            omplassering = Omplassering.JA,
+            omplassering = "Ja",
+            omplasseringAarsak = null,
             tilrettelegge = true,
             tiltak = listOf(Tiltak.ANNET),
             tiltakBeskrivelse = "tiltakBeskrivelse"

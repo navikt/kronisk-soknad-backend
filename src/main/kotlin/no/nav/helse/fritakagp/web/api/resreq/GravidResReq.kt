@@ -1,6 +1,7 @@
 package no.nav.helse.fritakagp.web.api.resreq
 
 import no.nav.helse.arbeidsgiver.web.validation.isValidIdentitetsnummer
+import no.nav.helse.fritakagp.domain.Omplassering
 import no.nav.helse.fritakagp.web.dto.validation.isOmplasseringValgRiktig
 import no.nav.helse.fritakagp.web.dto.validation.isTiltakValid
 import org.valiktor.functions.isInIgnoringCase
@@ -22,7 +23,7 @@ data class GravideSoknadRequest(
             validate(GravideSoknadRequest::fnr).isValidIdentitetsnummer()
             validate(GravideSoknadRequest::tiltak).isTiltakValid(it.tiltakBeskrivelse)
             validate(GravideSoknadRequest::tilrettelegge).isNotNull()
-            validate(GravideSoknadRequest::omplassering).isInIgnoringCase("Ja","Nei", "Ikke_mulig")
+            validate(GravideSoknadRequest::omplassering).isInIgnoringCase(Omplassering.values().map { it -> it.name })
             validate(GravideSoknadRequest::omplasseringAarsak).isOmplasseringValgRiktig(it.omplassering)
 
         }

@@ -32,7 +32,7 @@ fun getTiltakValue(req : List<String>) : List<Tiltak> {
     return req.map { it -> Tiltak.valueOf(it.toUpperCase()) }
 }
 
-fun getTiltakerBeskrivelse(req : List<String>) : List<String> {
+fun getTiltakBeskrivelse(req : List<String>) : List<String> {
     return req.map { it -> Tiltak.valueOf(it.toUpperCase()).beskrivelse }
 }
 fun getOmplasseringValue(req : String) : OmplasseringAarsak {

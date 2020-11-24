@@ -9,6 +9,8 @@ import kotlinx.coroutines.runBlocking
 import no.nav.helse.arbeidsgiver.kubernetes.KubernetesProbeManager
 import no.nav.helse.arbeidsgiver.kubernetes.LivenessComponent
 import no.nav.helse.arbeidsgiver.kubernetes.ReadynessComponent
+import no.nav.helse.arbeidsgiver.system.AppEnv
+import no.nav.helse.arbeidsgiver.system.getEnvironment
 import no.nav.helse.fritakagp.koin.getAllOfType
 import no.nav.helse.fritakagp.web.auth.localCookieDispenser
 import org.koin.ktor.ext.getKoin
@@ -20,14 +22,18 @@ val mainLogger = LoggerFactory.getLogger("main")
 @KtorExperimentalAPI
 fun main() {
 
-    mainLogger.info("Sover i 30s i håp om at sidecars er klare")
-    Thread.sleep(30000)
-
     Thread.currentThread().setUncaughtExceptionHandler { thread, err ->
         mainLogger.error("uncaught exception in thread ${thread.name}: ${err.message}", err)
     }
 
     embeddedServer(Netty, createApplicationEnvironment()).let { app ->
+
+        val environment = app.environment.config.getEnvironment()
+        if(environment == AppEnv.PREPROD || environment == AppEnv.PROD) {
+            mainLogger.info("Sover i 30s i påvente av SQL proxy sidecar")
+            Thread.sleep(30000)
+        }
+
         app.start(wait = false)
         val koin = app.application.getKoin()
         runBlocking { autoDetectProbeableComponents(koin) }

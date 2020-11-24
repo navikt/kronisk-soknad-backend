@@ -41,7 +41,8 @@ spec:
       value: PREPROD
   gcp:
     sqlInstances:
-      - type: POSTGRES_12
+      - type: POSTGRES_11
+        tier: db-g1-small
         databases:
-          - name: fritakagp_db
+          - name: fritakagp-db
             diskAutoresize: true

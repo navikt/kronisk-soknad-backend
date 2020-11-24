@@ -35,13 +35,13 @@ spec:
       cpu: 400m
       memory: 200Mi
   webproxy: true
-  leaderElection: true
+  leaderElection: false
   env:
     - name: KOIN_PROFILE
       value: PREPROD
   gcp:
     sqlInstances:
-      - type: POSTGRES_11
+      - type: POSTGRES_12
         databases:
-          - name: fritakagp-db
+          - name: fritakagp_db
             diskAutoresize: true

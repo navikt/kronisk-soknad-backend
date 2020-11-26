@@ -41,15 +41,14 @@ fun Application.fritakModule(config: ApplicationConfig = environment.config) {
 
     install(CORS)
     {
-        method(HttpMethod.Head)
         method(HttpMethod.Options)
         method(HttpMethod.Post)
-        method(HttpMethod.Get)
 
-        if (config.getEnvironment() == AppEnv.LOCAL) {
-            anyHost()
-        } else {
-            host("nav.no", schemes = listOf("https"))
+        when(config.getEnvironment()) {
+            AppEnv.TEST -> anyHost()
+            AppEnv.LOCAL -> anyHost()
+            AppEnv.PREPROD -> host("fritakagp.dev.nav.no", schemes = listOf("https"))
+            AppEnv.PROD -> host("fritakagp.nav.no", schemes = listOf("https"))
         }
 
         allowCredentials = true

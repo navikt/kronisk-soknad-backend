@@ -41,8 +41,10 @@ fun Application.fritakModule(config: ApplicationConfig = environment.config) {
 
     install(CORS)
     {
+        method(HttpMethod.Head)
         method(HttpMethod.Options)
         method(HttpMethod.Post)
+        method(HttpMethod.Get)
 
         if (config.getEnvironment() == AppEnv.LOCAL) {
             anyHost()

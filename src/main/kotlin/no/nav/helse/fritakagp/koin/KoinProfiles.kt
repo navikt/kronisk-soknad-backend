@@ -16,6 +16,7 @@ import io.ktor.client.features.json.*
 import io.ktor.config.*
 import io.ktor.util.*
 import no.nav.helse.arbeidsgiver.kubernetes.KubernetesProbeManager
+import no.nav.helse.fritakagp.db.MockSoeknadRepo
 import no.nav.helse.fritakagp.db.PostgresRepository
 import no.nav.helse.fritakagp.db.Repository
 import no.nav.helse.fritakagp.db.createHikariConfig
@@ -30,7 +31,7 @@ import javax.sql.DataSource
 @KtorExperimentalAPI
 fun selectModuleBasedOnProfile(config: ApplicationConfig): List<Module> {
     val envModule = when (config.property("koin.profile").getString()) {
-        "TEST" -> buildAndTestConfig()
+        "TEST" -> buildAndTestConfig(config)
         "LOCAL" -> localDevConfig(config)
         "PREPROD" -> preprodConfig(config)
         "PROD" -> prodConfig(config)
@@ -76,8 +77,10 @@ val common = module {
 
 }
 
-fun buildAndTestConfig() = module {
-
+fun buildAndTestConfig(config: ApplicationConfig) = module {
+    single { HikariDataSource(createHikariConfig(config.getjdbcUrlFromProperties(), config.getString("database.username"), config.getString("database.password"))) as DataSource }
+    single { MockSoeknadRepo() as Repository}
+    LocalOIDCWireMock.start()
 }
 
 @KtorExperimentalAPI

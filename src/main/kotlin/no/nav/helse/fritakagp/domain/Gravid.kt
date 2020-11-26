@@ -26,6 +26,7 @@ data class SoeknadGravid(
          * ID fra oppgave etter opprettelse av oppgave
          */
         val oppgaveId: String? = null
+       // val datafil: String? = null
 )
 
 fun getTiltakValue(req : List<String>) : List<Tiltak> {
@@ -57,4 +58,8 @@ enum class OmplasseringAarsak(val beskrivelse : String) {
     FAAR_IKKE_KONTAKT("Vi får ikke kontakt med den ansatte"),
     IKKE_ANDRE_OPPGAVER("Vi har ikke andre oppgaver eller arbeidssteder å tilby"),
     HELSETILSTANDEN("Den ansatte vil ikke fungere i en annen jobb på grunn av helsetilstanden")
+}
+
+enum class GodskjentFiletyper {
+    PDF,BILDER
 }

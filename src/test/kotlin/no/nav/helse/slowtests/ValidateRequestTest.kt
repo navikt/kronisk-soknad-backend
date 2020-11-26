@@ -10,6 +10,7 @@ import java.time.LocalDate
 
 class ValidateRequestTest
 {
+
     @Test
     fun `test tiltakbeskrivelse`() {
         GravideSoknadRequest(

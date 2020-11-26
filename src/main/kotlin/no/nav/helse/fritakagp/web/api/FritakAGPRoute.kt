@@ -1,5 +1,6 @@
 package no.nav.helse.fritakagp.web.api
 
+import com.fasterxml.jackson.core.JsonGenerationException
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.request.*
@@ -23,6 +24,7 @@ fun Route.fritakAGP(repo:Repository) {
 
         route("/gravid/soeknad") {
             post {
+                try {
                 val request = call.receive<GravideSoknadRequest>()
                 val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
 
@@ -35,10 +37,12 @@ fun Route.fritakAGP(repo:Repository) {
                         tilrettelegge = request.tilrettelegge,
                         tiltak = getTiltakValue(request.tiltak),
                         tiltakBeskrivelse = request.tiltakBeskrivelse
+
                 )
-                try {
-                    repo.insert(soeknad)
-                } catch (ex: SQLException) {
+
+                //   repo.insert(soeknad)
+                }
+                catch (ex: SQLException) {
                     call.respond(HttpStatusCode.UnprocessableEntity)
                 }
 

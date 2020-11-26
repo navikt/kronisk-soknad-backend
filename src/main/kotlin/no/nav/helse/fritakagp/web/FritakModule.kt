@@ -47,8 +47,8 @@ fun Application.fritakModule(config: ApplicationConfig = environment.config) {
         when(config.getEnvironment()) {
             AppEnv.TEST -> anyHost()
             AppEnv.LOCAL -> anyHost()
-            AppEnv.PREPROD -> host("fritakagp.dev.nav.no", schemes = listOf("https"))
-            AppEnv.PROD -> host("fritakagp.nav.no", schemes = listOf("https"))
+            AppEnv.PREPROD -> host("*.dev.nav.no", schemes = listOf("https"))
+            AppEnv.PROD -> host("*.nav.no", schemes = listOf("https"))
         }
 
         allowCredentials = true

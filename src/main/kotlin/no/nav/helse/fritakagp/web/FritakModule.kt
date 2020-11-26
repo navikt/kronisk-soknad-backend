@@ -12,6 +12,8 @@ import io.ktor.locations.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.util.*
+import no.nav.helse.arbeidsgiver.system.AppEnv
+import no.nav.helse.arbeidsgiver.system.getEnvironment
 import no.nav.helse.arbeidsgiver.web.validation.Problem
 import no.nav.helse.arbeidsgiver.web.validation.ValidationProblem
 import no.nav.helse.arbeidsgiver.web.validation.ValidationProblemDetail
@@ -35,6 +37,21 @@ import javax.ws.rs.ForbiddenException
 fun Application.fritakModule(config: ApplicationConfig = environment.config) {
     install(Koin) {
         modules(selectModuleBasedOnProfile(config))
+    }
+
+    install(CORS)
+    {
+        method(HttpMethod.Options)
+        method(HttpMethod.Post)
+
+        if (config.getEnvironment() == AppEnv.LOCAL) {
+            anyHost()
+        } else {
+            host("nav.no", schemes = listOf("https"))
+        }
+
+        allowCredentials = true
+        allowNonSimpleContentTypes = true
     }
 
     install(Locations)

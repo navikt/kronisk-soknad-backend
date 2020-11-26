@@ -27,8 +27,9 @@ fun Application.localCookieDispenser(config: ApplicationConfig) {
                 return@get
             }
 
+            val domain = if (config.getEnvironment() == AppEnv.PREPROD) "dev.nav.no" else "localhost"
             val cookieName = config.configList("no.nav.security.jwt.issuers")[0].property("cookie_name").getString()
-            call.response.cookies.append(Cookie(cookieName, JwtTokenGenerator.createSignedJWT(call.request.queryParameters["subject"]).serialize(), CookieEncoding.RAW, domain = "localhost", path = "/"))
+            call.response.cookies.append(Cookie(cookieName, JwtTokenGenerator.createSignedJWT(call.request.queryParameters["subject"]).serialize(), CookieEncoding.RAW, domain = domain, path = "/"))
 
             if (call.request.queryParameters["redirect"] != null) {
                 call.respondText("<script>window.location.href='" + call.request.queryParameters["redirect"] + "';</script>", ContentType.Text.Html, HttpStatusCode.OK)

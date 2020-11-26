@@ -30,8 +30,8 @@ fun main() {
 
         val environment = app.environment.config.getEnvironment()
         if(environment == AppEnv.PREPROD || environment == AppEnv.PROD) {
-            mainLogger.info("Sover i 60s i påvente av SQL proxy sidecar")
-            Thread.sleep(60000)
+            mainLogger.info("Sover i 30s i påvente av SQL proxy sidecar")
+            Thread.sleep(30000)
         }
 
         app.start(wait = false)

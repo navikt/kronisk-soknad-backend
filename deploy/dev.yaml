@@ -42,7 +42,6 @@ spec:
   env:
     - name: KOIN_PROFILE
       value: PREPROD
-    -
   gcp:
     sqlInstances:
       - type: POSTGRES_11

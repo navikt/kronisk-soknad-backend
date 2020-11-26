@@ -37,10 +37,12 @@ spec:
   webproxy: true
   leaderElection: false
   envFrom:
-    - configmap: loginservice-idporten # tilgjengeliggjør LOGINSERVICE_IDPORTEN_DISCOVERY_URL og LOGINSERVICE_IDPORTEN_AUDIENCE
+    #- configmap: loginservice-idporten # tilgjengeliggjør LOGINSERVICE_IDPORTEN_DISCOVERY_URL og LOGINSERVICE_IDPORTEN_AUDIENCE
+    # Skrur av ^^^ i PREPROD siden loginservice ikke virker via naisdevice
   env:
     - name: KOIN_PROFILE
       value: PREPROD
+    -
   gcp:
     sqlInstances:
       - type: POSTGRES_11

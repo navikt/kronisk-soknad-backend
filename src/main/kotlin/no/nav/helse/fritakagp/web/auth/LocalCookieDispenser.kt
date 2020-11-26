@@ -23,7 +23,7 @@ import no.nav.security.token.support.test.JwtTokenGenerator
 fun Application.localCookieDispenser(config: ApplicationConfig) {
     routing {
         get("/local/cookie-please") {
-            if (config.getEnvironment() != AppEnv.LOCAL) {
+            if (config.getEnvironment() == AppEnv.PROD) {
                 return@get
             }
 
@@ -40,7 +40,7 @@ fun Application.localCookieDispenser(config: ApplicationConfig) {
 }
 
 
-class LocalOIDCWireMock() {
+class LocalOIDCWireMock {
     companion object {
         var started = false
 

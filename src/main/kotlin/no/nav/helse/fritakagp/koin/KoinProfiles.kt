@@ -22,6 +22,8 @@ import no.nav.helse.fritakagp.db.createHikariConfig
 import org.koin.core.Koin
 import org.koin.core.definition.Kind
 import org.koin.core.module.Module
+import org.koin.dsl.bind
+import org.koin.dsl.binds
 import org.koin.dsl.module
 import javax.sql.DataSource
 
@@ -82,13 +84,13 @@ fun buildAndTestConfig() = module {
 @KtorExperimentalAPI
 fun localDevConfig(config: ApplicationConfig) = module {
     single { HikariDataSource(createHikariConfig(config.getjdbcUrlFromProperties(), config.getString("database.username"), config.getString("database.password"))) }
-    single { PostgresRepository(get(), get()) }
+    single { PostgresRepository(get(), get()) } bind Repository::class
 }
 
 @KtorExperimentalAPI
 fun preprodConfig(config: ApplicationConfig) = module {
     single { HikariDataSource(createHikariConfig(config.getjdbcUrlFromProperties(), config.getString("database.username"), config.getString("database.password"))) }
-    single { PostgresRepository(get(), get()) }
+    single { PostgresRepository(get(), get()) } bind Repository::class
 }
 
 @KtorExperimentalAPI

@@ -68,7 +68,11 @@ fun createApplicationEnvironment() = applicationEngineEnvironment {
     }
 
     module {
-        localCookieDispenser(config)
+
+        if (config.getEnvironment() != AppEnv.PROD) {
+            localCookieDispenser(config)
+        }
+
         fritakModule(config)
     }
 }

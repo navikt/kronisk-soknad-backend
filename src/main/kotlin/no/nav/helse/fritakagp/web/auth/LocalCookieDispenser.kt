@@ -22,10 +22,11 @@ import no.nav.security.token.support.test.JwtTokenGenerator
 @KtorExperimentalAPI
 fun Application.localCookieDispenser(config: ApplicationConfig) {
     routing {
+
+        LocalOIDCWireMock.start()
+
         get("/local/cookie-please") {
-            if (config.getEnvironment() == AppEnv.PROD) {
-                return@get
-            }
+
 
             val domain = if (config.getEnvironment() == AppEnv.PREPROD) "dev.nav.no" else "localhost"
             val cookieName = config.configList("no.nav.security.jwt.issuers")[0].property("cookie_name").getString()
@@ -41,7 +42,7 @@ fun Application.localCookieDispenser(config: ApplicationConfig) {
 }
 
 
-class LocalOIDCWireMock {
+private class LocalOIDCWireMock {
     companion object {
         var started = false
 

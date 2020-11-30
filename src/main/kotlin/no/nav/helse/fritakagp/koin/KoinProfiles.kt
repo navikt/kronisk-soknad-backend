@@ -19,7 +19,6 @@ import no.nav.helse.arbeidsgiver.kubernetes.KubernetesProbeManager
 import no.nav.helse.fritakagp.db.PostgresRepository
 import no.nav.helse.fritakagp.db.Repository
 import no.nav.helse.fritakagp.db.createHikariConfig
-import no.nav.helse.fritakagp.web.auth.LocalOIDCWireMock
 import org.koin.core.Koin
 import org.koin.core.definition.Kind
 import org.koin.core.module.Module
@@ -82,16 +81,14 @@ fun buildAndTestConfig() = module {
 
 @KtorExperimentalAPI
 fun localDevConfig(config: ApplicationConfig) = module {
-    single { HikariDataSource(createHikariConfig(config.getjdbcUrlFromProperties(), config.getString("database.username"), config.getString("database.password"))) as DataSource }
-    single { PostgresRepository(get(), get()) as Repository}
-
-    LocalOIDCWireMock.start()
+    single { HikariDataSource(createHikariConfig(config.getjdbcUrlFromProperties(), config.getString("database.username"), config.getString("database.password"))) }
+    single { PostgresRepository(get(), get()) }
 }
 
 @KtorExperimentalAPI
 fun preprodConfig(config: ApplicationConfig) = module {
-    single { HikariDataSource(createHikariConfig(config.getjdbcUrlFromProperties(), config.getString("database.username"), config.getString("database.password"))) as DataSource }
-    single { PostgresRepository(get(), get()) as Repository}
+    single { HikariDataSource(createHikariConfig(config.getjdbcUrlFromProperties(), config.getString("database.username"), config.getString("database.password"))) }
+    single { PostgresRepository(get(), get()) }
 }
 
 @KtorExperimentalAPI

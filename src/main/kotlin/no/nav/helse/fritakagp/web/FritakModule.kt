@@ -47,15 +47,14 @@ fun Application.fritakModule(config: ApplicationConfig = environment.config) {
 
     install(CORS)
     {
-        method(HttpMethod.Head)
         method(HttpMethod.Options)
         method(HttpMethod.Post)
 
         when(config.getEnvironment()) {
             AppEnv.TEST -> anyHost()
             AppEnv.LOCAL -> anyHost()
-            AppEnv.PREPROD -> host("fritak-agp-frontend.dev.nav.no", schemes = listOf("https"))
-            AppEnv.PROD -> host(".nav.no", schemes = listOf("https"))
+            AppEnv.PREPROD -> anyHost()
+            AppEnv.PROD -> host("arbeidsgiver.nav.no", schemes = listOf("https"))
         }
 
         allowCredentials = true

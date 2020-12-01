@@ -42,14 +42,11 @@ fun Route.fritakAGP(repo:Repository) {
                 )
                 try {
                     repo.insert(soeknad)
+                    // TODO: Opprette en bakgrunnsjobb som sender søknaden videre
+                    call.respond(HttpStatusCode.OK)
                 } catch (ex: SQLException) {
                     call.respond(HttpStatusCode.UnprocessableEntity)
                 }
-
-
-                // TODO: Opprette en bakgrunnsjobb som sender søknaden videre
-
-                call.respond(HttpStatusCode.OK)
             }
         }
     }

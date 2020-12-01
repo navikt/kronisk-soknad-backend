@@ -49,6 +49,7 @@ fun Application.fritakModule(config: ApplicationConfig = environment.config) {
     {
         method(HttpMethod.Options)
         method(HttpMethod.Post)
+        method(HttpMethod.Get)
 
         when(config.getEnvironment()) {
             AppEnv.TEST -> anyHost()

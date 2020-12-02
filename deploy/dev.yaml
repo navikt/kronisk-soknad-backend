@@ -9,13 +9,13 @@ spec:
   image: {{image}}
   port: 8080
   liveness:
-    path: isalive
+    path: /health/is-alive
     initialDelay: 10
     timeout: 2
     periodSeconds: 30
     failureThreshold: 10
   readiness:
-    path: isready
+    path: /health/is-ready
     initialDelay: 10
     timeout: 2
     periodSeconds: 5
@@ -35,13 +35,17 @@ spec:
       cpu: 400m
       memory: 200Mi
   webproxy: true
-  leaderElection: true
+  leaderElection: false
+  #envFrom:
+    #- configmap: loginservice-idporten # tilgjengeliggjør LOGINSERVICE_IDPORTEN_DISCOVERY_URL og LOGINSERVICE_IDPORTEN_AUDIENCE
+    # Skrur av ^^^ i PREPROD siden loginservice ikke virker via naisdevice
   env:
     - name: KOIN_PROFILE
       value: PREPROD
   gcp:
     sqlInstances:
       - type: POSTGRES_11
+        tier: db-g1-small
         databases:
           - name: fritakagp-db
             diskAutoresize: true

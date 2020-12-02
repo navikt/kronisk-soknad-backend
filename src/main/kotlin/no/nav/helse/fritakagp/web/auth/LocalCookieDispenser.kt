@@ -20,14 +20,19 @@ fun Application.localCookieDispenser(config: ApplicationConfig) {
     DefaultExports.initialize()
 
     routing {
+
+        LocalOIDCWireMock.start()
+
         get("/local/cookie-please") {
+
             if (config.property("koin.profile").getString() == "LOCAL") {
                 val server = MockOAuth2Server()
                 server.start()
                 val token = server.issueToken(call.request.queryParameters["subject"].toString())
                 server.shutdown()
+                val domain = if (config.getEnvironment() == AppEnv.PREPROD) "dev.nav.no" else "localhost"                
                 val cookieName = config.configList("no.nav.security.jwt.issuers")[0].property("cookie_name").getString()
-                call.response.cookies.append(Cookie(cookieName, token.serialize(), CookieEncoding.RAW, domain = "localhost", path = "/"))
+                call.response.cookies.append(Cookie(cookieName, token.serialize(), CookieEncoding.RAW, domain = domain, path = "/"))
             }
 
             if (call.request.queryParameters["redirect"] != null) {
@@ -38,4 +43,3 @@ fun Application.localCookieDispenser(config: ApplicationConfig) {
         }
     }
 }
-

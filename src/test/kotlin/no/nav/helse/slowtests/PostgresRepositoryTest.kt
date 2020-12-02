@@ -8,10 +8,12 @@ import no.nav.helse.fritakagp.domain.SoeknadGravid
 import no.nav.helse.fritakagp.domain.Tiltak
 import no.nav.helse.fritakagp.koin.common
 import org.assertj.core.api.Assertions.assertThat
+import org.flywaydb.core.Flyway
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.koin.core.KoinComponent
+import org.koin.core.context.GlobalContext
 import org.koin.core.context.loadKoinModules
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
@@ -36,9 +38,15 @@ class PostgresRepositoryTest : KoinComponent {
     internal fun setUp() {
         startKoin {
             loadKoinModules(common)
-
         }
-        repo = PostgresRepository(HikariDataSource(createTestHikariConfig()), get())
+        val ds = HikariDataSource(createTestHikariConfig())
+
+        Flyway.configure()
+                .dataSource(ds)
+                .load()
+                .migrate()
+
+        repo = PostgresRepository(ds, get())
         repo.insert(testSoeknad)
 
     }

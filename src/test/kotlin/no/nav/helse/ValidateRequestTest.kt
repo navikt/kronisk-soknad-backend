@@ -1,6 +1,5 @@
-package no.nav.helse.slowtests
+package no.nav.helse
 
-import no.nav.helse.fritakagp.domain.Omplassering
 import no.nav.helse.fritakagp.domain.OmplasseringAarsak
 import no.nav.helse.fritakagp.domain.Tiltak
 import no.nav.helse.fritakagp.web.api.resreq.GravideSoknadRequest

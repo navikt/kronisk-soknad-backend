@@ -18,12 +18,10 @@ import no.nav.helse.arbeidsgiver.system.getEnvironment
 import no.nav.helse.arbeidsgiver.web.validation.Problem
 import no.nav.helse.arbeidsgiver.web.validation.ValidationProblem
 import no.nav.helse.arbeidsgiver.web.validation.ValidationProblemDetail
-import no.nav.helse.fritakagp.koin.selectModuleBasedOnProfile
 import no.nav.helse.fritakagp.nais.nais
 import no.nav.helse.fritakagp.web.api.fritakAGP
 import no.nav.helse.fritakagp.web.dto.validation.getContextualMessage
 import no.nav.security.token.support.ktor.tokenValidationSupport
-import org.koin.ktor.ext.Koin
 import org.koin.ktor.ext.get
 import org.slf4j.LoggerFactory
 import org.valiktor.ConstraintViolationException
@@ -37,9 +35,6 @@ import javax.ws.rs.ForbiddenException
 @KtorExperimentalLocationsAPI
 @KtorExperimentalAPI
 fun Application.fritakModule(config: ApplicationConfig = environment.config) {
-    install(Koin) {
-        modules(selectModuleBasedOnProfile(config))
-    }
 
     install(Authentication) {
         tokenValidationSupport(config = config)

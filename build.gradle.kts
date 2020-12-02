@@ -77,6 +77,8 @@ dependencies {
     implementation("ch.qos.logback.contrib:logback-json-classic:$logback_contrib_version")
     implementation("net.logstash.logback:logstash-logback-encoder:4.9")
     implementation("org.codehaus.janino:janino:3.0.6")
+    implementation("org.flywaydb:flyway-core:7.3.0")
+
 
     implementation("no.nav.tjenestespesifikasjoner:altinn-correspondence-agency-external-basic:1.2019.09.25-00.21-49b69f0625e0")
 

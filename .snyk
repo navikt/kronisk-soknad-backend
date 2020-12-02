@@ -18,4 +18,8 @@ ignore:
     - '*':
         reason: Ingen fix tilgjengelig for nå
         expires: 2020-12-24T10:06:51.630Z
+  SNYK-JAVA-ORGECLIPSEJETTY-1047304:
+    - '*':
+        reason: None Given
+        expires: 2021-01-01T13:57:07.543Z
 patch: {}

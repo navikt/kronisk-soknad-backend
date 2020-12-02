@@ -1,24 +1,35 @@
 package no.nav.helse.slowtests
 
+import com.zaxxer.hikari.HikariDataSource
 import no.nav.helse.TestData
 import no.nav.helse.fritakagp.db.PostgresGravidSoeknadRepository
-import no.nav.helse.slowtests.systemtests.api.SystemTestBase
+import no.nav.helse.fritakagp.db.createTestHikariConfig
 import org.assertj.core.api.Assertions.assertThat
+import org.flywaydb.core.Flyway
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.koin.core.KoinComponent
 import org.koin.core.get
 import kotlin.test.assertNotNull
 
-class PostgresGravidSoeknadRepositoryTest : SystemTestBase() {
+class PostgresGravidSoeknadRepositoryTest : KoinComponent {
 
     lateinit var repo: PostgresGravidSoeknadRepository
     val testSoeknad = TestData.soeknadGravid
 
     @BeforeEach
     internal fun setUp() {
-        repo = PostgresGravidSoeknadRepository(get(), get())
+        val ds = HikariDataSource(createTestHikariConfig())
+
+        Flyway.configure()
+                .dataSource(ds)
+                .load()
+                .migrate()
+
+        repo = PostgresGravidSoeknadRepository(ds, get())
         repo.insert(testSoeknad)
+
     }
 
     @AfterEach

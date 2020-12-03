@@ -1,5 +1,8 @@
 package no.nav.helse.fritakagp.domain
 
+import java.io.ByteArrayInputStream
+import java.io.File
+import java.nio.file.Path
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
@@ -25,10 +28,22 @@ data class SoeknadGravid(
         /**
          * ID fra oppgave etter opprettelse av oppgave
          */
-        val oppgaveId: String? = null
-       // val datafil: String? = null
+        val oppgaveId: String? = null,
+        val datafil: String?,
+        val ext : String?
 )
 
+fun decodeBase64File(datafile : String, name : String, ext : String?): ByteArray {
+    val ff = File.createTempFile(name, ext)
+    ff.writeBytes(Base64.getDecoder().decode(datafile))
+    return ff.readBytes()
+}
+
+fun File.copyInputStreamToFile(inputStream: ByteArrayInputStream) {
+    this.outputStream().use { fileOut ->
+        inputStream.copyTo(fileOut)
+    }
+}
 fun getTiltakValue(req : List<String>) : List<Tiltak> {
     return req.map { it -> Tiltak.valueOf(it.toUpperCase()) }
 }
@@ -61,5 +76,6 @@ enum class OmplasseringAarsak(val beskrivelse : String) {
 }
 
 enum class GodskjentFiletyper {
-    PDF,BILDER
+    PDF,JPEG, PNG
 }
+

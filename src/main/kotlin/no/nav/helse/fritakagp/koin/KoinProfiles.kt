@@ -20,6 +20,9 @@ import no.nav.helse.fritakagp.db.MockSoeknadRepo
 import no.nav.helse.fritakagp.db.PostgresRepository
 import no.nav.helse.fritakagp.db.Repository
 import no.nav.helse.fritakagp.db.createHikariConfig
+import no.nav.helse.fritakagp.intergrasjoner.virusscan.ClamavVirusScannerImp
+import no.nav.helse.fritakagp.intergrasjoner.virusscan.MockVirusScanner
+import no.nav.helse.fritakagp.intergrasjoner.virusscan.VirusScanner
 import no.nav.helse.fritakagp.web.auth.LocalOIDCWireMock
 import org.koin.core.Koin
 import org.koin.core.definition.Kind
@@ -80,6 +83,7 @@ val common = module {
 fun buildAndTestConfig(config: ApplicationConfig) = module {
     single { HikariDataSource(createHikariConfig(config.getjdbcUrlFromProperties(), config.getString("database.username"), config.getString("database.password"))) as DataSource }
     single { MockSoeknadRepo() as Repository}
+    single { MockVirusScanner() as VirusScanner }
     LocalOIDCWireMock.start()
 }
 
@@ -87,6 +91,11 @@ fun buildAndTestConfig(config: ApplicationConfig) = module {
 fun localDevConfig(config: ApplicationConfig) = module {
     single { HikariDataSource(createHikariConfig(config.getjdbcUrlFromProperties(), config.getString("database.username"), config.getString("database.password"))) as DataSource }
     single { PostgresRepository(get(), get()) as Repository}
+    //single { MockVirusScanner() as VirusScanner }
+    single { ClamavVirusScannerImp(
+        get(),
+        config.getString("clam_local_url")
+    ) as VirusScanner }
 
     LocalOIDCWireMock.start()
 }
@@ -95,10 +104,18 @@ fun localDevConfig(config: ApplicationConfig) = module {
 fun preprodConfig(config: ApplicationConfig) = module {
     single { HikariDataSource(createHikariConfig(config.getjdbcUrlFromProperties(), config.getString("database.username"), config.getString("database.password"))) as DataSource }
     single { PostgresRepository(get(), get()) as Repository}
+    single { ClamavVirusScannerImp(
+            get(),
+            config.getString("clam_on_prem_url")
+    ) as VirusScanner }
 }
 
 @KtorExperimentalAPI
 fun prodConfig(config: ApplicationConfig) = module {
+    single { ClamavVirusScannerImp(
+            get(),
+            config.getString("clam_gcp_url")
+    ) as VirusScanner }
 }
 
 // utils

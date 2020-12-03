@@ -29,7 +29,9 @@ class PostgresRepositoryTest : KoinComponent {
             omplasseringAarsak = null,
             tilrettelegge = true,
             tiltak = listOf(Tiltak.ANNET),
-            tiltakBeskrivelse = "tiltakBeskrivelse"
+            tiltakBeskrivelse = "tiltakBeskrivelse",
+            datafil = null,
+            ext = null
     )
 
     @BeforeEach

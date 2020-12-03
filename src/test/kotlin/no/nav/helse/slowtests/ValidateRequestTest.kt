@@ -20,7 +20,9 @@ class ValidateRequestTest
                 tiltak = listOf(Tiltak.ANNET.name),
                 tiltakBeskrivelse = "beskrivelse",
                 omplassering="Ja",
-                omplasseringAarsak = null
+                omplasseringAarsak = null,
+                datafil = null,
+                ext = null
         )
     }
 
@@ -34,7 +36,9 @@ class ValidateRequestTest
                     tiltak = listOf(Tiltak.ANNET.name),
                     tiltakBeskrivelse = "",
                     omplassering="Ja",
-                    omplasseringAarsak = null
+                    omplasseringAarsak = null,
+                    datafil = null,
+                    ext = null
             )
         }
     }
@@ -48,7 +52,9 @@ class ValidateRequestTest
                 tiltak = listOf(Tiltak.TILPASSET_ARBEIDSTID.name),
                 tiltakBeskrivelse = "",
                 omplassering="Ja",
-                omplasseringAarsak = null
+                omplasseringAarsak = null,
+                datafil = null,
+                ext = null
         )
     }
 
@@ -61,7 +67,9 @@ class ValidateRequestTest
                 tiltak = listOf(Tiltak.TILPASSET_ARBEIDSTID.name),
                 tiltakBeskrivelse = "",
                 omplassering="IKKE_MULIG",
-                omplasseringAarsak = OmplasseringAarsak.FAAR_IKKE_KONTAKT.name
+                omplasseringAarsak = OmplasseringAarsak.FAAR_IKKE_KONTAKT.name,
+                datafil = null,
+                ext = null
         )
     }
 }

@@ -1,9 +1,9 @@
 package no.nav.helse.slowtests
 
 import com.zaxxer.hikari.HikariDataSource
-import no.nav.helse.fritakagp.db.PostgresRepository
+import no.nav.helse.TestData
+import no.nav.helse.fritakagp.db.PostgresGravidSoeknadRepository
 import no.nav.helse.fritakagp.db.createTestHikariConfig
-import no.nav.helse.fritakagp.domain.Omplassering
 import no.nav.helse.fritakagp.domain.SoeknadGravid
 import no.nav.helse.fritakagp.domain.Tiltak
 import no.nav.helse.fritakagp.koin.common
@@ -13,26 +13,17 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.koin.core.KoinComponent
-import org.koin.core.context.GlobalContext
 import org.koin.core.context.loadKoinModules
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.koin.core.get
 import java.time.LocalDate
+import kotlin.test.assertNotNull
 
-class PostgresRepositoryTest : KoinComponent {
+class PostgresGravidSoeknadRepositoryTest : KoinComponent {
 
-    lateinit var repo: PostgresRepository
-    val testSoeknad = SoeknadGravid(
-            dato = LocalDate.now(),
-            fnr = "12345",
-            sendtAv = "12345678911",
-            omplassering = "Ja",
-            omplasseringAarsak = null,
-            tilrettelegge = true,
-            tiltak = listOf(Tiltak.ANNET),
-            tiltakBeskrivelse = "tiltakBeskrivelse"
-    )
+    lateinit var repo: PostgresGravidSoeknadRepository
+    val testSoeknad = TestData.soeknadGravid
 
     @BeforeEach
     internal fun setUp() {
@@ -46,7 +37,7 @@ class PostgresRepositoryTest : KoinComponent {
                 .load()
                 .migrate()
 
-        repo = PostgresRepository(ds, get())
+        repo = PostgresGravidSoeknadRepository(ds, get())
         repo.insert(testSoeknad)
 
     }
@@ -61,6 +52,20 @@ class PostgresRepositoryTest : KoinComponent {
     fun `finner data i db`() {
         val soeknadGravidResult = repo.getById(testSoeknad.id)
         assertThat(soeknadGravidResult).isEqualTo(testSoeknad)
+    }
+
+    @Test
+    fun `kan oppdatere data`() {
+        val soeknadGravidResult = repo.getById(testSoeknad.id)
+        assertNotNull(soeknadGravidResult, "Må finnes")
+
+        soeknadGravidResult.journalpostId = "1234"
+        soeknadGravidResult.oppgaveId = "78990"
+
+        repo.update(soeknadGravidResult)
+
+        val afterUpdate = repo.getById(soeknadGravidResult.id)
+        assertThat(afterUpdate).isEqualTo(soeknadGravidResult)
     }
 
 }

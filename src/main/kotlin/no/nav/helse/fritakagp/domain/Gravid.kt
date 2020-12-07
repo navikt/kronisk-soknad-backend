@@ -1,6 +1,5 @@
 package no.nav.helse.fritakagp.domain
 
-import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
 
@@ -8,7 +7,7 @@ data class SoeknadGravid(
         val id: UUID = UUID.randomUUID(),
         val opprettet: LocalDateTime = LocalDateTime.now(),
 
-        val dato: LocalDate,
+        val orgnr: String,
         val fnr: String,
         val tilrettelegge: Boolean,
         val tiltak: List<Tiltak>? = null,
@@ -20,12 +19,12 @@ data class SoeknadGravid(
         /**
          * ID fra joark etter arkivering
          */
-        val journalpostId: String? = null,
+        var journalpostId: String? = null,
 
         /**
          * ID fra oppgave etter opprettelse av oppgave
          */
-        val oppgaveId: String? = null
+        var oppgaveId: String? = null
 )
 
 fun getTiltakValue(req : List<String>) : List<Tiltak> {
@@ -42,8 +41,10 @@ fun getOmplasseringBeskrivelse(req : String) : String {
     return OmplasseringAarsak.valueOf(req.toUpperCase()).beskrivelse
 }
 
-enum class Omplassering {
-    JA, NEI, IKKE_MULIG
+enum class Omplassering(val beskrivelse: String) {
+    JA("Ja"),
+    NEI("Nei"),
+    IKKE_MULIG("Ikke mulig")
 }
 enum class Tiltak(val beskrivelse : String) {
     TILPASSET_ARBEIDSTID("Fleksibel eller tilpasset arbeidstid"),

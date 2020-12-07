@@ -12,7 +12,7 @@ class ValidateRequestTest
     @Test
     fun `test tiltakbeskrivelse`() {
         GravideSoknadRequest(
-                dato = LocalDate.now(),
+                orgnr = "123456785",
                 fnr = "20015001543",
                 tilrettelegge = true,
                 tiltak = listOf(Tiltak.ANNET.name),
@@ -26,8 +26,9 @@ class ValidateRequestTest
     fun `test tiltakbeskrivelse uten beskrivelse`() {
         Assertions.assertThrows(org.valiktor.ConstraintViolationException::class.java) {
             GravideSoknadRequest(
-                    dato = LocalDate.now(),
-                    fnr = "20015001543",
+                orgnr = "123456785",
+
+                fnr = "20015001543",
                     tilrettelegge = true,
                     tiltak = listOf(Tiltak.ANNET.name),
                     tiltakBeskrivelse = "",
@@ -40,8 +41,9 @@ class ValidateRequestTest
     @Test
     fun `test tiltakbeskrivelse uten Annet`() {
         GravideSoknadRequest(
-                dato = LocalDate.now(),
-                fnr = "20015001543",
+            orgnr = "123456785",
+
+            fnr = "20015001543",
                 tilrettelegge = true,
                 tiltak = listOf(Tiltak.TILPASSET_ARBEIDSTID.name),
                 tiltakBeskrivelse = "",
@@ -53,8 +55,9 @@ class ValidateRequestTest
     @Test
     fun `test omplassering valg`() {
         GravideSoknadRequest(
-                dato = LocalDate.now(),
-                fnr = "20015001543",
+            orgnr = "123456785",
+
+            fnr = "20015001543",
                 tilrettelegge = true,
                 tiltak = listOf(Tiltak.TILPASSET_ARBEIDSTID.name),
                 tiltakBeskrivelse = "",

@@ -7,10 +7,11 @@ val jacksonVersion = "2.10.3"
 val prometheusVersion = "0.6.0"
 val hikariVersion = "3.3.1"
 val mainClass = "no.nav.helse.fritakagp.web.AppKt"
-val junitJupiterVersion = "5.5.0-RC2"
+val junitJupiterVersion = "5.7.0"
 val assertJVersion = "3.12.2"
 val mockKVersion = "1.9.3"
 val tokenSupportVersion = "1.3.0"
+val mockOAuth2ServerVersion = "0.2.1"
 val koinVersion = "2.0.1"
 val valiktorVersion = "0.12.0"
 
@@ -42,6 +43,8 @@ dependencies {
     implementation("io.netty:netty-codec-http:4.1.53.Final") // overstyrer transiente 4.1.51.Final gjennom ktor-server-netty
     implementation("junit:junit:4.13.1") // overstyrer transiente 4.12 gjennom koin-test
     implementation("org.apache.httpcomponents:httpclient:4.5.13") // overstyrer transiente 4.5.6 gjennom ktor-client-apache
+    implementation("org.eclipse.jetty:jetty-server:9.4.35.v20201120") // overstyrer
+    implementation("org.yaml:snakeyaml:1.26") //voerstyrer versjon 1.23 via githubjavafaker 1.02
     // -- end snyk fixes
 
 
@@ -65,7 +68,8 @@ dependencies {
     implementation("org.koin:koin-core:$koinVersion")
     implementation("org.koin:koin-ktor:$koinVersion")
     implementation("no.nav.security:token-validation-ktor:$tokenSupportVersion")
-    implementation("no.nav.security:token-validation-test-support:$tokenSupportVersion")
+    implementation("javax.ws.rs:javax.ws.rs-api:2.1.1")
+    implementation("no.nav.security:mock-oauth2-server:$mockOAuth2ServerVersion")
     implementation("no.nav.helsearbeidsgiver:helse-arbeidsgiver-felles-backend:2020.11.10-11-35-e35d5")
     implementation("no.nav.common:log:2.2020.10.15_11.43-b1f02e7bd6ae")
 

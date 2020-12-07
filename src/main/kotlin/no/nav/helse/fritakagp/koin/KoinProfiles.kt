@@ -9,7 +9,6 @@ import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
-import com.zaxxer.hikari.HikariDataSource
 import io.ktor.client.*
 import io.ktor.client.engine.apache.*
 import io.ktor.client.features.json.*
@@ -23,15 +22,11 @@ import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OpprettOppgaveRequest
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OpprettOppgaveResponse
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.*
 import no.nav.helse.arbeidsgiver.kubernetes.KubernetesProbeManager
-import no.nav.helse.fritakagp.db.PostgresGravidSoeknadRepository
-import no.nav.helse.fritakagp.db.GravidSoeknadRepository
-import no.nav.helse.fritakagp.db.createHikariConfig
 import org.koin.core.Koin
 import org.koin.core.definition.Kind
 import org.koin.core.module.Module
 import org.koin.dsl.bind
 import org.koin.dsl.module
-import javax.sql.DataSource
 
 
 @KtorExperimentalAPI

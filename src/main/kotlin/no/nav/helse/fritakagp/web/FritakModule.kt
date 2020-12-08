@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonMappingException
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException
 import io.ktor.application.*
+import io.ktor.auth.*
 import io.ktor.config.*
 import io.ktor.features.*
 import io.ktor.http.*
@@ -12,15 +13,15 @@ import io.ktor.locations.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.util.*
+import no.nav.helse.arbeidsgiver.system.AppEnv
+import no.nav.helse.arbeidsgiver.system.getEnvironment
 import no.nav.helse.arbeidsgiver.web.validation.Problem
 import no.nav.helse.arbeidsgiver.web.validation.ValidationProblem
 import no.nav.helse.arbeidsgiver.web.validation.ValidationProblemDetail
-import no.nav.helse.fritakagp.db.Repository
-import no.nav.helse.fritakagp.koin.selectModuleBasedOnProfile
 import no.nav.helse.fritakagp.nais.nais
 import no.nav.helse.fritakagp.web.api.fritakAGP
 import no.nav.helse.fritakagp.web.dto.validation.getContextualMessage
-import org.koin.ktor.ext.Koin
+import no.nav.security.token.support.ktor.tokenValidationSupport
 import org.koin.ktor.ext.get
 import org.slf4j.LoggerFactory
 import org.valiktor.ConstraintViolationException
@@ -31,12 +32,29 @@ import java.util.*
 import javax.ws.rs.ForbiddenException
 
 
-
 @KtorExperimentalLocationsAPI
 @KtorExperimentalAPI
 fun Application.fritakModule(config: ApplicationConfig = environment.config) {
-    install(Koin) {
-        modules(selectModuleBasedOnProfile(config))
+
+    install(Authentication) {
+        tokenValidationSupport(config = config)
+    }
+
+    install(CORS)
+    {
+        method(HttpMethod.Options)
+        method(HttpMethod.Post)
+        method(HttpMethod.Get)
+
+        when(config.getEnvironment()) {
+            AppEnv.TEST -> anyHost()
+            AppEnv.LOCAL -> anyHost()
+            AppEnv.PREPROD -> anyHost()
+            AppEnv.PROD -> host("arbeidsgiver.nav.no", schemes = listOf("https"))
+        }
+
+        allowCredentials = true
+        allowNonSimpleContentTypes = true
     }
 
     install(Locations)
@@ -156,6 +174,8 @@ fun Application.fritakModule(config: ApplicationConfig = environment.config) {
     nais()
 
     routing {
-        fritakAGP(get())
+        authenticate {
+            fritakAGP(get())
+        }
     }
 }

@@ -4,7 +4,7 @@ import no.nav.helse.fritakagp.domain.Tiltak
 import no.nav.helse.fritakagp.web.api.resreq.GravideSoknadRequest
 import java.time.LocalDate
 
-class TestData {
+object TestData {
     val validIdentitetsnummer = "20015001543"
     val notValidIdentitetsnummer = "50012001987"
     val validOrgNr = "123456785"
@@ -21,7 +21,7 @@ class TestData {
             ext = null
     )
 }
-class TestDataMedFil {
+object TestDataMedFil {
     val validIdentitetsnummer = "20015001543"
     val notValidIdentitetsnummer = "50012001987"
     val validOrgNr = "123456785"

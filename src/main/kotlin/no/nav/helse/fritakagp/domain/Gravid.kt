@@ -2,7 +2,6 @@ package no.nav.helse.fritakagp.domain
 
 import java.io.ByteArrayInputStream
 import java.io.File
-import java.nio.file.Path
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
@@ -38,12 +37,12 @@ fun decodeBase64File(datafile : String, name : String, ext : String?): ByteArray
     ff.writeBytes(Base64.getDecoder().decode(datafile))
     return ff.readBytes()
 }
-
 fun File.copyInputStreamToFile(inputStream: ByteArrayInputStream) {
     this.outputStream().use { fileOut ->
         inputStream.copyTo(fileOut)
     }
 }
+
 fun getTiltakValue(req : List<String>) : List<Tiltak> {
     return req.map { it -> Tiltak.valueOf(it.toUpperCase()) }
 }
@@ -74,8 +73,6 @@ enum class OmplasseringAarsak(val beskrivelse : String) {
     IKKE_ANDRE_OPPGAVER("Vi har ikke andre oppgaver eller arbeidssteder å tilby"),
     HELSETILSTANDEN("Den ansatte vil ikke fungere i en annen jobb på grunn av helsetilstanden")
 }
-
 enum class GodskjentFiletyper {
     PDF,JPEG, PNG
 }
-

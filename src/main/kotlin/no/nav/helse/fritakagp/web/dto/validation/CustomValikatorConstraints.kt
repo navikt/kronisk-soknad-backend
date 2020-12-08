@@ -1,15 +1,9 @@
 package no.nav.helse.fritakagp.web.dto.validation
 
-import io.ktor.utils.io.core.*
 import no.nav.helse.fritakagp.domain.OmplasseringAarsak
 import no.nav.helse.fritakagp.domain.Tiltak
 import org.valiktor.Constraint
 import org.valiktor.Validator
-import java.io.File
-import java.nio.file.Files
-import java.nio.file.Path
-import java.nio.file.Paths
-import kotlin.text.toByteArray
 
 interface CustomConstraint : Constraint {
     override val messageBundle: String
@@ -36,9 +30,10 @@ fun <E> Validator<E>.Property<String?>.isOmplasseringValgRiktig(omplassering : S
 
 class FileSizeConstraints : CustomConstraint
 fun <E> Validator<E>.Property<String?>.isNotStorreEnn(maxSize : Long) =
-        this.validate(FileSizeConstraints()){
-            return@validate  it!!.toByteArray().size <= maxSize
-        }
+    this.validate(FileSizeConstraints()){
+        return@validate  it!!.toByteArray().size <= maxSize
+    }
+
 
 
 inline fun <reified T : Enum<T>> enumContains(name: String): Boolean {

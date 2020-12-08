@@ -1,4 +1,4 @@
-package no.nav.helse.fritakagp.intergrasjoner.virusscan
+package no.nav.helse.fritakagp.virusscan
 
 import com.fasterxml.jackson.annotation.JsonAlias
 import io.ktor.client.HttpClient

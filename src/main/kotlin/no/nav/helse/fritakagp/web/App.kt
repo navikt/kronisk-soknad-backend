@@ -9,9 +9,14 @@ import kotlinx.coroutines.runBlocking
 import no.nav.helse.arbeidsgiver.kubernetes.KubernetesProbeManager
 import no.nav.helse.arbeidsgiver.kubernetes.LivenessComponent
 import no.nav.helse.arbeidsgiver.kubernetes.ReadynessComponent
+import no.nav.helse.arbeidsgiver.system.AppEnv
+import no.nav.helse.arbeidsgiver.system.getEnvironment
 import no.nav.helse.fritakagp.koin.getAllOfType
+import no.nav.helse.fritakagp.koin.selectModuleBasedOnProfile
 import no.nav.helse.fritakagp.web.auth.localCookieDispenser
-import org.koin.ktor.ext.getKoin
+import org.flywaydb.core.Flyway
+import org.koin.core.context.GlobalContext
+import org.koin.core.context.startKoin
 import org.slf4j.LoggerFactory
 
 
@@ -20,26 +25,42 @@ val mainLogger = LoggerFactory.getLogger("main")
 @KtorExperimentalAPI
 fun main() {
 
-    mainLogger.info("Sover i 30s i håp om at sidecars er klare")
-    Thread.sleep(30000)
-
     Thread.currentThread().setUncaughtExceptionHandler { thread, err ->
         mainLogger.error("uncaught exception in thread ${thread.name}: ${err.message}", err)
     }
 
-    embeddedServer(Netty, createApplicationEnvironment()).let { app ->
-        app.start(wait = false)
-        val koin = app.application.getKoin()
-        runBlocking { autoDetectProbeableComponents(koin) }
+    embeddedServer(Netty, createApplicationEnvironment()).let { engine ->
+
+        val environment = engine.environment.config.getEnvironment()
+        if(environment == AppEnv.PREPROD || environment == AppEnv.PROD) {
+            mainLogger.info("Sover i 30s i påvente av SQL proxy sidecar")
+            Thread.sleep(30000)
+        }
+
+        startKoin { modules(selectModuleBasedOnProfile(engine.environment.config)) }
+
+        migrateDatabase()
+
+        engine.start(wait = false)
+        runBlocking { autoDetectProbeableComponents(GlobalContext.get().koin) }
         mainLogger.info("La til probeable komponenter")
 
 
         Runtime.getRuntime().addShutdownHook(Thread {
-            app.stop(1000, 1000)
+            engine.stop(1000, 1000)
         })
-
-
     }
+}
+
+private fun migrateDatabase() {
+    mainLogger.info("Starter databasemigrering")
+
+    Flyway.configure()
+            .dataSource(GlobalContext.get().koin.get())
+            .load()
+            .migrate()
+
+    mainLogger.info("Databasemigrering slutt")
 }
 
 private suspend fun autoDetectProbeableComponents(koin: org.koin.core.Koin) {
@@ -62,7 +83,11 @@ fun createApplicationEnvironment() = applicationEngineEnvironment {
     }
 
     module {
-        localCookieDispenser(config)
+
+        if (config.getEnvironment() != AppEnv.PROD) {
+            localCookieDispenser(config)
+        }
+
         fritakModule(config)
     }
 }

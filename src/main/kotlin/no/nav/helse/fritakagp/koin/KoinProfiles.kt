@@ -20,13 +20,14 @@ import no.nav.helse.fritakagp.db.MockSoeknadRepo
 import no.nav.helse.fritakagp.db.PostgresRepository
 import no.nav.helse.fritakagp.db.Repository
 import no.nav.helse.fritakagp.db.createHikariConfig
-import no.nav.helse.fritakagp.intergrasjoner.virusscan.ClamavVirusScannerImp
-import no.nav.helse.fritakagp.intergrasjoner.virusscan.MockVirusScanner
-import no.nav.helse.fritakagp.intergrasjoner.virusscan.VirusScanner
-import no.nav.helse.fritakagp.web.auth.LocalOIDCWireMock
+import no.nav.helse.fritakagp.virusscan.ClamavVirusScannerImp
+import no.nav.helse.fritakagp.virusscan.MockVirusScanner
+import no.nav.helse.fritakagp.virusscan.VirusScanner
 import org.koin.core.Koin
 import org.koin.core.definition.Kind
 import org.koin.core.module.Module
+import org.koin.dsl.bind
+import org.koin.dsl.binds
 import org.koin.dsl.module
 import javax.sql.DataSource
 
@@ -81,41 +82,38 @@ val common = module {
 }
 
 fun buildAndTestConfig(config: ApplicationConfig) = module {
-    single { HikariDataSource(createHikariConfig(config.getjdbcUrlFromProperties(), config.getString("database.username"), config.getString("database.password"))) as DataSource }
-    single { MockSoeknadRepo() as Repository}
-    single { MockVirusScanner() as VirusScanner }
-    LocalOIDCWireMock.start()
+    single { HikariDataSource(createHikariConfig(config.getjdbcUrlFromProperties(), config.getString("database.username"), config.getString("database.password"))) } bind DataSource::class
+    single { MockSoeknadRepo() } bind Repository::class
+    single { MockVirusScanner() } bind VirusScanner::class
 }
 
 @KtorExperimentalAPI
 fun localDevConfig(config: ApplicationConfig) = module {
-    single { HikariDataSource(createHikariConfig(config.getjdbcUrlFromProperties(), config.getString("database.username"), config.getString("database.password"))) as DataSource }
-    single { PostgresRepository(get(), get()) as Repository}
-    //single { MockVirusScanner() as VirusScanner }
+    single { HikariDataSource(createHikariConfig(config.getjdbcUrlFromProperties(), config.getString("database.username"), config.getString("database.password"))) } bind DataSource::class
+    single { PostgresRepository(get(), get()) } bind Repository::class
+    //single { MockVirusScanner() } bind VirusScanner::class
     single { ClamavVirusScannerImp(
         get(),
-        config.getString("clam_local_url")
-    ) as VirusScanner }
-
-    LocalOIDCWireMock.start()
+        config.getString("clamav.local_url")
+    ) } bind VirusScanner::class
 }
 
 @KtorExperimentalAPI
 fun preprodConfig(config: ApplicationConfig) = module {
-    single { HikariDataSource(createHikariConfig(config.getjdbcUrlFromProperties(), config.getString("database.username"), config.getString("database.password"))) as DataSource }
-    single { PostgresRepository(get(), get()) as Repository}
+    single { HikariDataSource(createHikariConfig(config.getjdbcUrlFromProperties(), config.getString("database.username"), config.getString("database.password"))) } bind DataSource::class
+    single { PostgresRepository(get(), get()) } bind Repository::class
     single { ClamavVirusScannerImp(
-            get(),
-            config.getString("clam_on_prem_url")
-    ) as VirusScanner }
+        get(),
+        config.getString("clamav.on_prem_url")
+    ) } bind VirusScanner::class
 }
 
 @KtorExperimentalAPI
 fun prodConfig(config: ApplicationConfig) = module {
     single { ClamavVirusScannerImp(
-            get(),
-            config.getString("clam_gcp_url")
-    ) as VirusScanner }
+        get(),
+        config.getString("clamav.gcp_url")
+    ) } bind VirusScanner::class
 }
 
 // utils

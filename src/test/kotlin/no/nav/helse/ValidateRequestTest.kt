@@ -3,7 +3,7 @@ package no.nav.helse
 import no.nav.helse.fritakagp.domain.Omplassering
 import no.nav.helse.fritakagp.domain.OmplasseringAarsak
 import no.nav.helse.fritakagp.domain.Tiltak
-import no.nav.helse.slowtests.systemtests.api.resreq.GravideSoknadRequest
+import no.nav.helse.fritakagp.web.api.resreq.GravideSoknadRequest
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 

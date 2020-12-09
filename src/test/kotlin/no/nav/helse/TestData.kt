@@ -4,7 +4,7 @@ import no.nav.helse.fritakagp.domain.Omplassering
 import no.nav.helse.fritakagp.domain.OmplasseringAarsak
 import no.nav.helse.fritakagp.domain.SoeknadGravid
 import no.nav.helse.fritakagp.domain.Tiltak
-import no.nav.helse.slowtests.systemtests.api.resreq.GravideSoknadRequest
+import no.nav.helse.fritakagp.web.api.resreq.GravideSoknadRequest
 
 object TestData {
     val validIdentitetsnummer = "20015001543"

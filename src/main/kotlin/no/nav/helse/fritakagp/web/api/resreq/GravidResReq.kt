@@ -1,4 +1,4 @@
-package no.nav.helse.slowtests.systemtests.api.resreq
+package no.nav.helse.fritakagp.web.api.resreq
 
 import no.nav.helse.arbeidsgiver.web.validation.isValidIdentitetsnummer
 import no.nav.helse.arbeidsgiver.web.validation.isValidOrganisasjonsnummer

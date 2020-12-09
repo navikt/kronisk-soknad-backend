@@ -1,4 +1,4 @@
-package no.nav.helse.slowtests.systemtests.api
+package no.nav.helse.fritakagp.web.api
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.ktor.application.*
@@ -11,11 +11,10 @@ import no.nav.helse.arbeidsgiver.bakgrunnsjobb.Bakgrunnsjobb
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbRepository
 import no.nav.helse.fritakagp.db.GravidSoeknadRepository
 import no.nav.helse.fritakagp.domain.SoeknadGravid
-import no.nav.helse.fritakagp.domain.getTiltakValue
 import no.nav.helse.fritakagp.processing.gravid.SoeknadGravidProcessor
-import no.nav.helse.slowtests.systemtests.api.resreq.GravideSoknadRequest
 import no.nav.helse.fritakagp.web.hentIdentitetsnummerFraLoginToken
 import no.nav.helse.fritakagp.web.hentUtløpsdatoFraLoginToken
+import no.nav.helse.fritakagp.web.api.resreq.GravideSoknadRequest
 import org.slf4j.LoggerFactory
 import java.sql.SQLException
 import javax.sql.DataSource

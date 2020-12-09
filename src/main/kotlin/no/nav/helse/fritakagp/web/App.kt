@@ -46,7 +46,7 @@ class FritakAgpApplication(val port: Int = 8080) : KoinComponent {
     }
 
     fun shutdown() {
-        webserver?.stop(2000, 2000)
+        webserver?.stop(1000, 1000)
         get<BakgrunnsjobbService>().stop()
         stopKoin()
     }

@@ -1,4 +1,4 @@
-package no.nav.helse
+package no.nav.helse.fritakagp.web
 
 import no.nav.helse.fritakagp.domain.Omplassering
 import no.nav.helse.fritakagp.domain.OmplasseringAarsak

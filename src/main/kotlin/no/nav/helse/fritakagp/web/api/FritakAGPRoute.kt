@@ -9,14 +9,12 @@ import io.ktor.routing.*
 import io.ktor.util.*
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.Bakgrunnsjobb
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbRepository
-import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbService
 import no.nav.helse.fritakagp.db.GravidSoeknadRepository
 import no.nav.helse.fritakagp.domain.SoeknadGravid
-import no.nav.helse.fritakagp.domain.getTiltakValue
 import no.nav.helse.fritakagp.processing.gravid.SoeknadGravidProcessor
-import no.nav.helse.fritakagp.web.api.resreq.GravideSoknadRequest
 import no.nav.helse.fritakagp.web.hentIdentitetsnummerFraLoginToken
 import no.nav.helse.fritakagp.web.hentUtløpsdatoFraLoginToken
+import no.nav.helse.fritakagp.web.api.resreq.GravideSoknadRequest
 import org.slf4j.LoggerFactory
 import java.sql.SQLException
 import javax.sql.DataSource
@@ -51,7 +49,7 @@ fun Route.fritakAGP(
                         omplassering = request.omplassering,
                         omplasseringAarsak = request.omplasseringAarsak,
                         tilrettelegge = request.tilrettelegge,
-                        tiltak = getTiltakValue(request.tiltak),
+                        tiltak = request.tiltak,
                         tiltakBeskrivelse = request.tiltakBeskrivelse
                 )
                 try {

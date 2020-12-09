@@ -1,11 +1,11 @@
-package no.nav.helse
+package no.nav.helse.fritakagp.web
 
+import no.nav.helse.fritakagp.domain.Omplassering
 import no.nav.helse.fritakagp.domain.OmplasseringAarsak
 import no.nav.helse.fritakagp.domain.Tiltak
 import no.nav.helse.fritakagp.web.api.resreq.GravideSoknadRequest
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import java.time.LocalDate
 
 class ValidateRequestTest
 {
@@ -15,9 +15,9 @@ class ValidateRequestTest
                 orgnr = "123456785",
                 fnr = "20015001543",
                 tilrettelegge = true,
-                tiltak = listOf(Tiltak.ANNET.name),
+                tiltak = listOf(Tiltak.ANNET),
                 tiltakBeskrivelse = "beskrivelse",
-                omplassering="Ja",
+                omplassering= Omplassering.JA,
                 omplasseringAarsak = null
         )
     }
@@ -30,9 +30,9 @@ class ValidateRequestTest
 
                 fnr = "20015001543",
                     tilrettelegge = true,
-                    tiltak = listOf(Tiltak.ANNET.name),
+                    tiltak = listOf(Tiltak.ANNET),
                     tiltakBeskrivelse = "",
-                    omplassering="Ja",
+                    omplassering= Omplassering.JA,
                     omplasseringAarsak = null
             )
         }
@@ -45,9 +45,9 @@ class ValidateRequestTest
 
             fnr = "20015001543",
                 tilrettelegge = true,
-                tiltak = listOf(Tiltak.TILPASSET_ARBEIDSTID.name),
+                tiltak = listOf(Tiltak.TILPASSET_ARBEIDSTID),
                 tiltakBeskrivelse = "",
-                omplassering="Ja",
+                omplassering= Omplassering.JA,
                 omplasseringAarsak = null
         )
     }
@@ -59,10 +59,10 @@ class ValidateRequestTest
 
             fnr = "20015001543",
                 tilrettelegge = true,
-                tiltak = listOf(Tiltak.TILPASSET_ARBEIDSTID.name),
+                tiltak = listOf(Tiltak.TILPASSET_ARBEIDSTID),
                 tiltakBeskrivelse = "",
-                omplassering="IKKE_MULIG",
-                omplasseringAarsak = OmplasseringAarsak.FAAR_IKKE_KONTAKT.name
+                omplassering= Omplassering.IKKE_MULIG,
+                omplasseringAarsak = OmplasseringAarsak.FAAR_IKKE_KONTAKT
         )
     }
 }

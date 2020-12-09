@@ -18,7 +18,6 @@ import no.nav.helse.arbeidsgiver.system.getEnvironment
 import no.nav.helse.arbeidsgiver.web.validation.Problem
 import no.nav.helse.arbeidsgiver.web.validation.ValidationProblem
 import no.nav.helse.arbeidsgiver.web.validation.ValidationProblemDetail
-import no.nav.helse.fritakagp.nais.nais
 import no.nav.helse.fritakagp.web.api.fritakAGP
 import no.nav.helse.fritakagp.web.dto.validation.getContextualMessage
 import no.nav.security.token.support.ktor.tokenValidationSupport
@@ -154,24 +153,27 @@ fun Application.fritakModule(config: ApplicationConfig = environment.config) {
         }
 
         exception<JsonMappingException> { cause ->
-            val errorId = UUID.randomUUID()
-            val userAgent = call.request.headers.get("User-Agent") ?: "Ukjent"
-            val locale = call.request.headers.get("Accept-Language") ?: "Ukjent"
-            LOGGER.warn("$errorId : $userAgent : $locale", cause)
-            val problem = Problem(
-                    title = "Feil ved prosessering av JSON-dataene som ble oppgitt",
-                    detail = cause.message,
-                    instance = URI.create("urn:fritak:json-mapping-error:$errorId")
-            )
-            call.respond(HttpStatusCode.BadRequest, problem)
+            if (cause.cause is ConstraintViolationException) {
+                handleValidationError(call, cause.cause as ConstraintViolationException)
+            } else {
+                val errorId = UUID.randomUUID()
+                val userAgent = call.request.headers.get("User-Agent") ?: "Ukjent"
+                val locale = call.request.headers.get("Accept-Language") ?: "Ukjent"
+                LOGGER.warn("$errorId : $userAgent : $locale", cause)
+                val problem = Problem(
+                        status = HttpStatusCode.BadRequest.value,
+                        title = "Feil ved prosessering av JSON-dataene som ble oppgitt",
+                        detail = cause.message,
+                        instance = URI.create("urn:fritak:json-mapping-error:$errorId")
+                )
+                call.respond(HttpStatusCode.BadRequest, problem)
+            }
         }
 
         exception<ConstraintViolationException> { cause ->
             handleValidationError(call, cause)
         }
     }
-
-    nais()
 
     routing {
         authenticate {

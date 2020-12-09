@@ -44,6 +44,7 @@ open class SystemTestBase : KoinTest {
         if (app == null) {
             app = FritakAgpApplication(port = testServerPort)
             app!!.start()
+            Thread.sleep(500)
         }
     }
 

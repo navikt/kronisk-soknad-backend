@@ -1,4 +1,4 @@
-package no.nav.helse.fritakagp.web.api
+package no.nav.helse.slowtests.systemtests.api
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.ktor.application.*
@@ -9,12 +9,11 @@ import io.ktor.routing.*
 import io.ktor.util.*
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.Bakgrunnsjobb
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbRepository
-import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbService
 import no.nav.helse.fritakagp.db.GravidSoeknadRepository
 import no.nav.helse.fritakagp.domain.SoeknadGravid
 import no.nav.helse.fritakagp.domain.getTiltakValue
 import no.nav.helse.fritakagp.processing.gravid.SoeknadGravidProcessor
-import no.nav.helse.fritakagp.web.api.resreq.GravideSoknadRequest
+import no.nav.helse.slowtests.systemtests.api.resreq.GravideSoknadRequest
 import no.nav.helse.fritakagp.web.hentIdentitetsnummerFraLoginToken
 import no.nav.helse.fritakagp.web.hentUtløpsdatoFraLoginToken
 import org.slf4j.LoggerFactory
@@ -51,7 +50,7 @@ fun Route.fritakAGP(
                         omplassering = request.omplassering,
                         omplasseringAarsak = request.omplasseringAarsak,
                         tilrettelegge = request.tilrettelegge,
-                        tiltak = getTiltakValue(request.tiltak),
+                        tiltak = request.tiltak,
                         tiltakBeskrivelse = request.tiltakBeskrivelse
                 )
                 try {

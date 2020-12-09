@@ -49,8 +49,8 @@ class GravidSoeknadPDFGenerator {
             soeknad.tiltakBeskrivelse?.let { content.writeTextWrapped(it) }
 
             content.writeTextWrapped("Har dere forsøkt omplassering til en annen jobb?", 2)
-            content.writeTextWrapped(soeknad.omplassering)
-            soeknad.omplasseringAarsak?.let { content.writeTextWrapped(it) }
+            content.writeTextWrapped(soeknad.omplassering?.beskrivelse ?: "")
+            soeknad.omplasseringAarsak?.let { content.writeTextWrapped(it.beskrivelse) }
 
 
         } else {

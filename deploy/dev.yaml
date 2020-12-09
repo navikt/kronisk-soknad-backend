@@ -37,7 +37,8 @@ spec:
   webproxy: true
   leaderElection: false
   envFrom:
-    - secret: service-user-password # servicebrukerens passord som er  hentet fra vault og lagt inn slik: https://doc.nais.io/security/secrets/kubernetes-secrets/
+    - secret: service-user-password
+    # servicebrukerens passord som er  hentet fra vault og lagt inn slik: https://doc.nais.io/security/secrets/kubernetes-secrets/
     #- configmap: loginservice-idporten # tilgjengeliggjør LOGINSERVICE_IDPORTEN_DISCOVERY_URL og LOGINSERVICE_IDPORTEN_AUDIENCE
     # Skrur av ^^^ i PREPROD siden loginservice ikke virker via naisdevice
   env:

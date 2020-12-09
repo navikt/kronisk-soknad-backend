@@ -88,7 +88,6 @@ class FritakAgpApplication(val port: Int = 8080) : KoinComponent {
 
         Flyway.configure()
             .dataSource(GlobalContext.get().koin.get())
-            .baselineOnMigrate(true)
             .load()
             .migrate()
 

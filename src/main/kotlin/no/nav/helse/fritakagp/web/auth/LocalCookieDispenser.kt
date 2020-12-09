@@ -22,13 +22,13 @@ import java.net.InetAddress
 fun Application.localCookieDispenser(config: ApplicationConfig) {
     val oauthMockPort = 6666
     val logger = LoggerFactory.getLogger("LocalCookieDispenser")
+    logger.info("Starter OAuth Mock")
     val server = MockOAuth2Server()
     val cookieName = config.configList("no.nav.security.jwt.issuers")[0].property("cookie_name").getString()
     val issuerName = config.configList("no.nav.security.jwt.issuers")[0].property("issuer_name").getString()
     val audience = config.configList("no.nav.security.jwt.issuers")[0].property("accepted_audience").getString()
     server.start(port = oauthMockPort)
-
-    logger.info("Startet OAuth mock på ${server.jwksUrl(issuerName).toString()}")
+    logger.info("Startet OAuth mock på ${server.jwksUrl(issuerName)}")
 
     routing {
         get("/local/cookie-please") {

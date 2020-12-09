@@ -12,20 +12,26 @@ import io.ktor.routing.get
 import io.ktor.routing.routing
 import io.ktor.util.KtorExperimentalAPI
 import no.nav.security.mock.oauth2.MockOAuth2Server
+import org.slf4j.LoggerFactory
 
 import java.net.InetAddress
 
 
+
 @KtorExperimentalAPI
 fun Application.localCookieDispenser(config: ApplicationConfig) {
+    val oauthMockPort = 6666
+    val logger = LoggerFactory.getLogger("LocalCookieDispenser")
     val server = MockOAuth2Server()
-    server.start(InetAddress.getLocalHost(), 6666)
+    val cookieName = config.configList("no.nav.security.jwt.issuers")[0].property("cookie_name").getString()
+    val issuerName = config.configList("no.nav.security.jwt.issuers")[0].property("issuer_name").getString()
+    val audience = config.configList("no.nav.security.jwt.issuers")[0].property("accepted_audience").getString()
+    server.start(port = oauthMockPort)
+
+    logger.info("Startet OAuth mock på ${server.jwksUrl(issuerName).toString()}")
 
     routing {
         get("/local/cookie-please") {
-            val cookieName = config.configList("no.nav.security.jwt.issuers")[0].property("cookie_name").getString()
-            val issuerName = config.configList("no.nav.security.jwt.issuers")[0].property("issuer_name").getString()
-            val audience = config.configList("no.nav.security.jwt.issuers")[0].property("accepted_audience").getString()
             val token = server.issueToken(
                 subject = call.request.queryParameters["subject"].toString(),
                 issuerId = issuerName,

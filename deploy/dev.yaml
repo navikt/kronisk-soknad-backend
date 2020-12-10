@@ -44,7 +44,10 @@ spec:
         - host: security-token-service.nais.preprod.local
         - host: dokarkiv-q1.nais.preprod.local
         - host: oppgave.default.svc.nais.local
-
+      rules:
+        - application: security-token-service
+          namespace: default
+          cluster: dev-fss
 
   envFrom:
     - secret: service-user-password

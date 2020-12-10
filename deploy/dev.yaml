@@ -56,6 +56,8 @@ spec:
       value: https://helsearbeidsgiver-proxy.dev.intern.nav.no/dokarkiv
     - name: OPPGAVEBEHANDLING_URL
       value: https://helsearbeidsgiver-proxy.dev.intern.nav.no/oppgave
+    - name: PDL_URL
+      value: https://helsearbeidsgiver-proxy.dev.intern.nav.no/pdl
 
   gcp:
     sqlInstances:

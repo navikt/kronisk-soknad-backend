@@ -34,14 +34,13 @@ spec:
     requests:
       cpu: 400m
       memory: 200Mi
-  webproxy: true
   leaderElection: false
 
   accessPolicy:
     outbound:
       rules:
         - application: helsearbeidsgiver-proxy
-          namespace: default
+          namespace: helsearbeidsgiver
           cluster: dev-fss
 
   envFrom:

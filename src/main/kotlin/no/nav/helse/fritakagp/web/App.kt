@@ -75,12 +75,13 @@ class FritakAgpApplication(val port: Int = 8080) : KoinComponent {
     private fun configAndStartBackgroundWorker() {
         val bakgrunnsjobbService = get<BakgrunnsjobbService>()
 
-        bakgrunnsjobbService.leggTilBakgrunnsjobbProsesserer(
-            SoeknadGravidProcessor.JOB_TYPE,
-            get<SoeknadGravidProcessor>()
-        )
 
-        bakgrunnsjobbService.startAsync(true)
+//        bakgrunnsjobbService.leggTilBakgrunnsjobbProsesserer(
+//            SoeknadGravidProcessor.JOB_TYPE,
+//            get<SoeknadGravidProcessor>()
+//        )
+
+        // bakgrunnsjobbService.startAsync(true)
     }
 
     private fun migrateDatabase() {

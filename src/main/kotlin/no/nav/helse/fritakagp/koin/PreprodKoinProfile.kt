@@ -25,7 +25,7 @@ import javax.sql.DataSource
 
 @KtorExperimentalAPI
 fun preprodConfig(config: ApplicationConfig) = module {
-    externalSystemClients(config)
+    // externalSystemClients(config)
 
     single { HikariDataSource(createHikariConfig(config.getjdbcUrlFromProperties(), config.getString("database.username"), config.getString("database.password"))) } bind DataSource::class
     single { PostgresGravidSoeknadRepository(get(), get()) } bind GravidSoeknadRepository::class
@@ -34,7 +34,7 @@ fun preprodConfig(config: ApplicationConfig) = module {
     single { PostgresBakgrunnsjobbRepository(get()) } bind BakgrunnsjobbRepository::class
     single { BakgrunnsjobbService(get()) }
 
-    single { SoeknadGravidProcessor(get(), get(), get(), get(), GravidSoeknadPDFGenerator(), get()) }
+    // single { SoeknadGravidProcessor(get(), get(), get(), get(), GravidSoeknadPDFGenerator(), get()) }
 }
 
 

@@ -25,7 +25,7 @@ import javax.sql.DataSource
 
 @KtorExperimentalAPI
 fun preprodConfig(config: ApplicationConfig) = module {
-    // externalSystemClients(config)
+    externalSystemClients(config)
 
     single { HikariDataSource(createHikariConfig(config.getjdbcUrlFromProperties(), config.getString("database.username"), config.getString("database.password"))) } bind DataSource::class
     single { PostgresGravidSoeknadRepository(get(), get()) } bind GravidSoeknadRepository::class
@@ -34,17 +34,17 @@ fun preprodConfig(config: ApplicationConfig) = module {
     single { PostgresBakgrunnsjobbRepository(get()) } bind BakgrunnsjobbRepository::class
     single { BakgrunnsjobbService(get()) }
 
-    // single { SoeknadGravidProcessor(get(), get(), get(), get(), GravidSoeknadPDFGenerator(), get()) }
+    single { SoeknadGravidProcessor(get(), get(), get(), get(), GravidSoeknadPDFGenerator(), get()) }
 }
 
 
 fun Module.externalSystemClients(config: ApplicationConfig) {
-    single { RestStsClientImpl(
-            config.getString("service_user.username"),
-            config.getString("service_user.password"),
-            config.getString("sts_url_rest"),
-            get()
-        )
+    single { object: RestStsClient {
+            // STS er ikke tilgjengelig i GCP, og vi bruker en proxy for å snakke med tjenester i FSS
+            override fun getOidcToken(): String {
+                return "dummy-token-for-proxy"
+            }
+        }
     } bind RestStsClient::class
 
     single { DokarkivKlientImpl(config.getString("dokarkiv.base_url"), get(), get()) } bind DokarkivKlient::class

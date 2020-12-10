@@ -40,9 +40,9 @@ class FritakAgpApplication(val port: Int = 8080) : KoinComponent {
         startKoin { modules(selectModuleBasedOnProfile(appConfig)) }
         migrateDatabase()
 
-        configAndStartWebserver()
         configAndStartBackgroundWorker()
         autoDetectProbeableComponents()
+        configAndStartWebserver()
     }
 
     fun shutdown() {
@@ -75,13 +75,12 @@ class FritakAgpApplication(val port: Int = 8080) : KoinComponent {
     private fun configAndStartBackgroundWorker() {
         val bakgrunnsjobbService = get<BakgrunnsjobbService>()
 
+        bakgrunnsjobbService.leggTilBakgrunnsjobbProsesserer(
+            SoeknadGravidProcessor.JOB_TYPE,
+            get<SoeknadGravidProcessor>()
+        )
 
-//        bakgrunnsjobbService.leggTilBakgrunnsjobbProsesserer(
-//            SoeknadGravidProcessor.JOB_TYPE,
-//            get<SoeknadGravidProcessor>()
-//        )
-
-        // bakgrunnsjobbService.startAsync(true)
+        bakgrunnsjobbService.startAsync(true)
     }
 
     private fun migrateDatabase() {

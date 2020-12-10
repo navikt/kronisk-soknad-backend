@@ -38,6 +38,9 @@ spec:
 
   accessPolicy:
     outbound:
+      external:
+        - host: helsearbeidsgiver-proxy.dev.intern.nav.no
+
       rules:
         - application: helsearbeidsgiver-proxy
           namespace: helsearbeidsgiver

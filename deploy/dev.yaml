@@ -36,6 +36,14 @@ spec:
       memory: 200Mi
   webproxy: true
   leaderElection: false
+
+  accessPolicy:
+    outbound:
+      external:
+        - host: security-token-service.dev.adeo.no
+
+
+
   envFrom:
     - secret: service-user-password
     # servicebrukerens passord som er  hentet fra vault og lagt inn slik: https://doc.nais.io/security/secrets/kubernetes-secrets/

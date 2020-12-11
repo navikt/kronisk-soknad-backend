@@ -42,7 +42,7 @@ spec:
     outbound:
       external:
         - host: helsearbeidsgiver-proxy.dev-fss-pub.nais.io
-        - host: helsearbeidsgiver-proxy.dev.adeo.no
+        - host: helsearbeidsgiver-proxy.dev.intern.nav.no
 
       rules:
         - application: helsearbeidsgiver-proxy
@@ -58,11 +58,11 @@ spec:
     - name: KOIN_PROFILE
       value: PREPROD
     - name: DOKARKIV_URL
-      value: https://helsearbeidsgiver-proxy.dev.adeo.no/dokarkiv
+      value: https://helsearbeidsgiver-proxy.dev.intern.nav.no/dokarkiv
     - name: OPPGAVEBEHANDLING_URL
-      value: https://helsearbeidsgiver-proxy.dev.adeo.no/oppgave
+      value: https://helsearbeidsgiver-proxy.dev.intern.nav.no/oppgave
     - name: PDL_URL
-      value: https://helsearbeidsgiver-proxy.dev.adeo.no/pdl
+      value: https://helsearbeidsgiver-proxy.dev.intern.nav.no/pdl
 
   gcp:
     sqlInstances:

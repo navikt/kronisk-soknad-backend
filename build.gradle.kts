@@ -70,7 +70,7 @@ dependencies {
     implementation("no.nav.security:token-validation-ktor:$tokenSupportVersion")
     implementation("javax.ws.rs:javax.ws.rs-api:2.1.1")
     implementation("no.nav.security:mock-oauth2-server:$mockOAuth2ServerVersion")
-    implementation("no.nav.helsearbeidsgiver:helse-arbeidsgiver-felles-backend:2020.11.10-11-35-e35d5")
+    implementation("no.nav.helsearbeidsgiver:helse-arbeidsgiver-felles-backend:2020.12.10-17-35-5bca2")
     implementation("no.nav.common:log:2.2020.10.15_11.43-b1f02e7bd6ae")
 
     implementation(kotlin("stdlib"))
@@ -81,6 +81,9 @@ dependencies {
     implementation("ch.qos.logback.contrib:logback-json-classic:$logback_contrib_version")
     implementation("net.logstash.logback:logstash-logback-encoder:4.9")
     implementation("org.codehaus.janino:janino:3.0.6")
+    implementation("org.flywaydb:flyway-core:7.3.0")
+    implementation("org.apache.pdfbox:pdfbox:2.0.21")
+
 
     implementation("no.nav.tjenestespesifikasjoner:altinn-correspondence-agency-external-basic:1.2019.09.25-00.21-49b69f0625e0")
 

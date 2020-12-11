@@ -34,14 +34,36 @@ spec:
     requests:
       cpu: 400m
       memory: 200Mi
-  webproxy: true
   leaderElection: false
-  #envFrom:
+  tokenx:
+    enabled: true
+
+  accessPolicy:
+    outbound:
+      external:
+        - host: helsearbeidsgiver-proxy.dev-fss-pub.nais.io
+        - host: helsearbeidsgiver-proxy.dev.adeo.no
+
+      rules:
+        - application: helsearbeidsgiver-proxy
+          namespace: helsearbeidsgiver
+          cluster: dev-fss
+
+  envFrom:
+    - secret: service-user-password
+    # servicebrukerens passord som er  hentet fra vault og lagt inn slik: https://doc.nais.io/security/secrets/kubernetes-secrets/
     #- configmap: loginservice-idporten # tilgjengeliggjør LOGINSERVICE_IDPORTEN_DISCOVERY_URL og LOGINSERVICE_IDPORTEN_AUDIENCE
     # Skrur av ^^^ i PREPROD siden loginservice ikke virker via naisdevice
   env:
     - name: KOIN_PROFILE
       value: PREPROD
+    - name: DOKARKIV_URL
+      value: https://helsearbeidsgiver-proxy.dev.adeo.no/dokarkiv
+    - name: OPPGAVEBEHANDLING_URL
+      value: https://helsearbeidsgiver-proxy.dev.adeo.no/oppgave
+    - name: PDL_URL
+      value: https://helsearbeidsgiver-proxy.dev.adeo.no/pdl
+
   gcp:
     sqlInstances:
       - type: POSTGRES_11

@@ -6,7 +6,7 @@ import io.ktor.locations.KtorExperimentalLocationsAPI
 import io.ktor.server.testing.handleRequest
 import io.ktor.util.KtorExperimentalAPI
 import no.nav.helse.fritakagp.web.fritakModule
-import no.nav.helse.sporenstreks.web.integration.ControllerIntegrationTestBase
+import no.nav.helse.fritakagp.web.integration.ControllerIntegrationTestBase
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 

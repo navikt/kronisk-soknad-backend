@@ -1,8 +1,6 @@
 package no.nav.helse.fritakagp.domain
 
-import java.io.ByteArrayInputStream
 import java.io.File
-import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
 
@@ -10,24 +8,24 @@ data class SoeknadGravid(
         val id: UUID = UUID.randomUUID(),
         val opprettet: LocalDateTime = LocalDateTime.now(),
 
-        val dato: LocalDate,
+        val orgnr: String,
         val fnr: String,
         val tilrettelegge: Boolean,
         val tiltak: List<Tiltak>? = null,
         val tiltakBeskrivelse: String? = null,
-        val omplassering: String,
-        val omplasseringAarsak: String? = null,
+        val omplassering: Omplassering?,
+        val omplasseringAarsak: OmplasseringAarsak? = null,
         val sendtAv: String,
 
         /**
          * ID fra joark etter arkivering
          */
-        val journalpostId: String? = null,
+        var journalpostId: String? = null,
 
         /**
          * ID fra oppgave etter opprettelse av oppgave
          */
-        val oppgaveId: String? = null,
+        var oppgaveId: String? = null,
         val datafil: String?,
         val ext : String?
 )
@@ -36,11 +34,6 @@ fun decodeBase64File(datafile : String, name : String, ext : String?): ByteArray
     val ff = File.createTempFile(name, ext)
     ff.writeBytes(Base64.getDecoder().decode(datafile))
     return ff.readBytes()
-}
-fun File.copyInputStreamToFile(inputStream: ByteArrayInputStream) {
-    this.outputStream().use { fileOut ->
-        inputStream.copyTo(fileOut)
-    }
 }
 
 fun getTiltakValue(req : List<String>) : List<Tiltak> {
@@ -57,8 +50,10 @@ fun getOmplasseringBeskrivelse(req : String) : String {
     return OmplasseringAarsak.valueOf(req.toUpperCase()).beskrivelse
 }
 
-enum class Omplassering {
-    JA, NEI, IKKE_MULIG
+enum class Omplassering(val beskrivelse: String) {
+    JA("Ja"),
+    NEI("Nei"),
+    IKKE_MULIG("Ikke mulig")
 }
 enum class Tiltak(val beskrivelse : String) {
     TILPASSET_ARBEIDSTID("Fleksibel eller tilpasset arbeidstid"),
@@ -73,6 +68,8 @@ enum class OmplasseringAarsak(val beskrivelse : String) {
     IKKE_ANDRE_OPPGAVER("Vi har ikke andre oppgaver eller arbeidssteder å tilby"),
     HELSETILSTANDEN("Den ansatte vil ikke fungere i en annen jobb på grunn av helsetilstanden")
 }
-enum class GodskjentFiletyper {
-    PDF,JPEG, PNG
+enum class GodskjentFiletyper(val beskrivelse : String) {
+    PDF("pdf"),
+    JPEG("jpg"),
+    PNG("png")
 }

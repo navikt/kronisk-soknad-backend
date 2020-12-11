@@ -1,9 +1,8 @@
-package no.nav.helse.sporenstreks.web.integration
+package no.nav.helse.fritakagp.web.integration
 
 import io.ktor.application.Application
 import io.ktor.config.ApplicationConfig
 import io.ktor.config.MapApplicationConfig
-import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.server.testing.*
 import io.ktor.util.KtorExperimentalAPI
@@ -71,6 +70,7 @@ open class ControllerIntegrationTestBase : KoinTest {
 
         config.apply {
             put("koin.profile", "TEST")
+//            put("koin.profile", "LOCAL")
             put("no.nav.security.jwt.issuers.size", "1")
             put("no.nav.security.jwt.issuers.0.issuer_name", acceptedIssuer)
             put("no.nav.security.jwt.issuers.0.discoveryurl", server?.wellKnownUrl(acceptedIssuer).toString())

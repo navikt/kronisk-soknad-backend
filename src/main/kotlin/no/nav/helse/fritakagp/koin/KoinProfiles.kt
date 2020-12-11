@@ -9,33 +9,30 @@ import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
-import com.zaxxer.hikari.HikariDataSource
 import io.ktor.client.*
 import io.ktor.client.engine.apache.*
 import io.ktor.client.features.json.*
 import io.ktor.config.*
 import io.ktor.util.*
+import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.DokarkivKlient
+import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.JournalpostRequest
+import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.JournalpostResponse
+import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OppgaveKlient
+import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OpprettOppgaveRequest
+import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OpprettOppgaveResponse
+import no.nav.helse.arbeidsgiver.integrasjoner.pdl.*
 import no.nav.helse.arbeidsgiver.kubernetes.KubernetesProbeManager
-import no.nav.helse.fritakagp.db.MockSoeknadRepo
-import no.nav.helse.fritakagp.db.PostgresRepository
-import no.nav.helse.fritakagp.db.Repository
-import no.nav.helse.fritakagp.db.createHikariConfig
-import no.nav.helse.fritakagp.virusscan.ClamavVirusScannerImp
-import no.nav.helse.fritakagp.virusscan.MockVirusScanner
-import no.nav.helse.fritakagp.virusscan.VirusScanner
 import org.koin.core.Koin
 import org.koin.core.definition.Kind
 import org.koin.core.module.Module
 import org.koin.dsl.bind
-import org.koin.dsl.binds
 import org.koin.dsl.module
-import javax.sql.DataSource
 
 
 @KtorExperimentalAPI
 fun selectModuleBasedOnProfile(config: ApplicationConfig): List<Module> {
     val envModule = when (config.property("koin.profile").getString()) {
-        "TEST" -> buildAndTestConfig(config)
+        "TEST" -> buildAndTestConfig()
         "LOCAL" -> localDevConfig(config)
         "PREPROD" -> preprodConfig(config)
         "PROD" -> prodConfig(config)
@@ -81,40 +78,59 @@ val common = module {
 
 }
 
-fun buildAndTestConfig(config: ApplicationConfig) = module {
-    single { HikariDataSource(createHikariConfig(config.getjdbcUrlFromProperties(), config.getString("database.username"), config.getString("database.password"))) } bind DataSource::class
-    single { MockSoeknadRepo() } bind Repository::class
-    single { MockVirusScanner() } bind VirusScanner::class
+fun buildAndTestConfig() = module {
+
 }
 
-@KtorExperimentalAPI
-fun localDevConfig(config: ApplicationConfig) = module {
-    single { HikariDataSource(createHikariConfig(config.getjdbcUrlFromProperties(), config.getString("database.username"), config.getString("database.password"))) } bind DataSource::class
-    single { PostgresRepository(get(), get()) } bind Repository::class
-    //single { MockVirusScanner() } bind VirusScanner::class
-    single { ClamavVirusScannerImp(
-        get(),
-        config.getString("clamav.local_url")
-    ) } bind VirusScanner::class
+fun Module.mockExternalDependecies() {
+    single { object: DokarkivKlient {
+        override fun journalførDokument(
+            journalpost: JournalpostRequest,
+            forsoekFerdigstill: Boolean,
+            callId: String
+        ): JournalpostResponse {
+            return JournalpostResponse("arkiv-ref", true, "J", null, emptyList())
+        }
+    } } bind DokarkivKlient::class
+
+    single {object: PdlClient {
+        override fun fullPerson(ident: String) =
+            PdlHentFullPerson(
+                PdlHentFullPerson.PdlFullPersonliste(
+                    emptyList(),
+                    emptyList(),
+                    emptyList(),
+                    emptyList(),
+                    emptyList()
+                ),
+
+                PdlHentFullPerson.PdlIdentResponse(listOf(PdlIdent("aktør-id", PdlIdent.PdlIdentGruppe.AKTORID))),
+
+                PdlHentFullPerson.PdlGeografiskTilknytning(
+                    PdlHentFullPerson.PdlGeografiskTilknytning.PdlGtType.UTLAND,
+                    null,
+                    null,
+                    "SWE"
+                )
+            )
+
+        override fun personNavn(ident: String) =
+            PdlHentPersonNavn.PdlPersonNavneliste(listOf(
+                PdlHentPersonNavn.PdlPersonNavneliste.PdlPersonNavn("Ola", "M", "Avsender", PdlPersonNavnMetadata("freg"))))
+    }
+
+    } bind PdlClient::class
+
+    single { object: OppgaveKlient {
+        override suspend fun opprettOppgave(
+            opprettOppgaveRequest: OpprettOppgaveRequest,
+            callId: String
+        ): OpprettOppgaveResponse = OpprettOppgaveResponse(1234)
+    } } bind OppgaveKlient::class
+
 }
 
-@KtorExperimentalAPI
-fun preprodConfig(config: ApplicationConfig) = module {
-    single { HikariDataSource(createHikariConfig(config.getjdbcUrlFromProperties(), config.getString("database.username"), config.getString("database.password"))) } bind DataSource::class
-    single { PostgresRepository(get(), get()) } bind Repository::class
-    single { ClamavVirusScannerImp(
-        get(),
-        config.getString("clamav.on_prem_url")
-    ) } bind VirusScanner::class
-}
 
-@KtorExperimentalAPI
-fun prodConfig(config: ApplicationConfig) = module {
-    single { ClamavVirusScannerImp(
-        get(),
-        config.getString("clamav.gcp_url")
-    ) } bind VirusScanner::class
-}
 
 // utils
 @KtorExperimentalAPI

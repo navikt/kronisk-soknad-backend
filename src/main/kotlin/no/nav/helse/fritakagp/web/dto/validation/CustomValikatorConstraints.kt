@@ -34,8 +34,6 @@ fun <E> Validator<E>.Property<String?>.isNotStorreEnn(maxSize : Long) =
         return@validate  it!!.toByteArray().size <= maxSize
     }
 
-
-
 inline fun <reified T : Enum<T>> enumContains(name: String): Boolean {
     return enumValues<T>().any { it.name == name}
 }

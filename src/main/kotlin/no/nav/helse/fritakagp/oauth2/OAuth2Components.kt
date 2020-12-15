@@ -1,4 +1,4 @@
-package no.nav.helse.fritakagp.tokenx
+package no.nav.helse.fritakagp.oauth2
 
 import io.ktor.client.*
 import io.ktor.client.request.forms.*

@@ -19,9 +19,9 @@ import no.nav.helse.fritakagp.db.PostgresGravidSoeknadRepository
 import no.nav.helse.fritakagp.db.createHikariConfig
 import no.nav.helse.fritakagp.processing.gravid.GravidSoeknadPDFGenerator
 import no.nav.helse.fritakagp.processing.gravid.SoeknadGravidProcessor
-import no.nav.helse.fritakagp.tokenx.DefaultOAuth2HttpClient
-import no.nav.helse.fritakagp.tokenx.TokenResolver
-import no.nav.helse.fritakagp.tokenx.TokenXClientPropertiesConfig
+import no.nav.helse.fritakagp.oauth2.DefaultOAuth2HttpClient
+import no.nav.helse.fritakagp.oauth2.TokenResolver
+import no.nav.helse.fritakagp.oauth2.OAuth2ClientPropertiesConfig
 import no.nav.security.token.support.client.core.oauth2.ClientCredentialsTokenClient
 import no.nav.security.token.support.client.core.oauth2.OAuth2AccessTokenService
 import no.nav.security.token.support.client.core.oauth2.OnBehalfOfTokenClient
@@ -49,7 +49,7 @@ fun preprodConfig(config: ApplicationConfig) = module {
 fun Module.externalSystemClients(config: ApplicationConfig) {
 
     single {
-        val clientConfig = TokenXClientPropertiesConfig(config)
+        val clientConfig = OAuth2ClientPropertiesConfig(config)
         val tokenResolver = TokenResolver()
         val oauthHttpClient = DefaultOAuth2HttpClient(get())
         val accessTokenService = OAuth2AccessTokenService(
@@ -59,8 +59,8 @@ fun Module.externalSystemClients(config: ApplicationConfig) {
             TokenExchangeClient(oauthHttpClient)
         )
 
-        val tokenxConfig = clientConfig.clientConfig["tokenx"] ?: error("Fant ikke config i application.conf")
-        ServiceUserTokenXTokenProvider(accessTokenService, tokenxConfig)
+        val azureAdConfig = clientConfig.clientConfig["azure_ad"] ?: error("Fant ikke config i application.conf")
+        ServiceUserTokenXTokenProvider(accessTokenService, azureAdConfig)
     } bind AccessTokenProvider::class
 
     single { PdlClientImpl(config.getString("pdl_url"), get(), get(), get()) } bind PdlClient::class

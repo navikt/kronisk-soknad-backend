@@ -19,21 +19,18 @@ private val collectorRegistry = CollectorRegistry.defaultRegistry
 
 fun Application.nais() {
 
-    val log = LoggerFactory.getLogger("Metrics Routes")
     DefaultExports.initialize()
 
     routing {
         get("/health/is-alive") {
             val kubernetesProbeManager = this@routing.get<KubernetesProbeManager>()
             val checkResults = kubernetesProbeManager.runLivenessProbe()
-            log.info(checkResults.toString())
             returnResultOfChecks(checkResults)
         }
 
         get("/health/is-ready") {
             val kubernetesProbeManager = this@routing.get<KubernetesProbeManager>()
             val checkResults = kubernetesProbeManager.runReadynessProbe()
-            log.info(checkResults.toString())
             returnResultOfChecks(checkResults)
         }
 

@@ -21,12 +21,11 @@ class GravidSoeknadPDFGeneratorTest {
 
         assertThat(pdfText).contains(soeknad.tiltakBeskrivelse?.substring(0, 50)) // sjekker bare starten pga wrapping
         assertThat(pdfText).contains(soeknad.fnr)
-        assertThat(pdfText).contains(soeknad.omplasseringAarsak)
-        assertThat(pdfText).contains(soeknad.omplassering)
+        assertThat(pdfText).contains(soeknad.omplasseringAarsak?.beskrivelse)
+        assertThat(pdfText).contains(soeknad.omplassering?.beskrivelse)
         assertThat(pdfText).contains(soeknad.orgnr)
         soeknad.tiltak?.forEach { assertThat((pdfText)?.contains(it.beskrivelse)) }
     }
-
 
     @Test
     @Disabled

@@ -9,10 +9,8 @@ import io.ktor.routing.*
 import io.ktor.util.*
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.Bakgrunnsjobb
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbRepository
-import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbService
 import no.nav.helse.fritakagp.db.GravidSoeknadRepository
 import no.nav.helse.fritakagp.domain.SoeknadGravid
-import no.nav.helse.fritakagp.domain.getTiltakValue
 import no.nav.helse.fritakagp.processing.gravid.SoeknadGravidProcessor
 import no.nav.helse.fritakagp.processing.kvittering.KvitteringJobData
 import no.nav.helse.fritakagp.processing.kvittering.KvitteringProcessor
@@ -53,7 +51,7 @@ fun Route.fritakAGP(
                         omplassering = request.omplassering,
                         omplasseringAarsak = request.omplasseringAarsak,
                         tilrettelegge = request.tilrettelegge,
-                        tiltak = getTiltakValue(request.tiltak),
+                        tiltak = request.tiltak,
                         tiltakBeskrivelse = request.tiltakBeskrivelse
                 )
                 try {

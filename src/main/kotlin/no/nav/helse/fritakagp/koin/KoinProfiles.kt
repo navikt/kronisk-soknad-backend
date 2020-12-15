@@ -101,17 +101,19 @@ fun Module.mockExternalDependecies() {
                 PdlHentFullPerson.PdlFullPersonliste(
                     emptyList(),
                     emptyList(),
-                    PdlHentFullPerson.PdlFullPersonliste.PdlGeografiskTilknytning(
-                        PdlHentFullPerson.PdlFullPersonliste.PdlGeografiskTilknytning.PdlGtType.UTLAND,
-                        null,
-                        null,
-                        "SWE"
-                    ),
                     emptyList(),
                     emptyList(),
                     emptyList()
                 ),
-                PdlHentFullPerson.PdlIdentResponse(listOf(PdlIdent("aktør-id", PdlIdent.PdlIdentGruppe.AKTORID)))
+
+                PdlHentFullPerson.PdlIdentResponse(listOf(PdlIdent("aktør-id", PdlIdent.PdlIdentGruppe.AKTORID))),
+
+                PdlHentFullPerson.PdlGeografiskTilknytning(
+                    PdlHentFullPerson.PdlGeografiskTilknytning.PdlGtType.UTLAND,
+                    null,
+                    null,
+                    "SWE"
+                )
             )
 
         override fun personNavn(ident: String) =

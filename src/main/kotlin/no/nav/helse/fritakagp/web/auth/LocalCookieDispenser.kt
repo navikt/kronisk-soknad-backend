@@ -11,27 +11,38 @@ import io.ktor.response.respondText
 import io.ktor.routing.get
 import io.ktor.routing.routing
 import io.ktor.util.KtorExperimentalAPI
-import io.prometheus.client.hotspot.DefaultExports
+import no.nav.helse.arbeidsgiver.system.AppEnv
+import no.nav.helse.arbeidsgiver.system.getEnvironment
 import no.nav.security.mock.oauth2.MockOAuth2Server
+import org.slf4j.LoggerFactory
 
 import java.net.InetAddress
 
 
+
 @KtorExperimentalAPI
 fun Application.localCookieDispenser(config: ApplicationConfig) {
-
+    val oauthMockPort = 6666
+    val logger = LoggerFactory.getLogger("LocalCookieDispenser")
+    logger.info("Starter OAuth Mock")
     val server = MockOAuth2Server()
-    server.start(port = 6666)
+    val cookieName = config.configList("no.nav.security.jwt.issuers")[0].property("cookie_name").getString()
+    val issuerName = config.configList("no.nav.security.jwt.issuers")[0].property("issuer_name").getString()
+    val audience = config.configList("no.nav.security.jwt.issuers")[0].property("accepted_audience").getString()
+    val domain = if (config.getEnvironment() == AppEnv.PREPROD) "dev.nav.no" else "localhost"
 
-    DefaultExports.initialize()
+    server.start(port = oauthMockPort)
+    logger.info("Startet OAuth mock på ${server.jwksUrl(issuerName)}")
 
     routing {
         get("/local/cookie-please") {
-            if (config.property("koin.profile").getString() == "LOCAL") {
-                val token = server.issueToken(call.request.queryParameters["subject"].toString())
-                val cookieName = config.configList("no.nav.security.jwt.issuers")[0].property("cookie_name").getString()
-                call.response.cookies.append(Cookie(cookieName, token.serialize(), CookieEncoding.RAW, domain = "localhost", path = "/"))
-            }
+            val token = server.issueToken(
+                subject = call.request.queryParameters["subject"].toString(),
+                issuerId = issuerName,
+                audience = audience
+            )
+
+            call.response.cookies.append(Cookie(cookieName, token.serialize(), CookieEncoding.RAW, domain = domain, path = "/"))
 
             if (call.request.queryParameters["redirect"] != null) {
                 call.respondText("<script>window.location.href='" + call.request.queryParameters["redirect"] + "';</script>", ContentType.Text.Html, HttpStatusCode.OK)

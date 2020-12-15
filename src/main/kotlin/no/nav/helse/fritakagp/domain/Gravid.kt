@@ -12,8 +12,8 @@ data class SoeknadGravid(
         val tilrettelegge: Boolean,
         val tiltak: List<Tiltak>? = null,
         val tiltakBeskrivelse: String? = null,
-        val omplassering: String,
-        val omplasseringAarsak: String? = null,
+        val omplassering: Omplassering?,
+        val omplasseringAarsak: OmplasseringAarsak? = null,
         val sendtAv: String,
 
         /**

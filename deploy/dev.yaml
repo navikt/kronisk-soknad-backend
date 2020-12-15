@@ -42,7 +42,6 @@ spec:
     outbound:
       external:
         - host: helsearbeidsgiver-proxy.dev-fss-pub.nais.io
-        - host: helsearbeidsgiver-proxy.dev.intern.nav.no
 
       rules:
         - application: helsearbeidsgiver-proxy

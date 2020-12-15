@@ -11,6 +11,8 @@ import no.nav.helse.fritakagp.db.PostgresGravidSoeknadRepository
 import no.nav.helse.fritakagp.db.createHikariConfig
 import no.nav.helse.fritakagp.processing.gravid.GravidSoeknadPDFGenerator
 import no.nav.helse.fritakagp.processing.gravid.SoeknadGravidProcessor
+import no.nav.helse.fritakagp.processing.kvittering.DummyKvitteringSender
+import no.nav.helse.fritakagp.processing.kvittering.KvitteringSender
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import javax.sql.DataSource
@@ -28,4 +30,5 @@ fun localDevConfig(config: ApplicationConfig) = module {
     single { BakgrunnsjobbService(get()) }
 
     single { SoeknadGravidProcessor(get(), get(), get(), get(), GravidSoeknadPDFGenerator(), get())}
+    single { DummyKvitteringSender() as KvitteringSender }
 }

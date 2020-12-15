@@ -33,9 +33,11 @@ class PostgresGravidSoeknadRepositoryTest : KoinComponent {
         val ds = HikariDataSource(createTestHikariConfig())
 
         Flyway.configure()
+                .baselineOnMigrate(true)
                 .dataSource(ds)
                 .load()
                 .migrate()
+
 
         repo = PostgresGravidSoeknadRepository(ds, get())
         repo.insert(testSoeknad)

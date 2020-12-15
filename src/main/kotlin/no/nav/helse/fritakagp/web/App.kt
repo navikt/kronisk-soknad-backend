@@ -69,7 +69,7 @@ private fun startBackgroundWorker(koin: Koin) {
 private fun migrateDatabase() {
     mainLogger.info("Starter databasemigrering")
 
-    Flyway.configure()
+    Flyway.configure().baselineOnMigrate(true)
             .dataSource(GlobalContext.get().koin.get())
             .load()
             .migrate()

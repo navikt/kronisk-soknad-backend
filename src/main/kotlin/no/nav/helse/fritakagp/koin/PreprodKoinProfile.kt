@@ -7,7 +7,7 @@ import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbRepository
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbService
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.PostgresBakgrunnsjobbRepository
 import no.nav.helse.arbeidsgiver.integrasjoner.AccessTokenProvider
-import no.nav.helse.arbeidsgiver.integrasjoner.ServiceUserTokenXTokenProvider
+import no.nav.helse.arbeidsgiver.integrasjoner.OAuth2TokenProvider
 import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.DokarkivKlient
 import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.DokarkivKlientImpl
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OppgaveKlient
@@ -60,7 +60,7 @@ fun Module.externalSystemClients(config: ApplicationConfig) {
         )
 
         val azureAdConfig = clientConfig.clientConfig["azure_ad"] ?: error("Fant ikke config i application.conf")
-        ServiceUserTokenXTokenProvider(accessTokenService, azureAdConfig)
+        OAuth2TokenProvider(accessTokenService, azureAdConfig)
     } bind AccessTokenProvider::class
 
     single { PdlClientImpl(config.getString("pdl_url"), get(), get(), get()) } bind PdlClient::class

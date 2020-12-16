@@ -51,13 +51,13 @@ class PostgresGravidSoeknadRepositoryTest : KoinComponent {
     }
 
     @Test
-    fun `finner data i db`() {
+    fun `finnerDataIDb`() {
         val soeknadGravidResult = repo.getById(testSoeknad.id)
         assertThat(soeknadGravidResult).isEqualTo(testSoeknad)
     }
 
     @Test
-    fun `kan oppdatere data`() {
+    fun `kanOppdatereData`() {
         val soeknadGravidResult = repo.getById(testSoeknad.id)
         assertNotNull(soeknadGravidResult, "Må finnes")
 

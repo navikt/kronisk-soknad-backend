@@ -50,7 +50,7 @@ package no.nav.helse.slowtests
 
 
         @Test
-        fun `Kan hente lagret kvittering`() {
+        fun `kanHenteLagretKvittering`() {
             val rs = repo.getById(kvittering.id)
 
             assertThat(rs).isNotNull
@@ -59,14 +59,14 @@ package no.nav.helse.slowtests
 
 
         @Test
-        fun `Kan hente fra status`() {
+        fun `kanHenteFraStatus`() {
             val kvitteringListe = repo.getByStatus(KvitteringStatus.OPPRETTET, 10)
             assertThat(kvitteringListe.size).isEqualTo(1)
             assertThat(kvitteringListe.first()).isEqualTo(kvittering)
         }
 
         @Test
-        fun `Kan oppdatere krav`() {
+        fun `kanOppdatereKrav`() {
             val kvitteringListe = repo.getByStatus(KvitteringStatus.OPPRETTET, 10)
             val kvittering = kvitteringListe.first()
 
@@ -81,7 +81,7 @@ package no.nav.helse.slowtests
         }
 
         @Test
-        fun `Kan slette et refusjonskrav`() {
+        fun `kanSletteEtRefusjonskrav`() {
             val deletedCount = repo.delete(kvittering.id)
             assertThat(deletedCount).isEqualTo(1)
         }

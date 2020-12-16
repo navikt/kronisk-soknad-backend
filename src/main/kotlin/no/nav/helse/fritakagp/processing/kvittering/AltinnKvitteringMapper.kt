@@ -8,11 +8,7 @@ class AltinnKvitteringMapper(val altinnTjenesteKode: String) {
 
 
     fun mapKvitteringTilInsertCorrespondence(kvittering: Kvittering): InsertCorrespondenceV2 {
-        val dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
         val dateTimeFormatterMedKl = DateTimeFormatter.ofPattern("dd.MM.yyyy 'kl.' HH:mm")
-        val dateTimeFormatterPlain = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")
-
-
         val tittel = "Kvittering for mottatt søknad om fritak fra arbeidsgiverperioden grunnet graviditet"
 
         val innhold = """

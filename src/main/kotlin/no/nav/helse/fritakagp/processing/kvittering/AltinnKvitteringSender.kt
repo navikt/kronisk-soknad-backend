@@ -14,6 +14,7 @@ class AltinnKvitteringSender(
         private val db: KvitteringRepository) : KvitteringSender {
 
     private val log = LoggerFactory.getLogger("AltinnKvitteringSender")
+    private val FEIL_VED_SENDING = "Feil ved sending kvittering til Altinn"
 
     companion object {
         const val SYSTEM_USER_CODE = "NAV_HELSEARBEIDSGIVER"
@@ -28,17 +29,17 @@ class AltinnKvitteringSender(
             )
             if (receiptExternal.receiptStatusCode != ReceiptStatusEnum.OK) {
                 log.error("Fikk uventet statuskode fra Altinn {}", receiptExternal.receiptStatusCode)
-                throw RuntimeException("Feil ved sending kvittering til Altinn")
+                throw RuntimeException(FEIL_VED_SENDING)
             } else {
                 kvittering.status = KvitteringStatus.SENDT
             }
         } catch (e: ICorrespondenceAgencyExternalBasicInsertCorrespondenceBasicV2AltinnFaultFaultFaultMessage) {
-            log.error("Feil ved sending kvittering til Altinn", e)
+            log.error(FEIL_VED_SENDING, e)
             log.error("${e.faultInfo} ${e.cause} ${e.message}")
-            log.error("Feil ved sending kvittering til Altinn", e)
-            throw RuntimeException("Feil ved sending kvittering til Altinn", e)
+            log.error(FEIL_VED_SENDING, e)
+            throw RuntimeException(FEIL_VED_SENDING, e)
         } catch (e: Exception) {
-            log.error("Feil ved sending kvittering til Altinn", e)
+            log.error(FEIL_VED_SENDING, e)
             throw e
         }
         finally {

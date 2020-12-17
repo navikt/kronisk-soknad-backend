@@ -26,8 +26,6 @@ data class SoeknadGravid(
          * ID fra oppgave etter opprettelse av oppgave
          */
         var oppgaveId: String? = null,
-        val datafil: String?,
-        val ext : String?
 )
 
 fun decodeBase64File(datafile : String, name : String, ext : String?): ByteArray {

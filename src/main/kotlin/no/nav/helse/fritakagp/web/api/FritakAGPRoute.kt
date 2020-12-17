@@ -13,6 +13,7 @@ import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbRepository
 import no.nav.helse.fritakagp.db.GravidSoeknadRepository
 import no.nav.helse.fritakagp.domain.SoeknadGravid
 import no.nav.helse.fritakagp.domain.decodeBase64File
+import no.nav.helse.fritakagp.gcp.BucketUtils
 import no.nav.helse.fritakagp.processing.gravid.SoeknadGravidProcessor
 import no.nav.helse.fritakagp.virusscan.ClamavVirusScanner
 import no.nav.helse.fritakagp.web.hentIdentitetsnummerFraLoginToken
@@ -31,6 +32,7 @@ fun Route.fritakAGP(
 ) {
 
     val logger = LoggerFactory.getLogger("FritakAGP API")
+    val bucket = BucketUtils()
 
     route("/api/v1") {
 
@@ -53,18 +55,19 @@ fun Route.fritakAGP(
                         omplasseringAarsak = request.omplasseringAarsak,
                         tilrettelegge = request.tilrettelegge,
                         tiltak = request.tiltak,
-                        tiltakBeskrivelse = request.tiltakBeskrivelse,
-                        datafil = request.datafil,
-                        ext = request.ext
+                        tiltakBeskrivelse = request.tiltakBeskrivelse
                 )
+                val filContext = request.datafil
+                val filExt = request.ext
                 try {
-                    soeknad.datafil?.let {
+                    filContext?.let {
                         val vedlagteFil: ByteArray =
                             decodeBase64File(it, request.fnr.plus("_").plus(request.orgnr), request.ext)
                         runBlocking {
                             if (!ClamavVirusScanner().scanFile(vedlagteFil)) {
                                 call.respond(HttpStatusCode.NotAcceptable)
                             }
+                            bucket.uploadDoc(soeknad.id.toString(), it, filExt!!)
                         }
                     }
                     datasource.connection.use { connection ->

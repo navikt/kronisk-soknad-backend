@@ -71,3 +71,11 @@ spec:
         databases:
           - name: fritakagp-db
             diskAutoresize: true
+    buckets:
+      - name: helse-arbeidsgiver-fritakagb-bucket
+        #retentionPeriodDays: 30
+         # lifecycleCondition:
+         # age: 7
+         # createdBefore: 2020-01-01
+         # numNewerVersions: 2
+        #  withState: ANY

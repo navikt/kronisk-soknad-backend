@@ -14,6 +14,7 @@ val tokenSupportVersion = "1.3.0"
 val mockOAuth2ServerVersion = "0.2.1"
 val koinVersion = "2.0.1"
 val valiktorVersion = "0.12.0"
+val gcpStorageVersion = "1.36.0"
 
 val githubPassword: String by project
 
@@ -109,6 +110,8 @@ dependencies {
     testImplementation("org.assertj:assertj-core:$assertJVersion")
 
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitJupiterVersion")
+    implementation( "com.google.cloud:google-cloud-storage:$gcpStorageVersion")
+
 }
 
 tasks.named<KotlinCompile>("compileKotlin")

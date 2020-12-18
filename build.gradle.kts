@@ -47,7 +47,7 @@ dependencies {
     implementation("org.apache.httpcomponents:httpclient:4.5.13") // overstyrer transiente 4.5.6 gjennom ktor-client-apache
     implementation("org.eclipse.jetty:jetty-server:9.4.35.v20201120")
     implementation("org.yaml:snakeyaml:1.26") //overstyrer versjon 1.23 via githubjavafaker 1.02
-    implementation("com.google.guava:30.0-jre") //[Medium Severity][https://snyk.io/vuln/SNYK-JAVA-COMGOOGLEGUAVA-1015415] overstyrer versjon 29.0
+    testImplementation("com.google.guava:guava:30.0-jre") //[Medium Severity][https://snyk.io/vuln/SNYK-JAVA-COMGOOGLEGUAVA-1015415] overstyrer versjon 29.0
     // -- end snyk fixes
 
 

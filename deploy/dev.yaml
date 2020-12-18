@@ -35,14 +35,14 @@ spec:
       cpu: 400m
       memory: 200Mi
   leaderElection: false
-  tokenx:
-    enabled: true
+  azure:
+    application:
+      enabled: true
 
   accessPolicy:
     outbound:
       external:
         - host: helsearbeidsgiver-proxy.dev-fss-pub.nais.io
-        - host: helsearbeidsgiver-proxy.dev.intern.nav.no
 
       rules:
         - application: helsearbeidsgiver-proxy

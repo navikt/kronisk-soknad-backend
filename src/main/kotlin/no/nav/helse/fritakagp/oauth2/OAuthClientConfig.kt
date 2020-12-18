@@ -1,4 +1,4 @@
-package no.nav.helse.fritakagp.tokenx
+package no.nav.helse.fritakagp.oauth2
 
 import com.nimbusds.oauth2.sdk.auth.ClientAuthenticationMethod
 import io.ktor.config.*
@@ -9,7 +9,7 @@ import no.nav.security.token.support.client.core.OAuth2GrantType
 import java.net.URI
 
 @KtorExperimentalAPI
-class TokenXClientPropertiesConfig(
+class OAuth2ClientPropertiesConfig(
     applicationConfig: ApplicationConfig
 ) {
     internal val clientConfig: Map<String, ClientProperties> =
@@ -27,7 +27,7 @@ class TokenXClientPropertiesConfig(
                         ClientAuthenticationMethod(
                             clientConfig.propertyToString("authentication.client_auth_method")
                         ),
-                        clientConfig.propertyToStringOrNull("client_secret"),
+                        clientConfig.propertyToStringOrNull("authentication.client_secret"),
                         clientConfig.propertyToStringOrNull("authentication.client_jwk")
                     ),
                     resourceUrl?.let { URI(it) },

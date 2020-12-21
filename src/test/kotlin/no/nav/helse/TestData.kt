@@ -17,9 +17,7 @@ object TestData {
         tiltakBeskrivelse = "Vi prøvde både det ene og det andre og det første kanskje virka litt men muligens and the andre ikke var så på stell men akk ja sånn lorem",
         omplassering = Omplassering.IKKE_MULIG,
         omplasseringAarsak = OmplasseringAarsak.HELSETILSTANDEN,
-        sendtAv = "09876543210",
-        datafil = null,
-        ext = null
+        sendtAv = "09876543210"
     )
 
     val validRequest = GravideSoknadRequest(

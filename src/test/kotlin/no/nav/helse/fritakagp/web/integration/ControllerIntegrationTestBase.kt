@@ -69,13 +69,18 @@ open class ControllerIntegrationTestBase : KoinTest {
         val acceptedAudience = "default"
 
         config.apply {
-            put("koin.profile", "TEST")
-//            put("koin.profile", "LOCAL")
+  //          put("koin.profile", "TEST")
+            put("koin.profile", "LOCAL")
             put("no.nav.security.jwt.issuers.size", "1")
             put("no.nav.security.jwt.issuers.0.issuer_name", acceptedIssuer)
             put("no.nav.security.jwt.issuers.0.discoveryurl", server?.wellKnownUrl(acceptedIssuer).toString())
             put("no.nav.security.jwt.issuers.0.accepted_audience", acceptedAudience)
             put("no.nav.security.jwt.issuers.0.cookie_name", idTokenCookieName)
+            put("database.host","localhost")
+            put("database.port","5432")
+            put("database.name","fritakagp_db")
+            put("database.username","fritakagp")
+            put("database.password","fritakagp")
         }
     }
 }

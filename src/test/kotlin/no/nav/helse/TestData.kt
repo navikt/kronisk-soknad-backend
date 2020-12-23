@@ -8,8 +8,10 @@ import no.nav.helse.fritakagp.web.api.resreq.GravideSoknadRequest
 
 object TestData {
     val validIdentitetsnummer = "20015001543"
+    val validOrgNr = "123456785"
+
     val soeknadGravid = SoeknadGravid(
-        orgnr = "123456785",
+        orgnr = validOrgNr,
         fnr = validIdentitetsnummer,
         tilrettelegge = true,
         tiltak = listOf(Tiltak.HJEMMEKONTOR, Tiltak.ANNET),
@@ -19,14 +21,15 @@ object TestData {
         sendtAv = "09876543210"
     )
 
-    val validRequest = GravideSoknadRequest(
-        orgnr = "123456785",
-        fnr = "20015001543",
+    val fullValidRequest = GravideSoknadRequest(
+        orgnr = validOrgNr,
+        fnr = validIdentitetsnummer,
         tilrettelegge = true,
-        tiltak = listOf(Tiltak.ANNET),
+        tiltak = listOf(Tiltak.ANNET, Tiltak.HJEMMEKONTOR, Tiltak.TILPASSEDE_ARBEIDSOPPGAVER, Tiltak.TILPASSET_ARBEIDSTID),
         tiltakBeskrivelse = "beskrivelse",
-        omplassering = Omplassering.JA,
-        omplasseringAarsak = null
+        omplassering = Omplassering.NEI,
+        omplasseringAarsak = OmplasseringAarsak.HELSETILSTANDEN,
+        bekreftet = true
     )
 }
 

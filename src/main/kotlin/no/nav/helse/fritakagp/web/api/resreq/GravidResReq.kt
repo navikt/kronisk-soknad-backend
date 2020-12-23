@@ -5,11 +5,9 @@ import no.nav.helse.arbeidsgiver.web.validation.isValidOrganisasjonsnummer
 import no.nav.helse.fritakagp.domain.Omplassering
 import no.nav.helse.fritakagp.domain.OmplasseringAarsak
 import no.nav.helse.fritakagp.domain.Tiltak
-import no.nav.helse.fritakagp.web.dto.validation.isOmplasseringValgRiktig
-import no.nav.helse.fritakagp.web.dto.validation.isTiltakValid
-import org.valiktor.functions.isInIgnoringCase
 import org.valiktor.functions.isNotEmpty
 import org.valiktor.functions.isNotNull
+import org.valiktor.functions.isTrue
 import org.valiktor.validate
 
 data class GravideSoknadRequest(
@@ -21,15 +19,16 @@ data class GravideSoknadRequest(
         val tiltakBeskrivelse: String? = null,
 
         val omplassering: Omplassering? = null,
-        val omplasseringAarsak: OmplasseringAarsak? = null
+        val omplasseringAarsak: OmplasseringAarsak? = null,
+
+        val bekreftet: Boolean
 ) {
     init {
         validate(this) {
             validate(GravideSoknadRequest::fnr).isValidIdentitetsnummer()
+            validate(GravideSoknadRequest::bekreftet).isTrue()
+            validate(GravideSoknadRequest::orgnr).isValidOrganisasjonsnummer()
 
-            if (this@GravideSoknadRequest.orgnr.isNotEmpty()) {
-                validate(GravideSoknadRequest::orgnr).isValidOrganisasjonsnummer()
-            }
 
             if (this@GravideSoknadRequest.tilrettelegge) {
                 validate(GravideSoknadRequest::tiltak).isNotNull()

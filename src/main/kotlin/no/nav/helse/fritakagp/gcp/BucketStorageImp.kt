@@ -16,7 +16,7 @@ interface BucketStorage {
 }
 data class BucketDocument(val base64Data :String, val extension: String)
 
-class MockBucketUtils() : BucketStorage {
+class MockBucketStorage() : BucketStorage {
     private  val items = HashMap<String, BucketDocument>()
     private val default = BucketDocument("default doc","txt")
     override fun uploadDoc(uuid: UUID, filContent : String, filExt : String) {
@@ -32,7 +32,7 @@ class MockBucketUtils() : BucketStorage {
     }
 }
 
-class BucketUtilsImp(private val bucketName : String = "fritakagb-bucket"): BucketStorage  {
+class BucketStorageImp(private val bucketName : String = "fritakagb-bucket"): BucketStorage  {
     private val storage: Storage = StorageOptions.getDefaultInstance().service
     private val bucket : Bucket = storage.get(bucketName) ?: error("Bucket $bucketName eksistere ikke")
 

@@ -13,7 +13,7 @@ import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbRepository
 import no.nav.helse.fritakagp.db.GravidSoeknadRepository
 import no.nav.helse.fritakagp.domain.SoeknadGravid
 import no.nav.helse.fritakagp.domain.decodeBase64File
-import no.nav.helse.fritakagp.gcp.BucketUtilsImp
+import no.nav.helse.fritakagp.gcp.BucketStorageImp
 import no.nav.helse.fritakagp.processing.gravid.SoeknadGravidProcessor
 import no.nav.helse.fritakagp.virusscan.VirusScanner
 import no.nav.helse.fritakagp.web.hentIdentitetsnummerFraLoginToken
@@ -33,7 +33,7 @@ fun Route.fritakAGP(
 ) {
 
     val logger = LoggerFactory.getLogger("FritakAGP API")
-    val bucket = BucketUtilsImp()
+    val bucket = BucketStorageImp()
 
     route("/api/v1") {
 

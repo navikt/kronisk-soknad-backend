@@ -6,8 +6,8 @@ import io.ktor.util.*
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbRepository
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbService
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.PostgresBakgrunnsjobbRepository
-import no.nav.helse.arbeidsgiver.integrasjoner.RestStsClient
-import no.nav.helse.arbeidsgiver.integrasjoner.RestStsClientImpl
+import no.nav.helse.arbeidsgiver.integrasjoner.AccessTokenProvider
+import no.nav.helse.arbeidsgiver.integrasjoner.OAuth2TokenProvider
 import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.DokarkivKlient
 import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.DokarkivKlientImpl
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OppgaveKlient
@@ -19,8 +19,15 @@ import no.nav.helse.fritakagp.db.PostgresGravidSoeknadRepository
 import no.nav.helse.fritakagp.db.createHikariConfig
 import no.nav.helse.fritakagp.processing.gravid.GravidSoeknadPDFGenerator
 import no.nav.helse.fritakagp.processing.gravid.SoeknadGravidProcessor
+import no.nav.helse.fritakagp.oauth2.DefaultOAuth2HttpClient
+import no.nav.helse.fritakagp.oauth2.TokenResolver
+import no.nav.helse.fritakagp.oauth2.OAuth2ClientPropertiesConfig
 import no.nav.helse.fritakagp.virusscan.ClamavVirusScannerImp
 import no.nav.helse.fritakagp.virusscan.VirusScanner
+import no.nav.security.token.support.client.core.oauth2.ClientCredentialsTokenClient
+import no.nav.security.token.support.client.core.oauth2.OAuth2AccessTokenService
+import no.nav.security.token.support.client.core.oauth2.OnBehalfOfTokenClient
+import no.nav.security.token.support.client.core.oauth2.TokenExchangeClient
 import org.koin.core.module.Module
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -43,14 +50,20 @@ fun preprodConfig(config: ApplicationConfig) = module {
 
 
 fun Module.externalSystemClients(config: ApplicationConfig) {
-    single { object: RestStsClient {
-            // STS er ikke tilgjengelig i GCP, og vi bruker en proxy for å snakke med tjenester i FSS
-            override fun getOidcToken(): String {
-                return "dummy-token-for-proxy"
-            }
-        }
-    } bind RestStsClient::class
+    single {
+        val clientConfig = OAuth2ClientPropertiesConfig(config)
+        val tokenResolver = TokenResolver()
+        val oauthHttpClient = DefaultOAuth2HttpClient(get())
+        val accessTokenService = OAuth2AccessTokenService(
+            tokenResolver,
+            OnBehalfOfTokenClient(oauthHttpClient),
+            ClientCredentialsTokenClient(oauthHttpClient),
+            TokenExchangeClient(oauthHttpClient)
+        )
 
+        val azureAdConfig = clientConfig.clientConfig["azure_ad"] ?: error("Fant ikke config i application.conf")
+        OAuth2TokenProvider(accessTokenService, azureAdConfig)
+    } bind AccessTokenProvider::class
 
     single { PdlClientImpl(config.getString("pdl_url"), get(), get(), get()) } bind PdlClient::class
     single { DokarkivKlientImpl(config.getString("dokarkiv.base_url"), get(), get()) } bind DokarkivKlient::class

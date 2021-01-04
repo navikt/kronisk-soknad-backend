@@ -13,7 +13,6 @@ import org.junit.jupiter.api.Test
 import org.koin.ktor.ext.get
 
 class FritkagbRouteTest : ControllerIntegrationTestBase() {
-    //val gcpBucket = mockk<BucketUtils>()
     @KtorExperimentalAPI
     @Test
     //@Disabled

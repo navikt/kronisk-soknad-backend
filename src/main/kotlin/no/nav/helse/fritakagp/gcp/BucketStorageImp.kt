@@ -43,8 +43,8 @@ class BucketStorageImp(private val bucketName : String = "fritakagb-bucket"): Bu
         }
     }
 
-    override fun getDocAsString(uuid: String, path: String) : BucketDocument {
-        val blob = bucket.get(uuid) ?: error("Object $uuid eksistere ikke")
+    override fun getDocAsString(uuid: UUID, path: String) : BucketDocument {
+        val blob = bucket.get(uuid.toString()) ?: error("Object $uuid eksistere ikke")
         val blobMeta = blob.metadata
         val ext = blobMeta["ext"] ?: ""
 
@@ -52,8 +52,8 @@ class BucketStorageImp(private val bucketName : String = "fritakagb-bucket"): Bu
     }
 
 
-    override fun deleteDoc(uuid : String) {
-        val blob = bucket.get(uuid) ?: error("Object/fil $uuid eksistere ikke")
+    override fun deleteDoc(uuid : UUID) {
+        val blob = bucket.get(uuid.toString()) ?: error("Object/fil $uuid eksistere ikke")
         blob.delete()
     }
 

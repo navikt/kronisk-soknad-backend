@@ -22,6 +22,10 @@ import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OpprettOppgaveRequest
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OpprettOppgaveResponse
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.*
 import no.nav.helse.arbeidsgiver.kubernetes.KubernetesProbeManager
+import no.nav.helse.fritakagp.gcp.BucketStorage
+import no.nav.helse.fritakagp.gcp.MockBucketUtils
+import no.nav.helse.fritakagp.virusscan.MockVirusScanner
+import no.nav.helse.fritakagp.virusscan.VirusScanner
 import org.koin.core.Koin
 import org.koin.core.definition.Kind
 import org.koin.core.module.Module
@@ -127,6 +131,9 @@ fun Module.mockExternalDependecies() {
             callId: String
         ): OpprettOppgaveResponse = OpprettOppgaveResponse(1234)
     } } bind OppgaveKlient::class
+
+    single { MockVirusScanner() } bind VirusScanner::class
+    single { MockBucketUtils() } bind BucketStorage::class
 
 }
 

@@ -4,10 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import io.ktor.http.*
 import io.ktor.server.testing.*
 import io.ktor.util.*
-import io.mockk.mockk
 import no.nav.helse.TestData
 import no.nav.helse.TestDataMedFil
-import no.nav.helse.fritakagp.gcp.BucketUtils
 import no.nav.helse.fritakagp.web.integration.ControllerIntegrationTestBase
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Disabled

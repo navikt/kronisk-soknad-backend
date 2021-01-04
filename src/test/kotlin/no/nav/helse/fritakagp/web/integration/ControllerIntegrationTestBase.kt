@@ -69,7 +69,7 @@ open class ControllerIntegrationTestBase : KoinTest {
         val acceptedAudience = "default"
 
         config.apply {
-  //          put("koin.profile", "TEST")
+    //        put("koin.profile", "TEST")
             put("koin.profile", "LOCAL")
             put("no.nav.security.jwt.issuers.size", "1")
             put("no.nav.security.jwt.issuers.0.issuer_name", acceptedIssuer)

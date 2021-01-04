@@ -13,9 +13,9 @@ import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbRepository
 import no.nav.helse.fritakagp.db.GravidSoeknadRepository
 import no.nav.helse.fritakagp.domain.SoeknadGravid
 import no.nav.helse.fritakagp.domain.decodeBase64File
-import no.nav.helse.fritakagp.gcp.BucketUtils
+import no.nav.helse.fritakagp.gcp.BucketUtilsImp
 import no.nav.helse.fritakagp.processing.gravid.SoeknadGravidProcessor
-import no.nav.helse.fritakagp.virusscan.ClamavVirusScanner
+import no.nav.helse.fritakagp.virusscan.VirusScanner
 import no.nav.helse.fritakagp.web.hentIdentitetsnummerFraLoginToken
 import no.nav.helse.fritakagp.web.hentUtløpsdatoFraLoginToken
 import no.nav.helse.fritakagp.web.api.resreq.GravideSoknadRequest
@@ -28,11 +28,12 @@ fun Route.fritakAGP(
     datasource: DataSource,
     repo: GravidSoeknadRepository,
     bakgunnsjobbRepo: BakgrunnsjobbRepository,
-    om: ObjectMapper
+    om: ObjectMapper,
+    virusScanner: VirusScanner
 ) {
 
     val logger = LoggerFactory.getLogger("FritakAGP API")
-    val bucket = BucketUtils()
+    val bucket = BucketUtilsImp()
 
     route("/api/v1") {
 
@@ -64,10 +65,10 @@ fun Route.fritakAGP(
                         val vedlagteFil: ByteArray =
                             decodeBase64File(it, request.fnr.plus("_").plus(request.orgnr), request.ext)
                         runBlocking {
-                            if (!ClamavVirusScanner().scanFile(vedlagteFil)) {
-                                call.respond(HttpStatusCode.NotAcceptable)
+                            if (!virusScanner.scanDoc(vedlagteFil)) {
+                                call.respond(HttpStatusCode.BadRequest)
                             }
-                            bucket.uploadDoc(soeknad.id.toString(), it, filExt!!)
+                            bucket.uploadDoc(soeknad.id, it, filExt!!)
                         }
                     }
                     datasource.connection.use { connection ->

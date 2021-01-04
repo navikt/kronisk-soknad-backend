@@ -12,6 +12,6 @@ import org.koin.dsl.module
 fun prodConfig(config: ApplicationConfig) = module {
     single { ClamavVirusScannerImp(
         get(),
-        config.getString("clamav.gcp_url")
+        config.getString("clamav_url")
     ) } bind VirusScanner::class
 }

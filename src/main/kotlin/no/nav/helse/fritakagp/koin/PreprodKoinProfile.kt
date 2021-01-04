@@ -57,6 +57,6 @@ fun Module.externalSystemClients(config: ApplicationConfig) {
     single { OppgaveKlientImpl(config.getString("oppgavebehandling.url"), get(), get()) } bind OppgaveKlient::class
     single { ClamavVirusScannerImp(
         get(),
-        config.getString("clamav.on_prem_url")
+        config.getString("clamav_url")
     ) } bind VirusScanner::class
 }

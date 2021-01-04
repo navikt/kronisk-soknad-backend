@@ -63,6 +63,8 @@ spec:
       value: https://helsearbeidsgiver-proxy.dev.adeo.no/oppgave
     - name: PDL_URL
       value: https://helsearbeidsgiver-proxy.dev.adeo.no/pdl
+    - name: CLAM_AV_URL
+      value: http://clamav.clamav.svc.cluster.local/scan
 
   gcp:
     sqlInstances:

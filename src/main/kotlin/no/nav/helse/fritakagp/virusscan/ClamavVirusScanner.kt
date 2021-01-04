@@ -13,13 +13,7 @@ import org.koin.core.inject
 interface VirusScanner {
     suspend fun scanDoc(vedlagt : ByteArray) : Boolean
 }
-data class ScanResult(
-    val filename: String,
-    val result: Result
-)
-enum class Result {
-    FOUND, OK, ERROR
-}
+
 class MockVirusScanner : VirusScanner {
     override suspend fun scanDoc(vedlagt: ByteArray): Boolean {
         return true
@@ -28,6 +22,13 @@ class MockVirusScanner : VirusScanner {
 
 
 class ClamavVirusScannerImp(private val httpClient: HttpClient, private val scanUrl : String) : VirusScanner {
+    data class ScanResult(
+        val filename: String,
+        val result: Result
+    )
+    enum class Result {
+        FOUND, OK, ERROR
+    }
     override suspend fun scanDoc(vedlagt: ByteArray): Boolean {
         val scanResult = httpClient.request<ScanResult> {
             url(scanUrl)
@@ -52,9 +53,4 @@ class ClamavVirusScannerImp(private val httpClient: HttpClient, private val scan
             Result.FOUND, Result.ERROR -> false
         }
     }
-}
-
-class ClamavVirusScanner : KoinComponent {
-    val clamavService by inject<VirusScanner>()
-    suspend fun scanFile(vedlagt: ByteArray) = clamavService.scanDoc(vedlagt)
 }

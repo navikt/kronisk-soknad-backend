@@ -15,9 +15,7 @@ import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OppgaveKlient
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OppgaveKlientImpl
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlClient
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlClientImpl
-import no.nav.helse.fritakagp.db.GravidSoeknadRepository
-import no.nav.helse.fritakagp.db.PostgresGravidSoeknadRepository
-import no.nav.helse.fritakagp.db.createHikariConfig
+import no.nav.helse.fritakagp.db.*
 import no.nav.helse.fritakagp.integrasjon.rest.sts.configureFor
 import no.nav.helse.fritakagp.integrasjon.rest.sts.wsStsClient
 import no.nav.helse.fritakagp.gcp.BucketStorage
@@ -27,16 +25,13 @@ import no.nav.helse.fritakagp.processing.gravid.SoeknadGravidProcessor
 import no.nav.helse.fritakagp.oauth2.DefaultOAuth2HttpClient
 import no.nav.helse.fritakagp.oauth2.TokenResolver
 import no.nav.helse.fritakagp.oauth2.OAuth2ClientPropertiesConfig
+import no.nav.helse.fritakagp.processing.kvittering.*
 import no.nav.helse.fritakagp.virusscan.ClamavVirusScannerImp
 import no.nav.helse.fritakagp.virusscan.VirusScanner
 import no.nav.security.token.support.client.core.oauth2.ClientCredentialsTokenClient
 import no.nav.security.token.support.client.core.oauth2.OAuth2AccessTokenService
 import no.nav.security.token.support.client.core.oauth2.OnBehalfOfTokenClient
 import no.nav.security.token.support.client.core.oauth2.TokenExchangeClient
-import no.nav.helse.fritakagp.processing.kvittering.AltinnKvitteringMapper
-import no.nav.helse.fritakagp.processing.kvittering.AltinnKvitteringSender
-import no.nav.helse.fritakagp.processing.kvittering.Clients
-import no.nav.helse.fritakagp.processing.kvittering.KvitteringSender
 import org.koin.core.module.Module
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -47,9 +42,16 @@ import javax.sql.DataSource
 fun preprodConfig(config: ApplicationConfig) = module {
     externalSystemClients(config)
 
-    single { HikariDataSource(createHikariConfig(config.getjdbcUrlFromProperties(), config.getString("database.username"), config.getString("database.password"))) } bind DataSource::class
+    single {
+        HikariDataSource(
+            createHikariConfig(
+                config.getjdbcUrlFromProperties(),
+                config.getString("database.username"),
+                config.getString("database.password")
+            )
+        )
+    } bind DataSource::class
     single { PostgresGravidSoeknadRepository(get(), get()) } bind GravidSoeknadRepository::class
-
 
     single { PostgresBakgrunnsjobbRepository(get()) } bind BakgrunnsjobbRepository::class
     single { BakgrunnsjobbService(get()) }
@@ -57,23 +59,27 @@ fun preprodConfig(config: ApplicationConfig) = module {
     single { SoeknadGravidProcessor(get(), get(), get(), get(), GravidSoeknadPDFGenerator(), get()) }
     single {
         val altinnMeldingWsClient = Clients.iCorrespondenceExternalBasic(
-                config.getString("altinn_melding.pep_gw_endpoint")
+            config.getString("altinn_melding.pep_gw_endpoint")
         )
         val sts = wsStsClient(
-                config.getString("sts_url_ws"),
-                config.getString("service_user.username") to config.getString("service_user.password")
+            config.getString("sts_url_ws"),
+            config.getString("service_user.username") to config.getString("service_user.password")
         )
         sts.configureFor(altinnMeldingWsClient)
         altinnMeldingWsClient
     }
+    single { PostgresKvitteringRepository(get(), get()) } bind KvitteringRepository::class
     single {
         AltinnKvitteringSender(
-                AltinnKvitteringMapper(config.getString("altinn_melding.service_id")),
-                get(),
-                config.getString("altinn_melding.username"),
-                config.getString("altinn_melding.password"),
-                get())
-}
+            AltinnKvitteringMapper(config.getString("altinn_melding.service_id")),
+            get(),
+            config.getString("altinn_melding.username"),
+            config.getString("altinn_melding.password"),
+            get()
+        )
+    }
+
+    single { KvitteringProcessor(get(), get(), get()) }
 }
 
 fun Module.externalSystemClients(config: ApplicationConfig) {
@@ -96,10 +102,12 @@ fun Module.externalSystemClients(config: ApplicationConfig) {
     single { PdlClientImpl(config.getString("pdl_url"), get(), get(), get()) } bind PdlClient::class
     single { DokarkivKlientImpl(config.getString("dokarkiv.base_url"), get(), get()) } bind DokarkivKlient::class
     single { OppgaveKlientImpl(config.getString("oppgavebehandling.url"), get(), get()) } bind OppgaveKlient::class
-    single { ClamavVirusScannerImp(
-        get(),
-        config.getString("clamav_url")
-    ) } bind VirusScanner::class
+    single {
+        ClamavVirusScannerImp(
+            get(),
+            config.getString("clamav_url")
+        )
+    } bind VirusScanner::class
     single { BucketStorageImp() } bind BucketStorage::class
 }
 

@@ -6,12 +6,11 @@ import io.ktor.util.*
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbRepository
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbService
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.PostgresBakgrunnsjobbRepository
-import no.nav.helse.fritakagp.db.GravidSoeknadRepository
-import no.nav.helse.fritakagp.db.PostgresGravidSoeknadRepository
-import no.nav.helse.fritakagp.db.createHikariConfig
+import no.nav.helse.fritakagp.db.*
 import no.nav.helse.fritakagp.processing.gravid.GravidSoeknadPDFGenerator
 import no.nav.helse.fritakagp.processing.gravid.SoeknadGravidProcessor
 import no.nav.helse.fritakagp.processing.kvittering.DummyKvitteringSender
+import no.nav.helse.fritakagp.processing.kvittering.KvitteringProcessor
 import no.nav.helse.fritakagp.processing.kvittering.KvitteringSender
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -30,5 +29,8 @@ fun localDevConfig(config: ApplicationConfig) = module {
     single { BakgrunnsjobbService(get()) }
 
     single { SoeknadGravidProcessor(get(), get(), get(), get(), GravidSoeknadPDFGenerator(), get())}
-    single { DummyKvitteringSender() as KvitteringSender }
+
+    single { PostgresKvitteringRepository(get(), get()) } bind KvitteringRepository::class
+    single { DummyKvitteringSender() }
+    single { KvitteringProcessor(get(), get(), get())}
 }

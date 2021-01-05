@@ -20,7 +20,7 @@ class FritakModuleTests : SystemTestBase() {
             body = """
                 {
                     "fnr": "${TestData.validIdentitetsnummer}",
-                    "orgnr": "${TestData.validRequest.orgnr}",
+                    "orgnr": "${TestData.fullValidRequest.orgnr}",
                     "tilrettelegge": true,
                     "tiltak": ["IKKE GYLDIG"]
                 }

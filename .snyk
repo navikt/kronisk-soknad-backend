@@ -2,24 +2,8 @@
 version: v1.14.1
 # ignores vulnerabilities until expiry date; change duration by modifying expiry date
 ignore:
-  SNYK-JAVA-ORGSPRINGFRAMEWORK-1009832:
-    - '*':
-        reason: byttes ut med mock-oauth2-server
-        expires: 2020-12-24T10:05:11.203Z
-  SNYK-JAVA-ORGGLASSFISHJERSEYMEDIA-595972:
-    - '*':
-        reason: byttes ut med mock-oauth2-server
-        expires: 2020-12-24T10:06:10.422Z
-  SNYK-JAVA-ORGAPACHETOMCATEMBED-1017119:
-    - '*':
-        reason: byttes ut med mock-oauth2-server
-        expires: 2020-12-24T10:06:29.112Z
   SNYK-JAVA-IONETTY-1042268:
     - '*':
-        reason: Ingen fix tilgjengelig for nå
-        expires: 2020-12-24T10:06:51.630Z
-  SNYK-JAVA-ORGECLIPSEJETTY-1047304:
-    - '*':
         reason: None Given
-        expires: 2021-01-01T13:57:07.543Z
+        expires: 2021-02-04T12:39:32.328Z
 patch: {}

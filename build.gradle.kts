@@ -14,7 +14,7 @@ val tokenSupportVersion = "1.3.1"
 val mockOAuth2ServerVersion = "0.2.1"
 val koinVersion = "2.0.1"
 val valiktorVersion = "0.12.0"
-val gcpStorageVersion = "1.36.0"
+val gcpStorageVersion = "1.113.6"
 val cxfVersion = "3.4.1"
 val jaxwsVersion = "2.3.1"
 

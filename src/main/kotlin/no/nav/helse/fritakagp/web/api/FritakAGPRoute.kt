@@ -14,6 +14,8 @@ import no.nav.helse.fritakagp.domain.SoeknadGravid
 import no.nav.helse.fritakagp.domain.decodeBase64File
 import no.nav.helse.fritakagp.gcp.BucketStorage
 import no.nav.helse.fritakagp.processing.gravid.SoeknadGravidProcessor
+import no.nav.helse.fritakagp.processing.kvittering.KvitteringJobData
+import no.nav.helse.fritakagp.processing.kvittering.KvitteringProcessor
 import no.nav.helse.fritakagp.virusscan.VirusScanner
 import no.nav.helse.fritakagp.web.api.resreq.GravideSoknadRequest
 import no.nav.helse.fritakagp.web.hentIdentitetsnummerFraLoginToken

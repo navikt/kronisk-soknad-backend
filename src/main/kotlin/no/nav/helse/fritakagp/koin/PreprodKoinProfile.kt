@@ -18,8 +18,6 @@ import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlClientImpl
 import no.nav.helse.fritakagp.db.GravidSoeknadRepository
 import no.nav.helse.fritakagp.db.PostgresGravidSoeknadRepository
 import no.nav.helse.fritakagp.db.createHikariConfig
-import no.nav.helse.fritakagp.gcp.BucketStorage
-import no.nav.helse.fritakagp.gcp.BucketStorageImp
 import no.nav.helse.fritakagp.integrasjon.rest.sts.configureFor
 import no.nav.helse.fritakagp.integrasjon.rest.sts.wsStsClient
 import no.nav.helse.fritakagp.gcp.BucketStorage
@@ -66,7 +64,7 @@ fun preprodConfig(config: ApplicationConfig) = module {
                 config.getString("service_user.username") to config.getString("service_user.password")
         )
         sts.configureFor(altinnMeldingWsClient)
-        altinnMeldingWsClient as ICorrespondenceAgencyExternalBasic
+        altinnMeldingWsClient
     }
     single {
         AltinnKvitteringSender(
@@ -104,5 +102,5 @@ fun Module.externalSystemClients(config: ApplicationConfig) {
     ) } bind VirusScanner::class
     single { BucketStorageImp() } bind BucketStorage::class
 }
-}
+
 

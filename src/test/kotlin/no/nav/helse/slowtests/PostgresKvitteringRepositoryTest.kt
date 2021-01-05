@@ -7,6 +7,7 @@ package no.nav.helse.slowtests
     import no.nav.helse.fritakagp.koin.common
     import no.nav.helse.fritakagp.processing.kvittering.Kvittering
     import no.nav.helse.fritakagp.processing.kvittering.KvitteringStatus
+    import no.nav.helse.slowtests.systemtests.api.SystemTestBase
     import org.assertj.core.api.Assertions.assertThat
     import org.flywaydb.core.Flyway
     import org.junit.jupiter.api.AfterEach
@@ -20,23 +21,15 @@ package no.nav.helse.slowtests
     import java.time.LocalDate
     import java.time.LocalDateTime
 
-    internal class PostgresKvitteringRepositoryTest : KoinComponent {
+    internal class PostgresKvitteringRepositoryTest : SystemTestBase() {
 
         lateinit var repo: PostgresKvitteringRepository
         lateinit var kvittering: Kvittering
 
         @BeforeEach
         internal fun setUp() {
-            startKoin {
-                loadKoinModules(common)
-
-            }
             val ds = HikariDataSource(createTestHikariConfig())
-            Flyway.configure()
-                    .baselineOnMigrate(true)
-                    .dataSource(ds)
-                    .load()
-                    .migrate()
+
             repo = PostgresKvitteringRepository(ds, get())
             kvittering = repo.insert(Kvittering(
                     tidspunkt = LocalDateTime.now(), id = TestData.soeknadGravid.id, virksomhetsnummer = TestData.soeknadGravid.orgnr.toString(), status = KvitteringStatus.OPPRETTET))
@@ -45,7 +38,6 @@ package no.nav.helse.slowtests
         @AfterEach
         internal fun tearDown() {
             repo.delete(kvittering.id)
-            stopKoin()
         }
 
 

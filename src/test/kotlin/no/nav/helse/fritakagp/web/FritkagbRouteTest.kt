@@ -15,7 +15,7 @@ import org.koin.ktor.ext.get
 class FritkagbRouteTest : ControllerIntegrationTestBase() {
     @KtorExperimentalAPI
     @Test
-    //@Disabled
+    @Disabled
     fun `Skjek soeknad uten fil`() {
         configuredTestApplication({
             fritakModule()
@@ -24,7 +24,7 @@ class FritkagbRouteTest : ControllerIntegrationTestBase() {
             doAuthenticatedRequest(HttpMethod.Post, "api/v1/gravid/soeknad") {
                 addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
                 setBody(
-                        om.writeValueAsString(TestData.soeknadGravid)
+                        om.writeValueAsString(TestData.fullValidRequest)
                 )
             }.apply {
                 Assertions.assertEquals(response.status(), HttpStatusCode.OK)
@@ -34,7 +34,7 @@ class FritkagbRouteTest : ControllerIntegrationTestBase() {
 
     @KtorExperimentalAPI
     @Test
-    @Disabled
+    //@Disabled
     fun `Skjek soeknad med fil`() {
         configuredTestApplication({
             fritakModule()

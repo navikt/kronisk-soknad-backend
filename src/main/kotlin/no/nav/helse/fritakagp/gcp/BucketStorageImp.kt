@@ -32,7 +32,7 @@ class MockBucketStorage() : BucketStorage {
     }
 }
 
-class BucketStorageImp(private val bucketName : String = "fritakagb-bucket"): BucketStorage  {
+class BucketStorageImp(private val bucketName : String = "helse-arbeidsgiver-fritakagb-bucket"): BucketStorage  {
     private val storage: Storage = StorageOptions.getDefaultInstance().service
     private val bucket : Bucket = storage.get(bucketName) ?: error("Bucket $bucketName eksistere ikke")
 

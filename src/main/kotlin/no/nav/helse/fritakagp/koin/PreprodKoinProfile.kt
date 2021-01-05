@@ -17,6 +17,8 @@ import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlClientImpl
 import no.nav.helse.fritakagp.db.GravidSoeknadRepository
 import no.nav.helse.fritakagp.db.PostgresGravidSoeknadRepository
 import no.nav.helse.fritakagp.db.createHikariConfig
+import no.nav.helse.fritakagp.gcp.BucketStorage
+import no.nav.helse.fritakagp.gcp.BucketStorageImp
 import no.nav.helse.fritakagp.processing.gravid.GravidSoeknadPDFGenerator
 import no.nav.helse.fritakagp.processing.gravid.SoeknadGravidProcessor
 import no.nav.helse.fritakagp.oauth2.DefaultOAuth2HttpClient
@@ -72,4 +74,5 @@ fun Module.externalSystemClients(config: ApplicationConfig) {
         get(),
         config.getString("clamav_url")
     ) } bind VirusScanner::class
+    single { BucketStorageImp() } bind BucketStorage::class
 }

@@ -134,7 +134,6 @@ fun Module.mockExternalDependecies() {
 
     single { MockVirusScanner() } bind VirusScanner::class
     single { MockBucketStorage() } bind BucketStorage::class
-
 }
 
 

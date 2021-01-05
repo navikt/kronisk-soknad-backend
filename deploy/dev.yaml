@@ -63,11 +63,20 @@ spec:
       value: https://helsearbeidsgiver-proxy.dev-fss-pub.nais.io/oppgave
     - name: PDL_URL
       value: https://helsearbeidsgiver-proxy.dev-fss-pub.nais.io/pdl
+    - name: CLAM_AV_URL
+      value: http://clamav.clamav.svc.cluster.local/scan
 
   gcp:
     sqlInstances:
       - type: POSTGRES_11
-        tier: db-g1-small
         databases:
           - name: fritakagp-db
             diskAutoresize: true
+    buckets:
+      - name: helse-arbeidsgiver-fritakagb-bucket
+        #retentionPeriodDays: 30
+         # lifecycleCondition:
+         # age: 7
+         # createdBefore: 2020-01-01
+         # numNewerVersions: 2
+        #  withState: ANY

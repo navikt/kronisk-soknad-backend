@@ -27,6 +27,10 @@ data class SoeknadGravid(
         var oppgaveId: String? = null
 )
 
+fun decodeBase64File(datafile: String): ByteArray {
+    return Base64.getDecoder().decode(datafile)
+}
+
 fun getTiltakValue(req : List<String>) : List<Tiltak> {
     return req.map { it -> Tiltak.valueOf(it.toUpperCase()) }
 }
@@ -58,4 +62,9 @@ enum class OmplasseringAarsak(val beskrivelse : String) {
     FAAR_IKKE_KONTAKT("Vi får ikke kontakt med den ansatte"),
     IKKE_ANDRE_OPPGAVER("Vi har ikke andre oppgaver eller arbeidssteder å tilby"),
     HELSETILSTANDEN("Den ansatte vil ikke fungere i en annen jobb på grunn av helsetilstanden")
+}
+enum class GodskjentFiletyper(val beskrivelse : String) {
+    PDF("pdf"),
+    JPEG("jpg"),
+    PNG("png")
 }

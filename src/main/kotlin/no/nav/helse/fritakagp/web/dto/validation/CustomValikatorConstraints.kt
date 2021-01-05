@@ -28,6 +28,12 @@ fun <E> Validator<E>.Property<String?>.isOmplasseringValgRiktig(omplassering : S
                 return@validate true
         }
 
+class FileSizeConstraints : CustomConstraint
+fun <E> Validator<E>.Property<String?>.isNotStorreEnn(maxSize : Long) =
+    this.validate(FileSizeConstraints()){
+        return@validate  it!!.toByteArray().size <= maxSize
+    }
+
 inline fun <reified T : Enum<T>> enumContains(name: String): Boolean {
     return enumValues<T>().any { it.name == name}
 }

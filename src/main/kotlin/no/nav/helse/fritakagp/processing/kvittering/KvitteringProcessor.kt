@@ -3,7 +3,6 @@ package no.nav.helse.fritakagp.processing.kvittering
 import com.fasterxml.jackson.databind.ObjectMapper
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbProsesserer
 import no.nav.helse.fritakagp.db.KvitteringRepository
-import no.nav.helse.fritakagp.kvittering.KvitteringSender
 import java.time.LocalDateTime
 import java.util.*
 

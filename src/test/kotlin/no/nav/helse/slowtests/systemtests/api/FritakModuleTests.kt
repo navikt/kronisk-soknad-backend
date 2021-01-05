@@ -29,4 +29,28 @@ class FritakModuleTests : SystemTestBase() {
 
         Assertions.assertThat(response.status).isEqualTo(HttpStatusCode.BadRequest)
     }
+
+    @Test
+    fun `Skal returnere Created ved feilfritt skjema uten fil`() = suspendableTest {
+        val response = httpClient.post<HttpResponse> {
+            appUrl(soeknadGravidUrl)
+            contentType(ContentType.Application.Json)
+            loggedInAs("123456789")
+            body = TestData.fullValidRequest
+        }
+
+        Assertions.assertThat(response.status).isEqualTo(HttpStatusCode.Created)
+    }
+
+    @Test
+    fun `Skal returnere Created når fil er vedlagt`() = suspendableTest {
+        val response = httpClient.post<HttpResponse> {
+            appUrl(soeknadGravidUrl)
+            contentType(ContentType.Application.Json)
+            loggedInAs("123456789")
+            body = TestData.gravidSoknadMedFil
+        }
+
+        Assertions.assertThat(response.status).isEqualTo(HttpStatusCode.Created)
+    }
 }

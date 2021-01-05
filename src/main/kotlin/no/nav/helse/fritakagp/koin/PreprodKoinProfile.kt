@@ -20,11 +20,15 @@ import no.nav.helse.fritakagp.db.PostgresGravidSoeknadRepository
 import no.nav.helse.fritakagp.db.createHikariConfig
 import no.nav.helse.fritakagp.integrasjon.rest.sts.configureFor
 import no.nav.helse.fritakagp.integrasjon.rest.sts.wsStsClient
+import no.nav.helse.fritakagp.gcp.BucketStorage
+import no.nav.helse.fritakagp.gcp.BucketStorageImp
 import no.nav.helse.fritakagp.processing.gravid.GravidSoeknadPDFGenerator
 import no.nav.helse.fritakagp.processing.gravid.SoeknadGravidProcessor
 import no.nav.helse.fritakagp.oauth2.DefaultOAuth2HttpClient
 import no.nav.helse.fritakagp.oauth2.TokenResolver
 import no.nav.helse.fritakagp.oauth2.OAuth2ClientPropertiesConfig
+import no.nav.helse.fritakagp.virusscan.ClamavVirusScannerImp
+import no.nav.helse.fritakagp.virusscan.VirusScanner
 import no.nav.security.token.support.client.core.oauth2.ClientCredentialsTokenClient
 import no.nav.security.token.support.client.core.oauth2.OAuth2AccessTokenService
 import no.nav.security.token.support.client.core.oauth2.OnBehalfOfTokenClient
@@ -60,7 +64,7 @@ fun preprodConfig(config: ApplicationConfig) = module {
                 config.getString("service_user.username") to config.getString("service_user.password")
         )
         sts.configureFor(altinnMeldingWsClient)
-        altinnMeldingWsClient as ICorrespondenceAgencyExternalBasic
+        altinnMeldingWsClient
     }
     single {
         AltinnKvitteringSender(
@@ -92,5 +96,11 @@ fun Module.externalSystemClients(config: ApplicationConfig) {
     single { PdlClientImpl(config.getString("pdl_url"), get(), get(), get()) } bind PdlClient::class
     single { DokarkivKlientImpl(config.getString("dokarkiv.base_url"), get(), get()) } bind DokarkivKlient::class
     single { OppgaveKlientImpl(config.getString("oppgavebehandling.url"), get(), get()) } bind OppgaveKlient::class
+    single { ClamavVirusScannerImp(
+        get(),
+        config.getString("clamav_url")
+    ) } bind VirusScanner::class
+    single { BucketStorageImp() } bind BucketStorage::class
 }
+
 

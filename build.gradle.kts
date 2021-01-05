@@ -14,6 +14,8 @@ val tokenSupportVersion = "1.3.1"
 val mockOAuth2ServerVersion = "0.2.1"
 val koinVersion = "2.0.1"
 val valiktorVersion = "0.12.0"
+val cxfVersion = "3.4.1"
+val jaxwsVersion = "2.3.1"
 
 val githubPassword: String by project
 
@@ -43,8 +45,9 @@ dependencies {
     implementation("io.netty:netty-codec-http:4.1.53.Final") // overstyrer transiente 4.1.51.Final gjennom ktor-server-netty
     implementation("junit:junit:4.13.1") // overstyrer transiente 4.12 gjennom koin-test
     implementation("org.apache.httpcomponents:httpclient:4.5.13") // overstyrer transiente 4.5.6 gjennom ktor-client-apache
-    implementation("org.eclipse.jetty:jetty-server:9.4.35.v20201120") // overstyrer
-    implementation("org.yaml:snakeyaml:1.26") //voerstyrer versjon 1.23 via githubjavafaker 1.02
+    implementation("org.eclipse.jetty:jetty-server:9.4.35.v20201120")
+    implementation("org.yaml:snakeyaml:1.26") //overstyrer versjon 1.23 via githubjavafaker 1.02
+    implementation("com.google.guava:guava:30.0-jre") //[Medium Severity][https://snyk.io/vuln/SNYK-JAVA-COMGOOGLEGUAVA-1015415] overstyrer versjon 29.0
     // -- end snyk fixes
 
 
@@ -98,6 +101,13 @@ dependencies {
 
     implementation("io.prometheus:simpleclient_common:$prometheusVersion")
     implementation("io.prometheus:simpleclient_hotspot:$prometheusVersion")
+
+//    implementation("javax.xml.ws:jaxws-api:$jaxwsVersion")
+    implementation("org.apache.cxf:cxf-rt-frontend-jaxws:$cxfVersion")
+//    implementation("org.apache.cxf:cxf-rt-features-logging:$cxfVersion")
+//   implementation("org.apache.cxf:cxf-rt-transports-http:$cxfVersion")
+    implementation("org.apache.cxf:cxf-rt-ws-security:$cxfVersion")
+
 
     testImplementation("org.koin:koin-test:$koinVersion")
     implementation("com.github.javafaker:javafaker:1.0.2") // flytt denne til test når generatorene ikke er nødvendige i prod-koden lenger

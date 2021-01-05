@@ -5,6 +5,7 @@ import io.ktor.config.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import io.ktor.util.*
+import kotlinx.coroutines.runBlocking
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbService
 import no.nav.helse.arbeidsgiver.kubernetes.KubernetesProbeManager
 import no.nav.helse.arbeidsgiver.kubernetes.LivenessComponent
@@ -86,7 +87,7 @@ class FritakAgpApplication(val port: Int = 8080) : KoinComponent {
     private fun migrateDatabase() {
         logger.info("Starter databasemigrering")
 
-        Flyway.configure()
+    Flyway.configure().baselineOnMigrate(true)
             .dataSource(GlobalContext.get().koin.get())
             .load()
             .migrate()
@@ -125,3 +126,4 @@ fun main() {
         logger.info("Avsluttet OK")
     })
 }
+

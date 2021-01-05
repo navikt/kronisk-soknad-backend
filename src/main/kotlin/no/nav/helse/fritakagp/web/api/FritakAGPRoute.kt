@@ -12,9 +12,11 @@ import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbRepository
 import no.nav.helse.fritakagp.db.GravidSoeknadRepository
 import no.nav.helse.fritakagp.domain.SoeknadGravid
 import no.nav.helse.fritakagp.processing.gravid.SoeknadGravidProcessor
+import no.nav.helse.fritakagp.processing.kvittering.KvitteringJobData
+import no.nav.helse.fritakagp.processing.kvittering.KvitteringProcessor
+import no.nav.helse.fritakagp.web.api.resreq.GravideSoknadRequest
 import no.nav.helse.fritakagp.web.hentIdentitetsnummerFraLoginToken
 import no.nav.helse.fritakagp.web.hentUtløpsdatoFraLoginToken
-import no.nav.helse.fritakagp.web.api.resreq.GravideSoknadRequest
 import org.slf4j.LoggerFactory
 import java.sql.SQLException
 import javax.sql.DataSource
@@ -62,6 +64,13 @@ fun Route.fritakAGP(
                                 data = om.writeValueAsString(SoeknadGravidProcessor.JobbData(soeknad.id)),
                                 type = SoeknadGravidProcessor.JOB_TYPE),
                             connection
+                        )
+                        bakgunnsjobbRepo.save(
+                                Bakgrunnsjobb(
+                                        maksAntallForsoek = 10,
+                                        data = om.writeValueAsString(KvitteringJobData(soeknad.id)),
+                                        type = KvitteringProcessor.JOB_TYPE),
+                                connection
                         )
                     }
 

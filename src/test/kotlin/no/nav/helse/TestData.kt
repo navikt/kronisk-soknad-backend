@@ -34,9 +34,7 @@ object TestData {
         datafil = null,
         ext = null
     )
-}
 
-object TestDataMedFil {
     val gravidSoknadMedFil = GravideSoknadRequest(
         orgnr = TestData.validOrgNr,
         fnr = TestData.validIdentitetsnummer,

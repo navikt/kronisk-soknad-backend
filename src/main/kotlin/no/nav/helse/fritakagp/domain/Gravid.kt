@@ -1,6 +1,5 @@
 package no.nav.helse.fritakagp.domain
 
-import java.io.File
 import java.time.LocalDateTime
 import java.util.*
 
@@ -25,13 +24,11 @@ data class SoeknadGravid(
         /**
          * ID fra oppgave etter opprettelse av oppgave
          */
-        var oppgaveId: String? = null,
+        var oppgaveId: String? = null
 )
 
-fun decodeBase64File(datafile : String, name : String, ext : String?): ByteArray {
-    val ff = File.createTempFile(name, ext)
-    ff.writeBytes(Base64.getDecoder().decode(datafile))
-    return ff.readBytes()
+fun decodeBase64File(datafile: String): ByteArray {
+    return Base64.getDecoder().decode(datafile)
 }
 
 fun getTiltakValue(req : List<String>) : List<Tiltak> {

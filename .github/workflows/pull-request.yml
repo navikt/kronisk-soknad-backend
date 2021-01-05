@@ -29,7 +29,7 @@ jobs:
       - name: compose up
         run: cd docker/local && docker-compose up -d && sleep 15
       - name: test and build
-        run: ./gradlew --console=plain build test slowTests jacocoTestReport
+        run: bash ./gradlew --console=plain test
         env:
           ORG_GRADLE_PROJECT_githubUser: x-access-token
           ORG_GRADLE_PROJECT_githubPassword: ${{ secrets.GITHUB_TOKEN }}
@@ -46,5 +46,5 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
           ORG_GRADLE_PROJECT_githubPassword: ${{ secrets.GITHUB_TOKEN }}
         with:
-          args: --configuration-matching=runtimeClasspath --fail-on=all
+          args: --fail-on=all
 

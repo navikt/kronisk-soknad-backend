@@ -7,21 +7,18 @@ import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.util.*
-import kotlinx.coroutines.runBlocking
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.Bakgrunnsjobb
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbRepository
 import no.nav.helse.fritakagp.db.GravidSoeknadRepository
 import no.nav.helse.fritakagp.domain.SoeknadGravid
 import no.nav.helse.fritakagp.domain.decodeBase64File
 import no.nav.helse.fritakagp.gcp.BucketStorage
-import no.nav.helse.fritakagp.gcp.BucketStorageImp
 import no.nav.helse.fritakagp.processing.gravid.SoeknadGravidProcessor
 import no.nav.helse.fritakagp.virusscan.VirusScanner
+import no.nav.helse.fritakagp.web.api.resreq.GravideSoknadRequest
 import no.nav.helse.fritakagp.web.hentIdentitetsnummerFraLoginToken
 import no.nav.helse.fritakagp.web.hentUtløpsdatoFraLoginToken
-import no.nav.helse.fritakagp.web.api.resreq.GravideSoknadRequest
 import org.slf4j.LoggerFactory
-import java.sql.SQLException
 import javax.sql.DataSource
 
 @KtorExperimentalAPI
@@ -32,6 +29,7 @@ fun Route.fritakAGP(
     om: ObjectMapper,
     virusScanner: VirusScanner,
     bucket: BucketStorage
+
 ) {
 
     val logger = LoggerFactory.getLogger("FritakAGP API")
@@ -61,32 +59,34 @@ fun Route.fritakAGP(
                 )
                 val filContext = request.datafil
                 val filExt = request.ext
-                try {
-                    filContext?.let {
-                        val vedlagteFil: ByteArray =
-                            decodeBase64File(it, request.fnr.plus("_").plus(request.orgnr), request.ext)
-                            if (!virusScanner.scanDoc(vedlagteFil)) {
-                                call.respond(HttpStatusCode.BadRequest)
-                                return@post
-                            }
-                            bucket.uploadDoc(soeknad.id, it, filExt!!)
-                    }
-                    datasource.connection.use { connection ->
-                        repo.insert(soeknad, connection)
-                        bakgunnsjobbRepo.save(
-                            Bakgrunnsjobb(
-                                maksAntallForsoek = 10,
-                                data = om.writeValueAsString(SoeknadGravidProcessor.JobbData(soeknad.id)),
-                                type = SoeknadGravidProcessor.JOB_TYPE),
-                            connection
-                        )
-                    }
 
-                    call.respond(HttpStatusCode.Created)
-                } catch (ex: SQLException) {
-                    logger.error(ex)
-                    call.respond(HttpStatusCode.UnprocessableEntity)
+                filContext?.let {
+                    if (!virusScanner.scanDoc(decodeBase64File(it))) {
+                        call.respond(HttpStatusCode.BadRequest)
+                        return@post
+                    }
+                    bucket.uploadDoc(soeknad.id, it, filExt!!)
                 }
+
+                datasource.connection.use { connection ->
+                    repo.insert(soeknad, connection)
+                    bakgunnsjobbRepo.save(
+                        Bakgrunnsjobb(
+                            maksAntallForsoek = 10,
+                            data = om.writeValueAsString(SoeknadGravidProcessor.JobbData(soeknad.id)),
+                            type = SoeknadGravidProcessor.JOB_TYPE),
+                        connection
+                    )
+                    bakgunnsjobbRepo.save(
+                            Bakgrunnsjobb(
+                                    maksAntallForsoek = 10,
+                                    data = om.writeValueAsString(KvitteringJobData(soeknad.id)),
+                                    type = KvitteringProcessor.JOB_TYPE),
+                            connection
+                    )
+                }
+
+                call.respond(HttpStatusCode.Created)
             }
         }
     }

@@ -1,14 +1,12 @@
 package no.nav.helse.fritakagp.web.api.resreq
 
 import no.nav.helse.arbeidsgiver.web.validation.isValidIdentitetsnummer
-import no.nav.helse.arbeidsgiver.web.validation.isValidOrganisasjonsnummer
 import no.nav.helse.fritakagp.domain.GodskjentFiletyper
+import no.nav.helse.arbeidsgiver.web.validation.isValidOrganisasjonsnummer
 import no.nav.helse.fritakagp.domain.Omplassering
+import no.nav.helse.fritakagp.web.dto.validation.isNotStorreEnn
 import no.nav.helse.fritakagp.domain.OmplasseringAarsak
 import no.nav.helse.fritakagp.domain.Tiltak
-import no.nav.helse.fritakagp.web.dto.validation.isNotStorreEnn
-import no.nav.helse.fritakagp.web.dto.validation.isOmplasseringValgRiktig
-import no.nav.helse.fritakagp.web.dto.validation.isTiltakValid
 import org.valiktor.functions.isInIgnoringCase
 import org.valiktor.functions.isNotEmpty
 import org.valiktor.functions.isNotNull
@@ -26,6 +24,7 @@ data class GravideSoknadRequest(
         val omplassering: Omplassering? = null,
         val omplasseringAarsak: OmplasseringAarsak? = null,
         val bekreftet: Boolean,
+
         val datafil : String?,
         val ext : String?
 ) {
@@ -33,10 +32,8 @@ data class GravideSoknadRequest(
         validate(this) {
             validate(GravideSoknadRequest::fnr).isValidIdentitetsnummer()
             validate(GravideSoknadRequest::bekreftet).isTrue()
+            validate(GravideSoknadRequest::orgnr).isValidOrganisasjonsnummer()
 
-            if (this@GravideSoknadRequest.orgnr.isNotEmpty()) {
-                validate(GravideSoknadRequest::orgnr).isValidOrganisasjonsnummer()
-            }
 
             if (this@GravideSoknadRequest.tilrettelegge) {
                 validate(GravideSoknadRequest::tiltak).isNotNull()
@@ -49,15 +46,14 @@ data class GravideSoknadRequest(
                 if (this@GravideSoknadRequest.omplassering == Omplassering.IKKE_MULIG) {
                     validate(GravideSoknadRequest::omplasseringAarsak).isNotNull()
                 }
+            }
 
-                if (!this@GravideSoknadRequest.datafil.isNullOrEmpty()){
-                    validate(GravideSoknadRequest::ext).isInIgnoringCase(GodskjentFiletyper.values().map { it -> it.name })
-                    validate(GravideSoknadRequest::datafil).isNotStorreEnn(10L * MB)
-                }
+            if (!this@GravideSoknadRequest.datafil.isNullOrEmpty()){
+                validate(GravideSoknadRequest::ext).isInIgnoringCase(GodskjentFiletyper.values().map { it -> it.name })
+                validate(GravideSoknadRequest::datafil).isNotStorreEnn(10L * MB)
             }
         }
     }
 }
 
-const val GB = 1024 * 1024 * 1024
 const val MB = 1024 * 1024

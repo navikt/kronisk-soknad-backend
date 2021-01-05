@@ -86,7 +86,7 @@ class FritakAgpApplication(val port: Int = 8080) : KoinComponent {
     private fun migrateDatabase() {
         logger.info("Starter databasemigrering")
 
-        Flyway.configure()
+    Flyway.configure().baselineOnMigrate(true)
             .dataSource(GlobalContext.get().koin.get())
             .load()
             .migrate()
@@ -125,3 +125,4 @@ fun main() {
         logger.info("Avsluttet OK")
     })
 }
+

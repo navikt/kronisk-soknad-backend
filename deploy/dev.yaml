@@ -35,14 +35,14 @@ spec:
       cpu: 400m
       memory: 200Mi
   leaderElection: false
-  tokenx:
-    enabled: true
+  azure:
+    application:
+      enabled: true
 
   accessPolicy:
     outbound:
       external:
         - host: helsearbeidsgiver-proxy.dev-fss-pub.nais.io
-        - host: helsearbeidsgiver-proxy.dev.adeo.no
 
       rules:
         - application: helsearbeidsgiver-proxy
@@ -58,18 +58,17 @@ spec:
     - name: KOIN_PROFILE
       value: PREPROD
     - name: DOKARKIV_URL
-      value: https://helsearbeidsgiver-proxy.dev.adeo.no/dokarkiv
+      value: https://helsearbeidsgiver-proxy.dev-fss-pub.nais.io/dokarkiv
     - name: OPPGAVEBEHANDLING_URL
-      value: https://helsearbeidsgiver-proxy.dev.adeo.no/oppgave
+      value: https://helsearbeidsgiver-proxy.dev-fss-pub.nais.io/oppgave
     - name: PDL_URL
-      value: https://helsearbeidsgiver-proxy.dev.adeo.no/pdl
+      value: https://helsearbeidsgiver-proxy.dev-fss-pub.nais.io/pdl
     - name: CLAM_AV_URL
       value: http://clamav.clamav.svc.cluster.local/scan
 
   gcp:
     sqlInstances:
       - type: POSTGRES_11
-        tier: db-g1-small
         databases:
           - name: fritakagp-db
             diskAutoresize: true

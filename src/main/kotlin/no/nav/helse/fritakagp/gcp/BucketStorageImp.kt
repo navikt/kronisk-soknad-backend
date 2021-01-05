@@ -11,8 +11,8 @@ import java.util.*
 
 interface BucketStorage {
     fun uploadDoc(uuid: UUID, filContent : String, filExt : String)
-    fun getDocAsString(uuid: String, path: String) : BucketDocument
-    fun deleteDoc(uuid : String)
+    fun getDocAsString(uuid: UUID, path: String) : BucketDocument
+    fun deleteDoc(uuid : UUID)
 }
 data class BucketDocument(val base64Data :String, val extension: String)
 
@@ -23,11 +23,11 @@ class MockBucketStorage() : BucketStorage {
         items[uuid.toString()] = BucketDocument(filContent,filExt)
     }
 
-    override fun getDocAsString(uuid: String, path: String) : BucketDocument {
+    override fun getDocAsString(uuid: UUID, path: String) : BucketDocument {
         return items.getOrDefault(uuid, default)
     }
 
-    override fun deleteDoc(uuid : String) {
+    override fun deleteDoc(uuid : UUID) {
         items.remove(uuid)
     }
 }

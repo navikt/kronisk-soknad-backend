@@ -51,6 +51,7 @@ enum class OmplasseringAarsak(val beskrivelse : String) {
 }
 enum class GodskjentFiletyper(val beskrivelse : String) {
     PDF("pdf"),
-    JPEG("jpg"),
+    JPEG("jpeg"),
+    JPG("jpg"),
     PNG("png")
 }

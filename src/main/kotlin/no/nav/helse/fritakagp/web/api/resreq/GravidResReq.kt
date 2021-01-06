@@ -7,6 +7,8 @@ import no.nav.helse.fritakagp.domain.Omplassering
 import no.nav.helse.fritakagp.web.dto.validation.isNotStorreEnn
 import no.nav.helse.fritakagp.domain.OmplasseringAarsak
 import no.nav.helse.fritakagp.domain.Tiltak
+import no.nav.helse.fritakagp.gcp.BucketDocument
+import no.nav.helse.fritakagp.web.dto.validation.isGodskjentFiletyper
 import org.valiktor.functions.isInIgnoringCase
 import org.valiktor.functions.isNotEmpty
 import org.valiktor.functions.isNotNull
@@ -14,19 +16,18 @@ import org.valiktor.functions.isTrue
 import org.valiktor.validate
 
 data class GravideSoknadRequest(
-        val orgnr: String,
-        val fnr: String,
-        val tilrettelegge: Boolean,
+    val orgnr: String,
+    val fnr: String,
+    val tilrettelegge: Boolean,
 
-        val tiltak: List<Tiltak>? = null,
-        val tiltakBeskrivelse: String? = null,
+    val tiltak: List<Tiltak>? = null,
+    val tiltakBeskrivelse: String? = null,
 
-        val omplassering: Omplassering? = null,
-        val omplasseringAarsak: OmplasseringAarsak? = null,
-        val bekreftet: Boolean,
+    val omplassering: Omplassering? = null,
+    val omplasseringAarsak: OmplasseringAarsak? = null,
+    val bekreftet: Boolean,
 
-        val datafil : String?,
-        val ext : String?
+    val dokumentasjon : String?
 ) {
     init {
         validate(this) {
@@ -48,9 +49,9 @@ data class GravideSoknadRequest(
                 }
             }
 
-            if (!this@GravideSoknadRequest.datafil.isNullOrEmpty()){
-                validate(GravideSoknadRequest::ext).isInIgnoringCase(GodskjentFiletyper.values().map { it -> it.name })
-                validate(GravideSoknadRequest::datafil).isNotStorreEnn(10L * MB)
+            if (!this@GravideSoknadRequest.dokumentasjon.isNullOrEmpty()){
+                validate(GravideSoknadRequest::dokumentasjon).isGodskjentFiletyper()
+                validate(GravideSoknadRequest::dokumentasjon).isNotStorreEnn(10L * MB)
             }
         }
     }

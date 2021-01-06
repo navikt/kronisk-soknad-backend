@@ -18,6 +18,8 @@ import no.nav.helse.fritakagp.processing.kvittering.KvitteringJobData
 import no.nav.helse.fritakagp.processing.kvittering.KvitteringProcessor
 import no.nav.helse.fritakagp.virusscan.VirusScanner
 import no.nav.helse.fritakagp.web.api.resreq.GravideSoknadRequest
+import no.nav.helse.fritakagp.web.dto.validation.extractBase64Del
+import no.nav.helse.fritakagp.web.dto.validation.extractFilExtDel
 import no.nav.helse.fritakagp.web.hentIdentitetsnummerFraLoginToken
 import no.nav.helse.fritakagp.web.hentUtløpsdatoFraLoginToken
 import org.slf4j.LoggerFactory
@@ -59,15 +61,15 @@ fun Route.fritakAGP(
                         tiltak = request.tiltak,
                         tiltakBeskrivelse = request.tiltakBeskrivelse
                 )
-                val filContext = request.datafil
-                val filExt = request.ext
 
-                filContext?.let {
-                    if (!virusScanner.scanDoc(decodeBase64File(it))) {
+                if (!request.dokumentasjon.isNullOrEmpty()) {
+                    val filContext = extractBase64Del(request.dokumentasjon)
+                    val filExt = extractFilExtDel(request.dokumentasjon)
+                    if (!virusScanner.scanDoc(decodeBase64File(filContext))) {
                         call.respond(HttpStatusCode.BadRequest)
                         return@post
                     }
-                    bucket.uploadDoc(soeknad.id, it, filExt!!)
+                    bucket.uploadDoc(soeknad.id, filContext, filExt!!)
                 }
 
                 datasource.connection.use { connection ->

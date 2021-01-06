@@ -4,14 +4,13 @@ import com.google.cloud.storage.Bucket
 import com.google.cloud.storage.Storage
 import com.google.cloud.storage.StorageOptions
 import com.google.cloud.storage.BlobInfo
-import com.google.cloud.storage.Blob
-import java.nio.ByteBuffer
 import com.google.cloud.storage.BlobId
+import java.nio.file.Paths
 import java.util.*
 
 interface BucketStorage {
     fun uploadDoc(uuid: UUID, filContent : String, filExt : String)
-    fun getDocAsString(uuid: UUID, path: String) : BucketDocument
+    fun getDocAsString(uuid: UUID) : BucketDocument
     fun deleteDoc(uuid : UUID)
 }
 data class BucketDocument(val base64Data :String, val extension: String)
@@ -23,7 +22,7 @@ class MockBucketStorage() : BucketStorage {
         items[uuid.toString()] = BucketDocument(filContent,filExt)
     }
 
-    override fun getDocAsString(uuid: UUID, path: String) : BucketDocument {
+    override fun getDocAsString(uuid: UUID) : BucketDocument {
         return items.getOrDefault(uuid, default)
     }
 
@@ -32,37 +31,39 @@ class MockBucketStorage() : BucketStorage {
     }
 }
 
-class BucketStorageImp(private val bucketName : String = "helse-arbeidsgiver-fritakagb-bucket"): BucketStorage  {
-    private val storage: Storage = StorageOptions.getDefaultInstance().service
+class BucketStorageImp(private val bucketName : String = "helse-arbeidsgiver-fritakagb-bucket",
+                       private val gcpPrjID: String): BucketStorage  {
+    private val storage: Storage = StorageOptions.newBuilder().setProjectId(gcpPrjID).build().service
     private val bucket : Bucket = storage.get(bucketName) ?: error("Bucket $bucketName eksistere ikke")
 
     override fun uploadDoc(uuid: UUID, filContent : String, filExt : String) {
-        val blob = createBlob(bucketName, uuid, filExt)
-        blob.writer().use {
-            writer -> writer.write(ByteBuffer.wrap(filContent.toByteArray()))
-        }
+        storage.create(createBlob(bucketName, uuid, filExt),
+                       filContent.toByteArray())
     }
 
-    override fun getDocAsString(uuid: UUID, path: String) : BucketDocument {
+    override fun getDocAsString(uuid: UUID) : BucketDocument {
         val blob = bucket.get(uuid.toString()) ?: error("Object $uuid eksistere ikke")
         val blobMeta = blob.metadata
         val ext = blobMeta["ext"] ?: ""
 
-        return BucketDocument(blob.getContent().toString(), ext)
+        return BucketDocument(blob.getContent().decodeToString(), ext)
     }
 
+    fun getDocAsFile(uuid: UUID, destFilePath: String) {
+        val blob = storage[BlobId.of(bucketName, uuid.toString())]
+        blob.downloadTo(Paths.get(destFilePath))
+    }
 
     override fun deleteDoc(uuid : UUID) {
         val blob = bucket.get(uuid.toString()) ?: error("Object/fil $uuid eksistere ikke")
         blob.delete()
     }
 
-    private fun createBlob(bucketName: String, blobName: UUID, ext : String): Blob {
+    private fun createBlob(bucketName: String, blobName: UUID, ext : String): BlobInfo {
         val blobMetadata: MutableMap<String, String> = HashMap()
         blobMetadata["ext"] = ext
         val blobId = BlobId.of(bucketName, blobName.toString())
-        val blobInfo = BlobInfo.newBuilder(blobId).setMetadata(blobMetadata).build()
 
-        return storage.create(blobInfo)
+        return  BlobInfo.newBuilder(blobId).setMetadata(blobMetadata).build()
     }
 }

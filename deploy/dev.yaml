@@ -65,6 +65,10 @@ spec:
       value: https://helsearbeidsgiver-proxy.dev-fss-pub.nais.io/pdl
     - name: CLAM_AV_URL
       value: http://clamav.clamav.svc.cluster.local/scan
+    - name: GCP_PRJ_ID
+      value: helsearbeidsgiver-dev-6d06
+    - name: GCP_BUCKET_NAME
+      value: helse-arbeidsgiver-fritakagb-bucket
 
   gcp:
     sqlInstances:

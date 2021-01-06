@@ -16,5 +16,8 @@ fun prodConfig(config: ApplicationConfig) = module {
         get(),
         config.getString("clamav_url")
     ) } bind VirusScanner::class
-    single { BucketStorageImp() } bind BucketStorage::class
+    single { BucketStorageImp(
+        config.getString("gcp_bucket_name"),
+        config.getString("gcp_prjId")
+    ) } bind BucketStorage::class
 }

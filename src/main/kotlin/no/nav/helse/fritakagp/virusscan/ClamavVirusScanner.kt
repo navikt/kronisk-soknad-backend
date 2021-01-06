@@ -33,9 +33,6 @@ class ClamavVirusScannerImp(private val httpClient: HttpClient, private val scan
         val scanResult = httpClient.request<ScanResult> {
             url(scanUrl)
             method = HttpMethod.Post
-            headers {
-                append("Content-Type", "multipart/form-data")
-            }
             body = MultiPartFormDataContent(
                     formData {
                         append("file1",

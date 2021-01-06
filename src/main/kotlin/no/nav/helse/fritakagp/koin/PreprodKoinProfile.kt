@@ -57,7 +57,7 @@ fun preprodConfig(config: ApplicationConfig) = module {
     single { SoeknadGravidProcessor(get(), get(), get(), get(), GravidSoeknadPDFGenerator(), get()) }
     single {
         val altinnMeldingWsClient = Clients.iCorrespondenceExternalBasic(
-            config.getString("altinn_melding.pep_gw_endpoint")
+            config.getString("altinn_melding.altinn_endpoint")
         )
 
         altinnMeldingWsClient

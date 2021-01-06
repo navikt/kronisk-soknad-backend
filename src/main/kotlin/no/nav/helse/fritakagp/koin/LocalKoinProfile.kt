@@ -31,6 +31,6 @@ fun localDevConfig(config: ApplicationConfig) = module {
     single { SoeknadGravidProcessor(get(), get(), get(), get(), GravidSoeknadPDFGenerator(), get())}
 
     single { PostgresKvitteringRepository(get(), get()) } bind KvitteringRepository::class
-    single { DummyKvitteringSender() }
+    single { DummyKvitteringSender() } bind KvitteringSender::class
     single { KvitteringProcessor(get(), get(), get())}
 }

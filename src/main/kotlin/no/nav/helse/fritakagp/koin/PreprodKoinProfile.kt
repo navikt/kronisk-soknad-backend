@@ -77,7 +77,7 @@ fun preprodConfig(config: ApplicationConfig) = module {
             config.getString("altinn_melding.password"),
             get()
         )
-    }
+    } bind KvitteringSender::class
 
     single { KvitteringProcessor(get(), get(), get()) }
 }

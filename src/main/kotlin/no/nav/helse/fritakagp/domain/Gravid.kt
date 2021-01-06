@@ -31,20 +31,6 @@ fun decodeBase64File(datafile: String): ByteArray {
     return Base64.getDecoder().decode(datafile)
 }
 
-fun getTiltakValue(req : List<String>) : List<Tiltak> {
-    return req.map { it -> Tiltak.valueOf(it.toUpperCase()) }
-}
-
-fun getTiltakBeskrivelse(req : List<String>) : List<String> {
-    return req.map { it -> Tiltak.valueOf(it.toUpperCase()).beskrivelse }
-}
-fun getOmplasseringValue(req : String) : OmplasseringAarsak {
-    return OmplasseringAarsak.valueOf(req.toUpperCase())
-}
-fun getOmplasseringBeskrivelse(req : String) : String {
-    return OmplasseringAarsak.valueOf(req.toUpperCase()).beskrivelse
-}
-
 enum class Omplassering(val beskrivelse: String) {
     JA("Ja"),
     NEI("Nei"),

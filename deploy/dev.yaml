@@ -43,6 +43,7 @@ spec:
     outbound:
       external:
         - host: helsearbeidsgiver-proxy.dev-fss-pub.nais.io
+        - host: tt02.altinn.no
 
       rules:
         - application: helsearbeidsgiver-proxy

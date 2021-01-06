@@ -56,14 +56,12 @@ fun preprodConfig(config: ApplicationConfig) = module {
 
     single { SoeknadGravidProcessor(get(), get(), get(), get(), GravidSoeknadPDFGenerator(), get()) }
     single { Clients.iCorrespondenceExternalBasic(config.getString("altinn_melding.altinn_endpoint")) }
-    single { PostgresKvitteringRepository(get(), get()) } bind KvitteringRepository::class
     single {
         AltinnKvitteringSender(
             AltinnKvitteringMapper(config.getString("altinn_melding.service_id")),
             get(),
             config.getString("altinn_melding.username"),
-            config.getString("altinn_melding.password"),
-            get()
+            config.getString("altinn_melding.password")
         )
     } bind KvitteringSender::class
 

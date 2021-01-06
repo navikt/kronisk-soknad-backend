@@ -1,1 +1,1 @@
-DROP table kvittering;
+DROP table if EXISTS kvittering;

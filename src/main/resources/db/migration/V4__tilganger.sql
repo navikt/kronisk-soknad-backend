@@ -5,7 +5,7 @@ DO $$
         THEN
             GRANT ALL PRIVILEGES ON TABLE public.bakgrunnsjobb TO cloudsqliamuser;
             GRANT ALL PRIVILEGES ON TABLE public.flyway_schema_history TO cloudsqliamuser;
-            GRANT ALL PRIVILEGES ON TABLE public.kvittering TO cloudsqliamuser;
+            GRANT ALL PRIVILEGES ON TABLE public.soeknadgravid TO cloudsqliamuser;
             alter default privileges in schema public grant all on tables to cloudsqliamuser;
         END IF ;
     END

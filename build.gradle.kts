@@ -17,6 +17,7 @@ val valiktorVersion = "0.12.0"
 val gcpStorageVersion = "1.113.6"
 val cxfVersion = "3.4.1"
 val jaxwsVersion = "2.3.1"
+val jaxwsToolsVersion = "2.3.3"
 
 val githubPassword: String by project
 
@@ -103,12 +104,15 @@ dependencies {
     implementation("io.prometheus:simpleclient_common:$prometheusVersion")
     implementation("io.prometheus:simpleclient_hotspot:$prometheusVersion")
 
-//    implementation("javax.xml.ws:jaxws-api:$jaxwsVersion")
+    implementation("javax.xml.ws:jaxws-api:$jaxwsVersion")
     implementation("org.apache.cxf:cxf-rt-frontend-jaxws:$cxfVersion")
 //    implementation("org.apache.cxf:cxf-rt-features-logging:$cxfVersion")
 //   implementation("org.apache.cxf:cxf-rt-transports-http:$cxfVersion")
     implementation("org.apache.cxf:cxf-rt-ws-security:$cxfVersion")
-
+    implementation("com.sun.activation:javax.activation:1.2.0")
+    implementation("com.sun.xml.ws:jaxws-tools:$jaxwsToolsVersion") {
+        exclude(group = "com.sun.xml.ws", module = "policy")
+    }
 
     testImplementation("org.koin:koin-test:$koinVersion")
     implementation("com.github.javafaker:javafaker:1.0.2") // flytt denne til test når generatorene ikke er nødvendige i prod-koden lenger

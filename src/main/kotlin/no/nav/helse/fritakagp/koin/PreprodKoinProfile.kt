@@ -55,13 +55,7 @@ fun preprodConfig(config: ApplicationConfig) = module {
     single { BakgrunnsjobbService(get()) }
 
     single { SoeknadGravidProcessor(get(), get(), get(), get(), GravidSoeknadPDFGenerator(), get()) }
-    single {
-        val altinnMeldingWsClient = Clients.iCorrespondenceExternalBasic(
-            config.getString("altinn_melding.altinn_endpoint")
-        )
-
-        altinnMeldingWsClient
-    }
+    single { Clients.iCorrespondenceExternalBasic(config.getString("altinn_melding.altinn_endpoint")) }
     single { PostgresKvitteringRepository(get(), get()) } bind KvitteringRepository::class
     single {
         AltinnKvitteringSender(
@@ -102,10 +96,12 @@ fun Module.externalSystemClients(config: ApplicationConfig) {
             config.getString("clamav_url")
         )
     } bind VirusScanner::class
-    single { BucketStorageImp(
-        config.getString("gcp_bucket_name"),
-        config.getString("gcp_prjId")
-    ) } bind BucketStorage::class
+    single {
+        BucketStorageImp(
+            config.getString("gcp_bucket_name"),
+            config.getString("gcp_prjId")
+        )
+    } bind BucketStorage::class
 }
 
 

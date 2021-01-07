@@ -3,7 +3,6 @@ package no.nav.helse.fritakagp.koin
 import com.zaxxer.hikari.HikariDataSource
 import io.ktor.config.*
 import io.ktor.util.*
-import no.altinn.services.serviceengine.correspondence._2009._10.ICorrespondenceAgencyExternalBasic
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbRepository
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbService
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.PostgresBakgrunnsjobbRepository
@@ -17,7 +16,7 @@ import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlClient
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlClientImpl
 import no.nav.helse.fritakagp.db.*
 import no.nav.helse.fritakagp.gcp.BucketStorage
-import no.nav.helse.fritakagp.gcp.BucketStorageImp
+import no.nav.helse.fritakagp.gcp.BucketStorageImpl
 import no.nav.helse.fritakagp.processing.gravid.GravidSoeknadPDFGenerator
 import no.nav.helse.fritakagp.processing.gravid.SoeknadGravidProcessor
 import no.nav.helse.fritakagp.oauth2.DefaultOAuth2HttpClient
@@ -54,7 +53,7 @@ fun preprodConfig(config: ApplicationConfig) = module {
     single { PostgresBakgrunnsjobbRepository(get()) } bind BakgrunnsjobbRepository::class
     single { BakgrunnsjobbService(get()) }
 
-    single { SoeknadGravidProcessor(get(), get(), get(), get(), GravidSoeknadPDFGenerator(), get()) }
+    single { SoeknadGravidProcessor(get(), get(), get(), get(), GravidSoeknadPDFGenerator(), get(), get()) }
     single { Clients.iCorrespondenceExternalBasic(config.getString("altinn_melding.altinn_endpoint")) }
     single {
         AltinnKvitteringSender(
@@ -95,7 +94,7 @@ fun Module.externalSystemClients(config: ApplicationConfig) {
         )
     } bind VirusScanner::class
     single {
-        BucketStorageImp(
+        BucketStorageImpl(
             config.getString("gcp_bucket_name"),
             config.getString("gcp_prjId")
         )

@@ -11,20 +11,26 @@ import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlClient
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlIdent
 import no.nav.helse.fritakagp.db.GravidSoeknadRepository
 import no.nav.helse.fritakagp.domain.SoeknadGravid
+import no.nav.helse.fritakagp.gcp.BucketStorage
+import no.nav.security.mock.oauth2.http.objectMapper
 import org.slf4j.LoggerFactory
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
 
 class SoeknadGravidProcessor(
-        private val gravidSoeknadRepo: GravidSoeknadRepository,
-        private val dokarkivKlient: DokarkivKlient,
-        private val oppgaveKlient: OppgaveKlient,
-        private val pdlClient: PdlClient,
-        private val pdfGenerator: GravidSoeknadPDFGenerator,
-        private val om: ObjectMapper
+    private val gravidSoeknadRepo: GravidSoeknadRepository,
+    private val dokarkivKlient: DokarkivKlient,
+    private val oppgaveKlient: OppgaveKlient,
+    private val pdlClient: PdlClient,
+    private val pdfGenerator: GravidSoeknadPDFGenerator,
+    private val om: ObjectMapper,
+    private val bucketStorage: BucketStorage
 ) : BakgrunnsjobbProsesserer {
-    companion object { val JOB_TYPE = "PROC_GRAVID" }
+    companion object {
+        val JOB_TYPE = "PROC_GRAVID"
+        val dokumentasjonBrevkode = "soeknad_om_fritak_fra_agp_dokumentasjon"
+    }
 
     val digitalSoeknadBehandingsType = "ae0227"
     val fritakAGPBehandingsTema = "ab0338"
@@ -42,12 +48,14 @@ class SoeknadGravidProcessor(
     override fun prosesser(jobbDataString: String) {
         val jobbData = om.readValue<JobbData>(jobbDataString)
         val soeknad = gravidSoeknadRepo.getById(jobbData.id)
-        requireNotNull(soeknad, {"Jobben indikerte en søknad med id $jobbData men den kunne ikke finnes"})
+        requireNotNull(soeknad, { "Jobben indikerte en søknad med id $jobbData men den kunne ikke finnes" })
 
         try {
             if (soeknad.journalpostId == null) {
                 soeknad.journalpostId = journalfør(soeknad)
             }
+
+            bucketStorage.deleteDoc(soeknad.id)
 
             if (soeknad.oppgaveId == null) {
                 soeknad.oppgaveId = opprettOppgave(soeknad)
@@ -67,8 +75,7 @@ class SoeknadGravidProcessor(
     }
 
     fun journalfør(soeknad: SoeknadGravid): String {
-        val journalfoeringsTittel = "Søknad om fritak fra arbeidsgiverperioden ifbm sykedom"
-        val base64EnkodetPdf = Base64.getEncoder().encodeToString(pdfGenerator.lagPDF(soeknad))
+        val journalfoeringsTittel = "Søknad om fritak fra arbeidsgiverperioden ifbm graviditet"
         val pdlResponse = pdlClient.personNavn(soeknad.sendtAv)?.navn?.firstOrNull()
         val innsenderNavn = if (pdlResponse != null) "${pdlResponse.fornavn} ${pdlResponse.etternavn}" else "Ukjent"
 
@@ -84,17 +91,7 @@ class SoeknadGravidProcessor(
                     idType = IdType.FNR,
                     navn = innsenderNavn
                 ),
-                dokumenter = listOf(
-                    Dokument(
-                    dokumentVarianter = listOf(
-                        DokumentVariant(
-                        fysiskDokument = base64EnkodetPdf
-                    )
-                    ),
-                    brevkode = "soeknad_om_fritak_fra_agp",
-                    tittel = journalfoeringsTittel,
-                )
-                ),
+                dokumenter = createDocuments(soeknad, journalfoeringsTittel),
                 datoMottatt = soeknad.opprettet.toLocalDate()
             ), true, UUID.randomUUID().toString()
 
@@ -102,6 +99,43 @@ class SoeknadGravidProcessor(
 
         log.debug("Journalført ${soeknad.id} med ref ${response.journalpostId}")
         return response.journalpostId
+    }
+
+    private fun createDocuments(
+        soeknad: SoeknadGravid,
+        journalfoeringsTittel: String
+    ): List<Dokument> {
+        val base64EnkodetPdf = Base64.getEncoder().encodeToString(pdfGenerator.lagPDF(soeknad))
+
+
+        val dokumentListe = mutableListOf(
+            Dokument(
+                dokumentVarianter = listOf(
+                    DokumentVariant(
+                        fysiskDokument = base64EnkodetPdf
+                    )
+                ),
+                brevkode = "soeknad_om_fritak_fra_agp",
+                tittel = journalfoeringsTittel,
+            )
+        )
+
+        bucketStorage.getDocAsString(soeknad.id)?.let {
+            dokumentListe.add(
+                Dokument(
+                    dokumentVarianter = listOf(
+                        DokumentVariant(
+                            fysiskDokument = it.base64Data,
+                            filtype = if (it.extension == "jpg") "jpeg" else it.extension
+                        )
+                    ),
+                    brevkode = Companion.dokumentasjonBrevkode,
+                    tittel = "Helsedokumentasjon",
+                )
+            )
+        }
+
+        return dokumentListe
     }
 
     fun opprettOppgave(soeknad: SoeknadGravid): String {

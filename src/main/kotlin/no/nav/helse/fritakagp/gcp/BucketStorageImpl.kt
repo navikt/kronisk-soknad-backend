@@ -47,7 +47,7 @@ class BucketStorageImpl(
     }
 
     override fun getDocAsString(uuid: UUID): BucketDocument? {
-        val blob = bucket.get(uuid.toString()) ?: return null
+        val blob = storage[BlobId.of(bucketName, uuid.toString())] ?: return null
         val blobMeta = blob.metadata
         val ext = blobMeta["ext"] ?: ""
 

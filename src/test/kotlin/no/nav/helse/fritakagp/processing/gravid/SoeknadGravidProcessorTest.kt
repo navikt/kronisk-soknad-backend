@@ -69,7 +69,7 @@ class SoeknadGravidProcessorTest {
     @Test
     fun `Om det finnes ekstra dokumentasjon skal den journalføres og så slettes`() {
         val dokumentData = "test"
-        val filtype = "PDF"
+        val filtype = "pdf"
         every { bucketStorageMock.getDocAsString(soeknad.id) } returns BucketDocument(dokumentData, filtype)
 
         val joarkRequest = slot<JournalpostRequest>()
@@ -84,7 +84,7 @@ class SoeknadGravidProcessorTest {
         val dokumentasjon = joarkRequest.captured.dokumenter.filter { it.brevkode == SoeknadGravidProcessor.dokumentasjonBrevkode }.first()
 
         assertThat(dokumentasjon.dokumentVarianter[0].fysiskDokument).isEqualTo(dokumentData)
-        assertThat(dokumentasjon.dokumentVarianter[0].filtype).isEqualTo(filtype)
+        assertThat(dokumentasjon.dokumentVarianter[0].filtype).isEqualTo(filtype.toUpperCase())
     }
 
     @Test

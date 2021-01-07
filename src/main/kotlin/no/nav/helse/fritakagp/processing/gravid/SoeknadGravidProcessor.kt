@@ -126,7 +126,7 @@ class SoeknadGravidProcessor(
                     dokumentVarianter = listOf(
                         DokumentVariant(
                             fysiskDokument = it.base64Data,
-                            filtype = if (it.extension == "jpg") "jpeg" else it.extension
+                            filtype = if (it.extension == "jpg") "JPEG" else it.extension.toUpperCase()
                         )
                     ),
                     brevkode = Companion.dokumentasjonBrevkode,

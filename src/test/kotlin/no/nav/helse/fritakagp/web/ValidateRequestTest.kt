@@ -4,7 +4,7 @@ import no.nav.helse.TestData
 import no.nav.helse.fritakagp.domain.Omplassering
 import no.nav.helse.fritakagp.domain.OmplasseringAarsak
 import no.nav.helse.fritakagp.domain.Tiltak
-import no.nav.helse.fritakagp.web.api.resreq.GravideSoknadRequest
+import no.nav.helse.fritakagp.web.api.resreq.GravidSoknadRequest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -22,21 +22,21 @@ class ValidateRequestTest {
 
     @Test
     internal fun `Gyldig FNR er påkrevd`() {
-        validationShouldFailFor(GravideSoknadRequest::fnr) {
+        validationShouldFailFor(GravidSoknadRequest::fnr) {
             TestData.fullValidRequest.copy(fnr = "01020312345")
         }
     }
 
     @Test
     internal fun `Gyldig OrgNr er påkrevd dersom det er oppgitt`() {
-        validationShouldFailFor(GravideSoknadRequest::orgnr) {
+        validationShouldFailFor(GravidSoknadRequest::orgnr) {
             TestData.fullValidRequest.copy(orgnr = "098765432")
         }
     }
 
     @Test
     fun `Når tiltak inneholder ANNET må tiltaksbeskrivelse ha innhold`() {
-        validationShouldFailFor(GravideSoknadRequest::tiltakBeskrivelse) {
+        validationShouldFailFor(GravidSoknadRequest::tiltakBeskrivelse) {
             TestData.fullValidRequest.copy(
                 tiltak = listOf(Tiltak.ANNET),
                 tiltakBeskrivelse = "",
@@ -59,14 +59,14 @@ class ValidateRequestTest {
 
     @Test
     internal fun `Bekreftelse av egenerklæring er påkrevd`() {
-        validationShouldFailFor(GravideSoknadRequest::bekreftet) {
+        validationShouldFailFor(GravidSoknadRequest::bekreftet) {
             TestData.fullValidRequest.copy(bekreftet = false)
         }
     }
 
     @Test
     fun `Dersom omplassering ikke er mulig må det finnes en årsak`() {
-        validationShouldFailFor(GravideSoknadRequest::omplasseringAarsak) {
+        validationShouldFailFor(GravidSoknadRequest::omplasseringAarsak) {
             TestData.fullValidRequest.copy(
                 omplassering = Omplassering.IKKE_MULIG,
                 omplasseringAarsak = null

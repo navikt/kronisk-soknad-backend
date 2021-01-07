@@ -3,7 +3,6 @@ package no.nav.helse.fritakagp.koin
 import com.zaxxer.hikari.HikariDataSource
 import io.ktor.config.*
 import io.ktor.util.*
-import no.altinn.services.serviceengine.correspondence._2009._10.ICorrespondenceAgencyExternalBasic
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbRepository
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbService
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.PostgresBakgrunnsjobbRepository

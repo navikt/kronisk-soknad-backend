@@ -4,8 +4,7 @@ import no.nav.helse.fritakagp.domain.Omplassering
 import no.nav.helse.fritakagp.domain.OmplasseringAarsak
 import no.nav.helse.fritakagp.domain.SoeknadGravid
 import no.nav.helse.fritakagp.domain.Tiltak
-import no.nav.helse.fritakagp.web.api.resreq.GravideSoknadRequest
-import java.time.LocalDate
+import no.nav.helse.fritakagp.web.api.resreq.GravidSoknadRequest
 
 object TestData {
     val validIdentitetsnummer = "20015001543"
@@ -22,7 +21,7 @@ object TestData {
         sendtAv = "09876543210"
     )
 
-    val fullValidRequest = GravideSoknadRequest(
+    val fullValidRequest = GravidSoknadRequest(
         orgnr = validOrgNr,
         fnr = validIdentitetsnummer,
         tilrettelegge = true,
@@ -35,7 +34,7 @@ object TestData {
         ext = null
     )
 
-    val gravidSoknadMedFil = GravideSoknadRequest(
+    val gravidSoknadMedFil = GravidSoknadRequest(
         orgnr = TestData.validOrgNr,
         fnr = TestData.validIdentitetsnummer,
         tilrettelegge = true,

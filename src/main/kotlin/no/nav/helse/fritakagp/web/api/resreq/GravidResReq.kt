@@ -13,7 +13,7 @@ import org.valiktor.functions.isNotNull
 import org.valiktor.functions.isTrue
 import org.valiktor.validate
 
-data class GravideSoknadRequest(
+data class GravidSoknadRequest(
         val orgnr: String,
         val fnr: String,
         val tilrettelegge: Boolean,
@@ -30,27 +30,27 @@ data class GravideSoknadRequest(
 ) {
     init {
         validate(this) {
-            validate(GravideSoknadRequest::fnr).isValidIdentitetsnummer()
-            validate(GravideSoknadRequest::bekreftet).isTrue()
-            validate(GravideSoknadRequest::orgnr).isValidOrganisasjonsnummer()
+            validate(GravidSoknadRequest::fnr).isValidIdentitetsnummer()
+            validate(GravidSoknadRequest::bekreftet).isTrue()
+            validate(GravidSoknadRequest::orgnr).isValidOrganisasjonsnummer()
 
 
-            if (this@GravideSoknadRequest.tilrettelegge) {
-                validate(GravideSoknadRequest::tiltak).isNotNull()
+            if (this@GravidSoknadRequest.tilrettelegge) {
+                validate(GravidSoknadRequest::tiltak).isNotNull()
 
-                if (this@GravideSoknadRequest.tiltak?.contains(Tiltak.ANNET) == true) {
-                    validate(GravideSoknadRequest::tiltakBeskrivelse).isNotNull()
-                    validate(GravideSoknadRequest::tiltakBeskrivelse).isNotEmpty()
+                if (this@GravidSoknadRequest.tiltak?.contains(Tiltak.ANNET) == true) {
+                    validate(GravidSoknadRequest::tiltakBeskrivelse).isNotNull()
+                    validate(GravidSoknadRequest::tiltakBeskrivelse).isNotEmpty()
                 }
 
-                if (this@GravideSoknadRequest.omplassering == Omplassering.IKKE_MULIG) {
-                    validate(GravideSoknadRequest::omplasseringAarsak).isNotNull()
+                if (this@GravidSoknadRequest.omplassering == Omplassering.IKKE_MULIG) {
+                    validate(GravidSoknadRequest::omplasseringAarsak).isNotNull()
                 }
             }
 
-            if (!this@GravideSoknadRequest.datafil.isNullOrEmpty()){
-                validate(GravideSoknadRequest::ext).isInIgnoringCase(GodskjentFiletyper.values().map { it -> it.name })
-                validate(GravideSoknadRequest::datafil).isNotStorreEnn(10L * MB)
+            if (!this@GravidSoknadRequest.datafil.isNullOrEmpty()){
+                validate(GravidSoknadRequest::ext).isInIgnoringCase(GodskjentFiletyper.values().map { it -> it.name })
+                validate(GravidSoknadRequest::datafil).isNotStorreEnn(10L * MB)
             }
         }
     }

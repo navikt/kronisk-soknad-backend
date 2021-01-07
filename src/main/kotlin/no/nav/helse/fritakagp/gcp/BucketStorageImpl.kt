@@ -60,7 +60,7 @@ class BucketStorageImpl(
     }
 
     override fun deleteDoc(uuid: UUID) {
-        bucket.get(uuid.toString())?.delete()
+        storage[BlobId.of(bucketName, uuid.toString())]?.delete()
     }
 
     private fun createBlob(bucketName: String, blobName: UUID, ext: String): BlobInfo {

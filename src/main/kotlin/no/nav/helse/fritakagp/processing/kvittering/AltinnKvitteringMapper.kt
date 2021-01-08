@@ -2,12 +2,13 @@ package no.nav.helse.fritakagp.processing.kvittering
 
 import no.altinn.schemas.services.serviceengine.correspondence._2010._10.ExternalContentV2
 import no.altinn.schemas.services.serviceengine.correspondence._2010._10.InsertCorrespondenceV2
+import no.nav.helse.fritakagp.domain.SoeknadGravid
 import java.time.format.DateTimeFormatter
 
 class AltinnKvitteringMapper(val altinnTjenesteKode: String) {
 
 
-    fun mapKvitteringTilInsertCorrespondence(kvittering: Kvittering): InsertCorrespondenceV2 {
+    fun mapKvitteringTilInsertCorrespondence(kvittering: SoeknadGravid): InsertCorrespondenceV2 {
         val dateTimeFormatterMedKl = DateTimeFormatter.ofPattern("dd.MM.yyyy 'kl.' HH:mm")
         val tittel = "Kvittering for mottatt søknad om fritak fra arbeidsgiverperioden grunnet graviditet"
 
@@ -19,8 +20,8 @@ class AltinnKvitteringMapper(val altinnTjenesteKode: String) {
            <body>
                <div class="melding">
 <p>Kvittering for mottatt søknad om fritak fra arbeidsgiverperioden grunnet risiko for høyt sykefravær knyttet til graviditet.</p>
-<p>Virksomhetsnummer: ${kvittering.virksomhetsnummer}</p>
-<p>${kvittering.tidspunkt.format(dateTimeFormatterMedKl)}/p>
+<p>Virksomhetsnummer: ${kvittering.orgnr}</p>
+<p>${kvittering.opprettet.format(dateTimeFormatterMedKl)}/p>
 <p>Søknaden vil bli behandlet fortløpende. Ved behov vil NAV innhente ytterligere dokumentasjon.
  Har dere spørsmål, ring NAVs arbeidsgivertelefon 55 55 33 36.</p>
 <p>Dere har innrapportert følgende:</p>
@@ -48,7 +49,7 @@ class AltinnKvitteringMapper(val altinnTjenesteKode: String) {
 
         return InsertCorrespondenceV2()
                 .withAllowForwarding(false)
-                .withReportee(kvittering.virksomhetsnummer)
+                .withReportee(kvittering.orgnr)
                 .withMessageSender("NAV (Arbeids- og velferdsetaten)")
                 .withServiceCode(altinnTjenesteKode)
                 .withServiceEdition("1")

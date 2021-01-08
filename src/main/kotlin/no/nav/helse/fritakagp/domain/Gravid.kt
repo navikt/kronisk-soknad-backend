@@ -45,3 +45,9 @@ enum class OmplasseringAarsak(val beskrivelse : String) {
     IKKE_ANDRE_OPPGAVER("Vi har ikke andre oppgaver eller arbeidssteder å tilby"),
     HELSETILSTANDEN("Den ansatte vil ikke fungere i en annen jobb på grunn av helsetilstanden")
 }
+enum class GodskjentFiletyper(val beskrivelse : String) {
+    PDF("pdf"),
+    JPEG("jpeg"),
+    JPG("jpg"),
+    PNG("png")
+}

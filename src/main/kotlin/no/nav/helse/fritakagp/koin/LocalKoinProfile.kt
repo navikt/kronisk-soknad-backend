@@ -29,9 +29,8 @@ fun localDevConfig(config: ApplicationConfig) = module {
     single { PostgresBakgrunnsjobbRepository(get()) } bind BakgrunnsjobbRepository::class
     single { BakgrunnsjobbService(get()) }
 
-    single { SoeknadGravidProcessor(get(), get(), get(), get(), GravidSoeknadPDFGenerator(), get())}
+    single { SoeknadGravidProcessor(get(), get(), get(), get(), GravidSoeknadPDFGenerator(), get(), get())}
 
-    single { PostgresKvitteringRepository(get(), get()) } bind KvitteringRepository::class
     single { DummyKvitteringSender() } bind KvitteringSender::class
     single { KvitteringProcessor(get(), get(), get())}
 }

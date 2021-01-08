@@ -43,6 +43,7 @@ spec:
     outbound:
       external:
         - host: helsearbeidsgiver-proxy.dev-fss-pub.nais.io
+        - host: tt02.altinn.no
 
       rules:
         - application: helsearbeidsgiver-proxy
@@ -50,8 +51,9 @@ spec:
           cluster: dev-fss
 
   envFrom:
-    - secret: service-user-password
     # servicebrukerens passord som er  hentet fra vault og lagt inn slik: https://doc.nais.io/security/secrets/kubernetes-secrets/
+    - secret: service-user-password
+    - secret: altinn-user-password
     #- configmap: loginservice-idporten # tilgjengeliggjør LOGINSERVICE_IDPORTEN_DISCOVERY_URL og LOGINSERVICE_IDPORTEN_AUDIENCE
     # Skrur av ^^^ i PREPROD siden loginservice ikke virker via naisdevice
   env:
@@ -63,6 +65,8 @@ spec:
       value: https://helsearbeidsgiver-proxy.dev-fss-pub.nais.io/oppgave
     - name: PDL_URL
       value: https://helsearbeidsgiver-proxy.dev-fss-pub.nais.io/pdl
+    - name: ALTINN_ENDPOINT
+      value: https://tt02.altinn.no/ServiceEngineExternal/CorrespondenceAgencyExternalBasic.svc
     - name: CLAM_AV_URL
       value: http://clamav.clamav.svc.cluster.local/scan
     - name: GCP_PRJ_ID

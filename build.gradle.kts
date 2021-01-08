@@ -106,8 +106,8 @@ dependencies {
 
     implementation("javax.xml.ws:jaxws-api:$jaxwsVersion")
     implementation("org.apache.cxf:cxf-rt-frontend-jaxws:$cxfVersion")
-//    implementation("org.apache.cxf:cxf-rt-features-logging:$cxfVersion")
-//   implementation("org.apache.cxf:cxf-rt-transports-http:$cxfVersion")
+    implementation("org.apache.cxf:cxf-rt-features-logging:$cxfVersion")
+    implementation("org.apache.cxf:cxf-rt-transports-http:$cxfVersion")
     implementation("org.apache.cxf:cxf-rt-ws-security:$cxfVersion")
     implementation("com.sun.activation:javax.activation:1.2.0")
     implementation("com.sun.xml.ws:jaxws-tools:$jaxwsToolsVersion") {

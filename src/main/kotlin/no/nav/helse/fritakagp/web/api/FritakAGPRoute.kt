@@ -21,6 +21,8 @@ import no.nav.helse.fritakagp.processing.kvittering.KvitteringProcessor
 import no.nav.helse.fritakagp.virusscan.VirusScanner
 import no.nav.helse.fritakagp.web.api.resreq.GravideSoknadRequest
 import no.nav.helse.fritakagp.web.api.resreq.KroniskSoknadRequest
+import no.nav.helse.fritakagp.web.dto.validation.extractBase64Del
+import no.nav.helse.fritakagp.web.dto.validation.extractFilExtDel
 import no.nav.helse.fritakagp.web.hentIdentitetsnummerFraLoginToken
 import no.nav.helse.fritakagp.web.hentUtløpsdatoFraLoginToken
 import org.slf4j.LoggerFactory
@@ -63,11 +65,11 @@ fun Route.fritakAGP(
                         tiltak = request.tiltak,
                         tiltakBeskrivelse = request.tiltakBeskrivelse
                 )
-                val filContext = request.datafil
-                val filExt = request.ext
 
-                filContext?.let {
-                    if (!virusScanner.scanDoc(decodeBase64File(it))) {
+                if (!request.dokumentasjon.isNullOrEmpty()) {
+                    val filContext = extractBase64Del(request.dokumentasjon)
+                    val filExt = extractFilExtDel(request.dokumentasjon)
+                    if (!virusScanner.scanDoc(decodeBase64File(filContext))) {
                         call.respond(HttpStatusCode.BadRequest)
                         return@post
                     }
@@ -111,33 +113,19 @@ fun Route.fritakAGP(
                         fravaer = request.fravaer,
                         bekreftet = request.bekreftet
                 )
-                val filContext = request.datafil
-                val filExt = request.ext
 
-                filContext?.let {
-                    if (!virusScanner.scanDoc(decodeBase64File(it))) {
+                if (!request.dokumentasjon.isNullOrEmpty()) {
+                    val filContext = extractBase64Del(request.dokumentasjon)
+                    val filExt = extractFilExtDel(request.dokumentasjon)
+                    if (!virusScanner.scanDoc(decodeBase64File(filContext))) {
                         call.respond(HttpStatusCode.BadRequest)
                         return@post
                     }
-                    bucket.uploadDoc(soeknad.id, it, filExt!!)
+                    bucket.uploadDoc(soeknad.id, filContext, filExt!!)
                 }
 
                 datasource.connection.use { connection ->
                     kroniskRepo.insert(soeknad, connection)
-                    bakgunnsjobbRepo.save(
-                            Bakgrunnsjobb(
-                                    maksAntallForsoek = 10,
-                                    data = om.writeValueAsString(SoeknadGravidProcessor.JobbData(soeknad.id)),
-                                    type = SoeknadGravidProcessor.JOB_TYPE),
-                            connection
-                    )
-                    bakgunnsjobbRepo.save(
-                            Bakgrunnsjobb(
-                                    maksAntallForsoek = 10,
-                                    data = om.writeValueAsString(KvitteringJobData(soeknad.id)),
-                                    type = KvitteringProcessor.JOB_TYPE),
-                            connection
-                    )
                 }
 
                 call.respond(HttpStatusCode.Created)

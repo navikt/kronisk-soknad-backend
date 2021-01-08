@@ -15,10 +15,8 @@ import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OppgaveKlientImpl
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlClient
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlClientImpl
 import no.nav.helse.fritakagp.db.*
-import no.nav.helse.fritakagp.integrasjon.rest.sts.configureFor
-import no.nav.helse.fritakagp.integrasjon.rest.sts.wsStsClient
 import no.nav.helse.fritakagp.gcp.BucketStorage
-import no.nav.helse.fritakagp.gcp.BucketStorageImp
+import no.nav.helse.fritakagp.gcp.BucketStorageImpl
 import no.nav.helse.fritakagp.processing.gravid.GravidSoeknadPDFGenerator
 import no.nav.helse.fritakagp.processing.gravid.SoeknadGravidProcessor
 import no.nav.helse.fritakagp.oauth2.DefaultOAuth2HttpClient
@@ -55,26 +53,14 @@ fun preprodConfig(config: ApplicationConfig) = module {
     single { PostgresBakgrunnsjobbRepository(get()) } bind BakgrunnsjobbRepository::class
     single { BakgrunnsjobbService(get()) }
 
-    single { SoeknadGravidProcessor(get(), get(), get(), get(), GravidSoeknadPDFGenerator(), get()) }
-    single {
-        val altinnMeldingWsClient = Clients.iCorrespondenceExternalBasic(
-            config.getString("altinn_melding.pep_gw_endpoint")
-        )
-        val sts = wsStsClient(
-            config.getString("sts_url_ws"),
-            config.getString("service_user.username") to config.getString("service_user.password")
-        )
-        sts.configureFor(altinnMeldingWsClient)
-        altinnMeldingWsClient
-    }
-    single { PostgresKvitteringRepository(get(), get()) } bind KvitteringRepository::class
+    single { SoeknadGravidProcessor(get(), get(), get(), get(), GravidSoeknadPDFGenerator(), get(), get()) }
+    single { Clients.iCorrespondenceExternalBasic(config.getString("altinn_melding.altinn_endpoint")) }
     single {
         AltinnKvitteringSender(
             AltinnKvitteringMapper(config.getString("altinn_melding.service_id")),
             get(),
             config.getString("altinn_melding.username"),
-            config.getString("altinn_melding.password"),
-            get()
+            config.getString("altinn_melding.password")
         )
     } bind KvitteringSender::class
 
@@ -107,10 +93,12 @@ fun Module.externalSystemClients(config: ApplicationConfig) {
             config.getString("clamav_url")
         )
     } bind VirusScanner::class
-    single { BucketStorageImp(
-        config.getString("gcp_bucket_name"),
-        config.getString("gcp_prjId")
-    ) } bind BucketStorage::class
+    single {
+        BucketStorageImpl(
+            config.getString("gcp_bucket_name"),
+            config.getString("gcp_prjId")
+        )
+    } bind BucketStorage::class
 }
 
 

@@ -22,6 +22,8 @@ import no.nav.helse.fritakagp.processing.gravid.SoeknadGravidProcessor
 import no.nav.helse.fritakagp.oauth2.DefaultOAuth2HttpClient
 import no.nav.helse.fritakagp.oauth2.TokenResolver
 import no.nav.helse.fritakagp.oauth2.OAuth2ClientPropertiesConfig
+import no.nav.helse.fritakagp.processing.kronisk.KroniskSoeknadPDFGenerator
+import no.nav.helse.fritakagp.processing.kronisk.SoeknadKroniskProcessor
 import no.nav.helse.fritakagp.processing.kvittering.*
 import no.nav.helse.fritakagp.virusscan.ClamavVirusScannerImp
 import no.nav.helse.fritakagp.virusscan.VirusScanner
@@ -48,12 +50,16 @@ fun preprodConfig(config: ApplicationConfig) = module {
             )
         )
     } bind DataSource::class
+
     single { PostgresGravidSoeknadRepository(get(), get()) } bind GravidSoeknadRepository::class
+    single { PostgresKroniskSoeknadRepository(get(), get()) } bind KroniskSoeknadRepository::class
 
     single { PostgresBakgrunnsjobbRepository(get()) } bind BakgrunnsjobbRepository::class
     single { BakgrunnsjobbService(get()) }
 
     single { SoeknadGravidProcessor(get(), get(), get(), get(), GravidSoeknadPDFGenerator(), get(), get()) }
+    single { SoeknadKroniskProcessor(get(), get(), get(), get(), KroniskSoeknadPDFGenerator(), get(), get()) }
+
     single { Clients.iCorrespondenceExternalBasic(config.getString("altinn_melding.altinn_endpoint")) }
     single {
         AltinnKvitteringSender(

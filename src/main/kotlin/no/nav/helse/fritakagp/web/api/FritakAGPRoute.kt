@@ -16,6 +16,7 @@ import no.nav.helse.fritakagp.domain.SoeknadKronisk
 import no.nav.helse.fritakagp.domain.decodeBase64File
 import no.nav.helse.fritakagp.gcp.BucketStorage
 import no.nav.helse.fritakagp.processing.gravid.SoeknadGravidProcessor
+import no.nav.helse.fritakagp.processing.kronisk.SoeknadKroniskProcessor
 import no.nav.helse.fritakagp.processing.kvittering.KvitteringJobData
 import no.nav.helse.fritakagp.processing.kvittering.KvitteringProcessor
 import no.nav.helse.fritakagp.virusscan.VirusScanner
@@ -126,6 +127,13 @@ fun Route.fritakAGP(
 
                 datasource.connection.use { connection ->
                     kroniskRepo.insert(soeknad, connection)
+                    bakgunnsjobbRepo.save(
+                        Bakgrunnsjobb(
+                            maksAntallForsoek = 10,
+                            data = om.writeValueAsString(SoeknadKroniskProcessor.JobbData(soeknad.id)),
+                            type = SoeknadKroniskProcessor.JOB_TYPE),
+                        connection
+                    )
                 }
 
                 call.respond(HttpStatusCode.Created)

@@ -38,7 +38,6 @@ import org.koin.dsl.module
 @KtorExperimentalAPI
 fun selectModuleBasedOnProfile(config: ApplicationConfig): List<Module> {
     val envModule = when (config.property("koin.profile").getString()) {
-        "TEST" -> buildAndTestConfig()
         "LOCAL" -> localDevConfig(config)
         "PREPROD" -> preprodConfig(config)
         "PROD" -> prodConfig(config)
@@ -82,10 +81,6 @@ val common = module {
 
     single { httpClient }
 
-}
-
-fun buildAndTestConfig() = module {
-    single { DummyKvitteringSender() as KvitteringSender }
 }
 
 fun Module.mockExternalDependecies() {

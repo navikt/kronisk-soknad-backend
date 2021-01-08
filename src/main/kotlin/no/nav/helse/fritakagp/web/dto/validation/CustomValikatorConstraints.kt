@@ -1,35 +1,15 @@
 package no.nav.helse.fritakagp.web.dto.validation
 
+import no.nav.helse.fritakagp.domain.FravaerData
 import no.nav.helse.fritakagp.domain.GodskjentFiletyper
-import no.nav.helse.fritakagp.domain.OmplasseringAarsak
-import no.nav.helse.fritakagp.domain.Tiltak
-import no.nav.helse.fritakagp.gcp.BucketDocument
 import org.valiktor.Constraint
 import org.valiktor.Validator
-import org.valiktor.functions.isInIgnoringCase
+import java.time.LocalDate
 
 interface CustomConstraint : Constraint {
     override val messageBundle: String
         get() = "validation/validation-messages"
 }
-
-class TiltakBeskrivelseConstraint : CustomConstraint
-fun <E> Validator<E>.Property<Iterable<String>?>.isTiltakValid(beskrivelse : String?) =
-        this.validate(TiltakBeskrivelseConstraint()) { ps ->
-           if(ps!!.contains(Tiltak.ANNET.name))
-               return@validate !beskrivelse.isNullOrEmpty()
-            else
-               return@validate true
-        }
-
-class OmplasseringConstraints : CustomConstraint
-fun <E> Validator<E>.Property<String?>.isOmplasseringValgRiktig(omplassering : String) =
-        this.validate(OmplasseringConstraints()) {
-            if (omplassering.toUpperCase() == "IKKE_MULIG")
-                return@validate enumContains<OmplasseringAarsak>(it!!)
-            else
-                return@validate true
-        }
 
 class DataUrlExtensionConstraints: CustomConstraint
 fun <E> Validator<E>.Property<String?>.isGodskjentFiletyper() =
@@ -42,6 +22,24 @@ class DataUrlBase64Constraints : CustomConstraint
 fun <E> Validator<E>.Property<String?>.isNotStorreEnn(maxSize: Long) =
     this.validate(DataUrlBase64Constraints()){
         return@validate  extractBase64Del(it!!).toByteArray().size <= maxSize
+    }
+
+
+class MaxAgeFravaersDataConstraint : CustomConstraint
+fun <E> Validator<E>.Property<Iterable<FravaerData>?>.ingenDataEldreEnn(aar: Long) =
+    this.validate(MaxAgeFravaersDataConstraint()) { ps ->
+        val minDate = LocalDate.now().minusYears(aar)
+        return@validate !ps!!.any {
+            LocalDate.parse("${it.yearMonth}-01").isBefore(minDate)
+        }
+    }
+
+class MaxNumFravaersdagFravaersDataConstraint : CustomConstraint
+fun <E> Validator<E>.Property<Iterable<FravaerData>?>.ikkeFlereFravaersdagerEnnDagerIMaanden() =
+    this.validate(MaxNumFravaersdagFravaersDataConstraint()) { ps ->
+        return@validate !ps!!.any {
+            LocalDate.parse("${it.yearMonth}-01").lengthOfMonth() < it.antallDagerMedFravaer
+        }
     }
 
 inline fun <reified T : Enum<T>> enumContains(name: String): Boolean {

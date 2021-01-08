@@ -1,24 +1,16 @@
-package no.nav.helse.fritakagp.web
+package no.nav.helse.fritakagp.web.api.resreq
 
 import no.nav.helse.GravidTestData
 import no.nav.helse.fritakagp.domain.Omplassering
 import no.nav.helse.fritakagp.domain.OmplasseringAarsak
 import no.nav.helse.fritakagp.domain.Tiltak
-import no.nav.helse.fritakagp.web.api.resreq.GravideSoknadRequest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.valiktor.ConstraintViolationException
 import kotlin.reflect.KProperty1
 
-class ValidateGravidRequestTest {
-
-    fun <B, A> validationShouldFailFor(field: KProperty1<B, A>, block: () -> Unit): Exception {
-        val thrown = assertThrows<ConstraintViolationException>(block)
-        assertThat(thrown.constraintViolations).hasSize(1)
-        assertThat(thrown.constraintViolations.first().property).isEqualTo(field.name)
-        return thrown
-    }
+class GravidRequestTest{
 
     @Test
     internal fun `Gyldig FNR er påkrevd`() {

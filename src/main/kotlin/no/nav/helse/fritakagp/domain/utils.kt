@@ -9,5 +9,6 @@ fun decodeBase64File(datafile: String): ByteArray {
 enum class GodskjentFiletyper(val beskrivelse : String) {
     PDF("pdf"),
     JPEG("jpg"),
+    JPG("jpg"),
     PNG("png")
 }

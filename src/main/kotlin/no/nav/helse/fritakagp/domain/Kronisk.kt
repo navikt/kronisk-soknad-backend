@@ -30,7 +30,7 @@ data class SoeknadKronisk(
 
 data class FravaerData (
     val yearMonth: String,
-    val dager: String
+    val antallDagerMedFravaer: Int
 )
 
 enum class ArbeidsType(val beskrivelse : String) {

@@ -67,13 +67,13 @@ fun Route.fritakAGP(
                 )
 
                 if (!request.dokumentasjon.isNullOrEmpty()) {
-                    val filContext = extractBase64Del(request.dokumentasjon)
-                    val filExt = extractFilExtDel(request.dokumentasjon)
-                    if (!virusScanner.scanDoc(decodeBase64File(filContext))) {
+                    val fileContent = extractBase64Del(request.dokumentasjon)
+                    val fileExt = extractFilExtDel(request.dokumentasjon)
+                    if (!virusScanner.scanDoc(decodeBase64File(fileContent))) {
                         call.respond(HttpStatusCode.BadRequest)
                         return@post
                     }
-                    bucket.uploadDoc(soeknad.id, it, filExt!!)
+                    bucket.uploadDoc(soeknad.id, fileContent, fileExt)
                 }
 
                 datasource.connection.use { connection ->
@@ -107,8 +107,8 @@ fun Route.fritakAGP(
                         orgnr = request.orgnr,
                         fnr = request.fnr,
                         sendtAv = innloggetFnr,
-                        arbeid = request.arbeid,
-                        paakjenninger = request.paakjenninger,
+                        arbeid = request.arbeidstyper,
+                        paakjenninger = request.paakjenningstyper,
                         paakjenningBeskrivelse = request.paakjenningBeskrivelse,
                         fravaer = request.fravaer,
                         bekreftet = request.bekreftet
@@ -121,7 +121,7 @@ fun Route.fritakAGP(
                         call.respond(HttpStatusCode.BadRequest)
                         return@post
                     }
-                    bucket.uploadDoc(soeknad.id, filContext, filExt!!)
+                    bucket.uploadDoc(soeknad.id, filContext, filExt)
                 }
 
                 datasource.connection.use { connection ->

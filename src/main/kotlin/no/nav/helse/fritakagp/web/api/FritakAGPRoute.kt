@@ -107,8 +107,8 @@ fun Route.fritakAGP(
                         orgnr = request.orgnr,
                         fnr = request.fnr,
                         sendtAv = innloggetFnr,
-                        arbeid = request.arbeidstyper,
-                        paakjenninger = request.paakjenningstyper,
+                        arbeidstyper = request.arbeidstyper,
+                        paakjenningstyper = request.paakjenningstyper,
                         paakjenningBeskrivelse = request.paakjenningBeskrivelse,
                         fravaer = request.fravaer,
                         bekreftet = request.bekreftet

@@ -13,10 +13,11 @@ object KroniskTestData {
     val soeknadKronisk = SoeknadKronisk(
         orgnr = validOrgNr,
         fnr = validIdentitetsnummer,
-        arbeid = setOf(ArbeidsType.KREVENDE, ArbeidsType.MODERAT),
+        arbeidstyper = setOf(ArbeidsType.KREVENDE, ArbeidsType.MODERAT),
         bekreftet = true,
         fravaer = generateFravaersdata(),
-        paakjenninger = setOf(PaakjenningsType.ALLERGENER, PaakjenningsType.TUNGE),
+        paakjenningstyper = setOf(PaakjenningsType.ALLERGENER, PaakjenningsType.TUNGE),
+        paakjenningBeskrivelse = "Beskrivelse",
         sendtAv = "09876543210"
     )
 

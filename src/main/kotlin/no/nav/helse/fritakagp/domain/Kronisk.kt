@@ -1,28 +1,29 @@
 package no.nav.helse.fritakagp.domain
 
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
 
 data class SoeknadKronisk(
-        val id: UUID = UUID.randomUUID(),
-        val opprettet: LocalDateTime = LocalDateTime.now(),
+    val id: UUID = UUID.randomUUID(),
+    val opprettet: LocalDateTime = LocalDateTime.now(),
 
-        val orgnr: String,
-        val fnr: String,
-        val arbeid: Set<ArbeidsType>,
-        val paakjenninger: Set<PaakjenningsType>,
-        val paakjenningBeskrivelse: String? = null,
-        val fravaer: Set<FravaerData>,
-        val bekreftet: Boolean,
+    val orgnr: String,
+    val fnr: String,
+    val arbeidstyper: Set<ArbeidsType>,
+    val paakjenningstyper: Set<PaakjenningsType>,
+    val paakjenningBeskrivelse: String? = null,
+    val fravaer: Set<FravaerData>,
+    val bekreftet: Boolean,
 
-        val sendtAv: String,
+    val sendtAv: String,
 
-        /**
+    /**
          * ID fra joark etter arkivering
          */
         var journalpostId: String? = null,
 
-        /**
+    /**
          * ID fra oppgave etter opprettelse av oppgave
          */
         var oppgaveId: String? = null
@@ -31,7 +32,9 @@ data class SoeknadKronisk(
 data class FravaerData (
     val yearMonth: String,
     val antallDagerMedFravaer: Int
-)
+) {
+    fun toLocalDate() = LocalDate.parse("$yearMonth-01")
+}
 
 enum class ArbeidsType(val beskrivelse : String) {
     STILLESITTENDE("Stillesittende arbeid"),

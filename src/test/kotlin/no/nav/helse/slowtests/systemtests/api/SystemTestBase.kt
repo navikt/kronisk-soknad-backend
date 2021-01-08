@@ -1,23 +1,17 @@
 package no.nav.helse.slowtests.systemtests.api
 
 import io.ktor.client.*
-import io.ktor.client.features.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.util.KtorExperimentalAPI
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.runBlocking
-import no.nav.helse.TestData
-import no.nav.helse.arbeidsgiver.web.validation.Problem
 import no.nav.helse.fritakagp.web.FritakAgpApplication
-import no.nav.security.token.support.core.jwt.JwtToken
-import org.junit.Before
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.TestInstance
 import org.koin.test.KoinTest
-import org.koin.test.get
 import org.koin.test.inject
 
 @KtorExperimentalAPI

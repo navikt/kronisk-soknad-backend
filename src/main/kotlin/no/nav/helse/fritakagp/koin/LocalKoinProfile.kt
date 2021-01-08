@@ -9,6 +9,8 @@ import no.nav.helse.arbeidsgiver.bakgrunnsjobb.PostgresBakgrunnsjobbRepository
 import no.nav.helse.fritakagp.db.*
 import no.nav.helse.fritakagp.processing.gravid.GravidSoeknadPDFGenerator
 import no.nav.helse.fritakagp.processing.gravid.SoeknadGravidProcessor
+import no.nav.helse.fritakagp.processing.kronisk.KroniskSoeknadPDFGenerator
+import no.nav.helse.fritakagp.processing.kronisk.SoeknadKroniskProcessor
 import no.nav.helse.fritakagp.processing.kvittering.DummyKvitteringSender
 import no.nav.helse.fritakagp.processing.kvittering.KvitteringProcessor
 import no.nav.helse.fritakagp.processing.kvittering.KvitteringSender
@@ -24,11 +26,13 @@ fun localDevConfig(config: ApplicationConfig) = module {
 
     single { HikariDataSource(createHikariConfig(config.getjdbcUrlFromProperties(), config.getString("database.username"), config.getString("database.password"))) } bind DataSource::class
     single { PostgresGravidSoeknadRepository(get(), get()) } bind GravidSoeknadRepository::class
+    single { PostgresKroniskSoeknadRepository(get(), get()) } bind KroniskSoeknadRepository::class
 
     single { PostgresBakgrunnsjobbRepository(get()) } bind BakgrunnsjobbRepository::class
     single { BakgrunnsjobbService(get()) }
 
     single { SoeknadGravidProcessor(get(), get(), get(), get(), GravidSoeknadPDFGenerator(), get(), get())}
+    single { SoeknadKroniskProcessor(get(), get(), get(), get(), KroniskSoeknadPDFGenerator(), get(), get())}
 
     single { DummyKvitteringSender() } bind KvitteringSender::class
     single { KvitteringProcessor(get(), get(), get())}

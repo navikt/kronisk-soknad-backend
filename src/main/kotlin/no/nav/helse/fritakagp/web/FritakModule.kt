@@ -178,7 +178,7 @@ fun Application.fritakModule(config: ApplicationConfig = environment.config) {
 
     routing {
         authenticate {
-            fritakAGP(get(), get(), get(), get(), get(), get())
+            fritakAGP(get(), get(), get(), get(), get(), get(), get())
         }
     }
 }

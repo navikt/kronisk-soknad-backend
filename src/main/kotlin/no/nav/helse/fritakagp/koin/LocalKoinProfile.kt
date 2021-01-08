@@ -24,6 +24,7 @@ fun localDevConfig(config: ApplicationConfig) = module {
 
     single { HikariDataSource(createHikariConfig(config.getjdbcUrlFromProperties(), config.getString("database.username"), config.getString("database.password"))) } bind DataSource::class
     single { PostgresGravidSoeknadRepository(get(), get()) } bind GravidSoeknadRepository::class
+    single { PostgresKroniskSoeknadRepository(get(), get()) } bind KroniskSoeknadRepository::class
 
     single { PostgresBakgrunnsjobbRepository(get()) } bind BakgrunnsjobbRepository::class
     single { BakgrunnsjobbService(get()) }

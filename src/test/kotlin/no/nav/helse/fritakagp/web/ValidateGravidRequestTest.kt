@@ -1,6 +1,6 @@
 package no.nav.helse.fritakagp.web
 
-import no.nav.helse.TestData
+import no.nav.helse.GravidTestData
 import no.nav.helse.fritakagp.domain.Omplassering
 import no.nav.helse.fritakagp.domain.OmplasseringAarsak
 import no.nav.helse.fritakagp.domain.Tiltak
@@ -11,7 +11,7 @@ import org.junit.jupiter.api.assertThrows
 import org.valiktor.ConstraintViolationException
 import kotlin.reflect.KProperty1
 
-class ValidateRequestTest {
+class ValidateGravidRequestTest {
 
     fun <B, A> validationShouldFailFor(field: KProperty1<B, A>, block: () -> Unit): Exception {
         val thrown = assertThrows<ConstraintViolationException>(block)
@@ -23,27 +23,27 @@ class ValidateRequestTest {
     @Test
     internal fun `Gyldig FNR er påkrevd`() {
         validationShouldFailFor(GravideSoknadRequest::fnr) {
-            TestData.fullValidRequest.copy(fnr = "01020312345")
+            GravidTestData.fullValidRequest.copy(fnr = "01020312345")
         }
     }
 
     @Test
     internal fun `Gyldig OrgNr er påkrevd dersom det er oppgitt`() {
         validationShouldFailFor(GravideSoknadRequest::orgnr) {
-            TestData.fullValidRequest.copy(orgnr = "098765432")
+            GravidTestData.fullValidRequest.copy(orgnr = "098765432")
         }
     }
 
     @Test
     fun `Når tiltak inneholder ANNET må tiltaksbeskrivelse ha innhold`() {
         validationShouldFailFor(GravideSoknadRequest::tiltakBeskrivelse) {
-            TestData.fullValidRequest.copy(
+            GravidTestData.fullValidRequest.copy(
                 tiltak = listOf(Tiltak.ANNET),
                 tiltakBeskrivelse = "",
             )
         }
 
-        TestData.fullValidRequest.copy(
+        GravidTestData.fullValidRequest.copy(
             tiltak = listOf(Tiltak.ANNET),
             tiltakBeskrivelse = "dette går bra",
         )
@@ -51,7 +51,7 @@ class ValidateRequestTest {
 
     @Test
     fun `Om tiltak ikke inneholder ANNET er ikke tiltaksbeskrivelse påkrevd`() {
-        TestData.fullValidRequest.copy(
+        GravidTestData.fullValidRequest.copy(
             tiltak = listOf(Tiltak.TILPASSET_ARBEIDSTID),
             tiltakBeskrivelse = null
         )
@@ -60,20 +60,20 @@ class ValidateRequestTest {
     @Test
     internal fun `Bekreftelse av egenerklæring er påkrevd`() {
         validationShouldFailFor(GravideSoknadRequest::bekreftet) {
-            TestData.fullValidRequest.copy(bekreftet = false)
+            GravidTestData.fullValidRequest.copy(bekreftet = false)
         }
     }
 
     @Test
     fun `Dersom omplassering ikke er mulig må det finnes en årsak`() {
         validationShouldFailFor(GravideSoknadRequest::omplasseringAarsak) {
-            TestData.fullValidRequest.copy(
+            GravidTestData.fullValidRequest.copy(
                 omplassering = Omplassering.IKKE_MULIG,
                 omplasseringAarsak = null
             )
         }
 
-        TestData.fullValidRequest.copy(
+        GravidTestData.fullValidRequest.copy(
             omplassering = Omplassering.IKKE_MULIG,
             omplasseringAarsak = OmplasseringAarsak.FAAR_IKKE_KONTAKT
         )

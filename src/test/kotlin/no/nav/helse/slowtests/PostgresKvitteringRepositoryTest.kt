@@ -1,24 +1,17 @@
 package no.nav.helse.slowtests
 
     import com.zaxxer.hikari.HikariDataSource
-    import no.nav.helse.TestData
+    import no.nav.helse.GravidTestData
     import no.nav.helse.fritakagp.db.PostgresKvitteringRepository
     import no.nav.helse.fritakagp.db.createTestHikariConfig
-    import no.nav.helse.fritakagp.koin.common
     import no.nav.helse.fritakagp.processing.kvittering.Kvittering
     import no.nav.helse.fritakagp.processing.kvittering.KvitteringStatus
     import no.nav.helse.slowtests.systemtests.api.SystemTestBase
     import org.assertj.core.api.Assertions.assertThat
-    import org.flywaydb.core.Flyway
     import org.junit.jupiter.api.AfterEach
     import org.junit.jupiter.api.BeforeEach
     import org.junit.jupiter.api.Test
-    import org.koin.core.KoinComponent
-    import org.koin.core.context.loadKoinModules
-    import org.koin.core.context.startKoin
-    import org.koin.core.context.stopKoin
     import org.koin.core.get
-    import java.time.LocalDate
     import java.time.LocalDateTime
 
     internal class PostgresKvitteringRepositoryTest : SystemTestBase() {
@@ -32,7 +25,7 @@ package no.nav.helse.slowtests
 
             repo = PostgresKvitteringRepository(ds, get())
             kvittering = repo.insert(Kvittering(
-                    tidspunkt = LocalDateTime.now(), id = TestData.soeknadGravid.id, virksomhetsnummer = TestData.soeknadGravid.orgnr.toString(), status = KvitteringStatus.OPPRETTET))
+                    tidspunkt = LocalDateTime.now(), id = GravidTestData.soeknadGravid.id, virksomhetsnummer = GravidTestData.soeknadGravid.orgnr.toString(), status = KvitteringStatus.OPPRETTET))
         }
 
         @AfterEach

@@ -1,48 +1,41 @@
 package no.nav.helse
 
-import no.nav.helse.fritakagp.domain.Omplassering
-import no.nav.helse.fritakagp.domain.OmplasseringAarsak
-import no.nav.helse.fritakagp.domain.SoeknadGravid
-import no.nav.helse.fritakagp.domain.Tiltak
+import no.nav.helse.fritakagp.domain.*
 import no.nav.helse.fritakagp.web.api.resreq.GravideSoknadRequest
-import java.time.LocalDate
+import no.nav.helse.fritakagp.web.api.resreq.KroniskSoknadRequest
 
-object TestData {
+object KroniskTestData {
     val validIdentitetsnummer = "20015001543"
     val validOrgNr = "123456785"
 
-    val soeknadGravid = SoeknadGravid(
+    val soeknadKronisk = SoeknadKronisk(
         orgnr = validOrgNr,
         fnr = validIdentitetsnummer,
-        tilrettelegge = true,
-        tiltak = listOf(Tiltak.HJEMMEKONTOR, Tiltak.ANNET),
-        tiltakBeskrivelse = "Vi prøvde både det ene og det andre og det første kanskje virka litt men muligens and the andre ikke var så på stell men akk ja sånn lorem",
-        omplassering = Omplassering.IKKE_MULIG,
-        omplasseringAarsak = OmplasseringAarsak.HELSETILSTANDEN,
+        arbeid = listOf(ArbeidsType.KREVENDE, ArbeidsType.MODERAT),
+        bekreftet = true,
+        fravaer = listOf(FravaerData("2020-4", "3"), FravaerData("2019-6", "7")),
+        paakjenninger = listOf(PaakjenningsType.ALLERGENER, PaakjenningsType.TUNGE),
         sendtAv = "09876543210"
     )
 
-    val fullValidRequest = GravideSoknadRequest(
+    val fullValidRequest = KroniskSoknadRequest(
         orgnr = validOrgNr,
         fnr = validIdentitetsnummer,
-        tilrettelegge = true,
-        tiltak = listOf(Tiltak.ANNET, Tiltak.HJEMMEKONTOR, Tiltak.TILPASSEDE_ARBEIDSOPPGAVER, Tiltak.TILPASSET_ARBEIDSTID),
-        tiltakBeskrivelse = "beskrivelse",
-        omplassering = Omplassering.NEI,
-        omplasseringAarsak = OmplasseringAarsak.HELSETILSTANDEN,
+        arbeid = listOf(ArbeidsType.KREVENDE, ArbeidsType.MODERAT, ArbeidsType.STILLESITTENDE),
+        fravaer = listOf(FravaerData("2020-4", "3"), FravaerData("2019-6", "7")),
+        paakjenninger = listOf(PaakjenningsType.ALLERGENER, PaakjenningsType.TUNGE, PaakjenningsType.ANNET, PaakjenningsType.GAAING, PaakjenningsType.HARDE, PaakjenningsType.REGELMESSIG, PaakjenningsType.STRESSENDE, PaakjenningsType.UKOMFORTABEL),
+        paakjenningBeskrivelse = "Lorem Ipsum",
         bekreftet = true,
         datafil = null,
         ext = null
     )
 
-    val gravidSoknadMedFil = GravideSoknadRequest(
-        orgnr = TestData.validOrgNr,
-        fnr = TestData.validIdentitetsnummer,
-        tilrettelegge = true,
-        tiltak = listOf(Tiltak.ANNET),
-        tiltakBeskrivelse = "beskrivelse",
-        omplassering = Omplassering.JA,
-        omplasseringAarsak = null,
+    val kroniskSoknadMedFil = KroniskSoknadRequest(
+        orgnr = KroniskTestData.validOrgNr,
+        fnr = KroniskTestData.validIdentitetsnummer,
+        arbeid = listOf(ArbeidsType.MODERAT),
+        fravaer = listOf(FravaerData("2020-4", "3"), FravaerData("2019-6", "7")),
+        paakjenninger = listOf(PaakjenningsType.ALLERGENER, PaakjenningsType.TUNGE),
         bekreftet = true,
         ext = "pdf",
         datafil = """

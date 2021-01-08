@@ -3,7 +3,7 @@ package no.nav.helse.fritakagp.processing.gravid
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import io.mockk.*
-import no.nav.helse.TestData
+import no.nav.helse.GravidTestData
 import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.DokarkivKlient
 import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.JournalpostResponse
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OppgaveKlient
@@ -37,7 +37,7 @@ class SoeknadGravidProcessorTest {
 
     @BeforeEach
     fun setup() {
-        soeknad = TestData.soeknadGravid.copy()
+        soeknad = GravidTestData.soeknadGravid.copy()
         jobbDataJson = objectMapper.writeValueAsString(SoeknadGravidProcessor.JobbData(soeknad.id))
         every { repositoryMock.getById(soeknad.id) } returns soeknad
         every { pdlClientMock.personNavn(soeknad.sendtAv)} returns PdlHentPersonNavn.PdlPersonNavneliste(listOf(

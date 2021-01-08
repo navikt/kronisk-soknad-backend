@@ -2,17 +2,17 @@ package no.nav.helse.fritakagp.db
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import no.nav.helse.fritakagp.domain.SoeknadGravid
+import no.nav.helse.fritakagp.domain.SoeknadKronisk
 import org.slf4j.LoggerFactory
 import java.sql.Connection
 import java.util.*
 import javax.sql.DataSource
 import kotlin.collections.ArrayList
 
-class PostgresGravidSoeknadRepository(val ds: DataSource, val mapper: ObjectMapper) : GravidSoeknadRepository {
-    private val logger = LoggerFactory.getLogger(PostgresGravidSoeknadRepository::class.java)
+class PostgresKroniskSoeknadRepository(val ds: DataSource, val mapper: ObjectMapper) : KroniskSoeknadRepository {
+    private val logger = LoggerFactory.getLogger(PostgresKroniskSoeknadRepository::class.java)
 
-    private val tableName = "soeknadgravid"
+    private val tableName = "soeknadkronisk"
 
     private val getByIdStatement = """SELECT * FROM $tableName WHERE data ->> 'id' = ?"""
 
@@ -22,15 +22,15 @@ class PostgresGravidSoeknadRepository(val ds: DataSource, val mapper: ObjectMapp
 
     private val deleteStatement = """DELETE FROM $tableName WHERE data ->> 'id' = ?"""
 
-    override fun getById(id: UUID): SoeknadGravid? {
+    override fun getById(id: UUID): SoeknadKronisk? {
         ds.connection.use {
-            val existingList = ArrayList<SoeknadGravid>()
+            val existingList = ArrayList<SoeknadKronisk>()
             val res = it.prepareStatement(getByIdStatement).apply {
                 setString(1,id.toString())
             }.executeQuery()
 
             while (res.next()) {
-                val sg = mapper.readValue<SoeknadGravid>(res.getString("data"))
+                val sg = mapper.readValue<SoeknadKronisk>(res.getString("data"))
                 existingList.add(sg)
             }
 
@@ -38,16 +38,16 @@ class PostgresGravidSoeknadRepository(val ds: DataSource, val mapper: ObjectMapp
         }
     }
 
-    override fun insert(soeknad: SoeknadGravid, connection: Connection): UUID {
+    override fun insert(soeknad: SoeknadKronisk, connection: Connection): UUID {
         val json = mapper.writeValueAsString(soeknad)
         connection.prepareStatement(saveStatement).apply {
                 setString(1, json)
         }.executeUpdate()
-        logger.debug("Har lagt inn gravidsøknaden ${soeknad.id}")
+        logger.debug("Har lagt inn kronisksøknaden ${soeknad.id}")
         return soeknad.id
     }
 
-    override fun insert(soeknad: SoeknadGravid) : UUID {
+    override fun insert(soeknad: SoeknadKronisk) : UUID {
         ds.connection.use {
             insert(soeknad, it)
         }
@@ -62,7 +62,7 @@ class PostgresGravidSoeknadRepository(val ds: DataSource, val mapper: ObjectMapp
         }
     }
 
-    override fun update(soeknad: SoeknadGravid) {
+    override fun update(soeknad: SoeknadKronisk) {
         val json = mapper.writeValueAsString(soeknad)
         ds.connection.use {
             it.prepareStatement(updateStatement).apply {

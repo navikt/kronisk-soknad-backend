@@ -3,7 +3,6 @@ package no.nav.helse.fritakagp.koin
 import com.zaxxer.hikari.HikariDataSource
 import io.ktor.config.*
 import io.ktor.util.*
-import no.altinn.services.serviceengine.correspondence._2009._10.ICorrespondenceAgencyExternalBasic
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbRepository
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbService
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.PostgresBakgrunnsjobbRepository
@@ -16,6 +15,8 @@ import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OppgaveKlientImpl
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlClient
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlClientImpl
 import no.nav.helse.fritakagp.db.*
+import no.nav.helse.fritakagp.integrasjon.rest.sts.configureFor
+import no.nav.helse.fritakagp.integrasjon.rest.sts.wsStsClient
 import no.nav.helse.fritakagp.gcp.BucketStorage
 import no.nav.helse.fritakagp.gcp.BucketStorageImp
 import no.nav.helse.fritakagp.processing.gravid.GravidSoeknadPDFGenerator
@@ -59,7 +60,11 @@ fun preprodConfig(config: ApplicationConfig) = module {
         val altinnMeldingWsClient = Clients.iCorrespondenceExternalBasic(
             config.getString("altinn_melding.pep_gw_endpoint")
         )
-
+        val sts = wsStsClient(
+            config.getString("sts_url_ws"),
+            config.getString("service_user.username") to config.getString("service_user.password")
+        )
+        sts.configureFor(altinnMeldingWsClient)
         altinnMeldingWsClient
     }
     single { PostgresKvitteringRepository(get(), get()) } bind KvitteringRepository::class

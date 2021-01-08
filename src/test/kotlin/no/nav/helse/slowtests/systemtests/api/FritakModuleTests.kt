@@ -3,7 +3,7 @@ package no.nav.helse.slowtests.systemtests.api
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
-import no.nav.helse.TestData
+import no.nav.helse.GravidTestData
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 
@@ -19,8 +19,8 @@ class FritakModuleTests : SystemTestBase() {
 
             body = """
                 {
-                    "fnr": "${TestData.validIdentitetsnummer}",
-                    "orgnr": "${TestData.fullValidRequest.orgnr}",
+                    "fnr": "${GravidTestData.validIdentitetsnummer}",
+                    "orgnr": "${GravidTestData.fullValidRequest.orgnr}",
                     "tilrettelegge": true,
                     "tiltak": ["IKKE GYLDIG"]
                 }
@@ -36,7 +36,7 @@ class FritakModuleTests : SystemTestBase() {
             appUrl(soeknadGravidUrl)
             contentType(ContentType.Application.Json)
             loggedInAs("123456789")
-            body = TestData.fullValidRequest
+            body = GravidTestData.fullValidRequest
         }
 
         Assertions.assertThat(response.status).isEqualTo(HttpStatusCode.Created)
@@ -48,7 +48,7 @@ class FritakModuleTests : SystemTestBase() {
             appUrl(soeknadGravidUrl)
             contentType(ContentType.Application.Json)
             loggedInAs("123456789")
-            body = TestData.gravidSoknadMedFil
+            body = GravidTestData.gravidSoknadMedFil
         }
 
         Assertions.assertThat(response.status).isEqualTo(HttpStatusCode.Created)

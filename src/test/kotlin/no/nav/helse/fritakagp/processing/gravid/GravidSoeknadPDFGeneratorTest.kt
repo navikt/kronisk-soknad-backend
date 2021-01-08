@@ -1,6 +1,6 @@
 package no.nav.helse.fritakagp.processing.gravid
 
-import no.nav.helse.TestData
+import no.nav.helse.GravidTestData
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.text.PDFTextStripper
 import org.assertj.core.api.Assertions.assertThat
@@ -13,7 +13,7 @@ class GravidSoeknadPDFGeneratorTest {
 
     @Test
     fun testLagPDF() {
-        val soeknad = TestData.soeknadGravid
+        val soeknad = GravidTestData.soeknadGravid
         val pdf = GravidSoeknadPDFGenerator().lagPDF(soeknad)
         assertThat(pdf).isNotNull
 
@@ -31,7 +31,7 @@ class GravidSoeknadPDFGeneratorTest {
     @Disabled
     fun saveAndShowPdf() {
         // test for å visuelt sjekke ut PDFen
-        val soeknad = TestData.soeknadGravid
+        val soeknad = GravidTestData.soeknadGravid
         val pdf = GravidSoeknadPDFGenerator().lagPDF(soeknad)
 
         val file = Files.createTempFile(null, ".pdf").toFile()

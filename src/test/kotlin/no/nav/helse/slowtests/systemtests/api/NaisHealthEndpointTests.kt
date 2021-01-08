@@ -2,7 +2,7 @@ package no.nav.helse.slowtests.systemtests.api
 
 import io.ktor.client.request.*
 import io.ktor.http.*
-import no.nav.helse.TestData
+import no.nav.helse.GravidTestData
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 
@@ -13,7 +13,7 @@ class NaisHealthEndpointTests : SystemTestBase() {
         val response = httpClient.get<String> {
             appUrl("/health/is-alive")
             contentType(ContentType.Application.Json)
-            body = TestData.fullValidRequest
+            body = GravidTestData.fullValidRequest
         }
 
         Assertions.assertThat(response).isNotBlank()
@@ -24,7 +24,7 @@ class NaisHealthEndpointTests : SystemTestBase() {
         val response = httpClient.get<String> {
             appUrl("/health/is-ready")
             contentType(ContentType.Application.Json)
-            body = TestData.fullValidRequest
+            body = GravidTestData.fullValidRequest
         }
 
         Assertions.assertThat(response).isNotBlank()

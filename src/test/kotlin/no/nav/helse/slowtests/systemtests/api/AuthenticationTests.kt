@@ -4,7 +4,7 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.util.*
-import no.nav.helse.TestData
+import no.nav.helse.GravidTestData
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -17,7 +17,7 @@ class AuthenticationTests : SystemTestBase() {
         val response = httpClient.post<HttpResponse> {
             appUrl(soeknadGravidUrl)
             contentType(ContentType.Application.Json)
-            body = TestData.fullValidRequest
+            body = GravidTestData.fullValidRequest
         }
 
         assertThat(response.status).isEqualTo(HttpStatusCode.Unauthorized)
@@ -30,7 +30,7 @@ class AuthenticationTests : SystemTestBase() {
             contentType(ContentType.Application.Json)
             loggedInAs("123456789")
 
-            body = TestData.fullValidRequest
+            body = GravidTestData.fullValidRequest
         }
 
         assertThat(response.status).isNotEqualTo(HttpStatusCode.Unauthorized)

@@ -28,9 +28,18 @@ fun <E> Validator<E>.Property<String?>.isNotStorreEnn(maxSize: Long) =
 class MaxAgeFravaersDataConstraint : CustomConstraint
 fun <E> Validator<E>.Property<Iterable<FravaerData>?>.ingenDataEldreEnn(aar: Long) =
     this.validate(MaxAgeFravaersDataConstraint()) { ps ->
-        val minDate = LocalDate.now().minusYears(aar)
+        val minDate = LocalDate.now().minusYears(aar).withDayOfMonth(1)
         return@validate !ps!!.any {
             LocalDate.parse("${it.yearMonth}-01").isBefore(minDate)
+        }
+    }
+
+class NoFutureFravaersDataConstraint : CustomConstraint
+fun <E> Validator<E>.Property<Iterable<FravaerData>?>.ingenDataFraFremtiden() =
+    this.validate(NoFutureFravaersDataConstraint()) { ps ->
+        val maxDate = LocalDate.now().withDayOfMonth(1)
+        return@validate !ps!!.any {
+            LocalDate.parse("${it.yearMonth}-01").isAfter(maxDate)
         }
     }
 

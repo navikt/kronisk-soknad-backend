@@ -1,36 +1,89 @@
 package no.nav.helse.fritakagp.web.api.resreq
 
 import no.nav.helse.GravidTestData
-import no.nav.helse.fritakagp.domain.Omplassering
-import no.nav.helse.fritakagp.domain.OmplasseringAarsak
+import no.nav.helse.KroniskTestData
+import no.nav.helse.fritakagp.domain.FravaerData
+import no.nav.helse.fritakagp.domain.PaakjenningsType
 import no.nav.helse.fritakagp.domain.Tiltak
+import no.nav.helse.toYearMonthString
 import org.junit.jupiter.api.Test
+import java.time.LocalDate
 
 internal class KroniskSoknadRequestTest {
 
     @Test
-    internal fun `Gyldig FNR er påkrevd`() {
+    fun `Gyldig FNR er påkrevd`() {
         validationShouldFailFor(KroniskSoknadRequest::fnr) {
-            GravidTestData.fullValidRequest.copy(fnr = "01020312345")
+            KroniskTestData.fullValidRequest.copy(fnr = "01020312345")
         }
     }
 
     @Test
-    internal fun `Gyldig OrgNr er påkrevd dersom det er oppgitt`() {
+    fun `Gyldig OrgNr er påkrevd dersom det er oppgitt`() {
         validationShouldFailFor(KroniskSoknadRequest::orgnr) {
-            GravidTestData.fullValidRequest.copy(orgnr = "098765432")
+            KroniskTestData.fullValidRequest.copy(orgnr = "098765432")
         }
     }
 
     @Test
-    internal fun `Bekreftelse av egenerklæring er påkrevd`() {
+    fun `Bekreftelse av egenerklæring er påkrevd`() {
         validationShouldFailFor(KroniskSoknadRequest::bekreftet) {
-            GravidTestData.fullValidRequest.copy(bekreftet = false)
+            KroniskTestData.fullValidRequest.copy(bekreftet = false)
         }
     }
 
     @Test
-    fun `Dersom omplassering ikke er mulig må det finnes en årsak`() {
+    fun `Kan ikke ha eldre fraværsdata enn 3 år`() {
+        KroniskTestData.fullValidRequest.copy(
+            fravaer = setOf(
+                FravaerData(LocalDate.now().minusMonths(36).toYearMonthString(), 5)
+            )
+        )
 
+        validationShouldFailFor(KroniskSoknadRequest::fravaer) {
+            KroniskTestData.fullValidRequest.copy(
+                fravaer = setOf(
+                    FravaerData(LocalDate.now().minusMonths(37).toYearMonthString(), 5)
+                )
+            )
+        }
+    }
+
+
+    @Test
+    fun `Om påkjenninger ikke inneholder "ANNET" er beskrivelse ikke påkrevd`() {
+        KroniskTestData.fullValidRequest.copy(
+            paakjenningstyper = setOf(PaakjenningsType.STRESSENDE),
+            paakjenningBeskrivelse = null
+        )
+    }
+    @Test
+    fun `Om påkjenninger inneholder "ANNET" er beskrivelse påkrevd`() {
+        validationShouldFailFor(KroniskSoknadRequest::paakjenningBeskrivelse) {
+            KroniskTestData.fullValidRequest.copy(paakjenningBeskrivelse = null)
+        }
+    }
+
+    @Test
+    fun `Kan ikke ha fraværsdata fra fremtiden`() {
+        validationShouldFailFor(KroniskSoknadRequest::fravaer) {
+            KroniskTestData.fullValidRequest.copy(
+                fravaer = setOf(
+                    FravaerData(LocalDate.now().plusMonths(1).toYearMonthString(), 5)
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `Kan ikke ha fraværsdager som overstiger antall dager i måneden`() {
+        val invalidNumberOfDays = LocalDate.now().lengthOfMonth() + 1
+        validationShouldFailFor(KroniskSoknadRequest::fravaer) {
+            KroniskTestData.fullValidRequest.copy(
+                fravaer = setOf(
+                    FravaerData(LocalDate.now().toYearMonthString(), invalidNumberOfDays)
+                )
+            )
+        }
     }
 }

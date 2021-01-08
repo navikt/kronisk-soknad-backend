@@ -9,10 +9,10 @@ data class SoeknadKronisk(
 
         val orgnr: String,
         val fnr: String,
-        val arbeid: List<ArbeidsType>,
-        val paakjenninger: List<PaakjenningsType>,
+        val arbeid: Set<ArbeidsType>,
+        val paakjenninger: Set<PaakjenningsType>,
         val paakjenningBeskrivelse: String? = null,
-        val fravaer: List<FravaerData>,
+        val fravaer: Set<FravaerData>,
         val bekreftet: Boolean,
 
         val sendtAv: String,

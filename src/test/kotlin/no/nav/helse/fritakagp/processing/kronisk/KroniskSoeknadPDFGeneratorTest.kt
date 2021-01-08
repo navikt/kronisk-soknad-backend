@@ -4,6 +4,7 @@ import no.nav.helse.KroniskTestData
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.text.PDFTextStripper
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import java.awt.Desktop
 import java.nio.file.Files
@@ -31,6 +32,7 @@ class KroniskSoeknadPDFGeneratorTest {
     }
 
     @Test
+    @Disabled
     fun saveAndShowPdf() {
         // test for å visuelt sjekke ut PDFen
         val soeknad = KroniskTestData.soeknadKronisk

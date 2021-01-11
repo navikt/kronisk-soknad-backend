@@ -2,8 +2,8 @@ package no.nav.helse.fritakagp.koin
 
 import io.ktor.config.*
 import io.ktor.util.*
-import no.nav.helse.fritakagp.gcp.BucketStorage
-import no.nav.helse.fritakagp.gcp.BucketStorageImpl
+import no.nav.helse.fritakagp.integration.gcp.BucketStorage
+import no.nav.helse.fritakagp.integration.gcp.BucketStorageImpl
 import no.nav.helse.fritakagp.integration.virusscan.ClamavVirusScannerImp
 import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
 import org.koin.dsl.bind

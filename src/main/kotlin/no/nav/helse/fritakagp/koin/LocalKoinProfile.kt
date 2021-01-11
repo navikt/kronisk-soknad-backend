@@ -7,13 +7,15 @@ import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbRepository
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbService
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.PostgresBakgrunnsjobbRepository
 import no.nav.helse.fritakagp.db.*
-import no.nav.helse.fritakagp.processing.gravid.GravidSoeknadPDFGenerator
-import no.nav.helse.fritakagp.processing.gravid.SoeknadGravidProcessor
-import no.nav.helse.fritakagp.processing.kronisk.KroniskSoeknadPDFGenerator
-import no.nav.helse.fritakagp.processing.kronisk.SoeknadKroniskProcessor
-import no.nav.helse.fritakagp.integration.altinn.kvittering.gravid.soeknad.DummyGravidSoeknadKvitteringSender
-import no.nav.helse.fritakagp.integration.altinn.kvittering.gravid.soeknad.GravidSoeknadKvitteringProcessor
-import no.nav.helse.fritakagp.integration.altinn.kvittering.gravid.soeknad.GravidSoeknadKvitteringSender
+import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadPDFGenerator
+import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadProcessor
+import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadPDFGenerator
+import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadProcessor
+import no.nav.helse.fritakagp.processing.gravid.soeknad.DummyGravidSoeknadKvitteringSender
+import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadKvitteringProcessor
+import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadKvitteringSender
+import no.nav.helse.fritakagp.processing.kronisk.soeknad.DummyKroniskSoeknadKvitteringSender
+import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadKvitteringSender
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import javax.sql.DataSource
@@ -31,9 +33,11 @@ fun localDevConfig(config: ApplicationConfig) = module {
     single { PostgresBakgrunnsjobbRepository(get()) } bind BakgrunnsjobbRepository::class
     single { BakgrunnsjobbService(get()) }
 
-    single { SoeknadGravidProcessor(get(), get(), get(), get(), GravidSoeknadPDFGenerator(), get(), get())}
-    single { SoeknadKroniskProcessor(get(), get(), get(), get(), KroniskSoeknadPDFGenerator(), get(), get())}
+    single { GravidSoeknadProcessor(get(), get(), get(), get(), GravidSoeknadPDFGenerator(), get(), get()) }
+    single { KroniskSoeknadProcessor(get(), get(), get(), get(), KroniskSoeknadPDFGenerator(), get(), get()) }
 
     single { DummyGravidSoeknadKvitteringSender() } bind GravidSoeknadKvitteringSender::class
-    single { GravidSoeknadKvitteringProcessor(get(), get(), get()) }
+    single { KroniskSoeknadKvitteringProcessor(get(), get(), get()) }
+    single { DummyKroniskSoeknadKvitteringSender() } bind KroniskSoeknadKvitteringSender::class
+    single { KroniskSoeknadKvitteringProcessor(get(), get(), get()) }
 }

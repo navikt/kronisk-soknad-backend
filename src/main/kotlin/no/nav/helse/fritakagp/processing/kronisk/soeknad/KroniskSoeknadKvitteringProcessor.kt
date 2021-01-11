@@ -1,20 +1,21 @@
-package no.nav.helse.fritakagp.integration.altinn.kvittering.gravid.soeknad
+package no.nav.helse.fritakagp.processing.kronisk.soeknad
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbProsesserer
 import no.nav.helse.fritakagp.db.GravidSoeknadRepository
+import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadKvitteringSender
 import java.lang.IllegalArgumentException
 import java.time.LocalDateTime
 import java.util.*
 
-class GravidSoeknadKvitteringProcessor(
+class KroniskSoeknadKvitteringProcessor(
     private val gravidSoeknadKvitteringSender: GravidSoeknadKvitteringSender,
     private val db: GravidSoeknadRepository,
     private val om: ObjectMapper
 ) : BakgrunnsjobbProsesserer {
 
     companion object {
-        val JOB_TYPE = "kvitt_søk_gravid"
+        val JOB_TYPE = "kvitt_søk_kronisk"
     }
 
     override fun nesteForsoek(forsoek: Int, forrigeForsoek: LocalDateTime): LocalDateTime {

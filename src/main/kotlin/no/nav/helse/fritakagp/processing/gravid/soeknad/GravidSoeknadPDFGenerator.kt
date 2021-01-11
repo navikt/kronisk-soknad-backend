@@ -1,4 +1,4 @@
-package no.nav.helse.fritakagp.processing.gravid
+package no.nav.helse.fritakagp.processing.gravid.soeknad
 
 import no.nav.helse.fritakagp.domain.SoeknadGravid
 import org.apache.commons.lang3.text.WordUtils

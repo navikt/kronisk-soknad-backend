@@ -1,4 +1,4 @@
-package no.nav.helse.fritakagp.processing.kronisk
+package no.nav.helse.fritakagp.processing.kronisk.soeknad
 
 import no.nav.helse.fritakagp.domain.SoeknadKronisk
 import org.apache.commons.lang3.text.WordUtils

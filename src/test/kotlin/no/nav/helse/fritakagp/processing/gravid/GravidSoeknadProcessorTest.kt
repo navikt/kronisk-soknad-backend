@@ -15,15 +15,17 @@ import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlHentFullPerson.PdlGeografi
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlHentFullPerson.PdlIdentResponse
 import no.nav.helse.fritakagp.db.PostgresGravidSoeknadRepository
 import no.nav.helse.fritakagp.domain.SoeknadGravid
-import no.nav.helse.fritakagp.gcp.BucketDocument
-import no.nav.helse.fritakagp.gcp.BucketStorage
+import no.nav.helse.fritakagp.integration.gcp.BucketDocument
+import no.nav.helse.fritakagp.integration.gcp.BucketStorage
+import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadPDFGenerator
+import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadProcessor
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.io.IOException
 
-class SoeknadGravidProcessorTest {
+class GravidSoeknadProcessorTest {
 
     val joarkMock = mockk<DokarkivKlient>(relaxed = true)
     val oppgaveMock = mockk<OppgaveKlient>(relaxed = true)
@@ -32,7 +34,7 @@ class SoeknadGravidProcessorTest {
     val objectMapper = ObjectMapper().registerModule(KotlinModule())
     val pdfGeneratorMock = mockk<GravidSoeknadPDFGenerator>(relaxed = true)
     val bucketStorageMock = mockk<BucketStorage>(relaxed = true)
-    val prosessor = SoeknadGravidProcessor(repositoryMock, joarkMock, oppgaveMock, pdlClientMock, pdfGeneratorMock, objectMapper, bucketStorageMock)
+    val prosessor = GravidSoeknadProcessor(repositoryMock, joarkMock, oppgaveMock, pdlClientMock, pdfGeneratorMock, objectMapper, bucketStorageMock)
     lateinit var soeknad: SoeknadGravid
 
     private val oppgaveId = 9999
@@ -42,7 +44,7 @@ class SoeknadGravidProcessorTest {
     @BeforeEach
     fun setup() {
         soeknad = GravidTestData.soeknadGravid.copy()
-        jobbDataJson = objectMapper.writeValueAsString(SoeknadGravidProcessor.JobbData(soeknad.id))
+        jobbDataJson = objectMapper.writeValueAsString(GravidSoeknadProcessor.JobbData(soeknad.id))
         every { repositoryMock.getById(soeknad.id) } returns soeknad
         every { bucketStorageMock.getDocAsString(any()) } returns null
         every { pdlClientMock.personNavn(soeknad.sendtAv)} returns PdlHentPersonNavn.PdlPersonNavneliste(listOf(
@@ -81,7 +83,7 @@ class SoeknadGravidProcessorTest {
         verify(exactly = 1) { bucketStorageMock.deleteDoc(soeknad.id) }
 
         assertThat((joarkRequest.captured.dokumenter)).hasSize(2)
-        val dokumentasjon = joarkRequest.captured.dokumenter.filter { it.brevkode == SoeknadGravidProcessor.dokumentasjonBrevkode }.first()
+        val dokumentasjon = joarkRequest.captured.dokumenter.filter { it.brevkode == GravidSoeknadProcessor.dokumentasjonBrevkode }.first()
 
         assertThat(dokumentasjon.dokumentVarianter[0].fysiskDokument).isEqualTo(dokumentData)
         assertThat(dokumentasjon.dokumentVarianter[0].filtype).isEqualTo(filtype.toUpperCase())

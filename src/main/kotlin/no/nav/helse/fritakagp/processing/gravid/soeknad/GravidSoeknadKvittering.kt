@@ -1,4 +1,4 @@
-package no.nav.helse.fritakagp.integration.altinn.kvittering.gravid.soeknad
+package no.nav.helse.fritakagp.processing.gravid.soeknad
 
 import no.altinn.schemas.services.intermediary.receipt._2009._10.ReceiptStatusEnum
 import no.altinn.schemas.services.serviceengine.correspondence._2010._10.ExternalContentV2
@@ -6,7 +6,6 @@ import no.altinn.schemas.services.serviceengine.correspondence._2010._10.InsertC
 import no.altinn.services.serviceengine.correspondence._2009._10.ICorrespondenceAgencyExternalBasic
 import no.altinn.services.serviceengine.correspondence._2009._10.ICorrespondenceAgencyExternalBasicInsertCorrespondenceBasicV2AltinnFaultFaultFaultMessage
 import no.nav.helse.fritakagp.domain.SoeknadGravid
-import org.slf4j.LoggerFactory
 import java.time.format.DateTimeFormatter
 
 interface GravidSoeknadKvitteringSender {

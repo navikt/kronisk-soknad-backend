@@ -7,14 +7,11 @@ import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbRepository
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbService
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.PostgresBakgrunnsjobbRepository
 import no.nav.helse.fritakagp.db.*
-import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadPDFGenerator
-import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadProcessor
+import no.nav.helse.fritakagp.processing.gravid.soeknad.*
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadPDFGenerator
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadProcessor
-import no.nav.helse.fritakagp.processing.gravid.soeknad.DummyGravidSoeknadKvitteringSender
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadKvitteringProcessor
-import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadKvitteringSender
-import no.nav.helse.fritakagp.processing.kronisk.soeknad.DummyKroniskSoeknadKvitteringSender
+import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadKvitteringSenderDummy
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadKvitteringSender
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -36,8 +33,9 @@ fun localDevConfig(config: ApplicationConfig) = module {
     single { GravidSoeknadProcessor(get(), get(), get(), get(), GravidSoeknadPDFGenerator(), get(), get()) }
     single { KroniskSoeknadProcessor(get(), get(), get(), get(), KroniskSoeknadPDFGenerator(), get(), get()) }
 
-    single { DummyGravidSoeknadKvitteringSender() } bind GravidSoeknadKvitteringSender::class
+    single { KroniskSoeknadKvitteringSenderDummy() } bind KroniskSoeknadKvitteringSender::class
     single { KroniskSoeknadKvitteringProcessor(get(), get(), get()) }
-    single { DummyKroniskSoeknadKvitteringSender() } bind KroniskSoeknadKvitteringSender::class
-    single { KroniskSoeknadKvitteringProcessor(get(), get(), get()) }
+
+    single { GravidSoeknadKvitteringSenderDummy() } bind GravidSoeknadKvitteringSender::class
+    single { GravidSoeknadKvitteringProcessor(get(), get(), get()) }
 }

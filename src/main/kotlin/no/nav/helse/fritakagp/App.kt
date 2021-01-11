@@ -94,6 +94,11 @@ class FritakAgpApplication(val port: Int = 8080) : KoinComponent {
             get<KroniskSoeknadKvitteringProcessor>()
         )
 
+        bakgrunnsjobbService.leggTilBakgrunnsjobbProsesserer(
+            KroniskSoeknadKvitteringProcessor.JOB_TYPE,
+            get<KroniskSoeknadKvitteringProcessor>()
+        )
+
         bakgrunnsjobbService.startAsync(true)
     }
 

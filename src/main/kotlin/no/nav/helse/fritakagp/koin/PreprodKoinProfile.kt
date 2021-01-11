@@ -18,21 +18,18 @@ import no.nav.helse.fritakagp.MetrikkVarsler
 import no.nav.helse.fritakagp.db.*
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.integration.gcp.BucketStorageImpl
-import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadPDFGenerator
-import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadProcessor
 import no.nav.helse.fritakagp.integration.oauth2.DefaultOAuth2HttpClient
 import no.nav.helse.fritakagp.integration.oauth2.TokenResolver
 import no.nav.helse.fritakagp.integration.oauth2.OAuth2ClientPropertiesConfig
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadPDFGenerator
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadProcessor
 import no.nav.helse.fritakagp.integration.altinn.message.*
-import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadAltinnGravidSoeknadKvitteringSender
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadKvitteringProcessor
-import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadKvitteringSender
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadAltinnKroniskSoeknadKvitteringSender
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadKvitteringSender
 import no.nav.helse.fritakagp.integration.virusscan.ClamavVirusScannerImp
 import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
+import no.nav.helse.fritakagp.processing.gravid.soeknad.*
 import no.nav.security.token.support.client.core.oauth2.ClientCredentialsTokenClient
 import no.nav.security.token.support.client.core.oauth2.OAuth2AccessTokenService
 import no.nav.security.token.support.client.core.oauth2.OnBehalfOfTokenClient
@@ -77,7 +74,7 @@ fun preprodConfig(config: ApplicationConfig) = module {
         )
     } bind GravidSoeknadKvitteringSender::class
 
-    single { KroniskSoeknadKvitteringProcessor(get(), get(), get()) }
+    single { GravidSoeknadKvitteringProcessor(get(), get(), get()) }
     
     single {
         KroniskSoeknadAltinnKroniskSoeknadKvitteringSender(

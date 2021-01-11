@@ -12,7 +12,7 @@ interface GravidSoeknadKvitteringSender {
     fun send(kvittering: SoeknadGravid)
 }
 
-class DummyGravidSoeknadKvitteringSender: GravidSoeknadKvitteringSender {
+class GravidSoeknadKvitteringSenderDummy: GravidSoeknadKvitteringSender {
     override fun send(kvittering: SoeknadGravid) {
         println("Sender kvittering for søknad gravid: ${kvittering.id}")
     }

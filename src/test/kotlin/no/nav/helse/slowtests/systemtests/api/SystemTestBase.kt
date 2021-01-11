@@ -7,7 +7,7 @@ import io.ktor.http.*
 import io.ktor.util.KtorExperimentalAPI
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.runBlocking
-import no.nav.helse.fritakagp.web.FritakAgpApplication
+import no.nav.helse.fritakagp.FritakAgpApplication
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.TestInstance
@@ -54,7 +54,6 @@ open class SystemTestBase : KoinTest {
         url("http://localhost:$testServerPort$relativePath")
     }
 
-
     /**
      * Hjelpefunksjon for å hente ut gyldig JWT-token og legge det til som Auth header på en request
      */
@@ -66,7 +65,6 @@ open class SystemTestBase : KoinTest {
 
         header("Authorization", "Bearer ${response.setCookie()[0].value}")
     }
-
 
     /**
      * Hjelpefunksjon for at JUnit5 skal kunne kjenne igjen tester som kaller har "suspend"-funksjoner

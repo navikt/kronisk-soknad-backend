@@ -1,4 +1,4 @@
-package no.nav.helse.fritakagp.virusscan
+package no.nav.helse.fritakagp.integration.virusscan
 
 import io.ktor.client.HttpClient
 import io.ktor.client.request.*

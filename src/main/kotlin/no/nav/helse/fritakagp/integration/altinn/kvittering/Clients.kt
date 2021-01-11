@@ -1,4 +1,4 @@
-package no.nav.helse.fritakagp.processing.kvittering
+package no.nav.helse.fritakagp.integration.altinn.kvittering
 
 import no.altinn.services.serviceengine.correspondence._2009._10.ICorrespondenceAgencyExternalBasic
 import org.apache.cxf.jaxws.JaxWsProxyFactoryBean

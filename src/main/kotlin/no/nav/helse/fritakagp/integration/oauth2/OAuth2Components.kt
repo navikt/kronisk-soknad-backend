@@ -1,4 +1,4 @@
-package no.nav.helse.fritakagp.oauth2
+package no.nav.helse.fritakagp.integration.oauth2
 
 import io.ktor.client.*
 import io.ktor.client.call.*

@@ -16,7 +16,7 @@ import no.nav.helse.fritakagp.koin.selectModuleBasedOnProfile
 import no.nav.helse.fritakagp.nais.nais
 import no.nav.helse.fritakagp.processing.gravid.SoeknadGravidProcessor
 import no.nav.helse.fritakagp.processing.kronisk.SoeknadKroniskProcessor
-import no.nav.helse.fritakagp.processing.kvittering.KvitteringProcessor
+import no.nav.helse.fritakagp.integration.altinn.kvittering.gravid.soeknad.GravidSoeknadKvitteringProcessor
 import no.nav.helse.fritakagp.web.auth.localCookieDispenser
 import org.flywaydb.core.Flyway
 import org.koin.core.KoinComponent
@@ -88,8 +88,8 @@ class FritakAgpApplication(val port: Int = 8080) : KoinComponent {
         )
 
         bakgrunnsjobbService.leggTilBakgrunnsjobbProsesserer(
-            KvitteringProcessor.JOB_TYPE,
-            get<KvitteringProcessor>()
+            GravidSoeknadKvitteringProcessor.JOB_TYPE,
+            get<GravidSoeknadKvitteringProcessor>()
         )
 
         bakgrunnsjobbService.startAsync(true)

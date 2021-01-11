@@ -17,9 +17,9 @@ import no.nav.helse.fritakagp.domain.decodeBase64File
 import no.nav.helse.fritakagp.gcp.BucketStorage
 import no.nav.helse.fritakagp.processing.gravid.SoeknadGravidProcessor
 import no.nav.helse.fritakagp.processing.kronisk.SoeknadKroniskProcessor
-import no.nav.helse.fritakagp.processing.kvittering.KvitteringJobData
-import no.nav.helse.fritakagp.processing.kvittering.KvitteringProcessor
-import no.nav.helse.fritakagp.virusscan.VirusScanner
+import no.nav.helse.fritakagp.integration.altinn.kvittering.gravid.soeknad.KvitteringJobData
+import no.nav.helse.fritakagp.integration.altinn.kvittering.gravid.soeknad.GravidSoeknadKvitteringProcessor
+import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
 import no.nav.helse.fritakagp.web.api.resreq.GravideSoknadRequest
 import no.nav.helse.fritakagp.web.api.resreq.KroniskSoknadRequest
 import no.nav.helse.fritakagp.web.dto.validation.extractBase64Del
@@ -90,7 +90,7 @@ fun Route.fritakAGP(
                             Bakgrunnsjobb(
                                     maksAntallForsoek = 10,
                                     data = om.writeValueAsString(KvitteringJobData(soeknad.id)),
-                                    type = KvitteringProcessor.JOB_TYPE),
+                                    type = GravidSoeknadKvitteringProcessor.JOB_TYPE),
                             connection
                     )
                 }

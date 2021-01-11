@@ -19,14 +19,17 @@ import no.nav.helse.fritakagp.gcp.BucketStorage
 import no.nav.helse.fritakagp.gcp.BucketStorageImpl
 import no.nav.helse.fritakagp.processing.gravid.GravidSoeknadPDFGenerator
 import no.nav.helse.fritakagp.processing.gravid.SoeknadGravidProcessor
-import no.nav.helse.fritakagp.oauth2.DefaultOAuth2HttpClient
-import no.nav.helse.fritakagp.oauth2.TokenResolver
-import no.nav.helse.fritakagp.oauth2.OAuth2ClientPropertiesConfig
+import no.nav.helse.fritakagp.integration.oauth2.DefaultOAuth2HttpClient
+import no.nav.helse.fritakagp.integration.oauth2.TokenResolver
+import no.nav.helse.fritakagp.integration.oauth2.OAuth2ClientPropertiesConfig
 import no.nav.helse.fritakagp.processing.kronisk.KroniskSoeknadPDFGenerator
 import no.nav.helse.fritakagp.processing.kronisk.SoeknadKroniskProcessor
-import no.nav.helse.fritakagp.processing.kvittering.*
-import no.nav.helse.fritakagp.virusscan.ClamavVirusScannerImp
-import no.nav.helse.fritakagp.virusscan.VirusScanner
+import no.nav.helse.fritakagp.integration.altinn.kvittering.*
+import no.nav.helse.fritakagp.integration.altinn.kvittering.gravid.soeknad.GravidSoeknadAltinnGravidSoeknadKvitteringSender
+import no.nav.helse.fritakagp.integration.altinn.kvittering.gravid.soeknad.GravidSoeknadKvitteringProcessor
+import no.nav.helse.fritakagp.integration.altinn.kvittering.gravid.soeknad.GravidSoeknadKvitteringSender
+import no.nav.helse.fritakagp.integration.virusscan.ClamavVirusScannerImp
+import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
 import no.nav.security.token.support.client.core.oauth2.ClientCredentialsTokenClient
 import no.nav.security.token.support.client.core.oauth2.OAuth2AccessTokenService
 import no.nav.security.token.support.client.core.oauth2.OnBehalfOfTokenClient
@@ -62,15 +65,15 @@ fun preprodConfig(config: ApplicationConfig) = module {
 
     single { Clients.iCorrespondenceExternalBasic(config.getString("altinn_melding.altinn_endpoint")) }
     single {
-        AltinnKvitteringSender(
-            AltinnKvitteringMapper(config.getString("altinn_melding.service_id")),
+        GravidSoeknadAltinnGravidSoeknadKvitteringSender(
+            config.getString("altinn_melding.service_id"),
             get(),
             config.getString("altinn_melding.username"),
             config.getString("altinn_melding.password")
         )
-    } bind KvitteringSender::class
+    } bind GravidSoeknadKvitteringSender::class
 
-    single { KvitteringProcessor(get(), get(), get()) }
+    single { GravidSoeknadKvitteringProcessor(get(), get(), get()) }
 }
 
 fun Module.externalSystemClients(config: ApplicationConfig) {

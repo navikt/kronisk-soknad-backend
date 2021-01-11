@@ -4,8 +4,8 @@ import io.ktor.config.*
 import io.ktor.util.*
 import no.nav.helse.fritakagp.gcp.BucketStorage
 import no.nav.helse.fritakagp.gcp.BucketStorageImpl
-import no.nav.helse.fritakagp.virusscan.ClamavVirusScannerImp
-import no.nav.helse.fritakagp.virusscan.VirusScanner
+import no.nav.helse.fritakagp.integration.virusscan.ClamavVirusScannerImp
+import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
 import org.koin.dsl.bind
 import org.koin.dsl.module
 

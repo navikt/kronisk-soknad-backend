@@ -1,4 +1,4 @@
-package no.nav.helse.fritakagp.web
+package no.nav.helse.fritakagp
 
 import com.typesafe.config.ConfigFactory
 import io.ktor.config.*
@@ -13,11 +13,13 @@ import no.nav.helse.arbeidsgiver.system.AppEnv
 import no.nav.helse.arbeidsgiver.system.getEnvironment
 import no.nav.helse.fritakagp.koin.getAllOfType
 import no.nav.helse.fritakagp.koin.selectModuleBasedOnProfile
-import no.nav.helse.fritakagp.nais.nais
-import no.nav.helse.fritakagp.processing.gravid.SoeknadGravidProcessor
-import no.nav.helse.fritakagp.processing.kronisk.SoeknadKroniskProcessor
-import no.nav.helse.fritakagp.integration.altinn.kvittering.gravid.soeknad.GravidSoeknadKvitteringProcessor
+import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadKvitteringProcessor
+import no.nav.helse.fritakagp.web.nais.nais
+import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadProcessor
+import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadProcessor
+import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadKvitteringProcessor
 import no.nav.helse.fritakagp.web.auth.localCookieDispenser
+import no.nav.helse.fritakagp.web.fritakModule
 import org.flywaydb.core.Flyway
 import org.koin.core.KoinComponent
 import org.koin.core.context.GlobalContext
@@ -78,18 +80,18 @@ class FritakAgpApplication(val port: Int = 8080) : KoinComponent {
         val bakgrunnsjobbService = get<BakgrunnsjobbService>()
 
         bakgrunnsjobbService.leggTilBakgrunnsjobbProsesserer(
-            SoeknadGravidProcessor.JOB_TYPE,
-            get<SoeknadGravidProcessor>()
+            GravidSoeknadProcessor.JOB_TYPE,
+            get<GravidSoeknadProcessor>()
         )
 
         bakgrunnsjobbService.leggTilBakgrunnsjobbProsesserer(
-            SoeknadKroniskProcessor.JOB_TYPE,
-            get<SoeknadKroniskProcessor>()
+            KroniskSoeknadProcessor.JOB_TYPE,
+            get<KroniskSoeknadProcessor>()
         )
 
         bakgrunnsjobbService.leggTilBakgrunnsjobbProsesserer(
             GravidSoeknadKvitteringProcessor.JOB_TYPE,
-            get<GravidSoeknadKvitteringProcessor>()
+            get<KroniskSoeknadKvitteringProcessor>()
         )
 
         bakgrunnsjobbService.startAsync(true)

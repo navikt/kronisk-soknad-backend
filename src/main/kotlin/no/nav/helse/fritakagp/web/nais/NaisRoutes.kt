@@ -1,4 +1,4 @@
-package no.nav.helse.fritakagp.nais
+package no.nav.helse.fritakagp.web.nais
 
 import io.ktor.application.*
 import io.ktor.http.*
@@ -12,7 +12,6 @@ import no.nav.helse.arbeidsgiver.kubernetes.KubernetesProbeManager
 import no.nav.helse.arbeidsgiver.kubernetes.ProbeResult
 import no.nav.helse.arbeidsgiver.kubernetes.ProbeState
 import org.koin.ktor.ext.get
-import org.slf4j.LoggerFactory
 import java.util.*
 
 private val collectorRegistry = CollectorRegistry.defaultRegistry

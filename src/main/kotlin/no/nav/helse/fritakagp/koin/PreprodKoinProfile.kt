@@ -14,20 +14,23 @@ import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OppgaveKlient
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OppgaveKlientImpl
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlClient
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlClientImpl
+import no.nav.helse.fritakagp.MetrikkVarsler
 import no.nav.helse.fritakagp.db.*
-import no.nav.helse.fritakagp.gcp.BucketStorage
-import no.nav.helse.fritakagp.gcp.BucketStorageImpl
-import no.nav.helse.fritakagp.processing.gravid.GravidSoeknadPDFGenerator
-import no.nav.helse.fritakagp.processing.gravid.SoeknadGravidProcessor
+import no.nav.helse.fritakagp.integration.gcp.BucketStorage
+import no.nav.helse.fritakagp.integration.gcp.BucketStorageImpl
+import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadPDFGenerator
+import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadProcessor
 import no.nav.helse.fritakagp.integration.oauth2.DefaultOAuth2HttpClient
 import no.nav.helse.fritakagp.integration.oauth2.TokenResolver
 import no.nav.helse.fritakagp.integration.oauth2.OAuth2ClientPropertiesConfig
-import no.nav.helse.fritakagp.processing.kronisk.KroniskSoeknadPDFGenerator
-import no.nav.helse.fritakagp.processing.kronisk.SoeknadKroniskProcessor
-import no.nav.helse.fritakagp.integration.altinn.kvittering.*
-import no.nav.helse.fritakagp.integration.altinn.kvittering.gravid.soeknad.GravidSoeknadAltinnGravidSoeknadKvitteringSender
-import no.nav.helse.fritakagp.integration.altinn.kvittering.gravid.soeknad.GravidSoeknadKvitteringProcessor
-import no.nav.helse.fritakagp.integration.altinn.kvittering.gravid.soeknad.GravidSoeknadKvitteringSender
+import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadPDFGenerator
+import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadProcessor
+import no.nav.helse.fritakagp.integration.altinn.message.*
+import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadAltinnGravidSoeknadKvitteringSender
+import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadKvitteringProcessor
+import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadKvitteringSender
+import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadAltinnKroniskSoeknadKvitteringSender
+import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadKvitteringSender
 import no.nav.helse.fritakagp.integration.virusscan.ClamavVirusScannerImp
 import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
 import no.nav.security.token.support.client.core.oauth2.ClientCredentialsTokenClient
@@ -58,12 +61,13 @@ fun preprodConfig(config: ApplicationConfig) = module {
     single { PostgresKroniskSoeknadRepository(get(), get()) } bind KroniskSoeknadRepository::class
 
     single { PostgresBakgrunnsjobbRepository(get()) } bind BakgrunnsjobbRepository::class
-    single { BakgrunnsjobbService(get()) }
+    single { BakgrunnsjobbService(get(), bakgrunnsvarsler = MetrikkVarsler()) }
 
-    single { SoeknadGravidProcessor(get(), get(), get(), get(), GravidSoeknadPDFGenerator(), get(), get()) }
-    single { SoeknadKroniskProcessor(get(), get(), get(), get(), KroniskSoeknadPDFGenerator(), get(), get()) }
+    single { GravidSoeknadProcessor(get(), get(), get(), get(), GravidSoeknadPDFGenerator(), get(), get()) }
+    single { KroniskSoeknadProcessor(get(), get(), get(), get(), KroniskSoeknadPDFGenerator(), get(), get()) }
 
     single { Clients.iCorrespondenceExternalBasic(config.getString("altinn_melding.altinn_endpoint")) }
+    
     single {
         GravidSoeknadAltinnGravidSoeknadKvitteringSender(
             config.getString("altinn_melding.service_id"),
@@ -73,7 +77,17 @@ fun preprodConfig(config: ApplicationConfig) = module {
         )
     } bind GravidSoeknadKvitteringSender::class
 
-    single { GravidSoeknadKvitteringProcessor(get(), get(), get()) }
+    single { KroniskSoeknadKvitteringProcessor(get(), get(), get()) }
+    
+    single {
+        KroniskSoeknadAltinnKroniskSoeknadKvitteringSender(
+            config.getString("altinn_melding.service_id"),
+            get(),
+            config.getString("altinn_melding.username"),
+            config.getString("altinn_melding.password")
+        )
+    } bind KroniskSoeknadKvitteringSender::class
+    single { KroniskSoeknadKvitteringProcessor(get(), get(), get()) }
 }
 
 fun Module.externalSystemClients(config: ApplicationConfig) {

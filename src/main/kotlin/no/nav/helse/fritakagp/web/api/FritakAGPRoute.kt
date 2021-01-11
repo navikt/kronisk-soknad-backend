@@ -14,11 +14,11 @@ import no.nav.helse.fritakagp.db.KroniskSoeknadRepository
 import no.nav.helse.fritakagp.domain.SoeknadGravid
 import no.nav.helse.fritakagp.domain.SoeknadKronisk
 import no.nav.helse.fritakagp.domain.decodeBase64File
-import no.nav.helse.fritakagp.gcp.BucketStorage
-import no.nav.helse.fritakagp.processing.gravid.SoeknadGravidProcessor
-import no.nav.helse.fritakagp.processing.kronisk.SoeknadKroniskProcessor
-import no.nav.helse.fritakagp.integration.altinn.kvittering.gravid.soeknad.KvitteringJobData
-import no.nav.helse.fritakagp.integration.altinn.kvittering.gravid.soeknad.GravidSoeknadKvitteringProcessor
+import no.nav.helse.fritakagp.integration.gcp.BucketStorage
+import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadKvitteringProcessor
+import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadProcessor
+import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadProcessor
+import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadKvitteringProcessor
 import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
 import no.nav.helse.fritakagp.web.api.resreq.GravideSoknadRequest
 import no.nav.helse.fritakagp.web.api.resreq.KroniskSoknadRequest
@@ -82,14 +82,14 @@ fun Route.fritakAGP(
                     bakgunnsjobbRepo.save(
                             Bakgrunnsjobb(
                                     maksAntallForsoek = 10,
-                                    data = om.writeValueAsString(SoeknadGravidProcessor.JobbData(soeknad.id)),
-                                    type = SoeknadGravidProcessor.JOB_TYPE),
+                                    data = om.writeValueAsString(GravidSoeknadProcessor.JobbData(soeknad.id)),
+                                    type = GravidSoeknadProcessor.JOB_TYPE),
                             connection
                     )
                     bakgunnsjobbRepo.save(
                             Bakgrunnsjobb(
                                     maksAntallForsoek = 10,
-                                    data = om.writeValueAsString(KvitteringJobData(soeknad.id)),
+                                    data = om.writeValueAsString(GravidSoeknadKvitteringProcessor.Jobbdata(soeknad.id)),
                                     type = GravidSoeknadKvitteringProcessor.JOB_TYPE),
                             connection
                     )
@@ -130,8 +130,15 @@ fun Route.fritakAGP(
                     bakgunnsjobbRepo.save(
                         Bakgrunnsjobb(
                             maksAntallForsoek = 10,
-                            data = om.writeValueAsString(SoeknadKroniskProcessor.JobbData(soeknad.id)),
-                            type = SoeknadKroniskProcessor.JOB_TYPE),
+                            data = om.writeValueAsString(KroniskSoeknadProcessor.JobbData(soeknad.id)),
+                            type = KroniskSoeknadProcessor.JOB_TYPE),
+                        connection
+                    )
+                    bakgunnsjobbRepo.save(
+                        Bakgrunnsjobb(
+                            maksAntallForsoek = 10,
+                            data = om.writeValueAsString(KroniskSoeknadKvitteringProcessor.Jobbdata(soeknad.id)),
+                            type = KroniskSoeknadKvitteringProcessor.JOB_TYPE),
                         connection
                     )
                 }

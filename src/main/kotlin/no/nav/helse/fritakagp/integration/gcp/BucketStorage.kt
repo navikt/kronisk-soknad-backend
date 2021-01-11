@@ -1,4 +1,4 @@
-package no.nav.helse.fritakagp.gcp
+package no.nav.helse.fritakagp.integration.gcp
 
 import com.google.cloud.storage.Bucket
 import com.google.cloud.storage.Storage

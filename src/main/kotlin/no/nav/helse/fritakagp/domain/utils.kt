@@ -6,9 +6,6 @@ fun decodeBase64File(datafile: String): ByteArray {
     return Base64.getDecoder().decode(datafile)
 }
 
-enum class GodskjentFiletyper(val beskrivelse : String) {
-    PDF("pdf"),
-    JPEG("jpg"),
-    JPG("jpg"),
-    PNG("png")
+enum class GodkjenteFiletyper(val beskrivelse : String) {
+    PDF("pdf")
 }

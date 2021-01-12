@@ -1,7 +1,7 @@
 package no.nav.helse.fritakagp.web.dto.validation
 
 import no.nav.helse.fritakagp.domain.FravaerData
-import no.nav.helse.fritakagp.domain.GodskjentFiletyper
+import no.nav.helse.fritakagp.domain.GodkjenteFiletyper
 import org.valiktor.Constraint
 import org.valiktor.Validator
 import java.time.LocalDate
@@ -14,7 +14,7 @@ interface CustomConstraint : Constraint {
 class DataUrlExtensionConstraints: CustomConstraint
 fun <E> Validator<E>.Property<String?>.isGodskjentFiletyper() =
     this.validate(DataUrlExtensionConstraints()){
-        return@validate enumContains<GodskjentFiletyper>(extractFilExtDel(it!!.toUpperCase()))
+        return@validate enumContains<GodkjenteFiletyper>(extractFilExtDel(it!!.toUpperCase()))
     }
 
 

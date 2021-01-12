@@ -9,6 +9,7 @@ import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OppgaveKlient
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OpprettOppgaveRequest
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlClient
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlIdent
+import no.nav.helse.fritakagp.KroniskSoeknadMetrics
 import no.nav.helse.fritakagp.db.KroniskSoeknadRepository
 import no.nav.helse.fritakagp.domain.SoeknadKronisk
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
@@ -52,12 +53,14 @@ class KroniskSoeknadProcessor(
         try {
             if (soeknad.journalpostId == null) {
                 soeknad.journalpostId = journalfør(soeknad)
+                KroniskSoeknadMetrics.tellJournalfoert()
             }
 
             bucketStorage.deleteDoc(soeknad.id)
 
             if (soeknad.oppgaveId == null) {
                 soeknad.oppgaveId = opprettOppgave(soeknad)
+                KroniskSoeknadMetrics.tellOppgaveOpprettet()
             }
         } finally {
             updateAndLogOnFailure(soeknad)

@@ -2,6 +2,7 @@ package no.nav.helse.fritakagp.processing.gravid.soeknad
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbProsesserer
+import no.nav.helse.fritakagp.GravidSoeknadMetrics
 import no.nav.helse.fritakagp.db.GravidSoeknadRepository
 import java.lang.IllegalArgumentException
 import java.time.LocalDateTime
@@ -27,6 +28,7 @@ class GravidSoeknadKvitteringProcessor(
             ?: throw IllegalArgumentException("Fant ikke søknaden i jobbdatanene $jobbData")
 
         gravidSoeknadKvitteringSender.send(soeknad)
+        GravidSoeknadMetrics.tellKvitteringSendt()
     }
 
     data class Jobbdata(

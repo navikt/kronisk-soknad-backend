@@ -20,8 +20,23 @@ val FEILET_JOBB_COUNTER = Counter.build()
         .register()
 
 
-val INNKOMMENDE_GRAVID_SOEKNADER_COUNTER: Counter = Counter.build()
+object GravidSoeknadMetrics :
+    ProseseringsMetrikker("gravid_soeknad", "Metrikker for søknader, gravid")
+
+object KroniskSoeknadMetrics :
+    ProseseringsMetrikker("kronisk_soeknad", "Metrikker for søknader, kronisk")
+
+
+abstract class ProseseringsMetrikker(metricName: String, metricHelpText: String) {
+    private val GRAVID_SOEKNAD: Counter = Counter.build()
         .namespace(METRICS_NS)
-        .name("inkommende_gravis_soeknad")
-        .help("Counts the number of incoming applicaitons pregnant")
+        .name(metricName)
+        .labelNames("hendelse")
+        .help(metricHelpText)
         .register()
+
+    fun tellMottatt() = GRAVID_SOEKNAD.labels("mottatt").inc()
+    fun tellJournalfoert() = GRAVID_SOEKNAD.labels("journalfoert").inc()
+    fun tellOppgaveOpprettet() = GRAVID_SOEKNAD.labels("oppgaveOpprettet").inc()
+    fun tellKvitteringSendt() = GRAVID_SOEKNAD.labels("kvitteringSendt").inc()
+}

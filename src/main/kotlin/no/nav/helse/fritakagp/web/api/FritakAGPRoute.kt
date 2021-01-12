@@ -9,6 +9,8 @@ import io.ktor.routing.*
 import io.ktor.util.*
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.Bakgrunnsjobb
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbRepository
+import no.nav.helse.fritakagp.GravidSoeknadMetrics
+import no.nav.helse.fritakagp.KroniskSoeknadMetrics
 import no.nav.helse.fritakagp.db.GravidSoeknadRepository
 import no.nav.helse.fritakagp.db.KroniskSoeknadRepository
 import no.nav.helse.fritakagp.domain.SoeknadGravid
@@ -96,6 +98,7 @@ fun Route.fritakAGP(
                 }
 
                 call.respond(HttpStatusCode.Created)
+                GravidSoeknadMetrics.tellMottatt()
             }
         }
 
@@ -144,6 +147,7 @@ fun Route.fritakAGP(
                 }
 
                 call.respond(HttpStatusCode.Created)
+                KroniskSoeknadMetrics.tellMottatt()
             }
         }
     }

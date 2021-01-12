@@ -9,6 +9,8 @@ import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OppgaveKlient
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OpprettOppgaveRequest
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlClient
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlIdent
+import no.nav.helse.fritakagp.GravidSoeknadMetrics
+import no.nav.helse.fritakagp.KroniskSoeknadMetrics
 import no.nav.helse.fritakagp.db.GravidSoeknadRepository
 import no.nav.helse.fritakagp.domain.SoeknadGravid
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
@@ -52,12 +54,14 @@ class GravidSoeknadProcessor(
         try {
             if (soeknad.journalpostId == null) {
                 soeknad.journalpostId = journalfør(soeknad)
+                GravidSoeknadMetrics.tellJournalfoert()
             }
 
             bucketStorage.deleteDoc(soeknad.id)
 
             if (soeknad.oppgaveId == null) {
                 soeknad.oppgaveId = opprettOppgave(soeknad)
+                GravidSoeknadMetrics.tellOppgaveOpprettet()
             }
         } finally {
             updateAndLogOnFailure(soeknad)
@@ -68,8 +72,7 @@ class GravidSoeknadProcessor(
         try {
             gravidSoeknadRepo.update(soeknad)
         } catch (e: Exception) {
-            log.error("Feilet i å lagre ${soeknad.id} etter at en ekstern operasjon har blitt utført. JournalpostID: ${soeknad.journalpostId} OppgaveID: ${soeknad.oppgaveId}")
-            throw e
+            throw RuntimeException("Feilet i å lagre ${soeknad.id} etter at en ekstern operasjon har blitt utført. JournalpostID: ${soeknad.journalpostId} OppgaveID: ${soeknad.oppgaveId}", e)
         }
     }
 

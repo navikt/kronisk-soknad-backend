@@ -23,7 +23,8 @@ fun Application.configureExceptionHandling() {
 
         suspend fun handleUnexpectedException(call: ApplicationCall, cause: Throwable) {
             val errorId = UUID.randomUUID()
-            val userAgent = call.request.headers.get("User-Agent") ?: "Ukjent"
+
+            val userAgent = call.request.headers.get(HttpHeaders.UserAgent) ?: "Ukjent"
             logger.error("Uventet feil, $errorId med useragent $userAgent", cause)
             val problem = Problem(
                 type = URI.create("urn:fritak:uventet-feil"),
@@ -89,7 +90,7 @@ fun Application.configureExceptionHandling() {
         }
 
         exception<MissingKotlinParameterException> { cause ->
-            val userAgent = call.request.headers.get("User-Agent") ?: "Ukjent"
+            val userAgent = call.request.headers.get(HttpHeaders.UserAgent) ?: "Ukjent"
             call.respond(
                 HttpStatusCode.BadRequest,
                 ValidationProblem(
@@ -113,8 +114,8 @@ fun Application.configureExceptionHandling() {
                 handleValidationError(call, cause.cause as ConstraintViolationException)
             } else {
                 val errorId = UUID.randomUUID()
-                val userAgent = call.request.headers.get("User-Agent") ?: "Ukjent"
-                val locale = call.request.headers.get("Accept-Language") ?: "Ukjent"
+                val userAgent = call.request.headers.get(HttpHeaders.UserAgent) ?: "Ukjent"
+                val locale = call.request.headers.get(HttpHeaders.AcceptLanguage) ?: "Ukjent"
                 logger.warn("$errorId : $userAgent : $locale", cause)
                 val problem = Problem(
                     status = HttpStatusCode.BadRequest.value,

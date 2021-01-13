@@ -21,7 +21,7 @@ import javax.sql.DataSource
 @KtorExperimentalAPI
 fun localDevConfig(config: ApplicationConfig) = module {
 
-    this.mockExternalDependecies()
+    mockExternalDependecies()
 
     single { HikariDataSource(createHikariConfig(config.getjdbcUrlFromProperties(), config.getString("database.username"), config.getString("database.password"))) } bind DataSource::class
     single { PostgresGravidSoeknadRepository(get(), get()) } bind GravidSoeknadRepository::class

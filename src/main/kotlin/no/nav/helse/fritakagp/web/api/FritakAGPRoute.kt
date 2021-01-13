@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory
 import javax.sql.DataSource
 
 @KtorExperimentalAPI
-fun Route.fritakAGP(
+fun Route.fritakAGPRoutes(
         datasource: DataSource,
         gravidRepo: GravidSoeknadRepository,
         kroniskRepo: KroniskSoeknadRepository,

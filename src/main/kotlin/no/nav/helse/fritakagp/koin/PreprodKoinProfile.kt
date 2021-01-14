@@ -8,6 +8,7 @@ import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbService
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.PostgresBakgrunnsjobbRepository
 import no.nav.helse.arbeidsgiver.integrasjoner.AccessTokenProvider
 import no.nav.helse.arbeidsgiver.integrasjoner.OAuth2TokenProvider
+import no.nav.helse.arbeidsgiver.integrasjoner.altinn.AltinnRestClient
 import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.DokarkivKlient
 import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.DokarkivKlientImpl
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OppgaveKlient
@@ -17,6 +18,7 @@ import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlClientImpl
 import no.nav.helse.arbeidsgiver.web.auth.AltinnOrganisationsRepository
 import no.nav.helse.fritakagp.MetrikkVarsler
 import no.nav.helse.fritakagp.db.*
+import no.nav.helse.fritakagp.integration.altinn.CachedAuthRepo
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.integration.gcp.BucketStorageImpl
 import no.nav.helse.fritakagp.integration.oauth2.DefaultOAuth2HttpClient
@@ -89,7 +91,17 @@ fun preprodConfig(config: ApplicationConfig) = module {
 }
 
 fun Module.externalSystemClients(config: ApplicationConfig) {
-    single { MockAltinnRepo(get()) } bind AltinnOrganisationsRepository::class
+    single {
+        CachedAuthRepo(
+            AltinnRestClient(
+                config.getString("altinn.service_owner_api_url"),
+                config.getString("altinn.gw_api_key"),
+                config.getString("altinn.altinn_api_key"),
+                config.getString("altinn.service_id"),
+                get()
+            )
+        )
+    } bind AltinnOrganisationsRepository::class
 
     single {
         val clientConfig = OAuth2ClientPropertiesConfig(config)

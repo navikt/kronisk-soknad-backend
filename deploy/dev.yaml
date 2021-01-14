@@ -56,6 +56,7 @@ spec:
     # servicebrukerens passord som er  hentet fra vault og lagt inn slik: https://doc.nais.io/security/secrets/kubernetes-secrets/
     - secret: service-user-password
     - secret: altinn-user-password
+    - secret: altinn-api-gw-keys
     #- configmap: loginservice-idporten # tilgjengeliggjør LOGINSERVICE_IDPORTEN_DISCOVERY_URL og LOGINSERVICE_IDPORTEN_AUDIENCE
     # Skrur av ^^^ i PREPROD siden loginservice ikke virker via naisdevice
   env:
@@ -75,6 +76,9 @@ spec:
       value: helsearbeidsgiver-dev-6d06
     - name: GCP_BUCKET_NAME
       value: helse-arbeidsgiver-fritakagb-bucket
+    - name: ALTINN_SERVICE_OWNER_GW_URL
+      value: https://api-gw-q1.oera.no/ekstern/altinn/api/serviceowner
+
 
   gcp:
     sqlInstances:

@@ -21,6 +21,8 @@ import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadKvitteringProcessor
 import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadProcessor
 import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
+import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravKvitteringProcessor
+import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravProcessor
 import no.nav.helse.fritakagp.web.api.resreq.GravidKravRequest
 import no.nav.helse.fritakagp.web.api.resreq.GravidSoknadRequest
 import no.nav.helse.fritakagp.web.auth.authorize
@@ -40,7 +42,6 @@ fun Route.gravidRoutes(
     bucket: BucketStorage,
     authorizer: AltinnAuthorizer
 ) {
-
     route("/gravid") {
         route("/soeknad") {
             post {
@@ -117,6 +118,22 @@ fun Route.gravidRoutes(
 
                 datasource.connection.use { connection ->
                     gravidKravRepo.insert(krav, connection)
+                    bakgunnsjobbRepo.save(
+                        Bakgrunnsjobb(
+                            maksAntallForsoek = 10,
+                            data = om.writeValueAsString(GravidKravProcessor.JobbData(krav.id)),
+                            type = GravidKravProcessor.JOB_TYPE
+                        ),
+                        connection
+                    )
+                    bakgunnsjobbRepo.save(
+                        Bakgrunnsjobb(
+                            maksAntallForsoek = 10,
+                            data = om.writeValueAsString(GravidKravKvitteringProcessor.Jobbdata(krav.id)),
+                            type = GravidKravKvitteringProcessor.JOB_TYPE
+                        ),
+                        connection
+                    )
                 }
 
                 call.respond(HttpStatusCode.Created)

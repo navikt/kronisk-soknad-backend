@@ -1,7 +1,6 @@
-package no.nav.helse.fritakagp.processing.gravid
+package no.nav.helse.fritakagp.processing.gravid.soeknad
 
 import no.nav.helse.GravidTestData
-import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadPDFGenerator
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.text.PDFTextStripper
 import org.assertj.core.api.Assertions.assertThat

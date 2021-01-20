@@ -8,9 +8,9 @@ import kotlin.random.Random
 
 object KroniskTestData {
     val validIdentitetsnummer = "20015001543"
-    val validOrgNr = "123456785"
+    val validOrgNr = "917404437"
 
-    val soeknadKronisk = SoeknadKronisk(
+    val soeknadKronisk = KroniskSoeknad(
         orgnr = validOrgNr,
         fnr = validIdentitetsnummer,
         arbeidstyper = setOf(ArbeidsType.KREVENDE, ArbeidsType.MODERAT),

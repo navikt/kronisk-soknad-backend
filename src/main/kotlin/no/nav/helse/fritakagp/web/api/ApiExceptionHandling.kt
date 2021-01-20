@@ -9,6 +9,7 @@ import io.ktor.response.*
 import no.nav.helse.arbeidsgiver.web.validation.Problem
 import no.nav.helse.arbeidsgiver.web.validation.ValidationProblem
 import no.nav.helse.arbeidsgiver.web.validation.ValidationProblemDetail
+import no.nav.helse.fritakagp.integration.altinn.ManglerAltinnRettigheterException
 import no.nav.helse.fritakagp.web.dto.validation.getContextualMessage
 import org.slf4j.LoggerFactory
 import org.valiktor.ConstraintViolationException
@@ -61,10 +62,10 @@ fun Application.configureExceptionHandling() {
             }
         }
 
-        exception<ForbiddenException> {
+        exception<ManglerAltinnRettigheterException> {
             call.respond(
                 HttpStatusCode.Forbidden,
-                Problem(URI.create("urn:fritak:forbidden"), "Ingen tilgang", HttpStatusCode.Forbidden.value)
+                Problem(URI.create("urn:fritak:forbidden"), "Ikke korrekte Altinnrettigheter på valgt virksomhet", HttpStatusCode.Forbidden.value)
             )
         }
 

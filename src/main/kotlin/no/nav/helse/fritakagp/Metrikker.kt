@@ -20,6 +20,9 @@ val FEILET_JOBB_COUNTER = Counter.build()
         .register()
 
 
+object GravidKravMetrics :
+    ProseseringsMetrikker("gravid_krav", "Metrikker for krav, gravid")
+
 object GravidSoeknadMetrics :
     ProseseringsMetrikker("gravid_soeknad", "Metrikker for søknader, gravid")
 

@@ -11,7 +11,7 @@ import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlClient
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlIdent
 import no.nav.helse.fritakagp.KroniskSoeknadMetrics
 import no.nav.helse.fritakagp.db.KroniskSoeknadRepository
-import no.nav.helse.fritakagp.domain.SoeknadKronisk
+import no.nav.helse.fritakagp.domain.KroniskSoeknad
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import org.slf4j.LoggerFactory
 import java.time.LocalDate
@@ -67,7 +67,7 @@ class KroniskSoeknadProcessor(
         }
     }
 
-    private fun updateAndLogOnFailure(soeknad: SoeknadKronisk) {
+    private fun updateAndLogOnFailure(soeknad: KroniskSoeknad) {
         try {
             kroniskSoeknadRepo.update(soeknad)
         } catch (e: Exception) {
@@ -76,7 +76,7 @@ class KroniskSoeknadProcessor(
         }
     }
 
-    fun journalfør(soeknad: SoeknadKronisk): String {
+    fun journalfør(soeknad: KroniskSoeknad): String {
         val journalfoeringsTittel = "Søknad om fritak fra arbeidsgiverperioden ifbm kronisk lidelse"
         val pdlResponse = pdlClient.personNavn(soeknad.sendtAv)?.navn?.firstOrNull()
         val innsenderNavn = if (pdlResponse != null) "${pdlResponse.fornavn} ${pdlResponse.etternavn}" else "Ukjent"
@@ -104,7 +104,7 @@ class KroniskSoeknadProcessor(
     }
 
     private fun createDocuments(
-        soeknad: SoeknadKronisk,
+        soeknad: KroniskSoeknad,
         journalfoeringsTittel: String
     ): List<Dokument> {
         val base64EnkodetPdf = Base64.getEncoder().encodeToString(pdfGenerator.lagPDF(soeknad))
@@ -140,7 +140,7 @@ class KroniskSoeknadProcessor(
         return dokumentListe
     }
 
-    fun opprettOppgave(soeknad: SoeknadKronisk): String {
+    fun opprettOppgave(soeknad: KroniskSoeknad): String {
         val aktoerId = pdlClient.fullPerson(soeknad.fnr)?.hentIdenter?.trekkUtIdent(PdlIdent.PdlIdentGruppe.AKTORID)
         requireNotNull(aktoerId, { "Fant ikke AktørID for fnr i ${soeknad.id}" })
 

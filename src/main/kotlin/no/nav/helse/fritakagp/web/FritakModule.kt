@@ -12,9 +12,7 @@ import io.ktor.routing.*
 import io.ktor.util.*
 import no.nav.helse.arbeidsgiver.system.AppEnv
 import no.nav.helse.arbeidsgiver.system.getEnvironment
-import no.nav.helse.fritakagp.web.api.altinnRoutes
-import no.nav.helse.fritakagp.web.api.configureExceptionHandling
-import no.nav.helse.fritakagp.web.api.fritakAGPRoutes
+import no.nav.helse.fritakagp.web.api.*
 import no.nav.security.token.support.ktor.tokenValidationSupport
 import org.koin.ktor.ext.get
 import java.time.LocalDate
@@ -37,9 +35,13 @@ fun Application.fritakModule(config: ApplicationConfig = environment.config) {
     }
 
     routing {
-        authenticate {
-            fritakAGPRoutes(get(), get(), get(), get(), get(), get(), get())
-            altinnRoutes(get())
+        route("/api/v1") {
+            systemRoutes()
+            authenticate {
+                kroniskRoutes(get(), get(), get(), get(), get(), get())
+                gravidRoutes(get(), get(), get(), get(), get(), get(), get(), get())
+                altinnRoutes(get())
+            }
         }
     }
 }

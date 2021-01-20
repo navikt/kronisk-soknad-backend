@@ -1,15 +1,25 @@
 package no.nav.helse.fritakagp.web.dto.validation
 
+import no.nav.helse.fritakagp.domain.Arbeidsgiverperiode
 import no.nav.helse.fritakagp.domain.FravaerData
 import no.nav.helse.fritakagp.domain.GodkjenteFiletyper
 import org.valiktor.Constraint
 import org.valiktor.Validator
 import java.time.LocalDate
+import java.time.temporal.ChronoUnit
 
 interface CustomConstraint : Constraint {
     override val messageBundle: String
         get() = "validation/validation-messages"
 }
+
+
+class RefusjonsdagerKanIkkeOverstigePeriodelengdenConstraint : CustomConstraint
+fun <E> Validator<E>.Property<Arbeidsgiverperiode?>.refusjonsDagerIkkeOverstigerPeriodelengde() =
+    this.validate(RefusjonsdagerKanIkkeOverstigePeriodelengdenConstraint()) { ps ->
+        return@validate ChronoUnit.DAYS.between(ps?.fom, ps?.tom?.plusDays(1)) > ps?.antallDagerMedRefusjon!!
+    }
+
 
 class DataUrlExtensionConstraints: CustomConstraint
 fun <E> Validator<E>.Property<String?>.isGodskjentFiletyper() =

@@ -13,8 +13,9 @@ import no.nav.helse.arbeidsgiver.integrasjoner.pdl.*
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlHentFullPerson.PdlFullPersonliste
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlHentFullPerson.PdlGeografiskTilknytning.PdlGtType.UTLAND
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlHentFullPerson.PdlIdentResponse
+import no.nav.helse.fritakagp.db.GravidSoeknadRepository
 import no.nav.helse.fritakagp.db.PostgresGravidSoeknadRepository
-import no.nav.helse.fritakagp.domain.SoeknadGravid
+import no.nav.helse.fritakagp.domain.GravidSoeknad
 import no.nav.helse.fritakagp.integration.gcp.BucketDocument
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadPDFGenerator
@@ -29,13 +30,13 @@ class GravidSoeknadProcessorTest {
 
     val joarkMock = mockk<DokarkivKlient>(relaxed = true)
     val oppgaveMock = mockk<OppgaveKlient>(relaxed = true)
-    val repositoryMock = mockk<PostgresGravidSoeknadRepository>(relaxed = true)
+    val repositoryMock = mockk<GravidSoeknadRepository>(relaxed = true)
     val pdlClientMock = mockk<PdlClient>(relaxed = true)
     val objectMapper = ObjectMapper().registerModule(KotlinModule())
     val pdfGeneratorMock = mockk<GravidSoeknadPDFGenerator>(relaxed = true)
     val bucketStorageMock = mockk<BucketStorage>(relaxed = true)
     val prosessor = GravidSoeknadProcessor(repositoryMock, joarkMock, oppgaveMock, pdlClientMock, pdfGeneratorMock, objectMapper, bucketStorageMock)
-    lateinit var soeknad: SoeknadGravid
+    lateinit var soeknad: GravidSoeknad
 
     private val oppgaveId = 9999
     private val arkivReferanse = "12345"

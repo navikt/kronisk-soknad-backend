@@ -1,6 +1,6 @@
 package no.nav.helse.fritakagp.processing.gravid.soeknad
 
-import no.nav.helse.fritakagp.domain.SoeknadGravid
+import no.nav.helse.fritakagp.domain.GravidSoeknad
 import org.apache.commons.lang3.text.WordUtils
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.pdmodel.PDPage
@@ -17,7 +17,7 @@ class GravidSoeknadPDFGenerator {
     private val FONT_NAME = "fonts/SourceSansPro-Regular.ttf"
     val TIMESTAMP_FORMAT = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss")
 
-    fun lagPDF(soeknad: SoeknadGravid): ByteArray {
+    fun lagPDF(soeknad: GravidSoeknad): ByteArray {
         val doc = PDDocument()
         val page = PDPage()
         val font = PDType0Font.load(doc, this::class.java.classLoader.getResource(FONT_NAME).openStream())

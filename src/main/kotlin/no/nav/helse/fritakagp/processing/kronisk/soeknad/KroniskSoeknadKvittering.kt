@@ -5,15 +5,15 @@ import no.altinn.schemas.services.serviceengine.correspondence._2010._10.Externa
 import no.altinn.schemas.services.serviceengine.correspondence._2010._10.InsertCorrespondenceV2
 import no.altinn.services.serviceengine.correspondence._2009._10.ICorrespondenceAgencyExternalBasic
 import no.altinn.services.serviceengine.correspondence._2009._10.ICorrespondenceAgencyExternalBasicInsertCorrespondenceBasicV2AltinnFaultFaultFaultMessage
-import no.nav.helse.fritakagp.domain.SoeknadKronisk
+import no.nav.helse.fritakagp.domain.KroniskSoeknad
 import java.time.format.DateTimeFormatter
 
 interface KroniskSoeknadKvitteringSender {
-    fun send(kvittering: SoeknadKronisk)
+    fun send(kvittering: KroniskSoeknad)
 }
 
 class KroniskSoeknadKvitteringSenderDummy: KroniskSoeknadKvitteringSender {
-    override fun send(kvittering: SoeknadKronisk) {
+    override fun send(kvittering: KroniskSoeknad) {
         println("Sender kvittering for søknad gravid: ${kvittering.id}")
     }
 }
@@ -28,7 +28,7 @@ class KroniskSoeknadAltinnKroniskSoeknadKvitteringSender(
         const val SYSTEM_USER_CODE = "NAV_HELSEARBEIDSGIVER"
     }
 
-    override fun send(kvittering: SoeknadKronisk) {
+    override fun send(kvittering: KroniskSoeknad) {
         try {
             val receiptExternal = iCorrespondenceAgencyExternalBasic.insertCorrespondenceBasicV2(
                     username, password,
@@ -43,7 +43,7 @@ class KroniskSoeknadAltinnKroniskSoeknadKvitteringSender(
         }
     }
 
-    fun mapKvitteringTilInsertCorrespondence(kvittering: SoeknadKronisk): InsertCorrespondenceV2 {
+    fun mapKvitteringTilInsertCorrespondence(kvittering: KroniskSoeknad): InsertCorrespondenceV2 {
         val dateTimeFormatterMedKl = DateTimeFormatter.ofPattern("dd.MM.yyyy 'kl.' HH:mm")
         val tittel = "Kvittering for mottatt søknad om fritak fra arbeidsgiverperioden grunnet kronisk sykdom"
 

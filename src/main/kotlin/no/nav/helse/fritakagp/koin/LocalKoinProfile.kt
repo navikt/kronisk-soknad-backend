@@ -6,6 +6,8 @@ import io.ktor.util.*
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbRepository
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbService
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.PostgresBakgrunnsjobbRepository
+import no.nav.helse.arbeidsgiver.web.auth.AltinnAuthorizer
+import no.nav.helse.arbeidsgiver.web.auth.DefaultAltinnAuthorizer
 import no.nav.helse.fritakagp.db.*
 import no.nav.helse.fritakagp.processing.gravid.soeknad.*
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadPDFGenerator
@@ -25,6 +27,7 @@ fun localDevConfig(config: ApplicationConfig) = module {
 
     single { HikariDataSource(createHikariConfig(config.getjdbcUrlFromProperties(), config.getString("database.username"), config.getString("database.password"))) } bind DataSource::class
     single { PostgresGravidSoeknadRepository(get(), get()) } bind GravidSoeknadRepository::class
+    single { PostgresGravidKravRepository(get(), get()) } bind GravidKravRepository::class
     single { PostgresKroniskSoeknadRepository(get(), get()) } bind KroniskSoeknadRepository::class
 
     single { PostgresBakgrunnsjobbRepository(get()) } bind BakgrunnsjobbRepository::class
@@ -38,4 +41,6 @@ fun localDevConfig(config: ApplicationConfig) = module {
 
     single { GravidSoeknadKvitteringSenderDummy() } bind GravidSoeknadKvitteringSender::class
     single { GravidSoeknadKvitteringProcessor(get(), get(), get()) }
+
+    single { DefaultAltinnAuthorizer(get()) } bind AltinnAuthorizer::class
 }

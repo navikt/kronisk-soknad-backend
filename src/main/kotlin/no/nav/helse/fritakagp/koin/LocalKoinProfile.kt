@@ -9,6 +9,7 @@ import no.nav.helse.arbeidsgiver.bakgrunnsjobb.PostgresBakgrunnsjobbRepository
 import no.nav.helse.arbeidsgiver.web.auth.AltinnAuthorizer
 import no.nav.helse.arbeidsgiver.web.auth.DefaultAltinnAuthorizer
 import no.nav.helse.fritakagp.db.*
+import no.nav.helse.fritakagp.processing.gravid.krav.*
 import no.nav.helse.fritakagp.processing.gravid.soeknad.*
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadPDFGenerator
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadProcessor
@@ -34,6 +35,7 @@ fun localDevConfig(config: ApplicationConfig) = module {
     single { BakgrunnsjobbService(get()) }
 
     single { GravidSoeknadProcessor(get(), get(), get(), get(), GravidSoeknadPDFGenerator(), get(), get()) }
+    single { GravidKravProcessor(get(), get(), get(), get(), GravidKravPDFGenerator(), get(), get()) }
     single { KroniskSoeknadProcessor(get(), get(), get(), get(), KroniskSoeknadPDFGenerator(), get(), get()) }
 
     single { KroniskSoeknadKvitteringSenderDummy() } bind KroniskSoeknadKvitteringSender::class
@@ -41,6 +43,9 @@ fun localDevConfig(config: ApplicationConfig) = module {
 
     single { GravidSoeknadKvitteringSenderDummy() } bind GravidSoeknadKvitteringSender::class
     single { GravidSoeknadKvitteringProcessor(get(), get(), get()) }
+
+    single { GravidKravKvitteringSenderDummy() } bind GravidKravKvitteringSender::class
+    single { GravidKravKvitteringProcessor(get(), get(), get()) }
 
     single { DefaultAltinnAuthorizer(get()) } bind AltinnAuthorizer::class
 }

@@ -13,6 +13,7 @@ import no.nav.helse.arbeidsgiver.system.AppEnv
 import no.nav.helse.arbeidsgiver.system.getEnvironment
 import no.nav.helse.fritakagp.koin.getAllOfType
 import no.nav.helse.fritakagp.koin.selectModuleBasedOnProfile
+import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravKvitteringProcessor
 import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadKvitteringProcessor
 import no.nav.helse.fritakagp.web.nais.nais
 import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadProcessor
@@ -92,6 +93,11 @@ class FritakAgpApplication(val port: Int = 8080) : KoinComponent {
         bakgrunnsjobbService.leggTilBakgrunnsjobbProsesserer(
             GravidSoeknadKvitteringProcessor.JOB_TYPE,
             get<KroniskSoeknadKvitteringProcessor>()
+        )
+
+        bakgrunnsjobbService.leggTilBakgrunnsjobbProsesserer(
+            GravidKravKvitteringProcessor.JOB_TYPE,
+            get<GravidKravKvitteringProcessor>()
         )
 
         bakgrunnsjobbService.leggTilBakgrunnsjobbProsesserer(

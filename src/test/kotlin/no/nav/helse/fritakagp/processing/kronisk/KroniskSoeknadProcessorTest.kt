@@ -13,8 +13,9 @@ import no.nav.helse.arbeidsgiver.integrasjoner.pdl.*
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlHentFullPerson.PdlFullPersonliste
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlHentFullPerson.PdlGeografiskTilknytning.PdlGtType.UTLAND
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlHentFullPerson.PdlIdentResponse
+import no.nav.helse.fritakagp.db.KroniskSoeknadRepository
 import no.nav.helse.fritakagp.db.PostgresKroniskSoeknadRepository
-import no.nav.helse.fritakagp.domain.SoeknadKronisk
+import no.nav.helse.fritakagp.domain.KroniskSoeknad
 import no.nav.helse.fritakagp.integration.gcp.BucketDocument
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadPDFGenerator
@@ -29,13 +30,13 @@ class KroniskSoeknadProcessorTest {
 
     val joarkMock = mockk<DokarkivKlient>(relaxed = true)
     val oppgaveMock = mockk<OppgaveKlient>(relaxed = true)
-    val repositoryMock = mockk<PostgresKroniskSoeknadRepository>(relaxed = true)
+    val repositoryMock = mockk<KroniskSoeknadRepository>(relaxed = true)
     val pdlClientMock = mockk<PdlClient>(relaxed = true)
     val objectMapper = ObjectMapper().registerModule(KotlinModule())
     val pdfGeneratorMock = mockk<KroniskSoeknadPDFGenerator>(relaxed = true)
     val bucketStorageMock = mockk<BucketStorage>(relaxed = true)
     val prosessor = KroniskSoeknadProcessor(repositoryMock, joarkMock, oppgaveMock, pdlClientMock, pdfGeneratorMock, objectMapper, bucketStorageMock)
-    lateinit var soeknad: SoeknadKronisk
+    lateinit var soeknad: KroniskSoeknad
 
     private val oppgaveId = 9999
     private val arkivReferanse = "12345"
@@ -57,7 +58,6 @@ class KroniskSoeknadProcessorTest {
         every { joarkMock.journalførDokument(any(), any(), any()) } returns JournalpostResponse(arkivReferanse, true, "M", null, emptyList())
         coEvery { oppgaveMock.opprettOppgave(any(), any())} returns OpprettOppgaveResponse(oppgaveId)
     }
-
 
     @Test
     fun `skal ikke journalføre når det allerede foreligger en journalpostId, men skal forsøke sletting fra bucket `() {

@@ -10,9 +10,8 @@ import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OpprettOppgaveRequest
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlClient
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlIdent
 import no.nav.helse.fritakagp.GravidSoeknadMetrics
-import no.nav.helse.fritakagp.KroniskSoeknadMetrics
 import no.nav.helse.fritakagp.db.GravidSoeknadRepository
-import no.nav.helse.fritakagp.domain.SoeknadGravid
+import no.nav.helse.fritakagp.domain.GravidSoeknad
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import org.slf4j.LoggerFactory
 import java.time.LocalDate
@@ -68,7 +67,7 @@ class GravidSoeknadProcessor(
         }
     }
 
-    private fun updateAndLogOnFailure(soeknad: SoeknadGravid) {
+    private fun updateAndLogOnFailure(soeknad: GravidSoeknad) {
         try {
             gravidSoeknadRepo.update(soeknad)
         } catch (e: Exception) {
@@ -76,7 +75,7 @@ class GravidSoeknadProcessor(
         }
     }
 
-    fun journalfør(soeknad: SoeknadGravid): String {
+    fun journalfør(soeknad: GravidSoeknad): String {
         val journalfoeringsTittel = "Søknad om fritak fra arbeidsgiverperioden ifbm graviditet"
         val pdlResponse = pdlClient.personNavn(soeknad.sendtAv)?.navn?.firstOrNull()
         val innsenderNavn = if (pdlResponse != null) "${pdlResponse.fornavn} ${pdlResponse.etternavn}" else "Ukjent"
@@ -104,7 +103,7 @@ class GravidSoeknadProcessor(
     }
 
     private fun createDocuments(
-        soeknad: SoeknadGravid,
+        soeknad: GravidSoeknad,
         journalfoeringsTittel: String
     ): List<Dokument> {
         val base64EnkodetPdf = Base64.getEncoder().encodeToString(pdfGenerator.lagPDF(soeknad))
@@ -140,7 +139,7 @@ class GravidSoeknadProcessor(
         return dokumentListe
     }
 
-    fun opprettOppgave(soeknad: SoeknadGravid): String {
+    fun opprettOppgave(soeknad: GravidSoeknad): String {
         val aktoerId = pdlClient.fullPerson(soeknad.fnr)?.hentIdenter?.trekkUtIdent(PdlIdent.PdlIdentGruppe.AKTORID)
         requireNotNull(aktoerId, { "Fant ikke AktørID for fnr i ${soeknad.id}" })
 

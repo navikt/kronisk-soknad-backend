@@ -1,11 +1,12 @@
 package no.nav.helse.fritakagp.domain
 
+import no.nav.helse.fritakagp.db.SimpleJsonbEntity
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
 
-data class SoeknadKronisk(
-    val id: UUID = UUID.randomUUID(),
+data class KroniskSoeknad(
+    override val id: UUID = UUID.randomUUID(),
     val opprettet: LocalDateTime = LocalDateTime.now(),
 
     val orgnr: String,
@@ -27,7 +28,7 @@ data class SoeknadKronisk(
          * ID fra oppgave etter opprettelse av oppgave
          */
         var oppgaveId: String? = null
-)
+): SimpleJsonbEntity
 
 data class FravaerData (
     val yearMonth: String,

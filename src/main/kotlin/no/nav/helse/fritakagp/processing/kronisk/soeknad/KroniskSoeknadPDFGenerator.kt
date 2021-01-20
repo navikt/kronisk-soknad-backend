@@ -1,6 +1,6 @@
 package no.nav.helse.fritakagp.processing.kronisk.soeknad
 
-import no.nav.helse.fritakagp.domain.SoeknadKronisk
+import no.nav.helse.fritakagp.domain.KroniskSoeknad
 import org.apache.commons.lang3.text.WordUtils
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.pdmodel.PDPage
@@ -20,7 +20,7 @@ class KroniskSoeknadPDFGenerator {
     val TIMESTAMP_FORMAT = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss")
 
 
-    fun lagPDF(soeknad: SoeknadKronisk): ByteArray {
+    fun lagPDF(soeknad: KroniskSoeknad): ByteArray {
         val doc = PDDocument()
         val font = PDType0Font.load(doc, this::class.java.classLoader.getResource(FONT_NAME).openStream())
 

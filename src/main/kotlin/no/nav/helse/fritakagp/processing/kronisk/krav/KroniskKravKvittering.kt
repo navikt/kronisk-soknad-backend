@@ -1,34 +1,34 @@
-package no.nav.helse.fritakagp.processing.kronisk.soeknad
+package no.nav.helse.fritakagp.processing.kronisk.krav
 
 import no.altinn.schemas.services.intermediary.receipt._2009._10.ReceiptStatusEnum
 import no.altinn.schemas.services.serviceengine.correspondence._2010._10.ExternalContentV2
 import no.altinn.schemas.services.serviceengine.correspondence._2010._10.InsertCorrespondenceV2
 import no.altinn.services.serviceengine.correspondence._2009._10.ICorrespondenceAgencyExternalBasic
 import no.altinn.services.serviceengine.correspondence._2009._10.ICorrespondenceAgencyExternalBasicInsertCorrespondenceBasicV2AltinnFaultFaultFaultMessage
-import no.nav.helse.fritakagp.domain.KroniskSoeknad
+import no.nav.helse.fritakagp.domain.KroniskKrav
 import java.time.format.DateTimeFormatter
 
-interface KroniskSoeknadKvitteringSender {
-    fun send(kvittering: KroniskSoeknad)
+interface KroniskKravKvitteringSender {
+    fun send(kvittering: KroniskKrav)
 }
 
-class KroniskSoeknadKvitteringSenderDummy: KroniskSoeknadKvitteringSender {
-    override fun send(kvittering: KroniskSoeknad) {
-        println("Sender kvittering for søknad gravid: ${kvittering.id}")
+class KroniskKravKvitteringSenderDummy: KroniskKravKvitteringSender {
+    override fun send(kvittering: KroniskKrav) {
+        println("Sender kvittering for krav kronisk: ${kvittering.id}")
     }
 }
 
-class KroniskSoeknadAltinnKvitteringSender(
+class KroniskKravAltinnKvitteringSender(
     private val altinnTjenesteKode: String,
     private val iCorrespondenceAgencyExternalBasic: ICorrespondenceAgencyExternalBasic,
     private val username: String,
-    private val password: String) : KroniskSoeknadKvitteringSender {
+    private val password: String) : KroniskKravKvitteringSender {
 
     companion object {
         const val SYSTEM_USER_CODE = "NAV_HELSEARBEIDSGIVER"
     }
 
-    override fun send(kvittering: KroniskSoeknad) {
+    override fun send(kvittering: KroniskKrav) {
         try {
             val receiptExternal = iCorrespondenceAgencyExternalBasic.insertCorrespondenceBasicV2(
                     username, password,
@@ -43,9 +43,9 @@ class KroniskSoeknadAltinnKvitteringSender(
         }
     }
 
-    fun mapKvitteringTilInsertCorrespondence(kvittering: KroniskSoeknad): InsertCorrespondenceV2 {
+    fun mapKvitteringTilInsertCorrespondence(kvittering: KroniskKrav): InsertCorrespondenceV2 {
         val dateTimeFormatterMedKl = DateTimeFormatter.ofPattern("dd.MM.yyyy 'kl.' HH:mm")
-        val tittel = "Kvittering for mottatt søknad om fritak fra arbeidsgiverperioden grunnet kronisk sykdom"
+        val tittel = "Kvittering for mottatt refusjonskrav fra arbeidsgiverperioden grunnet kronisk sykdom"
 
         val innhold = """
         <html>
@@ -54,17 +54,14 @@ class KroniskSoeknadAltinnKvitteringSender(
            </head>
            <body>
                <div class="melding">
-            <p>Kvittering for mottatt søknad om fritak fra arbeidsgiverperioden grunnet risiko for høyt sykefravær knyttet til kronisk sykdom.</p>
-            <p>Virksomhetsnummer: ${kvittering.orgnr}</p>
+            <p>Kvittering for mottatt krav om fritak fra arbeidsgiverperioden grunnet risiko for høyt sykefravær knyttet til kronisk sykdom.</p>
+            <p>Virksomhetsnummer: ${kvittering.virksomhetsnummer}</p>
             <p>${kvittering.opprettet.format(dateTimeFormatterMedKl)}/p>
-            <p>Søknaden vil bli behandlet fortløpende. Ved behov vil NAV innhente ytterligere dokumentasjon.
+            <p>Kravet vil bli behandlet fortløpende. Ved behov vil NAV innhente ytterligere dokumentasjon.
              Har dere spørsmål, ring NAVs arbeidsgivertelefon 55 55 33 36.</p>
             <p>Dere har innrapportert følgende:</p>
             <ul>
                 <li>Fødselsnummer: xxxxxxxxxxx
-                <li>Forsøkt tilrettelegging [Ja/Nei]
-                <li>Tiltak: [Liste over tiltak]
-                <li>Forsøkt omplassering: [Ja/Nei/Ikke mulig + grunn]
                 <li>Dokumentasjon vedlagt: [Ja/Nei]
                 <li>>Mottatt: dd.mm.åååå kl tt:mm</li>
                 <li>Innrapportert av [fnr på innsender]</li>
@@ -74,18 +71,21 @@ class KroniskSoeknadAltinnKvitteringSender(
         </html>
     """.trimIndent()
 
+
         val meldingsInnhold = ExternalContentV2()
             .withLanguageCode("1044")
             .withMessageTitle(tittel)
             .withMessageBody(innhold)
-            .withMessageSummary("Kvittering for søknad om fritak fra arbeidsgiverperioden ifbm graviditetsrelatert fravær")
+            .withMessageSummary("Kvittering for krav om refusjon av arbeidsgiverperioden ifbm kronisk sykdom")
+
 
         return InsertCorrespondenceV2()
             .withAllowForwarding(false)
-            .withReportee(kvittering.orgnr)
+            .withReportee(kvittering.virksomhetsnummer)
             .withMessageSender("NAV (Arbeids- og velferdsetaten)")
             .withServiceCode(altinnTjenesteKode)
             .withServiceEdition("1")
             .withContent(meldingsInnhold)
     }
+
 }

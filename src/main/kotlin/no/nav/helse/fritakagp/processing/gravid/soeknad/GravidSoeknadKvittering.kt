@@ -18,7 +18,7 @@ class GravidSoeknadKvitteringSenderDummy: GravidSoeknadKvitteringSender {
     }
 }
 
-class GravidSoeknadAltinnGravidSoeknadKvitteringSender(
+class GravidSoeknadAltinnKvitteringSender(
     private val altinnTjenesteKode: String,
     private val iCorrespondenceAgencyExternalBasic: ICorrespondenceAgencyExternalBasic,
     private val username: String,

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.helse.fritakagp.domain.GravidKrav
 import no.nav.helse.fritakagp.domain.GravidSoeknad
+import no.nav.helse.fritakagp.domain.KroniskKrav
 import no.nav.helse.fritakagp.domain.KroniskSoeknad
 import org.slf4j.LoggerFactory
 import java.sql.Connection
@@ -19,3 +20,6 @@ class PostgresKroniskSoeknadRepository(ds: DataSource, om: ObjectMapper): Kronis
 
 class PostgresGravidKravRepository(ds: DataSource, om: ObjectMapper): GravidKravRepository,
     SimpleJsonbRepositoryBase<GravidKrav>("kravgravid", ds, om, GravidKrav::class.java)
+
+class PostgresKroniskKravRepository(ds: DataSource, om: ObjectMapper): KroniskKravRepository,
+    SimpleJsonbRepositoryBase<KroniskKrav>("krav_kronisk", ds, om, KroniskKrav::class.java)

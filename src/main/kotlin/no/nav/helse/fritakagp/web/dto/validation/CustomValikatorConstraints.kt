@@ -20,6 +20,13 @@ fun <E> Validator<E>.Property<Arbeidsgiverperiode?>.refusjonsDagerIkkeOverstiger
         return@validate ChronoUnit.DAYS.between(ps?.fom, ps?.tom?.plusDays(1)) > ps?.antallDagerMedRefusjon!!
     }
 
+fun <E> Validator<E>.Property<Iterable<Arbeidsgiverperiode>?>.refujonsDagerIkkeOverstigerPeriodelengder() =
+    this.validate(RefusjonsdagerKanIkkeOverstigePeriodelengdenConstraint()) { ps ->
+        !ps!!.any { p ->
+            ChronoUnit.DAYS.between(p.fom, p.tom.plusDays(1)) < p.antallDagerMedRefusjon
+        }
+    }
+
 
 class DataUrlExtensionConstraints: CustomConstraint
 fun <E> Validator<E>.Property<String?>.isGodskjentFiletyper() =

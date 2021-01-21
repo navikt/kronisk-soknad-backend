@@ -5,6 +5,7 @@ import io.ktor.config.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import io.ktor.util.*
+import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbProsesserer
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbService
 import no.nav.helse.arbeidsgiver.kubernetes.KubernetesProbeManager
 import no.nav.helse.arbeidsgiver.kubernetes.LivenessComponent
@@ -14,9 +15,12 @@ import no.nav.helse.arbeidsgiver.system.getEnvironment
 import no.nav.helse.fritakagp.koin.getAllOfType
 import no.nav.helse.fritakagp.koin.selectModuleBasedOnProfile
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravKvitteringProcessor
+import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravProcessor
 import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadKvitteringProcessor
 import no.nav.helse.fritakagp.web.nais.nais
 import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadProcessor
+import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravKvitteringProcessor
+import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravProcessor
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadProcessor
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadKvitteringProcessor
 import no.nav.helse.fritakagp.web.auth.localCookieDispenser
@@ -78,40 +82,29 @@ class FritakAgpApplication(val port: Int = 8080) : KoinComponent {
     }
 
     private fun configAndStartBackgroundWorker() {
-        val bakgrunnsjobbService = get<BakgrunnsjobbService>()
+        fun BakgrunnsjobbService.registrer(name: String, handler: BakgrunnsjobbProsesserer) =
+            this.leggTilBakgrunnsjobbProsesserer(name, handler)
+        get<BakgrunnsjobbService>().apply {
+            registrer(GravidSoeknadProcessor.JOB_TYPE, get<GravidSoeknadProcessor>())
+            registrer(GravidSoeknadKvitteringProcessor.JOB_TYPE, get<KroniskSoeknadKvitteringProcessor>())
 
-        bakgrunnsjobbService.leggTilBakgrunnsjobbProsesserer(
-            GravidSoeknadProcessor.JOB_TYPE,
-            get<GravidSoeknadProcessor>()
-        )
+            registrer(GravidKravProcessor.JOB_TYPE, get<GravidKravProcessor>())
+            registrer(GravidKravKvitteringProcessor.JOB_TYPE, get<GravidKravKvitteringProcessor>())
 
-        bakgrunnsjobbService.leggTilBakgrunnsjobbProsesserer(
-            KroniskSoeknadProcessor.JOB_TYPE,
-            get<KroniskSoeknadProcessor>()
-        )
+            registrer(KroniskSoeknadProcessor.JOB_TYPE, get<KroniskSoeknadProcessor>())
+            registrer(KroniskSoeknadKvitteringProcessor.JOB_TYPE, get<KroniskSoeknadKvitteringProcessor>())
 
-        bakgrunnsjobbService.leggTilBakgrunnsjobbProsesserer(
-            GravidSoeknadKvitteringProcessor.JOB_TYPE,
-            get<KroniskSoeknadKvitteringProcessor>()
-        )
+            registrer(KroniskKravProcessor.JOB_TYPE, get<KroniskKravProcessor>())
+            registrer(KroniskKravKvitteringProcessor.JOB_TYPE, get<KroniskKravKvitteringProcessor>())
 
-        bakgrunnsjobbService.leggTilBakgrunnsjobbProsesserer(
-            GravidKravKvitteringProcessor.JOB_TYPE,
-            get<GravidKravKvitteringProcessor>()
-        )
-
-        bakgrunnsjobbService.leggTilBakgrunnsjobbProsesserer(
-            KroniskSoeknadKvitteringProcessor.JOB_TYPE,
-            get<KroniskSoeknadKvitteringProcessor>()
-        )
-
-        bakgrunnsjobbService.startAsync(true)
+            startAsync(true)
+        }
     }
 
     private fun migrateDatabase() {
         logger.info("Starter databasemigrering")
 
-    Flyway.configure().baselineOnMigrate(true)
+        Flyway.configure().baselineOnMigrate(true)
             .dataSource(GlobalContext.get().koin.get())
             .load()
             .migrate()

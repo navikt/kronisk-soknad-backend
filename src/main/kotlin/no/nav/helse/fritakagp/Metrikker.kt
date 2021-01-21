@@ -23,11 +23,15 @@ val FEILET_JOBB_COUNTER = Counter.build()
 object GravidKravMetrics :
     ProseseringsMetrikker("gravid_krav", "Metrikker for krav, gravid")
 
+object KroniskKravMetrics :
+    ProseseringsMetrikker("kronisk_krav", "Metrikker for krav, kronisk")
+
 object GravidSoeknadMetrics :
     ProseseringsMetrikker("gravid_soeknad", "Metrikker for søknader, gravid")
 
 object KroniskSoeknadMetrics :
     ProseseringsMetrikker("kronisk_soeknad", "Metrikker for søknader, kronisk")
+
 
 
 abstract class ProseseringsMetrikker(metricName: String, metricHelpText: String) {

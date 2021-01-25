@@ -1,7 +1,6 @@
 package no.nav.helse.fritakagp
 
 import io.prometheus.client.Counter
-import io.prometheus.client.Summary
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.Bakgrunnsvarsler
 
 const val METRICS_NS = "fritakagp"
@@ -35,15 +34,15 @@ object KroniskSoeknadMetrics :
 
 
 abstract class ProseseringsMetrikker(metricName: String, metricHelpText: String) {
-    private val GRAVID_SOEKNAD: Counter = Counter.build()
+    private val counter: Counter = Counter.build()
         .namespace(METRICS_NS)
         .name(metricName)
         .labelNames("hendelse")
         .help(metricHelpText)
         .register()
 
-    fun tellMottatt() = GRAVID_SOEKNAD.labels("mottatt").inc()
-    fun tellJournalfoert() = GRAVID_SOEKNAD.labels("journalfoert").inc()
-    fun tellOppgaveOpprettet() = GRAVID_SOEKNAD.labels("oppgaveOpprettet").inc()
-    fun tellKvitteringSendt() = GRAVID_SOEKNAD.labels("kvitteringSendt").inc()
+    fun tellMottatt() = counter.labels("mottatt").inc()
+    fun tellJournalfoert() = counter.labels("journalfoert").inc()
+    fun tellOppgaveOpprettet() = counter.labels("oppgaveOpprettet").inc()
+    fun tellKvitteringSendt() = counter.labels("kvitteringSendt").inc()
 }

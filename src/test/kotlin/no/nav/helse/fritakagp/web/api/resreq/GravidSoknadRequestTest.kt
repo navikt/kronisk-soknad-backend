@@ -10,15 +10,15 @@ class GravidSoknadRequestTest{
 
     @Test
     internal fun `Gyldig FNR er påkrevd`() {
-        validationShouldFailFor(GravidSoknadRequest::fnr) {
-            GravidTestData.fullValidRequest.copy(fnr = "01020312345")
+        validationShouldFailFor(GravidSoknadRequest::identitetsnummer) {
+            GravidTestData.fullValidRequest.copy(identitetsnummer = "01020312345")
         }
     }
 
     @Test
     internal fun `Gyldig OrgNr er påkrevd dersom det er oppgitt`() {
-        validationShouldFailFor(GravidSoknadRequest::orgnr) {
-            GravidTestData.fullValidRequest.copy(orgnr = "098765432")
+        validationShouldFailFor(GravidSoknadRequest::virksomhetsnummer) {
+            GravidTestData.fullValidRequest.copy(virksomhetsnummer = "098765432")
         }
     }
 

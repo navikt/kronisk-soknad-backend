@@ -1,10 +1,8 @@
 package no.nav.helse.fritakagp.web.api.resreq
 
-import no.nav.helse.GravidTestData
 import no.nav.helse.KroniskTestData
 import no.nav.helse.fritakagp.domain.FravaerData
 import no.nav.helse.fritakagp.domain.PaakjenningsType
-import no.nav.helse.fritakagp.domain.Tiltak
 import no.nav.helse.toYearMonthString
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
@@ -13,15 +11,15 @@ internal class KroniskSoknadRequestTest {
 
     @Test
     fun `Gyldig FNR er påkrevd`() {
-        validationShouldFailFor(KroniskSoknadRequest::fnr) {
-            KroniskTestData.fullValidRequest.copy(fnr = "01020312345")
+        validationShouldFailFor(KroniskSoknadRequest::identitetsnummer) {
+            KroniskTestData.fullValidRequest.copy(identitetsnummer = "01020312345")
         }
     }
 
     @Test
     fun `Gyldig OrgNr er påkrevd dersom det er oppgitt`() {
-        validationShouldFailFor(KroniskSoknadRequest::orgnr) {
-            KroniskTestData.fullValidRequest.copy(orgnr = "098765432")
+        validationShouldFailFor(KroniskSoknadRequest::virksomhetsnummer) {
+            KroniskTestData.fullValidRequest.copy(virksomhetsnummer = "098765432")
         }
     }
 

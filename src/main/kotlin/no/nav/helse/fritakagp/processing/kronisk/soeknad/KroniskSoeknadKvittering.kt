@@ -55,7 +55,7 @@ class KroniskSoeknadAltinnKvitteringSender(
            <body>
                <div class="melding">
             <p>Kvittering for mottatt søknad om fritak fra arbeidsgiverperioden grunnet risiko for høyt sykefravær knyttet til kronisk sykdom.</p>
-            <p>Virksomhetsnummer: ${kvittering.orgnr}</p>
+            <p>Virksomhetsnummer: ${kvittering.virksomhetsnummer}</p>
             <p>${kvittering.opprettet.format(dateTimeFormatterMedKl)}/p>
             <p>Søknaden vil bli behandlet fortløpende. Ved behov vil NAV innhente ytterligere dokumentasjon.
              Har dere spørsmål, ring NAVs arbeidsgivertelefon 55 55 33 36.</p>
@@ -82,7 +82,7 @@ class KroniskSoeknadAltinnKvitteringSender(
 
         return InsertCorrespondenceV2()
             .withAllowForwarding(false)
-            .withReportee(kvittering.orgnr)
+            .withReportee(kvittering.virksomhetsnummer)
             .withMessageSender("NAV (Arbeids- og velferdsetaten)")
             .withServiceCode(altinnTjenesteKode)
             .withServiceEdition("1")

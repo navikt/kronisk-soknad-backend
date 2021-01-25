@@ -21,7 +21,7 @@ class KroniskSoeknadHTTPTests : SystemTestBase() {
             body = """
                 {
                     "fnr": "${GravidTestData.validIdentitetsnummer}",
-                    "orgnr": "${GravidTestData.fullValidRequest.orgnr}",
+                    "orgnr": "${GravidTestData.fullValidRequest.virksomhetsnummer}",
                     "bekreftelse": true,
                     "paakjenningstyper": ["IKKE GYLDIG"]
                 }

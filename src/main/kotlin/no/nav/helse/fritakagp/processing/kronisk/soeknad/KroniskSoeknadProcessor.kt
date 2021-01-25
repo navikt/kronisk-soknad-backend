@@ -86,7 +86,7 @@ class KroniskSoeknadProcessor(
                 tittel = journalfoeringsTittel,
                 journalposttype = Journalposttype.INNGAAENDE,
                 kanal = "NAV_NO",
-                bruker = Bruker(soeknad.fnr, IdType.FNR),
+                bruker = Bruker(soeknad.identitetsnummer, IdType.FNR),
                 eksternReferanseId = soeknad.id.toString(),
                 avsenderMottaker = AvsenderMottaker(
                     id = soeknad.sendtAv,
@@ -141,7 +141,7 @@ class KroniskSoeknadProcessor(
     }
 
     fun opprettOppgave(soeknad: KroniskSoeknad): String {
-        val aktoerId = pdlClient.fullPerson(soeknad.fnr)?.hentIdenter?.trekkUtIdent(PdlIdent.PdlIdentGruppe.AKTORID)
+        val aktoerId = pdlClient.fullPerson(soeknad.identitetsnummer)?.hentIdenter?.trekkUtIdent(PdlIdent.PdlIdentGruppe.AKTORID)
         requireNotNull(aktoerId, { "Fant ikke AktørID for fnr i ${soeknad.id}" })
 
         val request = OpprettOppgaveRequest(

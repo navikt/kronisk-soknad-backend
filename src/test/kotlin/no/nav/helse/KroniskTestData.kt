@@ -1,7 +1,6 @@
 package no.nav.helse
 
 import no.nav.helse.fritakagp.domain.*
-import no.nav.helse.fritakagp.web.api.resreq.GravidKravRequest
 import no.nav.helse.fritakagp.web.api.resreq.KroniskKravRequest
 import no.nav.helse.fritakagp.web.api.resreq.KroniskSoknadRequest
 import java.time.LocalDate
@@ -13,8 +12,8 @@ object KroniskTestData {
     val validOrgNr = "917404437"
 
     val soeknadKronisk = KroniskSoeknad(
-        orgnr = validOrgNr,
-        fnr = validIdentitetsnummer,
+        virksomhetsnummer = validOrgNr,
+        identitetsnummer = validIdentitetsnummer,
         arbeidstyper = setOf(ArbeidsType.KREVENDE, ArbeidsType.MODERAT),
         bekreftet = true,
         fravaer = generateFravaersdata(),
@@ -24,8 +23,8 @@ object KroniskTestData {
     )
 
     val fullValidRequest = KroniskSoknadRequest(
-        orgnr = validOrgNr,
-        fnr = validIdentitetsnummer,
+        virksomhetsnummer = validOrgNr,
+        identitetsnummer = validIdentitetsnummer,
         arbeidstyper = setOf(ArbeidsType.KREVENDE, ArbeidsType.MODERAT, ArbeidsType.STILLESITTENDE),
         fravaer = generateFravaersdata(),
         paakjenningstyper = setOf(PaakjenningsType.ALLERGENER, PaakjenningsType.TUNGE, PaakjenningsType.ANNET, PaakjenningsType.GAAING, PaakjenningsType.HARDE, PaakjenningsType.REGELMESSIG, PaakjenningsType.STRESSENDE, PaakjenningsType.UKOMFORTABEL),

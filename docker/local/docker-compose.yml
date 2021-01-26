@@ -17,19 +17,6 @@ services:
     ports:
       - "2181:2181"
       - "9092:9092"
-#    environment:
-#      KAFKA_SSL_KEYSTORE_LOCATION: '/Users/ehsansadeghi/reps/fritakagp/SSL/kafka01.keystore.jks'
-#      KAFKA_SSL_KEYSTORE_PASSWORD: '123456'
-#      KAFKA_SSL_KEY_PASSWORD: '123456'
-#      KAFKA_SSL_TRUSTSTORE_LOCATION: '/Users/ehsansadeghi/reps/fritakagp/SSL/kafka.truststore.jks'
-#      KAFKA_SSL_TRUSTSTORE_PASSWORD: '123456'
-#      # KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: ''
-#      KAFKA_SECURITY_INTER_BROKER_PROTOCOL: 'SSL'
-#      #KAFKA_SSL_ENABLED_PROTOCOLS: 'TLSv1.2,TLSv1.1,TLSv1'
-#      KAFKA_SSL_CLIENT_AUTH: 'none'
-#      KAFKA_KEYSTORE_PATH: '/Users/ehsansadeghi/reps/fritakagp/SSL/'
-#      KAFKA_TRUSTSTORE_PATH: '/Users/ehsansadeghi/reps/fritakagp/SSL/'
-#      KAFKA_CREDSTORE_PASSWORD: '123456'
-#      KAFKA_KEYSTORE_TYPE: 'JKS'
+
 volumes:
   data:

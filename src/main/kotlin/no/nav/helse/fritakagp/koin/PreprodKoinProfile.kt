@@ -38,6 +38,7 @@ import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravAltinnKvitterin
 import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravKvitteringProcessor
 import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravKvitteringSender
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.*
+import no.nav.helse.fritakagp.processing.kronisk.krav.*
 import no.nav.security.token.support.client.core.oauth2.ClientCredentialsTokenClient
 import no.nav.security.token.support.client.core.oauth2.OAuth2AccessTokenService
 import no.nav.security.token.support.client.core.oauth2.OnBehalfOfTokenClient
@@ -75,6 +76,7 @@ fun preprodConfig(config: ApplicationConfig) = module {
     single { GravidKravProcessor(get(), get(), get(), get(), GravidKravPDFGenerator(), get(), get()) }
 
     single { KroniskSoeknadProcessor(get(), get(), get(), get(), KroniskSoeknadPDFGenerator(), get(), get()) }
+    single { KroniskKravProcessor(get(), get(), get(), get(), KroniskKravPDFGenerator(), get(), get()) }
 
     single { Clients.iCorrespondenceExternalBasic(config.getString("altinn_melding.altinn_endpoint")) }
     

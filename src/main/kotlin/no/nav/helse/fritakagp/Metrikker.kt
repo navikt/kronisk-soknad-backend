@@ -46,9 +46,3 @@ abstract class ProseseringsMetrikker(metricName: String, metricHelpText: String)
     fun tellOppgaveOpprettet() = counter.labels("oppgaveOpprettet").inc()
     fun tellKvitteringSendt() = counter.labels("kvitteringSendt").inc()
 }
-
-val ANTALL_INNKOMMENDE_MELDINGER: Counter = Counter.build()
-    .namespace(METRICS_NS)
-    .name("inkommende_meldinger")
-    .help("Teller antall innkommene meldinger om manglende IM")
-    .register()

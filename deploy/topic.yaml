@@ -1,12 +1,12 @@
 apiVersion: kafka.nais.io/v1
 kind: Topic
 metadata:
-  name: fritaksoeknad
+  name: fritakagpsoeknad
   namespace: helsearbeidsgiver
   labels:
     team: helsearbeidsgiver
   annotations:
-    dcat.data.nav.no/title: "fritaksøknad"
+    dcat.data.nav.no/title: "fritakagpsøknad"
     dcat.data.nav.no/description: "helsearbeidgiver"
     dcat.data.nav.no/keyword: "sykepenger, gravid, kronisksyk"
     dcat.data.nav.no/theme: "sykepenger"
@@ -19,9 +19,9 @@ spec:
     partitions: 1
     replication: 3  # see min/max requirements
     retentionBytes: -1  # -1 means unlimited
-    retentionHours: 72  # -1 means unlimited
+    retentionHours: 168  # -1 means unlimited
   acl:
     - team: helsearbeidsgiver
-      application: ownerapp
+      application: fritakagp
       access: readwrite   # read, write, readwrite
 

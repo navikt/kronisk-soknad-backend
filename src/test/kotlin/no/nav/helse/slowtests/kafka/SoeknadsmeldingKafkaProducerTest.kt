@@ -1,25 +1,29 @@
 package no.nav.helse.slowtests.kafka
 
-import kotlinx.coroutines.runBlocking
+import com.fasterxml.jackson.databind.ObjectMapper
 import no.nav.helse.GravidTestData
-import no.nav.helse.fritakagp.integration.kafka.SoeknadsmeldingKafkaConsumer
+import no.nav.helse.fritakagp.integration.kafka.SoeknadsmeldingKafkaProducer
 import no.nav.helse.fritakagp.integration.kafka.consumerFakeConfig
-import no.nav.helse.slowtests.kafka.KafkaProducerForTests.Companion.topicName
+import no.nav.helse.fritakagp.integration.kafka.producerFakeConfig
+import no.nav.helse.slowtests.kafka.KafkaAdminForTests.Companion.topicName
 import no.nav.helse.slowtests.systemtests.api.SystemTestBase
 import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatExceptionOfType
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
-import org.koin.core.get
+
 
 
 internal class SoeknadsmeldingKafkaProducerTest : SystemTestBase() {
-    private lateinit var kafkaProdusent: KafkaProducerForTests
+    private lateinit var kafkaProdusent: KafkaAdminForTests
+    private lateinit var producer: SoeknadsmeldingKafkaProducer
+    private lateinit var consumer: SoeknadsmeldingKafkaConsumer
 
     @BeforeAll
     internal fun setUp() {
-        kafkaProdusent = KafkaProducerForTests(get())
+        kafkaProdusent = KafkaAdminForTests()
+        producer = SoeknadsmeldingKafkaProducer(producerFakeConfig(), topicName, om = ObjectMapper())
+        consumer = SoeknadsmeldingKafkaConsumer(consumerFakeConfig(), topicName)
     }
 
     @AfterAll
@@ -28,32 +32,14 @@ internal class SoeknadsmeldingKafkaProducerTest : SystemTestBase() {
     }
 
     @Test
-    internal fun testHealthCheck() {
-        val client = SoeknadsmeldingKafkaConsumer(consumerFakeConfig(), topicName)
-
-        runBlocking { client.runLivenessCheck() }
-
-        client.stop()
-
-        assertThatExceptionOfType(Exception::class.java).isThrownBy {
-            runBlocking { client.getMessagesToProcess() }
-        }
-
-        assertThatExceptionOfType(Exception::class.java).isThrownBy {
-            runBlocking { client.runLivenessCheck() }
-        }
-    }
-
-    @Test
     fun getMessages() {
 
-        val consumer = SoeknadsmeldingKafkaConsumer(consumerFakeConfig(), topicName)
         val noMessagesExpected = consumer.getMessagesToProcess()
 
         assertThat(noMessagesExpected).isEmpty()
 
-        kafkaProdusent.sendSync(GravidTestData.fullValidRequest)
-
+        kafkaProdusent.createTopicIfNotExists()
+        producer.sendMessage(GravidTestData.soeknadGravid)
         val oneMessageExpected = consumer.getMessagesToProcess()
         assertThat(oneMessageExpected).hasSize(1)
 

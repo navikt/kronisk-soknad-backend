@@ -7,7 +7,6 @@ import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.util.*
-import io.ktor.util.pipeline.*
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.Bakgrunnsjobb
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbRepository
 import no.nav.helse.arbeidsgiver.web.auth.AltinnAuthorizer
@@ -17,20 +16,19 @@ import no.nav.helse.fritakagp.db.KroniskKravRepository
 import no.nav.helse.fritakagp.db.KroniskSoeknadRepository
 import no.nav.helse.fritakagp.domain.KroniskKrav
 import no.nav.helse.fritakagp.domain.KroniskSoeknad
-import no.nav.helse.fritakagp.domain.decodeBase64File
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.integration.kafka.SoeknadsmeldingKafkaProducer
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadProcessor
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadKvitteringProcessor
 import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
+import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadKafkaProcessor
 import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravKvitteringProcessor
 import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravProcessor
+import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadKafkaProcessor
 import no.nav.helse.fritakagp.web.api.resreq.KroniskKravRequest
 import no.nav.helse.fritakagp.web.api.resreq.KroniskSoknadRequest
 import no.nav.helse.fritakagp.web.auth.authorize
 import no.nav.helse.fritakagp.web.auth.hentIdentitetsnummerFraLoginToken
-import no.nav.helse.fritakagp.web.dto.validation.extractBase64Del
-import no.nav.helse.fritakagp.web.dto.validation.extractFilExtDel
 import javax.sql.DataSource
 
 @KtorExperimentalAPI
@@ -84,7 +82,13 @@ fun Route.kroniskRoutes(
                     )
                 }
 
-                kafkaProducer.sendMessagesToProcess(om.writeValueAsString(soeknad))
+                bakgunnsjobbRepo.save(
+                    Bakgrunnsjobb(
+                        maksAntallForsoek = 10,
+                        data = om.writeValueAsString(KroniskSoeknadKafkaProcessor.JobbData(soeknad.id)),
+                        type = KroniskSoeknadKafkaProcessor.JOB_TYPE
+                    )
+                )
 
                 call.respond(HttpStatusCode.Created)
                 KroniskSoeknadMetrics.tellMottatt()
@@ -124,8 +128,6 @@ fun Route.kroniskRoutes(
                         connection
                     )
                 }
-
-                kafkaProducer.sendMessagesToProcess(om.writeValueAsString(krav))
 
                 call.respond(HttpStatusCode.Created)
                 KroniskKravMetrics.tellMottatt()

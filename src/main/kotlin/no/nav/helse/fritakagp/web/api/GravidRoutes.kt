@@ -24,6 +24,7 @@ import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadProcessor
 import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravKvitteringProcessor
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravProcessor
+import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadKafkaProcessor
 import no.nav.helse.fritakagp.web.api.resreq.GravidKravRequest
 import no.nav.helse.fritakagp.web.api.resreq.GravidSoknadRequest
 import no.nav.helse.fritakagp.web.auth.authorize
@@ -87,7 +88,13 @@ fun Route.gravidRoutes(
                     )
                 }
 
-                kafkaProducer.sendMessagesToProcess(om.writeValueAsString(soeknad))
+                bakgunnsjobbRepo.save(
+                    Bakgrunnsjobb(
+                        maksAntallForsoek = 10,
+                        data = om.writeValueAsString(GravidSoeknadKafkaProcessor.JobbData(soeknad.id)),
+                        type = GravidSoeknadKafkaProcessor.JOB_TYPE
+                    )
+                )
 
                 call.respond(HttpStatusCode.Created)
                 GravidSoeknadMetrics.tellMottatt()
@@ -127,8 +134,6 @@ fun Route.gravidRoutes(
                         connection
                     )
                 }
-
-                kafkaProducer.sendMessagesToProcess(om.writeValueAsString(krav))
 
                 call.respond(HttpStatusCode.Created)
                 GravidKravMetrics.tellMottatt()

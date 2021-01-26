@@ -172,7 +172,7 @@ fun Module.externalSystemClients(config: ApplicationConfig) {
     single {
         SoeknadsmeldingKafkaProducer(
             producerConfig() as MutableMap<String, Any>
-            , config.getString("kafka_topic_name")
+            , config.getString("kafka_topic_name"), get()
         ) } bind SoeknadsmeldingMeldingProvider::class
 }
 

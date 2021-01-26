@@ -26,18 +26,6 @@
                     <pattern>%d{YYYY-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
                 </encoder>
             </appender>
-            <appender name="secureLog" class="ch.qos.logback.core.rolling.RollingFileAppender">
-                <file>/secure-logs/secure.log</file>
-                <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
-                    <fileNamePattern>/secure-logs/secure.log.%i</fileNamePattern>
-                    <minIndex>1</minIndex>
-                    <maxIndex>1</maxIndex>
-                </rollingPolicy>
-                <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
-                    <maxFileSize>50MB</maxFileSize>
-                </triggeringPolicy>
-                <encoder class="net.logstash.logback.encoder.LogstashEncoder" />
-            </appender>
         </else>
     </if>
     <logger name="no.nav" level="${log.level.no.nav:-INFO}"/>

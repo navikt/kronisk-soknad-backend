@@ -21,17 +21,15 @@ import no.nav.helse.arbeidsgiver.web.auth.DefaultAltinnAuthorizer
 import no.nav.helse.fritakagp.MetrikkVarsler
 import no.nav.helse.fritakagp.db.*
 import no.nav.helse.fritakagp.integration.altinn.CachedAuthRepo
+import no.nav.helse.fritakagp.integration.altinn.message.Clients
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.integration.gcp.BucketStorageImpl
+import no.nav.helse.fritakagp.integration.kafka.SoeknadsmeldingKafkaProducer
+import no.nav.helse.fritakagp.integration.kafka.SoeknadsmeldingMeldingProvider
+import no.nav.helse.fritakagp.integration.kafka.producerConfig
 import no.nav.helse.fritakagp.integration.oauth2.DefaultOAuth2HttpClient
-import no.nav.helse.fritakagp.integration.oauth2.TokenResolver
 import no.nav.helse.fritakagp.integration.oauth2.OAuth2ClientPropertiesConfig
-import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadPDFGenerator
-import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadProcessor
-import no.nav.helse.fritakagp.integration.altinn.message.*
-import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadKvitteringProcessor
-import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadAltinnKvitteringSender
-import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadKvitteringSender
+import no.nav.helse.fritakagp.integration.oauth2.TokenResolver
 import no.nav.helse.fritakagp.integration.virusscan.ClamavVirusScannerImp
 import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
 import no.nav.helse.fritakagp.processing.gravid.krav.*
@@ -39,6 +37,7 @@ import no.nav.helse.fritakagp.processing.gravid.soeknad.*
 import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravAltinnKvitteringSender
 import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravKvitteringProcessor
 import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravKvitteringSender
+import no.nav.helse.fritakagp.processing.kronisk.soeknad.*
 import no.nav.security.token.support.client.core.oauth2.ClientCredentialsTokenClient
 import no.nav.security.token.support.client.core.oauth2.OAuth2AccessTokenService
 import no.nav.security.token.support.client.core.oauth2.OnBehalfOfTokenClient
@@ -167,6 +166,12 @@ fun Module.externalSystemClients(config: ApplicationConfig) {
             config.getString("gcp_prjId")
         )
     } bind BucketStorage::class
+
+    single {
+        SoeknadsmeldingKafkaProducer(
+            producerConfig() as MutableMap<String, Any>
+            , config.getString("kafka_topic_name")
+        ) } bind SoeknadsmeldingMeldingProvider::class
 }
 
 

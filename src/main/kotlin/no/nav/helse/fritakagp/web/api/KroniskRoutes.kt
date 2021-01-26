@@ -19,6 +19,7 @@ import no.nav.helse.fritakagp.domain.KroniskKrav
 import no.nav.helse.fritakagp.domain.KroniskSoeknad
 import no.nav.helse.fritakagp.domain.decodeBase64File
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
+import no.nav.helse.fritakagp.integration.kafka.SoeknadsmeldingKafkaProducer
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadProcessor
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadKvitteringProcessor
 import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
@@ -41,8 +42,8 @@ fun Route.kroniskRoutes(
     om: ObjectMapper,
     virusScanner: VirusScanner,
     bucket: BucketStorage,
-    authorizer: AltinnAuthorizer
-
+    authorizer: AltinnAuthorizer,
+    kafkaProducer : SoeknadsmeldingKafkaProducer
 ) {
     route("/kronisk") {
         route("/soeknad") {
@@ -61,15 +62,7 @@ fun Route.kroniskRoutes(
                     bekreftet = request.bekreftet
                 )
 
-                if (!request.dokumentasjon.isNullOrEmpty()) {
-                    val filContext = extractBase64Del(request.dokumentasjon)
-                    val filExt = extractFilExtDel(request.dokumentasjon)
-                    if (!virusScanner.scanDoc(decodeBase64File(filContext))) {
-                        call.respond(HttpStatusCode.BadRequest)
-                        return@post
-                    }
-                    bucket.uploadDoc(soeknad.id, filContext, filExt)
-                }
+                processDocumentForGCPStorage(request.dokumentasjon, virusScanner, bucket, soeknad.id)
 
                 datasource.connection.use { connection ->
                     kroniskSoeknadRepo.insert(soeknad, connection)
@@ -91,6 +84,8 @@ fun Route.kroniskRoutes(
                     )
                 }
 
+                kafkaProducer.sendMessagesToProcess(om.writeValueAsString(soeknad))
+
                 call.respond(HttpStatusCode.Created)
                 KroniskSoeknadMetrics.tellMottatt()
             }
@@ -108,15 +103,7 @@ fun Route.kroniskRoutes(
                     sendtAv = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
                 )
 
-                if (!request.dokumentasjon.isNullOrEmpty()) {
-                    val fileContent = extractBase64Del(request.dokumentasjon)
-                    val fileExt = extractFilExtDel(request.dokumentasjon)
-                    if (!virusScanner.scanDoc(decodeBase64File(fileContent))) {
-                        call.respond(HttpStatusCode.BadRequest)
-                        return@post
-                    }
-                    bucket.uploadDoc(krav.id, fileContent, fileExt)
-                }
+                processDocumentForGCPStorage(request.dokumentasjon, virusScanner, bucket, krav.id)
 
                 datasource.connection.use { connection ->
                     kroniskKravRepo.insert(krav, connection)
@@ -137,6 +124,8 @@ fun Route.kroniskRoutes(
                         connection
                     )
                 }
+
+                kafkaProducer.sendMessagesToProcess(om.writeValueAsString(krav))
 
                 call.respond(HttpStatusCode.Created)
                 KroniskKravMetrics.tellMottatt()

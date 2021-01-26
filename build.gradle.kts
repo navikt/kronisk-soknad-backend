@@ -18,6 +18,7 @@ val gcpStorageVersion = "1.113.6"
 val cxfVersion = "3.4.1"
 val jaxwsVersion = "2.3.1"
 val jaxwsToolsVersion = "2.3.3"
+val kafkaClient = "2.7.0"
 
 val githubPassword: String by project
 
@@ -126,6 +127,7 @@ dependencies {
 
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitJupiterVersion")
     implementation( "com.google.cloud:google-cloud-storage:$gcpStorageVersion")
+    implementation("org.apache.kafka:kafka-clients:$kafkaClient")
 
 }
 

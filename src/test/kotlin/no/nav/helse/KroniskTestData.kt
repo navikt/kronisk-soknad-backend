@@ -77,8 +77,4 @@ private fun generateFravaersdata() = (0..35L)
     .map { FravaerData(LocalDate.now().minusMonths(it).toYearMonthString(), Random.nextInt(0, 28)) }
     .toMutableSet()
 
-fun LocalDate.toYearMonthString(): String {
-    val formatted = this.format(DateTimeFormatter.ofPattern("YYYY-MM"))
-    println("Mapper $this to $formatted")
-    return formatted
-}
+fun LocalDate.toYearMonthString() = this.format(DateTimeFormatter.ofPattern("yyyy-MM"))

@@ -22,10 +22,6 @@ interface SoeknadsmeldingMeldingProvider {
 class SoeknadsmeldingKafkaProducer(props: MutableMap<String, Any>, private val topicName: String, private val om : ObjectMapper) :
         SoeknadsmeldingMeldingProvider {
     private val producer = KafkaProducer(props, StringSerializer(), StringSerializer())
-    init {
-        om.registerModule(JavaTimeModule())
-        om.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
-    }
 
     override fun sendMessage(melding: KroniskSoeknad): RecordMetadata?{
         val record: ProducerRecord<String, String> =  ProducerRecord(topicName, om.writeValueAsString(melding))
@@ -38,6 +34,5 @@ class SoeknadsmeldingKafkaProducer(props: MutableMap<String, Any>, private val t
         record.headers().add(RecordHeader("type", "GravidSoeknad".toByteArray()))
         return producer.send(record).get(10, TimeUnit.SECONDS)
     }
-
 }
 

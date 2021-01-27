@@ -3,7 +3,9 @@ package no.nav.helse.fritakagp.processing.kronisk.soeknad
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import kotlinx.coroutines.runBlocking
+import no.nav.helse.arbeidsgiver.bakgrunnsjobb.Bakgrunnsjobb
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbProsesserer
+import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbRepository
 import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.*
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OppgaveKlient
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OpprettOppgaveRequest
@@ -22,13 +24,14 @@ class KroniskSoeknadProcessor(
     private val kroniskSoeknadRepo: KroniskSoeknadRepository,
     private val dokarkivKlient: DokarkivKlient,
     private val oppgaveKlient: OppgaveKlient,
+    private val bakgrunnsjobbRepo: BakgrunnsjobbRepository,
     private val pdlClient: PdlClient,
     private val pdfGenerator: KroniskSoeknadPDFGenerator,
     private val om: ObjectMapper,
     private val bucketStorage: BucketStorage
 ) : BakgrunnsjobbProsesserer {
     companion object {
-        val JOB_TYPE = "PROC_Kronisk_søk"
+        val JOB_TYPE = "kronisk-søknad-formidling"
         val dokumentasjonBrevkode = "soeknad_om_fritak_fra_agp_dokumentasjon"
     }
 
@@ -36,10 +39,6 @@ class KroniskSoeknadProcessor(
     val fritakAGPBehandingsTema = "ab0338"
 
     val log = LoggerFactory.getLogger(KroniskSoeknadProcessor::class.java)
-
-    override fun nesteForsoek(forsoek: Int, forrigeForsoek: LocalDateTime): LocalDateTime {
-        return LocalDateTime.now().plusHours(3)
-    }
 
     /**
      * Prosesserer en kronisksøknad; journalfører søknaden og oppretter en oppgave for saksbehandler.
@@ -62,6 +61,15 @@ class KroniskSoeknadProcessor(
                 soeknad.oppgaveId = opprettOppgave(soeknad)
                 KroniskSoeknadMetrics.tellOppgaveOpprettet()
             }
+
+            bakgrunnsjobbRepo.save(
+                Bakgrunnsjobb(
+                    maksAntallForsoek = 10,
+                    data = om.writeValueAsString(KroniskSoeknadKafkaProcessor.JobbData(soeknad.id)),
+                    type = KroniskSoeknadKafkaProcessor.JOB_TYPE
+                )
+            )
+
         } finally {
             updateAndLogOnFailure(soeknad)
         }

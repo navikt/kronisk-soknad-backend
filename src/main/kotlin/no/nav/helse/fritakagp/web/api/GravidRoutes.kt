@@ -88,14 +88,6 @@ fun Route.gravidRoutes(
                     )
                 }
 
-                bakgunnsjobbRepo.save(
-                    Bakgrunnsjobb(
-                        maksAntallForsoek = 10,
-                        data = om.writeValueAsString(GravidSoeknadKafkaProcessor.JobbData(soeknad.id)),
-                        type = GravidSoeknadKafkaProcessor.JOB_TYPE
-                    )
-                )
-
                 call.respond(HttpStatusCode.Created)
                 GravidSoeknadMetrics.tellMottatt()
             }

@@ -28,7 +28,7 @@ class KroniskKravProcessor(
     private val bucketStorage: BucketStorage
 ) : BakgrunnsjobbProsesserer {
     companion object {
-        val JOB_TYPE = "PROC_KRONISK_KRAV"
+        val JOB_TYPE = "kronisk-krav-formidling"
         val dokumentasjonBrevkode = "krav_om_fritak_fra_agp_dokumentasjon"
     }
 
@@ -36,10 +36,6 @@ class KroniskKravProcessor(
     val fritakAGPBehandingsTema = "ab0338"
 
     val log = LoggerFactory.getLogger(KroniskKravProcessor::class.java)
-
-    override fun nesteForsoek(forsoek: Int, forrigeForsoek: LocalDateTime): LocalDateTime {
-        return LocalDateTime.now().plusHours(3)
-    }
 
     /**
      * Prosesserer et kroniskkrav; journalfører kravet og oppretter en oppgave for saksbehandler.

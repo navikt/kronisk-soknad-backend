@@ -28,7 +28,7 @@ class GravidKravProcessor(
     private val bucketStorage: BucketStorage
 ) : BakgrunnsjobbProsesserer {
     companion object {
-        val JOB_TYPE = "PROC_GRAVID_KRAV"
+        val JOB_TYPE = "gravid-krav-formidling"
         val dokumentasjonBrevkode = "krav_om_fritak_fra_agp_dokumentasjon"
     }
 
@@ -36,10 +36,6 @@ class GravidKravProcessor(
     val fritakAGPBehandingsTema = "ab0338"
 
     val log = LoggerFactory.getLogger(GravidKravProcessor::class.java)
-
-    override fun nesteForsoek(forsoek: Int, forrigeForsoek: LocalDateTime): LocalDateTime {
-        return LocalDateTime.now().plusHours(3)
-    }
 
     /**
      * Prosesserer et gravidkrav; journalfører kravet og oppretter en oppgave for saksbehandler.

@@ -12,14 +12,10 @@ class KroniskSoeknadKafkaProcessor(
     private val kafkaProducer: SoeknadsmeldingKafkaProducer
 ) : BakgrunnsjobbProsesserer {
     companion object {
-        val JOB_TYPE = "PROC_KRONISK_KAFKA"
+        val JOB_TYPE = "kronisk-søknad-send-kafka"
     }
 
     val log = LoggerFactory.getLogger(KroniskSoeknadKafkaProcessor::class.java)
-
-    override fun nesteForsoek(forsoek: Int, forrigeForsoek: LocalDateTime): LocalDateTime {
-        return LocalDateTime.now().plusHours(3)
-    }
 
     /**
      * Sender kronisksoeknad til Kafka kø

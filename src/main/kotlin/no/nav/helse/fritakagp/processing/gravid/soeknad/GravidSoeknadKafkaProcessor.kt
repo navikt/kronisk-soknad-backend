@@ -12,14 +12,10 @@ class GravidSoeknadKafkaProcessor(
     private val kafkaProducer: SoeknadsmeldingKafkaProducer
 ) : BakgrunnsjobbProsesserer {
     companion object {
-        val JOB_TYPE = "PROC_GRAVID_KAFKA"
+        val JOB_TYPE = "gravid-søknad-send-kafka"
     }
 
     val log = LoggerFactory.getLogger(GravidSoeknadKafkaProcessor::class.java)
-
-    override fun nesteForsoek(forsoek: Int, forrigeForsoek: LocalDateTime): LocalDateTime {
-        return LocalDateTime.now().plusHours(3)
-    }
 
     /**
      * Sender gravidsoeknad til Kafka kø

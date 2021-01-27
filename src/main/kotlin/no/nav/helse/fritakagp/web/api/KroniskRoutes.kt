@@ -82,14 +82,6 @@ fun Route.kroniskRoutes(
                     )
                 }
 
-                bakgunnsjobbRepo.save(
-                    Bakgrunnsjobb(
-                        maksAntallForsoek = 10,
-                        data = om.writeValueAsString(KroniskSoeknadKafkaProcessor.JobbData(soeknad.id)),
-                        type = KroniskSoeknadKafkaProcessor.JOB_TYPE
-                    )
-                )
-
                 call.respond(HttpStatusCode.Created)
                 KroniskSoeknadMetrics.tellMottatt()
             }

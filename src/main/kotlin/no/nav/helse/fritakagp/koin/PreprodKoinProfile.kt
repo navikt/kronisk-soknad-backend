@@ -73,10 +73,10 @@ fun preprodConfig(config: ApplicationConfig) = module {
     single { BakgrunnsjobbService(get(), bakgrunnsvarsler = MetrikkVarsler()) }
 
     single { GravidSoeknadProcessor(get(), get(), get(), get(), get(), GravidSoeknadPDFGenerator(), get(), get()) }
-    single { GravidKravProcessor(get(), get(), get(), get(), GravidKravPDFGenerator(), get(), get()) }
+    single { GravidKravProcessor(get(), get(), get(), get(), get(), GravidKravPDFGenerator(), get(), get()) }
 
     single { KroniskSoeknadProcessor(get(), get(), get(), get(), get(), KroniskSoeknadPDFGenerator(), get(), get()) }
-    single { KroniskKravProcessor(get(), get(), get(), get(), KroniskKravPDFGenerator(), get(), get()) }
+    single { KroniskKravProcessor(get(), get(), get(), get(), get(), KroniskKravPDFGenerator(), get(), get()) }
 
     single { Clients.iCorrespondenceExternalBasic(config.getString("altinn_melding.altinn_endpoint")) }
     

@@ -128,7 +128,7 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitJupiterVersion")
     implementation( "com.google.cloud:google-cloud-storage:$gcpStorageVersion")
     implementation("org.apache.kafka:kafka-clients:$kafkaClient")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+    //implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 
 }
 

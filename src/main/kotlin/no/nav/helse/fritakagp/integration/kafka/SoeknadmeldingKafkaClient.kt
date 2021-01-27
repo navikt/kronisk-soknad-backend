@@ -1,9 +1,9 @@
 package no.nav.helse.fritakagp.integration.kafka
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import no.nav.helse.fritakagp.domain.GravidKrav
 import no.nav.helse.fritakagp.domain.GravidSoeknad
+import no.nav.helse.fritakagp.domain.KroniskKrav
 import no.nav.helse.fritakagp.domain.KroniskSoeknad
 import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.clients.producer.ProducerRecord
@@ -16,6 +16,8 @@ import java.util.concurrent.TimeUnit
 interface SoeknadsmeldingMeldingProvider {
     fun sendMessage(melding: KroniskSoeknad): RecordMetadata?
     fun sendMessage(melding: GravidSoeknad): RecordMetadata?
+    fun sendMessage(melding: KroniskKrav): RecordMetadata?
+    fun sendMessage(melding: GravidKrav): RecordMetadata?
 
 }
 
@@ -24,14 +26,24 @@ class SoeknadsmeldingKafkaProducer(props: MutableMap<String, Any>, private val t
     private val producer = KafkaProducer(props, StringSerializer(), StringSerializer())
 
     override fun sendMessage(melding: KroniskSoeknad): RecordMetadata?{
-        val record: ProducerRecord<String, String> =  ProducerRecord(topicName, om.writeValueAsString(melding))
-        record.headers().add(RecordHeader("type", "KroniskSoeknad".toByteArray()))
-        return producer.send(record).get(10, TimeUnit.SECONDS)
+        return sendKafkaMessage(om.writeValueAsString(melding), "KroniskSoeknad")
     }
 
     override fun sendMessage(melding: GravidSoeknad): RecordMetadata? {
-        val record: ProducerRecord<String, String> =  ProducerRecord(topicName, om.writeValueAsString(melding))
-        record.headers().add(RecordHeader("type", "GravidSoeknad".toByteArray()))
+        return sendKafkaMessage(om.writeValueAsString(melding), "GravidSoeknad")
+    }
+
+    override fun sendMessage(melding: GravidKrav): RecordMetadata? {
+        return sendKafkaMessage(om.writeValueAsString(melding), "GravidKrav")
+    }
+
+    override fun sendMessage(melding: KroniskKrav): RecordMetadata? {
+        return sendKafkaMessage(om.writeValueAsString(melding), "KroniskKrav")
+    }
+
+    private fun sendKafkaMessage(melding: String, type : String): RecordMetadata? {
+        val record: ProducerRecord<String, String> = ProducerRecord(topicName, melding)
+        record.headers().add(RecordHeader("type", type.toByteArray()))
         return producer.send(record).get(10, TimeUnit.SECONDS)
     }
 }

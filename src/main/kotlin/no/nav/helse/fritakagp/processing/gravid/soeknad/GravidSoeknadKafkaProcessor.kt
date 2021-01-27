@@ -4,7 +4,6 @@ import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbProsesserer
 import no.nav.helse.fritakagp.domain.GravidSoeknad
 import no.nav.helse.fritakagp.integration.kafka.SoeknadsmeldingKafkaProducer
 import org.slf4j.LoggerFactory
-import java.time.LocalDateTime
 import java.util.*
 
 class GravidSoeknadKafkaProcessor(

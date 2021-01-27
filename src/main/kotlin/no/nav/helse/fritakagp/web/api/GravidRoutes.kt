@@ -54,6 +54,7 @@ fun Route.gravidRoutes(
             post {
                 val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
                 val request = call.receive<GravidSoknadRequest>()
+                request.validate()
 
                 val soeknad = GravidSoeknad(
                     orgnr = request.orgnr,
@@ -96,6 +97,7 @@ fun Route.gravidRoutes(
         route("/krav") {
             post {
                 val request = call.receive<GravidKravRequest>()
+                request.validate()
                 authorize(authorizer, request.virksomhetsnummer)
 
                 val krav = GravidKrav(

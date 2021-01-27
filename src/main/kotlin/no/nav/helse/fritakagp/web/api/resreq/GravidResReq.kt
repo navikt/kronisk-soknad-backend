@@ -28,32 +28,32 @@ data class GravidSoknadRequest(
 
     val dokumentasjon: String?
 ) {
-    init {
-        validate(this) {
-            validate(GravidSoknadRequest::fnr).isValidIdentitetsnummer()
-            validate(GravidSoknadRequest::bekreftet).isTrue()
-            validate(GravidSoknadRequest::orgnr).isValidOrganisasjonsnummer()
+   fun validate() {
+       validate(this) {
+           validate(GravidSoknadRequest::fnr).isValidIdentitetsnummer()
+           validate(GravidSoknadRequest::bekreftet).isTrue()
+           validate(GravidSoknadRequest::orgnr).isValidOrganisasjonsnummer()
 
 
-            if (this@GravidSoknadRequest.tilrettelegge) {
-                validate(GravidSoknadRequest::tiltak).isNotNull()
+           if (this@GravidSoknadRequest.tilrettelegge) {
+               validate(GravidSoknadRequest::tiltak).isNotNull()
 
-                if (this@GravidSoknadRequest.tiltak?.contains(Tiltak.ANNET) == true) {
-                    validate(GravidSoknadRequest::tiltakBeskrivelse).isNotNull()
-                    validate(GravidSoknadRequest::tiltakBeskrivelse).isNotEmpty()
-                }
+               if (this@GravidSoknadRequest.tiltak?.contains(Tiltak.ANNET) == true) {
+                   validate(GravidSoknadRequest::tiltakBeskrivelse).isNotNull()
+                   validate(GravidSoknadRequest::tiltakBeskrivelse).isNotEmpty()
+               }
 
-                if (this@GravidSoknadRequest.omplassering == Omplassering.IKKE_MULIG) {
-                    validate(GravidSoknadRequest::omplasseringAarsak).isNotNull()
-                }
-            }
+               if (this@GravidSoknadRequest.omplassering == Omplassering.IKKE_MULIG) {
+                   validate(GravidSoknadRequest::omplasseringAarsak).isNotNull()
+               }
+           }
 
-            if (!this@GravidSoknadRequest.dokumentasjon.isNullOrEmpty()) {
-                validate(GravidSoknadRequest::dokumentasjon).isGodskjentFiletyper()
-                validate(GravidSoknadRequest::dokumentasjon).isNotStorreEnn(10L * MB)
-            }
-        }
-    }
+           if (!this@GravidSoknadRequest.dokumentasjon.isNullOrEmpty()) {
+               validate(GravidSoknadRequest::dokumentasjon).isGodskjentFiletyper()
+               validate(GravidSoknadRequest::dokumentasjon).isNotStorreEnn(10L * MB)
+           }
+       }
+   }
 }
 
 
@@ -66,7 +66,7 @@ data class GravidKravRequest(
 
     val dokumentasjon: String?
 ) {
-    init {
+    fun validate() {
         validate(this) {
             validate(GravidKravRequest::identitetsnummer).isValidIdentitetsnummer()
             validate(GravidKravRequest::virksomhetsnummer).isValidOrganisasjonsnummer()

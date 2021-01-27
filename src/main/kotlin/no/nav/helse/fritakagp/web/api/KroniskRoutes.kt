@@ -47,6 +47,7 @@ fun Route.kroniskRoutes(
         route("/soeknad") {
             post {
                 val request = call.receive<KroniskSoknadRequest>()
+                request.validate()
                 val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
 
                 val soeknad = KroniskSoeknad(
@@ -90,6 +91,7 @@ fun Route.kroniskRoutes(
         route("/krav") {
             post {
                 val request = call.receive<KroniskKravRequest>()
+                request.validate()
                 authorize(authorizer, request.virksomhetsnummer)
 
                 val krav = KroniskKrav(

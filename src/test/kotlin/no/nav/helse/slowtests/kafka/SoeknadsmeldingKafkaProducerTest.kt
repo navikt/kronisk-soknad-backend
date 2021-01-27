@@ -1,9 +1,6 @@
 package no.nav.helse.slowtests.kafka
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import io.ktor.client.*
 import no.nav.helse.GravidTestData
 import no.nav.helse.fritakagp.integration.kafka.SoeknadsmeldingKafkaProducer
 import no.nav.helse.fritakagp.integration.kafka.consumerFakeConfig
@@ -19,7 +16,7 @@ import org.koin.test.inject
 
 internal class SoeknadsmeldingKafkaProducerTest : SystemTestBase() {
 
-    val om by inject<ObjectMapper>()
+    private val om by inject<ObjectMapper>()
 
     private lateinit var kafkaProdusent: KafkaAdminForTests
     private lateinit var producer: SoeknadsmeldingKafkaProducer

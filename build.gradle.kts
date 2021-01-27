@@ -18,6 +18,7 @@ val gcpStorageVersion = "1.113.6"
 val cxfVersion = "3.4.1"
 val jaxwsVersion = "2.3.1"
 val jaxwsToolsVersion = "2.3.3"
+val kafkaClient = "2.7.0"
 
 val githubPassword: String by project
 
@@ -76,7 +77,7 @@ dependencies {
     implementation("no.nav.security:token-validation-ktor:$tokenSupportVersion")
     implementation("javax.ws.rs:javax.ws.rs-api:2.1.1")
     implementation("no.nav.security:mock-oauth2-server:$mockOAuth2ServerVersion")
-    implementation("no.nav.helsearbeidsgiver:helse-arbeidsgiver-felles-backend:2021.01.26-13-01-5c465")
+    implementation("no.nav.helsearbeidsgiver:helse-arbeidsgiver-felles-backend:2021.01.27-10-20-8a953")
     implementation("no.nav.common:log:2.2020.10.15_11.43-b1f02e7bd6ae")
 
     implementation(kotlin("stdlib"))
@@ -126,6 +127,8 @@ dependencies {
 
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitJupiterVersion")
     implementation( "com.google.cloud:google-cloud-storage:$gcpStorageVersion")
+    implementation("org.apache.kafka:kafka-clients:$kafkaClient")
+    //implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 
 }
 

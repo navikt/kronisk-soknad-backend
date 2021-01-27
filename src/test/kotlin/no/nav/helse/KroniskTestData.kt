@@ -1,7 +1,6 @@
 package no.nav.helse
 
 import no.nav.helse.fritakagp.domain.*
-import no.nav.helse.fritakagp.web.api.resreq.GravidKravRequest
 import no.nav.helse.fritakagp.web.api.resreq.KroniskKravRequest
 import no.nav.helse.fritakagp.web.api.resreq.KroniskSoknadRequest
 import java.time.LocalDate
@@ -78,4 +77,4 @@ private fun generateFravaersdata() = (0..35L)
     .map { FravaerData(LocalDate.now().minusMonths(it).toYearMonthString(), Random.nextInt(0, 28)) }
     .toMutableSet()
 
-fun LocalDate.toYearMonthString() = this.format(DateTimeFormatter.ofPattern("YYYY-MM"))
+fun LocalDate.toYearMonthString() = this.format(DateTimeFormatter.ofPattern("yyyy-MM"))

@@ -3,7 +3,9 @@ package no.nav.helse.fritakagp.processing.gravid.krav
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import kotlinx.coroutines.runBlocking
+import no.nav.helse.arbeidsgiver.bakgrunnsjobb.Bakgrunnsjobb
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbProsesserer
+import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbRepository
 import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.*
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OppgaveKlient
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OpprettOppgaveRequest
@@ -13,6 +15,7 @@ import no.nav.helse.fritakagp.GravidKravMetrics
 import no.nav.helse.fritakagp.db.GravidKravRepository
 import no.nav.helse.fritakagp.domain.GravidKrav
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
+import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadKafkaProcessor
 import org.slf4j.LoggerFactory
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -23,12 +26,13 @@ class GravidKravProcessor(
     private val dokarkivKlient: DokarkivKlient,
     private val oppgaveKlient: OppgaveKlient,
     private val pdlClient: PdlClient,
+    private val bakgrunnsjobbRepo: BakgrunnsjobbRepository,
     private val pdfGenerator: GravidKravPDFGenerator,
     private val om: ObjectMapper,
     private val bucketStorage: BucketStorage
 ) : BakgrunnsjobbProsesserer {
     companion object {
-        val JOB_TYPE = "PROC_GRAVID_KRAV"
+        val JOB_TYPE = "gravid-krav-formidling"
         val dokumentasjonBrevkode = "krav_om_fritak_fra_agp_dokumentasjon"
     }
 
@@ -36,10 +40,6 @@ class GravidKravProcessor(
     val fritakAGPBehandingsTema = "ab0338"
 
     val log = LoggerFactory.getLogger(GravidKravProcessor::class.java)
-
-    override fun nesteForsoek(forsoek: Int, forrigeForsoek: LocalDateTime): LocalDateTime {
-        return LocalDateTime.now().plusHours(3)
-    }
 
     /**
      * Prosesserer et gravidkrav; journalfører kravet og oppretter en oppgave for saksbehandler.
@@ -62,6 +62,13 @@ class GravidKravProcessor(
                 krav.oppgaveId = opprettOppgave(krav)
                 GravidKravMetrics.tellOppgaveOpprettet()
             }
+            bakgrunnsjobbRepo.save(
+                Bakgrunnsjobb(
+                    maksAntallForsoek = 10,
+                    data = om.writeValueAsString(GravidKravKafkaProcessor.JobbData(krav.id)),
+                    type = GravidKravKafkaProcessor.JOB_TYPE
+                )
+            )
         } finally {
             updateAndLogOnFailure(krav)
         }

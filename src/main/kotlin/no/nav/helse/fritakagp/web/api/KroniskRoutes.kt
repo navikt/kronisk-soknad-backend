@@ -7,7 +7,6 @@ import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.util.*
-import io.ktor.util.pipeline.*
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.Bakgrunnsjobb
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbRepository
 import no.nav.helse.arbeidsgiver.web.auth.AltinnAuthorizer
@@ -17,19 +16,19 @@ import no.nav.helse.fritakagp.db.KroniskKravRepository
 import no.nav.helse.fritakagp.db.KroniskSoeknadRepository
 import no.nav.helse.fritakagp.domain.KroniskKrav
 import no.nav.helse.fritakagp.domain.KroniskSoeknad
-import no.nav.helse.fritakagp.domain.decodeBase64File
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
+import no.nav.helse.fritakagp.integration.kafka.SoeknadsmeldingKafkaProducer
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadProcessor
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadKvitteringProcessor
 import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
+import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadKafkaProcessor
 import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravKvitteringProcessor
 import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravProcessor
+import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadKafkaProcessor
 import no.nav.helse.fritakagp.web.api.resreq.KroniskKravRequest
 import no.nav.helse.fritakagp.web.api.resreq.KroniskSoknadRequest
 import no.nav.helse.fritakagp.web.auth.authorize
 import no.nav.helse.fritakagp.web.auth.hentIdentitetsnummerFraLoginToken
-import no.nav.helse.fritakagp.web.dto.validation.extractBase64Del
-import no.nav.helse.fritakagp.web.dto.validation.extractFilExtDel
 import javax.sql.DataSource
 
 @KtorExperimentalAPI
@@ -41,13 +40,14 @@ fun Route.kroniskRoutes(
     om: ObjectMapper,
     virusScanner: VirusScanner,
     bucket: BucketStorage,
-    authorizer: AltinnAuthorizer
-
+    authorizer: AltinnAuthorizer,
+    kafkaProducer : SoeknadsmeldingKafkaProducer
 ) {
     route("/kronisk") {
         route("/soeknad") {
             post {
                 val request = call.receive<KroniskSoknadRequest>()
+                request.validate()
                 val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
 
                 val soeknad = KroniskSoeknad(
@@ -61,15 +61,7 @@ fun Route.kroniskRoutes(
                     bekreftet = request.bekreftet
                 )
 
-                if (!request.dokumentasjon.isNullOrEmpty()) {
-                    val filContext = extractBase64Del(request.dokumentasjon)
-                    val filExt = extractFilExtDel(request.dokumentasjon)
-                    if (!virusScanner.scanDoc(decodeBase64File(filContext))) {
-                        call.respond(HttpStatusCode.BadRequest)
-                        return@post
-                    }
-                    bucket.uploadDoc(soeknad.id, filContext, filExt)
-                }
+                processDocumentForGCPStorage(request.dokumentasjon, virusScanner, bucket, soeknad.id)
 
                 datasource.connection.use { connection ->
                     kroniskSoeknadRepo.insert(soeknad, connection)
@@ -99,6 +91,7 @@ fun Route.kroniskRoutes(
         route("/krav") {
             post {
                 val request = call.receive<KroniskKravRequest>()
+                request.validate()
                 authorize(authorizer, request.virksomhetsnummer)
 
                 val krav = KroniskKrav(
@@ -108,15 +101,7 @@ fun Route.kroniskRoutes(
                     sendtAv = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
                 )
 
-                if (!request.dokumentasjon.isNullOrEmpty()) {
-                    val fileContent = extractBase64Del(request.dokumentasjon)
-                    val fileExt = extractFilExtDel(request.dokumentasjon)
-                    if (!virusScanner.scanDoc(decodeBase64File(fileContent))) {
-                        call.respond(HttpStatusCode.BadRequest)
-                        return@post
-                    }
-                    bucket.uploadDoc(krav.id, fileContent, fileExt)
-                }
+                processDocumentForGCPStorage(request.dokumentasjon, virusScanner, bucket, krav.id)
 
                 datasource.connection.use { connection ->
                     kroniskKravRepo.insert(krav, connection)

@@ -78,6 +78,8 @@ spec:
       value: helse-arbeidsgiver-fritakagb-bucket
     - name: ALTINN_SERVICE_OWNER_GW_URL
       value: https://api-gw-q1.oera.no/ekstern/altinn/api/serviceowner
+    - name: KAFKA_TOPIC_NAME
+      value: helsearbeidsgiver.fritakagpsoeknad
 
 
   gcp:
@@ -94,3 +96,6 @@ spec:
          # createdBefore: 2020-01-01
          # numNewerVersions: 2
         #  withState: ANY
+
+  kafka:
+    pool: nav-dev    # enum of nav-dev, nav-prod

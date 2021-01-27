@@ -5,6 +5,10 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import no.nav.helse.GravidTestData
 import no.nav.helse.KroniskTestData
+import no.nav.helse.fritakagp.domain.ArbeidsType
+import no.nav.helse.fritakagp.domain.FravaerData
+import no.nav.helse.fritakagp.domain.PaakjenningsType
+import no.nav.helse.fritakagp.web.api.resreq.KroniskSoknadRequest
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 
@@ -41,6 +45,27 @@ class KroniskSoeknadHTTPTests : SystemTestBase() {
         }
 
         Assertions.assertThat(response.status).isEqualTo(HttpStatusCode.Created)
+    }
+
+
+    @Test
+    fun `Skal validere feil ved ugyldig data`() = suspendableTest {
+        val response = httpClient.post<HttpResponse> {
+            appUrl(soeknadKroniskUrl)
+            contentType(ContentType.Application.Json)
+            loggedInAs("123456789")
+            body = KroniskSoknadRequest(orgnr = "lkajsbdfv",
+                fnr = "lkdf",
+                paakjenningBeskrivelse = "sdfsfd",
+                arbeidstyper = setOf(ArbeidsType.KREVENDE),
+                paakjenningstyper = setOf(PaakjenningsType.ALLERGENER),
+                fravaer = setOf(FravaerData("2001-01",12)),
+                bekreftet = true,
+                dokumentasjon = null
+            )
+        }
+
+        Assertions.assertThat(response.status).isEqualTo(HttpStatusCode.UnprocessableEntity)
     }
 
     @Test

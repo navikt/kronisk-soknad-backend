@@ -3,7 +3,9 @@ package no.nav.helse.fritakagp.processing.gravid.soeknad
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import kotlinx.coroutines.runBlocking
+import no.nav.helse.arbeidsgiver.bakgrunnsjobb.Bakgrunnsjobb
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbProsesserer
+import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbRepository
 import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.*
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OppgaveKlient
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OpprettOppgaveRequest
@@ -23,12 +25,13 @@ class GravidSoeknadProcessor(
     private val dokarkivKlient: DokarkivKlient,
     private val oppgaveKlient: OppgaveKlient,
     private val pdlClient: PdlClient,
+    private val bakgrunnsjobbRepo: BakgrunnsjobbRepository,
     private val pdfGenerator: GravidSoeknadPDFGenerator,
     private val om: ObjectMapper,
     private val bucketStorage: BucketStorage
 ) : BakgrunnsjobbProsesserer {
     companion object {
-        val JOB_TYPE = "PROC_GRAVID"
+        val JOB_TYPE = "gravid-søknad-formidling"
         val dokumentasjonBrevkode = "soeknad_om_fritak_fra_agp_dokumentasjon"
     }
 
@@ -36,10 +39,6 @@ class GravidSoeknadProcessor(
     val fritakAGPBehandingsTema = "ab0338"
 
     val log = LoggerFactory.getLogger(GravidSoeknadProcessor::class.java)
-
-    override fun nesteForsoek(forsoek: Int, forrigeForsoek: LocalDateTime): LocalDateTime {
-        return LocalDateTime.now().plusHours(3)
-    }
 
     /**
      * Prosesserer en gravidsøknad; journalfører søknaden og oppretter en oppgave for saksbehandler.
@@ -62,6 +61,15 @@ class GravidSoeknadProcessor(
                 soeknad.oppgaveId = opprettOppgave(soeknad)
                 GravidSoeknadMetrics.tellOppgaveOpprettet()
             }
+
+            bakgrunnsjobbRepo.save(
+                Bakgrunnsjobb(
+                    maksAntallForsoek = 10,
+                    data = om.writeValueAsString(GravidSoeknadKafkaProcessor.JobbData(soeknad.id)),
+                    type = GravidSoeknadKafkaProcessor.JOB_TYPE
+                )
+            )
+
         } finally {
             updateAndLogOnFailure(soeknad)
         }

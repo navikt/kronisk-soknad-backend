@@ -16,11 +16,7 @@ class KroniskSoeknadKvitteringProcessor(
 ) : BakgrunnsjobbProsesserer {
 
     companion object {
-        val JOB_TYPE = "kvitt_søk_kronisk"
-    }
-
-    override fun nesteForsoek(forsoek: Int, forrigeForsoek: LocalDateTime): LocalDateTime {
-        return forrigeForsoek.plusHours(1)
+        val JOB_TYPE = "kronisk-søknad-altinn-kvittering"
     }
 
     override fun prosesser(jobbData: String) {

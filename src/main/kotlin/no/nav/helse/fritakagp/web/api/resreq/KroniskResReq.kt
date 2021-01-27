@@ -24,7 +24,8 @@ data class KroniskSoknadRequest(
 
     val dokumentasjon : String?
 ) {
-    init {
+
+    fun validate() {
         validate(this) {
             validate(KroniskSoknadRequest::fnr).isValidIdentitetsnummer()
             validate(KroniskSoknadRequest::bekreftet).isTrue()
@@ -52,6 +53,7 @@ data class KroniskSoknadRequest(
                 validate(KroniskSoknadRequest::dokumentasjon).isNotStorreEnn(10L * MB)
             }
         }
+
     }
 }
 
@@ -65,7 +67,7 @@ data class KroniskKravRequest(
 
     val dokumentasjon: String?
 ) {
-    init {
+   fun validate() {
         validate(this) {
             validate(KroniskKravRequest::identitetsnummer).isValidIdentitetsnummer()
             validate(KroniskKravRequest::virksomhetsnummer).isValidOrganisasjonsnummer()

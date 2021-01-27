@@ -18,17 +18,23 @@ import no.nav.helse.fritakagp.domain.GravidKrav
 import no.nav.helse.fritakagp.domain.GravidSoeknad
 import no.nav.helse.fritakagp.domain.decodeBase64File
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
+import no.nav.helse.fritakagp.integration.kafka.SoeknadsmeldingKafkaProducer
 import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadKvitteringProcessor
 import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadProcessor
 import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravKvitteringProcessor
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravProcessor
+import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadKafkaProcessor
 import no.nav.helse.fritakagp.web.api.resreq.GravidKravRequest
 import no.nav.helse.fritakagp.web.api.resreq.GravidSoknadRequest
 import no.nav.helse.fritakagp.web.auth.authorize
 import no.nav.helse.fritakagp.web.auth.hentIdentitetsnummerFraLoginToken
+import no.nav.helse.fritakagp.web.dto.validation.VirusCheckConstraint
 import no.nav.helse.fritakagp.web.dto.validation.extractBase64Del
 import no.nav.helse.fritakagp.web.dto.validation.extractFilExtDel
+import org.valiktor.ConstraintViolationException
+import org.valiktor.DefaultConstraintViolation
+import java.util.*
 import javax.sql.DataSource
 
 @KtorExperimentalAPI
@@ -40,13 +46,15 @@ fun Route.gravidRoutes(
     om: ObjectMapper,
     virusScanner: VirusScanner,
     bucket: BucketStorage,
-    authorizer: AltinnAuthorizer
+    authorizer: AltinnAuthorizer,
+    kafkaProducer : SoeknadsmeldingKafkaProducer
 ) {
     route("/gravid") {
         route("/soeknad") {
             post {
                 val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
                 val request = call.receive<GravidSoknadRequest>()
+                request.validate()
 
                 val soeknad = GravidSoeknad(
                     orgnr = request.orgnr,
@@ -59,15 +67,7 @@ fun Route.gravidRoutes(
                     tiltakBeskrivelse = request.tiltakBeskrivelse
                 )
 
-                if (!request.dokumentasjon.isNullOrEmpty()) {
-                    val fileContent = extractBase64Del(request.dokumentasjon)
-                    val fileExt = extractFilExtDel(request.dokumentasjon)
-                    if (!virusScanner.scanDoc(decodeBase64File(fileContent))) {
-                        call.respond(HttpStatusCode.BadRequest)
-                        return@post
-                    }
-                    bucket.uploadDoc(soeknad.id, fileContent, fileExt)
-                }
+                processDocumentForGCPStorage(request.dokumentasjon, virusScanner, bucket, soeknad.id )
 
                 datasource.connection.use { connection ->
                     gravidSoeknadRepo.insert(soeknad, connection)
@@ -97,6 +97,7 @@ fun Route.gravidRoutes(
         route("/krav") {
             post {
                 val request = call.receive<GravidKravRequest>()
+                request.validate()
                 authorize(authorizer, request.virksomhetsnummer)
 
                 val krav = GravidKrav(
@@ -106,15 +107,7 @@ fun Route.gravidRoutes(
                     sendtAv = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
                 )
 
-                if (!request.dokumentasjon.isNullOrEmpty()) {
-                    val fileContent = extractBase64Del(request.dokumentasjon)
-                    val fileExt = extractFilExtDel(request.dokumentasjon)
-                    if (!virusScanner.scanDoc(decodeBase64File(fileContent))) {
-                        call.respond(HttpStatusCode.BadRequest)
-                        return@post
-                    }
-                    bucket.uploadDoc(krav.id, fileContent, fileExt)
-                }
+                processDocumentForGCPStorage(request.dokumentasjon, virusScanner, bucket, krav.id)
 
                 datasource.connection.use { connection ->
                     gravidKravRepo.insert(krav, connection)
@@ -142,3 +135,14 @@ fun Route.gravidRoutes(
         }
     }
 }
+suspend fun processDocumentForGCPStorage(doc : String?, virusScanner: VirusScanner, bucket: BucketStorage, id : UUID)  {
+    if (!doc.isNullOrEmpty()) {
+        val fileContent = extractBase64Del(doc)
+        val fileExt = extractFilExtDel(doc)
+        if (!virusScanner.scanDoc(decodeBase64File(fileContent))) {
+            throw ConstraintViolationException(setOf(DefaultConstraintViolation("dokumentasjon", constraint = VirusCheckConstraint())))
+        }
+        bucket.uploadDoc(id, fileContent, fileExt)
+    }
+}
+

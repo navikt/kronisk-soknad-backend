@@ -14,6 +14,7 @@ import no.nav.helse.arbeidsgiver.utils.loadFromResources
 import no.nav.helse.arbeidsgiver.web.auth.AltinnOrganisationsRepository
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.integration.gcp.MockBucketStorage
+import no.nav.helse.fritakagp.integration.kafka.*
 import no.nav.helse.fritakagp.integration.virusscan.MockVirusScanner
 import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
 import org.koin.core.module.Module
@@ -82,6 +83,7 @@ fun Module.mockExternalDependecies() {
 
     single { MockVirusScanner() } bind VirusScanner::class
     single { MockBucketStorage() } bind BucketStorage::class
+    single {SoeknadsmeldingKafkaProducer(producerFakeConfig(), "kafka_topic", get())} bind SoeknadsmeldingMeldingProvider::class
 }
 
 class MockAltinnRepo(om: ObjectMapper) : AltinnOrganisationsRepository {

@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import io.mockk.*
 import no.nav.helse.KroniskTestData
+import no.nav.helse.arbeidsgiver.bakgrunnsjobb.Bakgrunnsjobb
+import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbRepository
 import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.DokarkivKlient
 import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.JournalpostRequest
 import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.JournalpostResponse
@@ -17,6 +19,7 @@ import no.nav.helse.fritakagp.db.KroniskSoeknadRepository
 import no.nav.helse.fritakagp.domain.KroniskSoeknad
 import no.nav.helse.fritakagp.integration.gcp.BucketDocument
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
+import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadKafkaProcessor
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -32,7 +35,9 @@ class KroniskSoeknadProcessorTest {
     val objectMapper = ObjectMapper().registerModule(KotlinModule())
     val pdfGeneratorMock = mockk<KroniskSoeknadPDFGenerator>(relaxed = true)
     val bucketStorageMock = mockk<BucketStorage>(relaxed = true)
-    val prosessor = KroniskSoeknadProcessor(repositoryMock, joarkMock, oppgaveMock, pdlClientMock, pdfGeneratorMock, objectMapper, bucketStorageMock)
+    val bakgrunnsjobbRepomock = mockk<BakgrunnsjobbRepository>(relaxed = true)
+
+    val prosessor = KroniskSoeknadProcessor(repositoryMock, joarkMock, oppgaveMock, bakgrunnsjobbRepomock, pdlClientMock, pdfGeneratorMock, objectMapper, bucketStorageMock)
     lateinit var soeknad: KroniskSoeknad
 
     private val oppgaveId = 9999
@@ -105,6 +110,19 @@ class KroniskSoeknadProcessorTest {
         verify(exactly = 1) { repositoryMock.update(soeknad) }
     }
 
+    @Test
+    fun `skal opprette kafkasenderjobb`() {
+        prosessor.prosesser(jobbDataJson)
+
+        assertThat(soeknad.journalpostId).isEqualTo(arkivReferanse)
+        assertThat(soeknad.oppgaveId).isEqualTo(oppgaveId.toString())
+
+        val opprettetBakgrunnsjobb = slot<Bakgrunnsjobb>()
+        verify(exactly = 1) { bakgrunnsjobbRepomock.save(capture(opprettetBakgrunnsjobb)) }
+
+        assertThat(opprettetBakgrunnsjobb.captured.type).isEqualTo(KroniskSoeknadKafkaProcessor.JOB_TYPE)
+        assertThat(opprettetBakgrunnsjobb.captured.data).contains(soeknad.id.toString())
+    }
 
     @Test
     fun `Ved feil i oppgave skal joarkref lagres, og det skal det kastes exception oppover`() {

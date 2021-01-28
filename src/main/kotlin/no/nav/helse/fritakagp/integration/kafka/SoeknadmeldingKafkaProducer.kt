@@ -17,7 +17,7 @@ interface SoeknadmeldingSender {
 
 }
 
-class SoeknadmeldingKafkaProducer(props: MutableMap<String, Any>, private val topicName: String, private val om : ObjectMapper) :
+class SoeknadmeldingKafkaProducer(props: Map<String, Any>, private val topicName: String, private val om : ObjectMapper) :
         SoeknadmeldingSender {
     private val producer = KafkaProducer(props, StringSerializer(), StringSerializer())
 

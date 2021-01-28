@@ -78,8 +78,6 @@ spec:
       value: helse-arbeidsgiver-fritakagb-bucket
     - name: ALTINN_SERVICE_OWNER_GW_URL
       value: https://api-gw-q1.oera.no/ekstern/altinn/api/serviceowner
-    - name: KAFKA_TOPIC_NAME
-      value: helsearbeidsgiver.fritakagpsoeknad
 
 
   gcp:

@@ -51,10 +51,10 @@ fun localDevConfig(config: ApplicationConfig) = module {
     single { KroniskKravKvitteringSenderDummy() } bind KroniskKravKvitteringSender::class
     single { KroniskKravKvitteringProcessor(get(), get(), get()) }
 
-    single { GravidSoeknadKafkaProcessor(get(), get()) }
-    single { GravidKravKafkaProcessor(get(), get()) }
-    single { KroniskSoeknadKafkaProcessor(get(), get()) }
-    single { KroniskKravKafkaProcessor(get(), get()) }
+    single { GravidSoeknadKafkaProcessor(get(), get(), get()) }
+    single { GravidKravKafkaProcessor(get(), get(), get()) }
+    single { KroniskSoeknadKafkaProcessor(get(), get(), get()) }
+    single { KroniskKravKafkaProcessor(get(), get(), get()) }
 
     single { DefaultAltinnAuthorizer(get()) } bind AltinnAuthorizer::class
 }

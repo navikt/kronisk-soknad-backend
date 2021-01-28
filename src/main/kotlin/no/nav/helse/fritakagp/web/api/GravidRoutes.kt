@@ -18,13 +18,11 @@ import no.nav.helse.fritakagp.domain.GravidKrav
 import no.nav.helse.fritakagp.domain.GravidSoeknad
 import no.nav.helse.fritakagp.domain.decodeBase64File
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
-import no.nav.helse.fritakagp.integration.kafka.SoeknadsmeldingKafkaProducer
-import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadKvitteringProcessor
-import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadProcessor
 import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravKvitteringProcessor
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravProcessor
-import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadKafkaProcessor
+import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadKvitteringProcessor
+import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadProcessor
 import no.nav.helse.fritakagp.web.api.resreq.GravidKravRequest
 import no.nav.helse.fritakagp.web.api.resreq.GravidSoknadRequest
 import no.nav.helse.fritakagp.web.auth.authorize
@@ -46,8 +44,7 @@ fun Route.gravidRoutes(
     om: ObjectMapper,
     virusScanner: VirusScanner,
     bucket: BucketStorage,
-    authorizer: AltinnAuthorizer,
-    kafkaProducer : SoeknadsmeldingKafkaProducer
+    authorizer: AltinnAuthorizer
 ) {
     route("/gravid") {
         route("/soeknad") {

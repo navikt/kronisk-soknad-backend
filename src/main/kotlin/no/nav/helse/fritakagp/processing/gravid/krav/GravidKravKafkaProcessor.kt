@@ -2,13 +2,13 @@ package no.nav.helse.fritakagp.processing.gravid.krav
 
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbProsesserer
 import no.nav.helse.fritakagp.domain.GravidKrav
-import no.nav.helse.fritakagp.integration.kafka.SoeknadsmeldingKafkaProducer
+import no.nav.helse.fritakagp.integration.kafka.KravmeldingSender
 import org.slf4j.LoggerFactory
 import java.util.*
 
 class GravidKravKafkaProcessor(
     private val gravidKrav: GravidKrav,
-    private val kafkaProducer: SoeknadsmeldingKafkaProducer
+    private val kafkaProducer: KravmeldingSender
 ) : BakgrunnsjobbProsesserer {
     companion object {
         val JOB_TYPE = "gravid-krav-send-kafka"

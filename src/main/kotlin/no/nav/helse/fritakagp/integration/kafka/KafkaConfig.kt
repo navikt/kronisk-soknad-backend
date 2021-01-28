@@ -41,7 +41,7 @@ private fun securityConfig() = mapOf(
     SslConfigs.SSL_KEY_PASSWORD_CONFIG to System.getenv()["KAFKA_CREDSTORE_PASSWORD"]
 )
 
-fun producerFakeConfig() = mutableMapOf<String, Any>(
+fun producerLocalConfig() = mutableMapOf<String, Any>(
     ProducerConfig.BOOTSTRAP_SERVERS_CONFIG to "localhost:9092",
     ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG to StringSerializer::class.java.canonicalName,
     ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG to StringSerializer::class.java.canonicalName,

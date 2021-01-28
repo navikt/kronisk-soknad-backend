@@ -1,6 +1,5 @@
 package no.nav.helse.slowtests.kafka
 
-import no.nav.helse.fritakagp.integration.kafka.SoeknadsmeldingKafkaProducer
 import no.nav.helse.fritakagp.integration.kafka.consumerFakeConfig
 import org.apache.kafka.clients.admin.AdminClient
 import org.apache.kafka.clients.admin.KafkaAdminClient
@@ -14,7 +13,7 @@ import java.time.Duration
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-class KafkaAdminForTests() {
+class KafkaAdminForTests {
     companion object {
         const val topicName = "fritakagb-test"
     }
@@ -56,7 +55,7 @@ class SoeknadsmeldingKafkaConsumer(props: MutableMap<String, Any>, private val t
         KafkaConsumer(props, StringDeserializer(), StringDeserializer())
     private val  topicPartition = TopicPartition(topicName, 0)
 
-    private val log = LoggerFactory.getLogger(SoeknadsmeldingKafkaProducer::class.java)
+    private val log = LoggerFactory.getLogger(this::class.java)
 
     init {
         consumer.assign(Collections.singletonList(topicPartition))

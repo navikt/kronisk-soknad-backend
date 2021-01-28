@@ -19,7 +19,7 @@ fun producerConfig() = mutableMapOf<String, Any>(
     ProducerConfig.BOOTSTRAP_SERVERS_CONFIG to envOrEmpty("KAFKA_BROKERS"),
     ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG to StringSerializer::class.java.canonicalName,
     ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG to StringSerializer::class.java.canonicalName,
-    ProducerConfig.ACKS_CONFIG to "ALL",
+    ProducerConfig.ACKS_CONFIG to "all",
 
     CommonClientConfigs.SECURITY_PROTOCOL_CONFIG to SecurityProtocol.SSL.name,
     SslConfigs.SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_CONFIG to "", //Disable server host name verification

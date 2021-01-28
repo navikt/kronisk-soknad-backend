@@ -13,11 +13,7 @@ import no.nav.helse.fritakagp.integration.kafka.*
 import no.nav.helse.fritakagp.processing.gravid.krav.*
 import no.nav.helse.fritakagp.processing.gravid.soeknad.*
 import no.nav.helse.fritakagp.processing.kronisk.krav.*
-import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadPDFGenerator
-import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadProcessor
-import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadKvitteringProcessor
-import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadKvitteringSenderDummy
-import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadKvitteringSender
+import no.nav.helse.fritakagp.processing.kronisk.soeknad.*
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import javax.sql.DataSource
@@ -54,6 +50,11 @@ fun localDevConfig(config: ApplicationConfig) = module {
     single { KroniskSoeknadKvitteringProcessor(get(), get(), get()) }
     single { KroniskKravKvitteringSenderDummy() } bind KroniskKravKvitteringSender::class
     single { KroniskKravKvitteringProcessor(get(), get(), get()) }
+
+    single { GravidSoeknadKafkaProcessor(get(), get()) }
+    single { GravidKravKafkaProcessor(get(), get()) }
+    single { KroniskSoeknadKafkaProcessor(get(), get()) }
+    single { KroniskKravKafkaProcessor(get(), get()) }
 
     single { DefaultAltinnAuthorizer(get()) } bind AltinnAuthorizer::class
 }

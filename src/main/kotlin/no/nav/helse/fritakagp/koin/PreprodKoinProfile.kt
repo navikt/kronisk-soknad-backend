@@ -120,6 +120,11 @@ fun preprodConfig(config: ApplicationConfig) = module {
     } bind KroniskKravKvitteringSender::class
     single { KroniskKravKvitteringProcessor(get(), get(), get()) }
 
+    single { GravidSoeknadKafkaProcessor(get(), get()) }
+    single { GravidKravKafkaProcessor(get(), get()) }
+    single { KroniskSoeknadKafkaProcessor(get(), get()) }
+    single { KroniskKravKafkaProcessor(get(), get()) }
+
     single { DefaultAltinnAuthorizer(get()) } bind AltinnAuthorizer::class
 }
 

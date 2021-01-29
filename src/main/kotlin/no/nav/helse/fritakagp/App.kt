@@ -91,7 +91,7 @@ class FritakAgpApplication(val port: Int = 8080) : KoinComponent {
         get<BakgrunnsjobbService>().apply {
             registrer(GravidSoeknadProcessor.JOB_TYPE, get<GravidSoeknadProcessor>())
             registrer(GravidSoeknadKafkaProcessor.JOB_TYPE, get<GravidSoeknadKafkaProcessor>())
-            registrer(GravidSoeknadKvitteringProcessor.JOB_TYPE, get<KroniskSoeknadKvitteringProcessor>())
+            registrer(GravidSoeknadKvitteringProcessor.JOB_TYPE, get<GravidSoeknadKvitteringProcessor>())
 
             registrer(GravidKravProcessor.JOB_TYPE, get<GravidKravProcessor>())
             registrer(GravidKravKafkaProcessor.JOB_TYPE, get<GravidKravKafkaProcessor>())

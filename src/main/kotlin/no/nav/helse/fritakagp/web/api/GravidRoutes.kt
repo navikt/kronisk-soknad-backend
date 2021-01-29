@@ -54,8 +54,8 @@ fun Route.gravidRoutes(
                 request.validate()
 
                 val soeknad = GravidSoeknad(
-                    orgnr = request.orgnr,
-                    fnr = request.fnr,
+                    virksomhetsnummer = request.virksomhetsnummer,
+                    identitetsnummer = request.identitetsnummer,
                     sendtAv = innloggetFnr,
                     omplassering = request.omplassering,
                     omplasseringAarsak = request.omplasseringAarsak,

@@ -20,7 +20,7 @@ class KroniskKravHTTPTests : SystemTestBase() {
             body = """
                 {
                     "fnr": "${KroniskTestData.validIdentitetsnummer}",
-                    "orgnr": "${KroniskTestData.fullValidRequest.orgnr}",
+                    "orgnr": "${KroniskTestData.fullValidRequest.virksomhetsnummer}",
                     "tilrettelegge": fele,
                     "tiltak": ["IKKE GYLDIG"]
                 }

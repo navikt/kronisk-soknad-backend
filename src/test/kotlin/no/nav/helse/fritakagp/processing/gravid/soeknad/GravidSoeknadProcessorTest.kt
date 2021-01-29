@@ -50,7 +50,7 @@ class GravidSoeknadProcessorTest {
         every { bucketStorageMock.getDocAsString(any()) } returns null
         every { pdlClientMock.personNavn(soeknad.sendtAv)} returns PdlHentPersonNavn.PdlPersonNavneliste(listOf(
             PdlHentPersonNavn.PdlPersonNavneliste.PdlPersonNavn("Ola", "M", "Avsender", PdlPersonNavnMetadata("freg"))))
-        every { pdlClientMock.fullPerson(soeknad.fnr)} returns PdlHentFullPerson(
+        every { pdlClientMock.fullPerson(soeknad.identitetsnummer)} returns PdlHentFullPerson(
             PdlFullPersonliste(emptyList(), emptyList(), emptyList(), emptyList(), emptyList()),
             PdlIdentResponse(listOf(PdlIdent("aktør-id", PdlIdent.PdlIdentGruppe.AKTORID))),
             PdlHentFullPerson.PdlGeografiskTilknytning(UTLAND, null, null, "SWE")

@@ -9,8 +9,8 @@ data class KroniskSoeknad(
     override val id: UUID = UUID.randomUUID(),
     val opprettet: LocalDateTime = LocalDateTime.now(),
 
-    val orgnr: String,
-    val fnr: String,
+    val virksomhetsnummer: String,
+    val identitetsnummer: String,
     val arbeidstyper: Set<ArbeidsType>,
     val paakjenningstyper: Set<PaakjenningsType>,
     val paakjenningBeskrivelse: String? = null,

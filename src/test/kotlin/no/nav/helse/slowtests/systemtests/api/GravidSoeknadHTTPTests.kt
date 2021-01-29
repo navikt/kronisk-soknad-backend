@@ -5,7 +5,6 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import no.nav.helse.GravidTestData
 import org.assertj.core.api.Assertions
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
 class GravidSoeknadHTTPTests : SystemTestBase() {
@@ -21,7 +20,7 @@ class GravidSoeknadHTTPTests : SystemTestBase() {
             body = """
                 {
                     "fnr": "${GravidTestData.validIdentitetsnummer}",
-                    "orgnr": "${GravidTestData.fullValidRequest.orgnr}",
+                    "orgnr": "${GravidTestData.fullValidRequest.virksomhetsnummer}",
                     "tilrettelegge": true,
                     "tiltak": ["IKKE GYLDIG"]
                 }

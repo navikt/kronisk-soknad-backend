@@ -20,7 +20,7 @@ class GravidKravHTTPTests : SystemTestBase() {
             body = """
                 {
                     "fnr": "${GravidTestData.validIdentitetsnummer}",
-                    "orgnr": "${GravidTestData.fullValidRequest.orgnr}",
+                    "orgnr": "${GravidTestData.fullValidRequest.virksomhetsnummer}",
                     "tilrettelegge": true,
                     "tiltak": ["IKKE GYLDIG"]
                 }

@@ -20,10 +20,10 @@ class GravidSoeknadPDFGeneratorTest {
         val pdfText = extractTextFromPdf(pdf)
 
         assertThat(pdfText).contains(soeknad.tiltakBeskrivelse?.substring(0, 50)) // sjekker bare starten pga wrapping
-        assertThat(pdfText).contains(soeknad.fnr)
+        assertThat(pdfText).contains(soeknad.identitetsnummer)
         assertThat(pdfText).contains(soeknad.omplasseringAarsak?.beskrivelse)
         assertThat(pdfText).contains(soeknad.omplassering?.beskrivelse)
-        assertThat(pdfText).contains(soeknad.orgnr)
+        assertThat(pdfText).contains(soeknad.virksomhetsnummer)
         soeknad.tiltak?.forEach { assertThat((pdfText)?.contains(it.beskrivelse)) }
     }
 

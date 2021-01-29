@@ -47,8 +47,8 @@ fun Route.kroniskRoutes(
                 val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
 
                 val soeknad = KroniskSoeknad(
-                    orgnr = request.orgnr,
-                    fnr = request.fnr,
+                    virksomhetsnummer = request.virksomhetsnummer,
+                    identitetsnummer = request.identitetsnummer,
                     sendtAv = innloggetFnr,
                     arbeidstyper = request.arbeidstyper,
                     paakjenningstyper = request.paakjenningstyper,

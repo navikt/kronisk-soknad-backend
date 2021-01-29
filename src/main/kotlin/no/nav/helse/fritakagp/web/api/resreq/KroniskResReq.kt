@@ -14,8 +14,8 @@ import org.valiktor.functions.isTrue
 import org.valiktor.validate
 
 data class KroniskSoknadRequest(
-    val orgnr: String,
-    val fnr: String,
+    val virksomhetsnummer: String,
+    val identitetsnummer: String,
     val arbeidstyper: Set<ArbeidsType>,
     val paakjenningstyper: Set<PaakjenningsType>,
     val paakjenningBeskrivelse: String? = null,
@@ -27,9 +27,9 @@ data class KroniskSoknadRequest(
 
     fun validate() {
         validate(this) {
-            validate(KroniskSoknadRequest::fnr).isValidIdentitetsnummer()
+            validate(KroniskSoknadRequest::identitetsnummer).isValidIdentitetsnummer()
             validate(KroniskSoknadRequest::bekreftet).isTrue()
-            validate(KroniskSoknadRequest::orgnr).isValidOrganisasjonsnummer()
+            validate(KroniskSoknadRequest::virksomhetsnummer).isValidOrganisasjonsnummer()
 
             validate(KroniskSoknadRequest::arbeidstyper).isNotNull()
             validate(KroniskSoknadRequest::arbeidstyper).hasSize(1, 10)

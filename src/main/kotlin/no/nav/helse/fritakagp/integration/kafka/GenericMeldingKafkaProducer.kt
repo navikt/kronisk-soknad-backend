@@ -20,6 +20,5 @@ class GenericMeldingKafkaProducer(props: Map<String, Any>, private val topicName
         record.headers().add(RecordHeader("type", type.toByteArray()))
         return producer.send(record).get(10, TimeUnit.SECONDS)
     }
-
-    fun testme(){}
+    
 }

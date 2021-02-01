@@ -1,15 +1,17 @@
 package no.nav.helse.fritakagp.processing.kronisk.krav
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbProsesserer
-import no.nav.helse.fritakagp.domain.KroniskKrav
-import no.nav.helse.fritakagp.domain.KroniskSoeknad
-import no.nav.helse.fritakagp.integration.kafka.SoeknadsmeldingKafkaProducer
+import no.nav.helse.fritakagp.db.KroniskKravRepository
+import no.nav.helse.fritakagp.integration.kafka.KravmeldingSender
 import org.slf4j.LoggerFactory
 import java.util.*
 
 class KroniskKravKafkaProcessor(
-    private val kroniskKrav: KroniskKrav,
-    private val kafkaProducer: SoeknadsmeldingKafkaProducer
+    private val kroniskKravRepo: KroniskKravRepository,
+    private val kafkaProducer: KravmeldingSender,
+    private val om : ObjectMapper
 ) : BakgrunnsjobbProsesserer {
     companion object {
         val JOB_TYPE = "kronisk-krav-send-kafka"
@@ -21,6 +23,8 @@ class KroniskKravKafkaProcessor(
      * Sender kroniskkrav til Kafka kø
      */
     override fun prosesser(jobbDataString: String) {
+        val jobbData = om.readValue<JobbData>(jobbDataString)
+        val kroniskKrav = kroniskKravRepo.getById(jobbData.id) ?: throw java.lang.IllegalStateException("${jobbData.id} fantes ikke")
         val retRecord = kafkaProducer.sendMessage(kroniskKrav)
         log.info("Skrevet ${kroniskKrav.id} til Kafka til topic ${retRecord!!.topic()}")
     }

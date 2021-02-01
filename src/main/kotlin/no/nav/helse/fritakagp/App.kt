@@ -14,13 +14,17 @@ import no.nav.helse.arbeidsgiver.system.AppEnv
 import no.nav.helse.arbeidsgiver.system.getEnvironment
 import no.nav.helse.fritakagp.koin.getAllOfType
 import no.nav.helse.fritakagp.koin.selectModuleBasedOnProfile
+import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravKafkaProcessor
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravKvitteringProcessor
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravProcessor
+import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadKafkaProcessor
 import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadKvitteringProcessor
 import no.nav.helse.fritakagp.web.nais.nais
 import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadProcessor
+import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravKafkaProcessor
 import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravKvitteringProcessor
 import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravProcessor
+import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadKafkaProcessor
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadProcessor
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadKvitteringProcessor
 import no.nav.helse.fritakagp.web.auth.localCookieDispenser
@@ -86,15 +90,19 @@ class FritakAgpApplication(val port: Int = 8080) : KoinComponent {
             this.leggTilBakgrunnsjobbProsesserer(name, handler)
         get<BakgrunnsjobbService>().apply {
             registrer(GravidSoeknadProcessor.JOB_TYPE, get<GravidSoeknadProcessor>())
-            registrer(GravidSoeknadKvitteringProcessor.JOB_TYPE, get<KroniskSoeknadKvitteringProcessor>())
+            registrer(GravidSoeknadKafkaProcessor.JOB_TYPE, get<GravidSoeknadKafkaProcessor>())
+            registrer(GravidSoeknadKvitteringProcessor.JOB_TYPE, get<GravidSoeknadKvitteringProcessor>())
 
             registrer(GravidKravProcessor.JOB_TYPE, get<GravidKravProcessor>())
+            registrer(GravidKravKafkaProcessor.JOB_TYPE, get<GravidKravKafkaProcessor>())
             registrer(GravidKravKvitteringProcessor.JOB_TYPE, get<GravidKravKvitteringProcessor>())
 
             registrer(KroniskSoeknadProcessor.JOB_TYPE, get<KroniskSoeknadProcessor>())
+            registrer(KroniskSoeknadKafkaProcessor.JOB_TYPE, get<KroniskSoeknadKafkaProcessor>())
             registrer(KroniskSoeknadKvitteringProcessor.JOB_TYPE, get<KroniskSoeknadKvitteringProcessor>())
 
             registrer(KroniskKravProcessor.JOB_TYPE, get<KroniskKravProcessor>())
+            registrer(KroniskKravKafkaProcessor.JOB_TYPE, get<KroniskKravKafkaProcessor>())
             registrer(KroniskKravKvitteringProcessor.JOB_TYPE, get<KroniskKravKvitteringProcessor>())
 
             startAsync(true)

@@ -8,8 +8,8 @@ data class GravidSoeknad(
     override val id: UUID = UUID.randomUUID(),
     val opprettet: LocalDateTime = LocalDateTime.now(),
 
-    val orgnr: String,
-    val fnr: String,
+    val virksomhetsnummer: String,
+    val identitetsnummer: String,
     val tilrettelegge: Boolean,
     val tiltak: List<Tiltak>? = null,
     val tiltakBeskrivelse: String? = null,

@@ -33,8 +33,8 @@ class GravidSoeknadPDFGenerator {
         content.setFont(font, FONT_SIZE)
 
         content.writeTextWrapped("Mottatt: ${TIMESTAMP_FORMAT.format(soeknad.opprettet)}", 4)
-        content.writeTextWrapped("Person (FNR): ${soeknad.fnr}")
-        content.writeTextWrapped("Arbeidsgiver oppgitt i søknad: ${soeknad.orgnr}")
+        content.writeTextWrapped("Person (FNR): ${soeknad.identitetsnummer}")
+        content.writeTextWrapped("Arbeidsgiver oppgitt i søknad: ${soeknad.virksomhetsnummer}")
         content.writeTextWrapped(
                 "Har dere prøvd å tilrettelegge arbeidsdagen slik at den gravide kan jobbe til tross for helseplagene?", 2
         )

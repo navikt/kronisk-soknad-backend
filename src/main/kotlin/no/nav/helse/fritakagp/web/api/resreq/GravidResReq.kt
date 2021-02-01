@@ -15,8 +15,8 @@ import org.valiktor.functions.isTrue
 import org.valiktor.validate
 
 data class GravidSoknadRequest(
-    val orgnr: String,
-    val fnr: String,
+    val virksomhetsnummer: String,
+    val identitetsnummer: String,
     val tilrettelegge: Boolean,
 
     val tiltak: List<Tiltak>? = null,
@@ -30,9 +30,9 @@ data class GravidSoknadRequest(
 ) {
    fun validate() {
        validate(this) {
-           validate(GravidSoknadRequest::fnr).isValidIdentitetsnummer()
+           validate(GravidSoknadRequest::identitetsnummer).isValidIdentitetsnummer()
            validate(GravidSoknadRequest::bekreftet).isTrue()
-           validate(GravidSoknadRequest::orgnr).isValidOrganisasjonsnummer()
+           validate(GravidSoknadRequest::virksomhetsnummer).isValidOrganisasjonsnummer()
 
 
            if (this@GravidSoknadRequest.tilrettelegge) {

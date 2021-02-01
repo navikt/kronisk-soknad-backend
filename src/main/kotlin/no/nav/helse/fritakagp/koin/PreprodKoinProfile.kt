@@ -24,9 +24,7 @@ import no.nav.helse.fritakagp.integration.altinn.CachedAuthRepo
 import no.nav.helse.fritakagp.integration.altinn.message.Clients
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.integration.gcp.BucketStorageImpl
-import no.nav.helse.fritakagp.integration.kafka.SoeknadsmeldingKafkaProducer
-import no.nav.helse.fritakagp.integration.kafka.SoeknadsmeldingMeldingProvider
-import no.nav.helse.fritakagp.integration.kafka.producerConfig
+import no.nav.helse.fritakagp.integration.kafka.*
 import no.nav.helse.fritakagp.integration.oauth2.DefaultOAuth2HttpClient
 import no.nav.helse.fritakagp.integration.oauth2.OAuth2ClientPropertiesConfig
 import no.nav.helse.fritakagp.integration.oauth2.TokenResolver
@@ -122,6 +120,11 @@ fun preprodConfig(config: ApplicationConfig) = module {
     } bind KroniskKravKvitteringSender::class
     single { KroniskKravKvitteringProcessor(get(), get(), get()) }
 
+    single { GravidSoeknadKafkaProcessor(get(), get(), get() ) }
+    single { GravidKravKafkaProcessor(get(), get(), get()) }
+    single { KroniskSoeknadKafkaProcessor(get(), get(), get()) }
+    single { KroniskKravKafkaProcessor(get(), get(), get()) }
+
     single { DefaultAltinnAuthorizer(get()) } bind AltinnAuthorizer::class
 }
 
@@ -169,11 +172,8 @@ fun Module.externalSystemClients(config: ApplicationConfig) {
         )
     } bind BucketStorage::class
 
-    single {
-        SoeknadsmeldingKafkaProducer(
-            producerConfig() as MutableMap<String, Any>
-            , config.getString("kafka_topic_name"), get()
-        ) } bind SoeknadsmeldingMeldingProvider::class
+    single { SoeknadmeldingKafkaProducer(producerConfig(), config.getString("kafka_soeknad_topic_name"), get()) } bind SoeknadmeldingSender::class
+    single { KravmeldingKafkaProducer(producerConfig(), config.getString("kafka_krav_topic_name"), get()) } bind KravmeldingSender::class
 }
 
 

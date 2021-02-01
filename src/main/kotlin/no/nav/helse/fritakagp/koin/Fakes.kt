@@ -83,7 +83,6 @@ fun Module.mockExternalDependecies() {
 
     single { MockVirusScanner() } bind VirusScanner::class
     single { MockBucketStorage() } bind BucketStorage::class
-    single {SoeknadsmeldingKafkaProducer(producerFakeConfig(), "kafka_topic", get())} bind SoeknadsmeldingMeldingProvider::class
 }
 
 class MockAltinnRepo(om: ObjectMapper) : AltinnOrganisationsRepository {

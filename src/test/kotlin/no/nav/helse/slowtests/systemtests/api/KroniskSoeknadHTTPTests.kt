@@ -25,7 +25,7 @@ class KroniskSoeknadHTTPTests : SystemTestBase() {
             body = """
                 {
                     "fnr": "${GravidTestData.validIdentitetsnummer}",
-                    "orgnr": "${GravidTestData.fullValidRequest.orgnr}",
+                    "orgnr": "${GravidTestData.fullValidRequest.virksomhetsnummer}",
                     "bekreftelse": true,
                     "paakjenningstyper": ["IKKE GYLDIG"]
                 }
@@ -54,8 +54,8 @@ class KroniskSoeknadHTTPTests : SystemTestBase() {
             appUrl(soeknadKroniskUrl)
             contentType(ContentType.Application.Json)
             loggedInAs("123456789")
-            body = KroniskSoknadRequest(orgnr = "lkajsbdfv",
-                fnr = "lkdf",
+            body = KroniskSoknadRequest(virksomhetsnummer = "lkajsbdfv",
+                identitetsnummer = "lkdf",
                 paakjenningBeskrivelse = "sdfsfd",
                 arbeidstyper = setOf(ArbeidsType.KREVENDE),
                 paakjenningstyper = setOf(PaakjenningsType.ALLERGENER),

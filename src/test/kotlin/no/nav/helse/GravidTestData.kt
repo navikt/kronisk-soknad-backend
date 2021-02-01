@@ -10,8 +10,8 @@ object GravidTestData {
     val validOrgNr = "917404437"
 
     val soeknadGravid = GravidSoeknad(
-        orgnr = validOrgNr,
-        fnr = validIdentitetsnummer,
+        virksomhetsnummer = validOrgNr,
+        identitetsnummer = validIdentitetsnummer,
         tilrettelegge = true,
         tiltak = listOf(Tiltak.HJEMMEKONTOR, Tiltak.ANNET),
         tiltakBeskrivelse = "Vi prøvde både det ene og det andre og det første kanskje virka litt men muligens and the andre ikke var så på stell men akk ja sånn lorem",
@@ -21,8 +21,8 @@ object GravidTestData {
     )
 
     val fullValidRequest = GravidSoknadRequest(
-        orgnr = validOrgNr,
-        fnr = validIdentitetsnummer,
+        virksomhetsnummer = validOrgNr,
+        identitetsnummer = validIdentitetsnummer,
         tilrettelegge = true,
         tiltak = listOf(
             Tiltak.ANNET,
@@ -38,8 +38,8 @@ object GravidTestData {
     )
 
     val gravidSoknadMedFil = GravidSoknadRequest(
-        orgnr = GravidTestData.validOrgNr,
-        fnr = GravidTestData.validIdentitetsnummer,
+        virksomhetsnummer = GravidTestData.validOrgNr,
+        identitetsnummer = GravidTestData.validIdentitetsnummer,
         tilrettelegge = true,
         tiltak = listOf(Tiltak.ANNET),
         tiltakBeskrivelse = "beskrivelse",

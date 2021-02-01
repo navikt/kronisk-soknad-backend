@@ -1,14 +1,17 @@
 package no.nav.helse.fritakagp.processing.gravid.krav
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbProsesserer
-import no.nav.helse.fritakagp.domain.GravidKrav
-import no.nav.helse.fritakagp.integration.kafka.SoeknadsmeldingKafkaProducer
+import no.nav.helse.fritakagp.db.GravidKravRepository
+import no.nav.helse.fritakagp.integration.kafka.KravmeldingSender
 import org.slf4j.LoggerFactory
 import java.util.*
 
 class GravidKravKafkaProcessor(
-    private val gravidKrav: GravidKrav,
-    private val kafkaProducer: SoeknadsmeldingKafkaProducer
+    private val gravidKravRepo: GravidKravRepository,
+    private val kafkaProducer: KravmeldingSender,
+    private val om : ObjectMapper
 ) : BakgrunnsjobbProsesserer {
     companion object {
         val JOB_TYPE = "gravid-krav-send-kafka"
@@ -20,6 +23,8 @@ class GravidKravKafkaProcessor(
      * Sender gravidkrav til Kafka kø
      */
     override fun prosesser(jobbDataString: String) {
+        val jobbData = om.readValue<JobbData>(jobbDataString)
+        val gravidKrav = gravidKravRepo.getById(jobbData.id) ?: throw java.lang.IllegalStateException("${jobbData.id} fantes ikke")
         val retRecord = kafkaProducer.sendMessage(gravidKrav)
         log.info("Skrevet ${gravidKrav.id} til Kafka til topic ${retRecord!!.topic()}")
     }

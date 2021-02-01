@@ -6,8 +6,8 @@ metadata:
   labels:
     team: helsearbeidsgiver
   annotations:
-    dcat.data.nav.no/title: "fritakagpsøknad"
-    dcat.data.nav.no/description: "helsearbeidgiver"
+    dcat.data.nav.no/title: "Fritak AGP Søknader"
+    dcat.data.nav.no/description: "Søknader om fritak fra arbeidsgiverperioden for sykepenger"
     dcat.data.nav.no/keyword: "sykepenger, gravid, kronisksyk"
     dcat.data.nav.no/theme: "sykepenger"
 

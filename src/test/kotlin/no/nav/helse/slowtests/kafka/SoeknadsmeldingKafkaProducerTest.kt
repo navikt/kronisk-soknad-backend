@@ -2,9 +2,9 @@ package no.nav.helse.slowtests.kafka
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import no.nav.helse.GravidTestData
-import no.nav.helse.fritakagp.integration.kafka.SoeknadsmeldingKafkaProducer
+import no.nav.helse.fritakagp.integration.kafka.SoeknadmeldingKafkaProducer
 import no.nav.helse.fritakagp.integration.kafka.consumerFakeConfig
-import no.nav.helse.fritakagp.integration.kafka.producerFakeConfig
+import no.nav.helse.fritakagp.integration.kafka.producerLocalConfig
 import no.nav.helse.slowtests.kafka.KafkaAdminForTests.Companion.topicName
 import no.nav.helse.slowtests.systemtests.api.SystemTestBase
 import org.assertj.core.api.Assertions.assertThat
@@ -19,14 +19,14 @@ internal class SoeknadsmeldingKafkaProducerTest : SystemTestBase() {
     private val om by inject<ObjectMapper>()
 
     private lateinit var kafkaProdusent: KafkaAdminForTests
-    private lateinit var producer: SoeknadsmeldingKafkaProducer
+    private lateinit var producer: SoeknadmeldingKafkaProducer
     private lateinit var consumer: SoeknadsmeldingKafkaConsumer
 
     @BeforeAll
     internal fun setUp() {
 
         kafkaProdusent = KafkaAdminForTests()
-        producer = SoeknadsmeldingKafkaProducer(producerFakeConfig(), topicName, om = om)
+        producer = SoeknadmeldingKafkaProducer(producerLocalConfig(), topicName, om = om)
         consumer = SoeknadsmeldingKafkaConsumer(consumerFakeConfig(), topicName)
     }
 

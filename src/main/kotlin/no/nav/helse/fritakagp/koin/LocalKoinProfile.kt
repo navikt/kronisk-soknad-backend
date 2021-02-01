@@ -9,14 +9,11 @@ import no.nav.helse.arbeidsgiver.bakgrunnsjobb.PostgresBakgrunnsjobbRepository
 import no.nav.helse.arbeidsgiver.web.auth.AltinnAuthorizer
 import no.nav.helse.arbeidsgiver.web.auth.DefaultAltinnAuthorizer
 import no.nav.helse.fritakagp.db.*
+import no.nav.helse.fritakagp.integration.kafka.*
 import no.nav.helse.fritakagp.processing.gravid.krav.*
 import no.nav.helse.fritakagp.processing.gravid.soeknad.*
 import no.nav.helse.fritakagp.processing.kronisk.krav.*
-import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadPDFGenerator
-import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadProcessor
-import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadKvitteringProcessor
-import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadKvitteringSenderDummy
-import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadKvitteringSender
+import no.nav.helse.fritakagp.processing.kronisk.soeknad.*
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import javax.sql.DataSource
@@ -33,6 +30,9 @@ fun localDevConfig(config: ApplicationConfig) = module {
     single { PostgresKroniskSoeknadRepository(get(), get()) } bind KroniskSoeknadRepository::class
     single { PostgresKroniskKravRepository(get(), get()) } bind KroniskKravRepository::class
 
+    single { SoeknadmeldingKafkaProducer(producerLocalConfig(), config.getString("kafka_soeknad_topic_name"), get())} bind SoeknadmeldingSender::class
+    single { KravmeldingKafkaProducer(producerLocalConfig(), config.getString("kafka_krav_topic_name"), get()) } bind KravmeldingSender::class
+
     single { PostgresBakgrunnsjobbRepository(get()) } bind BakgrunnsjobbRepository::class
     single { BakgrunnsjobbService(get()) }
 
@@ -45,11 +45,16 @@ fun localDevConfig(config: ApplicationConfig) = module {
     single { GravidSoeknadKvitteringProcessor(get(), get(), get()) }
     single { GravidKravKvitteringSenderDummy() } bind GravidKravKvitteringSender::class
     single { GravidKravKvitteringProcessor(get(), get(), get()) }
-    
+
     single { KroniskSoeknadKvitteringSenderDummy() } bind KroniskSoeknadKvitteringSender::class
     single { KroniskSoeknadKvitteringProcessor(get(), get(), get()) }
     single { KroniskKravKvitteringSenderDummy() } bind KroniskKravKvitteringSender::class
     single { KroniskKravKvitteringProcessor(get(), get(), get()) }
+
+    single { GravidSoeknadKafkaProcessor(get(), get(), get()) }
+    single { GravidKravKafkaProcessor(get(), get(), get()) }
+    single { KroniskSoeknadKafkaProcessor(get(), get(), get()) }
+    single { KroniskKravKafkaProcessor(get(), get(), get()) }
 
     single { DefaultAltinnAuthorizer(get()) } bind AltinnAuthorizer::class
 }

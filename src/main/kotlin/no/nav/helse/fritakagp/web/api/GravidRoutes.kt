@@ -57,6 +57,7 @@ fun Route.gravidRoutes(
                     virksomhetsnummer = request.virksomhetsnummer,
                     identitetsnummer = request.identitetsnummer,
                     sendtAv = innloggetFnr,
+                    termindato = request.termindato,
                     omplassering = request.omplassering,
                     omplasseringAarsak = request.omplasseringAarsak,
                     tilrettelegge = request.tilrettelegge,

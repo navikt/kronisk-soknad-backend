@@ -3,9 +3,11 @@ package no.nav.helse.fritakagp.integration.kafka
 import org.apache.kafka.clients.CommonClientConfigs
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.clients.producer.ProducerConfig
+import org.apache.kafka.common.config.SaslConfigs
 import org.apache.kafka.common.config.SslConfigs
 import org.apache.kafka.common.security.auth.SecurityProtocol
 import org.apache.kafka.common.serialization.StringSerializer
+import org.apache.pdfbox.pdmodel.interactive.annotation.layout.PlainText
 
 private const val JAVA_KEYSTORE = "jks"
 private const val PKCS12 = "PKCS12"
@@ -33,11 +35,47 @@ fun producerLocalConfig() = mutableMapOf<String, Any>(
     ProducerConfig.BOOTSTRAP_SERVERS_CONFIG to "localhost:9092",
     ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG to StringSerializer::class.java.canonicalName,
     ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG to StringSerializer::class.java.canonicalName,
-    ProducerConfig.ACKS_CONFIG to "1")
+    ProducerConfig.ACKS_CONFIG to "1"
+)
+fun producerLocalSaslConfig() = mutableMapOf<String, Any>(
+    ProducerConfig.BOOTSTRAP_SERVERS_CONFIG to "localhost:9092",
+    ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG to StringSerializer::class.java.canonicalName,
+    ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG to StringSerializer::class.java.canonicalName,
+    ProducerConfig.ACKS_CONFIG to "1",
+    CommonClientConfigs.SECURITY_PROTOCOL_CONFIG to SecurityProtocol.SASL_PLAINTEXT.name,
+    SaslConfigs.SASL_MECHANISM to "PLAIN",
+    SaslConfigs.SASL_JAAS_CONFIG to lagreJassTemplate("igroup", "itest")
+)
+
+fun lagreJassTemplate(usernavn: String, passord: String) : String{
+    return "org.apache.kafka.common.security.scram.ScramLoginModule required username=\"$usernavn\" password=\"$passord\";";
+}
+
+fun producerLocalSaslConfigWrongAuth() = mutableMapOf<String, Any>(
+    ProducerConfig.BOOTSTRAP_SERVERS_CONFIG to "localhost:9092",
+    ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG to StringSerializer::class.java.canonicalName,
+    ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG to StringSerializer::class.java.canonicalName,
+    ProducerConfig.ACKS_CONFIG to "1",
+    CommonClientConfigs.SECURITY_PROTOCOL_CONFIG to SecurityProtocol.SASL_PLAINTEXT.name,
+    SaslConfigs.SASL_MECHANISM to "PLAIN",
+    SaslConfigs.SASL_JAAS_CONFIG to lagreJassTemplate("admin", "admin")
+)
 
 fun consumerFakeConfig() = mutableMapOf<String, Any>(
     ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG to "localhost:9092",
     ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG to "30000",
     ConsumerConfig.GROUP_ID_CONFIG to "helsearbeidsgiver-im-varsel-grace-period",
     ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG to false,
-    ConsumerConfig.AUTO_OFFSET_RESET_CONFIG to "latest")
+    ConsumerConfig.AUTO_OFFSET_RESET_CONFIG to "latest",
+)
+fun consumerFakeSaslConfig() = mutableMapOf<String, Any>(
+    ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG to "localhost:9092",
+    ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG to "30000",
+    ConsumerConfig.GROUP_ID_CONFIG to "helsearbeidsgiver-im-varsel-grace-period",
+    ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG to false,
+    ConsumerConfig.AUTO_OFFSET_RESET_CONFIG to "latest",
+
+    CommonClientConfigs.SECURITY_PROTOCOL_CONFIG to SecurityProtocol.SASL_PLAINTEXT.name,
+    SaslConfigs.SASL_MECHANISM to "PLAIN",
+    SaslConfigs.SASL_JAAS_CONFIG to lagreJassTemplate("igroup", "itest")
+)

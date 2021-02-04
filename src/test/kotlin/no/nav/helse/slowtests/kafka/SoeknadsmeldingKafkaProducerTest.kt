@@ -19,15 +19,10 @@ internal class SoeknadsmeldingKafkaProducerTest : SystemTestBase() {
     private val om by inject<ObjectMapper>()
 
     private lateinit var kafkaProdusent: KafkaAdminForTests
-    private lateinit var producer: SoeknadmeldingKafkaProducer
-    private lateinit var consumer: SoeknadsmeldingKafkaConsumer
 
     @BeforeAll
     internal fun setUp() {
-
         kafkaProdusent = KafkaAdminForTests()
-        producer = SoeknadmeldingKafkaProducer(producerLocalConfig(), topicName, om = om)
-        consumer = SoeknadsmeldingKafkaConsumer(consumerFakeConfig(), topicName)
     }
 
     @AfterAll
@@ -37,9 +32,9 @@ internal class SoeknadsmeldingKafkaProducerTest : SystemTestBase() {
 
     @Test
     fun getMessages() {
-
+        val consumer = SoeknadsmeldingKafkaConsumer(consumerFakeConfig(), topicName)
         val noMessagesExpected = consumer.getMessagesToProcess()
-
+        val producer = SoeknadmeldingKafkaProducer(producerLocalConfig(), topicName, om = om)
         assertThat(noMessagesExpected).isEmpty()
 
         kafkaProdusent.createTopicIfNotExists()
@@ -58,4 +53,9 @@ internal class SoeknadsmeldingKafkaProducerTest : SystemTestBase() {
 
         consumer.stop()
     }
+
+
+
+
+
 }

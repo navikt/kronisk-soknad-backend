@@ -13,24 +13,24 @@ import org.valiktor.functions.isNotEmpty
 import org.valiktor.functions.isNotNull
 import org.valiktor.functions.isTrue
 import org.valiktor.validate
-import java.time.LocalDateTime
+import java.time.LocalDate
 
 data class GravidSoknadRequest(
-    val virksomhetsnummer: String,
-    val identitetsnummer: String,
-    val tilrettelegge: Boolean,
-    val termindato: LocalDateTime?,
+        val virksomhetsnummer: String,
+        val identitetsnummer: String,
+        val tilrettelegge: Boolean,
+        val termindato: LocalDate?,
 
-    val tiltak: List<Tiltak>? = null,
-    val tiltakBeskrivelse: String? = null,
+        val tiltak: List<Tiltak>? = null,
+        val tiltakBeskrivelse: String? = null,
 
-    val omplassering: Omplassering? = null,
-    val omplasseringAarsak: OmplasseringAarsak? = null,
-    val bekreftet: Boolean,
+        val omplassering: Omplassering? = null,
+        val omplasseringAarsak: OmplasseringAarsak? = null,
+        val bekreftet: Boolean,
 
 
 
-    val dokumentasjon: String?
+        val dokumentasjon: String?
 ) {
    fun validate() {
        validate(this) {

@@ -1,6 +1,7 @@
 package no.nav.helse.fritakagp.domain
 
 import no.nav.helse.fritakagp.db.SimpleJsonbEntity
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
 
@@ -16,7 +17,7 @@ data class GravidSoeknad(
         val omplassering: Omplassering?,
         val omplasseringAarsak: OmplasseringAarsak? = null,
         val sendtAv: String,
-        val termindato: LocalDateTime?,
+        val termindato: LocalDate?,
 
         /**
      * ID fra joark etter arkivering

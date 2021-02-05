@@ -12,6 +12,8 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.layout.PlainText
 private const val JAVA_KEYSTORE = "jks"
 private const val PKCS12 = "PKCS12"
 private const val LOCALHOST = "localhost:9092"
+private const val GROUP_ID_CONFIG = "helsearbeidsgiver-im-varsel-grace-period"
+private const val SASL_MECHANISM = "PLAIN"
 
 private fun envOrThrow(envVar: String) = System.getenv()[envVar] ?: throw IllegalStateException("$envVar er påkrevd miljøvariabel")
 
@@ -33,53 +35,54 @@ fun producerConfig() = mutableMapOf<String, Any>(
 )
 
 fun producerLocalConfig() = mutableMapOf<String, Any>(
-    ProducerConfig.BOOTSTRAP_SERVERS_CONFIG to "localhost:9092",
+    ProducerConfig.BOOTSTRAP_SERVERS_CONFIG to LOCALHOST,
     ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG to StringSerializer::class.java.canonicalName,
     ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG to StringSerializer::class.java.canonicalName,
     ProducerConfig.ACKS_CONFIG to "1"
 )
 fun producerLocalSaslConfig() = mutableMapOf<String, Any>(
-    ProducerConfig.BOOTSTRAP_SERVERS_CONFIG to "localhost:9092",
+    ProducerConfig.BOOTSTRAP_SERVERS_CONFIG to LOCALHOST,
     ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG to StringSerializer::class.java.canonicalName,
     ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG to StringSerializer::class.java.canonicalName,
-    ProducerConfig.ACKS_CONFIG to "1",
-    CommonClientConfigs.SECURITY_PROTOCOL_CONFIG to SecurityProtocol.SASL_PLAINTEXT.name,
-    SaslConfigs.SASL_MECHANISM to "PLAIN",
-    SaslConfigs.SASL_JAAS_CONFIG to lagreJassTemplate("igroup", "itest")
-)
+    ProducerConfig.ACKS_CONFIG to "1"
+)  + saslConfig()
 
-fun lagreJassTemplate(usernavn: String, passord: String) : String{
-    return "org.apache.kafka.common.security.scram.ScramLoginModule required username=\"$usernavn\" password=\"$passord\";";
-}
 
 fun producerLocalSaslConfigWrongAuth() = mutableMapOf<String, Any>(
     ProducerConfig.BOOTSTRAP_SERVERS_CONFIG to LOCALHOST,
     ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG to StringSerializer::class.java.canonicalName,
     ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG to StringSerializer::class.java.canonicalName,
-    ProducerConfig.ACKS_CONFIG to "1",
-    CommonClientConfigs.SECURITY_PROTOCOL_CONFIG to SecurityProtocol.SASL_PLAINTEXT.name,
-    SaslConfigs.SASL_MECHANISM to "PLAIN",
-    SaslConfigs.SASL_JAAS_CONFIG to lagreJassTemplate("admin", "admin")
-)
+    ProducerConfig.ACKS_CONFIG to "1"
+)  + saslConfigFeilPassord()
 
-fun consumerFakeConfig(): MutableMap<String, Any> {
-
-    return mutableMapOf<String, Any>(
+fun consumerFakeConfig() = mutableMapOf<String, Any>(
         ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG to LOCALHOST,
         ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG to "30000",
-        ConsumerConfig.GROUP_ID_CONFIG to "helsearbeidsgiver-im-varsel-grace-period",
+        ConsumerConfig.GROUP_ID_CONFIG to GROUP_ID_CONFIG,
         ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG to false,
-        ConsumerConfig.AUTO_OFFSET_RESET_CONFIG to "latest",
+        ConsumerConfig.AUTO_OFFSET_RESET_CONFIG to "latest"
     )
-}
+
 fun consumerFakeSaslConfig() = mutableMapOf<String, Any>(
     ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG to LOCALHOST,
     ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG to "30000",
-    ConsumerConfig.GROUP_ID_CONFIG to "helsearbeidsgiver-im-varsel-grace-period",
+    ConsumerConfig.GROUP_ID_CONFIG to GROUP_ID_CONFIG,
     ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG to false,
-    ConsumerConfig.AUTO_OFFSET_RESET_CONFIG to "latest",
+    ConsumerConfig.AUTO_OFFSET_RESET_CONFIG to "latest"
+) + saslConfig()
 
+fun saslConfig()  = mutableMapOf<String, Any>(
     CommonClientConfigs.SECURITY_PROTOCOL_CONFIG to SecurityProtocol.SASL_PLAINTEXT.name,
-    SaslConfigs.SASL_MECHANISM to "PLAIN",
+    SaslConfigs.SASL_MECHANISM to SASL_MECHANISM,
     SaslConfigs.SASL_JAAS_CONFIG to lagreJassTemplate("igroup", "itest")
 )
+
+fun saslConfigFeilPassord()  = mutableMapOf<String, Any>(
+    CommonClientConfigs.SECURITY_PROTOCOL_CONFIG to SecurityProtocol.SASL_PLAINTEXT.name,
+    SaslConfigs.SASL_MECHANISM to SASL_MECHANISM,
+    SaslConfigs.SASL_JAAS_CONFIG to lagreJassTemplate("admin", "admin")
+)
+
+fun lagreJassTemplate(usernavn: String, passord: String) : String{
+    return "org.apache.kafka.common.security.scram.ScramLoginModule required username=\"$usernavn\" password=\"$passord\";";
+}

@@ -31,17 +31,17 @@ internal class KroniskSoknadRequestTest {
     }
 
     @Test
-    fun `Kan ikke ha eldre fraværsdata enn 3 år`() {
+    fun `Kan ikke ha eldre fraværsdata enn 2 år`() {
         KroniskTestData.fullValidRequest.copy(
             fravaer = setOf(
-                FravaerData(LocalDate.now().minusMonths(36).toYearMonthString(), 5)
+                FravaerData(LocalDate.now().minusMonths(24).toYearMonthString(), 5)
             )
         ).validate()
 
         validationShouldFailFor(KroniskSoknadRequest::fravaer) {
             KroniskTestData.fullValidRequest.copy(
                 fravaer = setOf(
-                    FravaerData(LocalDate.now().minusMonths(37).toYearMonthString(), 5)
+                    FravaerData(LocalDate.now().minusMonths(25).toYearMonthString(), 5)
                 )
             ).validate()
         }

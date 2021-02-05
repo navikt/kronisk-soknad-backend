@@ -73,7 +73,7 @@ object KroniskTestData {
     
 }
 
-private fun generateFravaersdata() = (0..35L)
+private fun generateFravaersdata() = (0..24L)
     .map { FravaerData(LocalDate.now().minusMonths(it).toYearMonthString(), Random.nextInt(0, 28)) }
     .toMutableSet()
 

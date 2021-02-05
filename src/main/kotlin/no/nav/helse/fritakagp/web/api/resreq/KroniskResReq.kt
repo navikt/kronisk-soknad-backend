@@ -39,7 +39,7 @@ data class KroniskSoknadRequest(
 
             validate(KroniskSoknadRequest::fravaer).isNotNull()
 
-            validate(KroniskSoknadRequest::fravaer).ingenDataEldreEnn(3)
+            validate(KroniskSoknadRequest::fravaer).ingenDataEldreEnn(2)
             validate(KroniskSoknadRequest::fravaer).ingenDataFraFremtiden()
             validate(KroniskSoknadRequest::fravaer).ikkeFlereFravaersdagerEnnDagerIMaanden()
 

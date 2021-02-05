@@ -13,7 +13,7 @@ class GravidKravKafkaTest {
 
     @Test
     fun `funksjonen oppretter en feil hvis egenskapene ikke inneholder riktig brukernavn`() {
-        val mockProducer = MockSoeknadmeldingKafkaProducer(producerLocalSaslConfigWrongAuth())
+        val mockProducer = MockSoeknadmeldingKafkaProducer(producerLocalSaslConfigWrongAuth() as MutableMap<String, Any>)
         Assertions.assertThrows(
             AuthenticationException::class.java,
             { mockProducer.sendMessage(GravidTestData.soeknadGravid)}
@@ -22,7 +22,7 @@ class GravidKravKafkaTest {
 
     @Test
     fun `funksjonen retunere RecordMetaData hvis egenskapene inneholder riktig brukernavn`() {
-        val mockProducer = MockSoeknadmeldingKafkaProducer(producerLocalSaslConfig())
+        val mockProducer = MockSoeknadmeldingKafkaProducer(producerLocalSaslConfig() as MutableMap<String, Any>)
         val ret = mockProducer.sendMessage(GravidTestData.soeknadGravid)
 
         Assertions.assertEquals(ret!!::class.java, RecordMetadata::class.java)

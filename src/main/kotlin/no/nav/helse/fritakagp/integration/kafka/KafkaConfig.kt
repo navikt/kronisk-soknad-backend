@@ -11,6 +11,7 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.layout.PlainText
 
 private const val JAVA_KEYSTORE = "jks"
 private const val PKCS12 = "PKCS12"
+private const val LOCALHOST = "localhost:9092"
 
 private fun envOrThrow(envVar: String) = System.getenv()[envVar] ?: throw IllegalStateException("$envVar er påkrevd miljøvariabel")
 
@@ -52,7 +53,7 @@ fun lagreJassTemplate(usernavn: String, passord: String) : String{
 }
 
 fun producerLocalSaslConfigWrongAuth() = mutableMapOf<String, Any>(
-    ProducerConfig.BOOTSTRAP_SERVERS_CONFIG to "localhost:9092",
+    ProducerConfig.BOOTSTRAP_SERVERS_CONFIG to LOCALHOST,
     ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG to StringSerializer::class.java.canonicalName,
     ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG to StringSerializer::class.java.canonicalName,
     ProducerConfig.ACKS_CONFIG to "1",
@@ -61,15 +62,18 @@ fun producerLocalSaslConfigWrongAuth() = mutableMapOf<String, Any>(
     SaslConfigs.SASL_JAAS_CONFIG to lagreJassTemplate("admin", "admin")
 )
 
-fun consumerFakeConfig() = mutableMapOf<String, Any>(
-    ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG to "localhost:9092",
-    ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG to "30000",
-    ConsumerConfig.GROUP_ID_CONFIG to "helsearbeidsgiver-im-varsel-grace-period",
-    ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG to false,
-    ConsumerConfig.AUTO_OFFSET_RESET_CONFIG to "latest",
-)
+fun consumerFakeConfig(): MutableMap<String, Any> {
+
+    return mutableMapOf<String, Any>(
+        ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG to LOCALHOST,
+        ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG to "30000",
+        ConsumerConfig.GROUP_ID_CONFIG to "helsearbeidsgiver-im-varsel-grace-period",
+        ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG to false,
+        ConsumerConfig.AUTO_OFFSET_RESET_CONFIG to "latest",
+    )
+}
 fun consumerFakeSaslConfig() = mutableMapOf<String, Any>(
-    ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG to "localhost:9092",
+    ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG to LOCALHOST,
     ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG to "30000",
     ConsumerConfig.GROUP_ID_CONFIG to "helsearbeidsgiver-im-varsel-grace-period",
     ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG to false,

@@ -1,31 +1,33 @@
 package no.nav.helse.fritakagp.domain
 
 import no.nav.helse.fritakagp.db.SimpleJsonbEntity
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
 
 data class GravidSoeknad(
-    override val id: UUID = UUID.randomUUID(),
-    val opprettet: LocalDateTime = LocalDateTime.now(),
+        override val id: UUID = UUID.randomUUID(),
+        val opprettet: LocalDateTime = LocalDateTime.now(),
 
-    val virksomhetsnummer: String,
-    val identitetsnummer: String,
-    val tilrettelegge: Boolean,
-    val tiltak: List<Tiltak>? = null,
-    val tiltakBeskrivelse: String? = null,
-    val omplassering: Omplassering?,
-    val omplasseringAarsak: OmplasseringAarsak? = null,
-    val sendtAv: String,
+        val virksomhetsnummer: String,
+        val identitetsnummer: String,
+        val tilrettelegge: Boolean,
+        val tiltak: List<Tiltak>? = null,
+        val tiltakBeskrivelse: String? = null,
+        val omplassering: Omplassering?,
+        val omplasseringAarsak: OmplasseringAarsak? = null,
+        val sendtAv: String,
+        val termindato: LocalDate?,
 
-    /**
+        /**
      * ID fra joark etter arkivering
      */
-    var journalpostId: String? = null,
+        var journalpostId: String? = null,
 
-    /**
+        /**
      * ID fra oppgave etter opprettelse av oppgave
      */
-    var oppgaveId: String? = null
+        var oppgaveId: String? = null
 ) : SimpleJsonbEntity
 
 enum class Omplassering(val beskrivelse: String) {

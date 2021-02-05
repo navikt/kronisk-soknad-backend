@@ -4,6 +4,7 @@ import no.nav.helse.fritakagp.domain.*
 import no.nav.helse.fritakagp.web.api.resreq.GravidKravRequest
 import no.nav.helse.fritakagp.web.api.resreq.GravidSoknadRequest
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 object GravidTestData {
     val validIdentitetsnummer = "20015001543"
@@ -12,6 +13,7 @@ object GravidTestData {
     val soeknadGravid = GravidSoeknad(
         virksomhetsnummer = validOrgNr,
         identitetsnummer = validIdentitetsnummer,
+        termindato = LocalDate.now().plusDays(25)   ,
         tilrettelegge = true,
         tiltak = listOf(Tiltak.HJEMMEKONTOR, Tiltak.ANNET),
         tiltakBeskrivelse = "Vi prøvde både det ene og det andre og det første kanskje virka litt men muligens and the andre ikke var så på stell men akk ja sånn lorem",
@@ -23,6 +25,7 @@ object GravidTestData {
     val fullValidRequest = GravidSoknadRequest(
         virksomhetsnummer = validOrgNr,
         identitetsnummer = validIdentitetsnummer,
+        termindato = LocalDate.now().plusDays(25),
         tilrettelegge = true,
         tiltak = listOf(
             Tiltak.ANNET,
@@ -40,6 +43,7 @@ object GravidTestData {
     val gravidSoknadMedFil = GravidSoknadRequest(
         virksomhetsnummer = GravidTestData.validOrgNr,
         identitetsnummer = GravidTestData.validIdentitetsnummer,
+        termindato = LocalDate.now().plusDays(25),
         tilrettelegge = true,
         tiltak = listOf(Tiltak.ANNET),
         tiltakBeskrivelse = "beskrivelse",

@@ -18,7 +18,7 @@ interface KravmeldingSender {
 
 }
 
-class KravmeldingKafkaProducer(props: MutableMap<String, Any>, private val topicName: String, private val om : ObjectMapper) :
+class KravmeldingKafkaProducer(private val props: MutableMap<String, Any>, private val topicName: String, private val om : ObjectMapper) :
         KravmeldingSender {
     private var producer = KafkaProducer(props, StringSerializer(), StringSerializer())
 
@@ -43,7 +43,7 @@ class KravmeldingKafkaProducer(props: MutableMap<String, Any>, private val topic
             when(ex){
                 is AuthenticationException -> {
                     producer.close()
-                    producer = KafkaProducer(producerConfig(), StringSerializer(), StringSerializer())
+                    producer = KafkaProducer(props, StringSerializer(), StringSerializer())
                     sendMelding(melding, type)
                 }
                 else -> throw ex

@@ -30,8 +30,10 @@ fun localDevConfig(config: ApplicationConfig) = module {
     single { PostgresKroniskSoeknadRepository(get(), get()) } bind KroniskSoeknadRepository::class
     single { PostgresKroniskKravRepository(get(), get()) } bind KroniskKravRepository::class
 
-    single { SoeknadmeldingKafkaProducer(producerLocalConfig(), config.getString("kafka_soeknad_topic_name"), get())} bind SoeknadmeldingSender::class
-    single { KravmeldingKafkaProducer(producerLocalConfig(), config.getString("kafka_krav_topic_name"), get()) } bind KravmeldingSender::class
+//    single { SoeknadmeldingKafkaProducer(producerLocalConfig(), config.getString("kafka_soeknad_topic_name"), get(), Producer(ProducerType.PROD))} bind SoeknadmeldingSender::class
+//    single { KravmeldingKafkaProducer(producerLocalConfig(), config.getString("kafka_krav_topic_name"), get()) } bind KravmeldingSender::class
+    single { SoeknadmeldingKafkaProducer(ProducerSaslConfig(), config.getString("kafka_soeknad_topic_name"), get(), Producer(ProducerType.PROD))} bind SoeknadmeldingSender::class
+    single { KravmeldingKafkaProducer(ProducerSaslConfig(), config.getString("kafka_krav_topic_name"), get()) } bind KravmeldingSender::class
 
     single { PostgresBakgrunnsjobbRepository(get()) } bind BakgrunnsjobbRepository::class
     single { BakgrunnsjobbService(get()) }

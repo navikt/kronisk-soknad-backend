@@ -40,12 +40,13 @@ fun producerLocalConfig() = mutableMapOf<String, Any>(
     ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG to StringSerializer::class.java.canonicalName,
     ProducerConfig.ACKS_CONFIG to "1"
 )
+
 fun producerLocalSaslConfig() = mutableMapOf<String, Any>(
     ProducerConfig.BOOTSTRAP_SERVERS_CONFIG to LOCALHOST,
     ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG to StringSerializer::class.java.canonicalName,
     ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG to StringSerializer::class.java.canonicalName,
     ProducerConfig.ACKS_CONFIG to "1"
-)  + saslConfig()
+) + saslConfig()
 
 
 fun producerLocalSaslConfigWrongAuth() = mutableMapOf<String, Any>(
@@ -53,7 +54,7 @@ fun producerLocalSaslConfigWrongAuth() = mutableMapOf<String, Any>(
     ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG to StringSerializer::class.java.canonicalName,
     ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG to StringSerializer::class.java.canonicalName,
     ProducerConfig.ACKS_CONFIG to "1"
-)  + saslConfigFeilPassord()
+) + saslConfigFeilPassord()
 
 fun consumerFakeConfig() = mutableMapOf<String, Any>(
         ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG to LOCALHOST,
@@ -86,3 +87,13 @@ fun saslConfigFeilPassord()  = mutableMapOf<String, Any>(
 fun lagreJassTemplate(usernavn: String, passord: String) : String{
     return "org.apache.kafka.common.security.scram.ScramLoginModule required username=\"$usernavn\" password=\"$passord\";";
 }
+
+fun ProducerSaslConfig() = mutableMapOf<String, Any>(
+    ProducerConfig.BOOTSTRAP_SERVERS_CONFIG to LOCALHOST,
+    ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG to StringSerializer::class.java.canonicalName,
+    ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG to StringSerializer::class.java.canonicalName,
+    ProducerConfig.ACKS_CONFIG to "1",
+    CommonClientConfigs.SECURITY_PROTOCOL_CONFIG to SecurityProtocol.SASL_PLAINTEXT.name,
+    SaslConfigs.SASL_MECHANISM to SASL_MECHANISM,
+    SaslConfigs.SASL_JAAS_CONFIG to lagreJassTemplate(envOrThrow("SASL_USERNAME"), envOrThrow("SASL_PASSWORD"))
+)

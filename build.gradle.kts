@@ -19,6 +19,7 @@ val cxfVersion = "3.4.1"
 val jaxwsVersion = "2.3.1"
 val jaxwsToolsVersion = "2.3.3"
 val kafkaClient = "2.7.0"
+val kotest = "4.4.0"
 
 val githubPassword: String by project
 
@@ -114,6 +115,8 @@ dependencies {
     implementation("com.sun.xml.ws:jaxws-tools:$jaxwsToolsVersion") {
         exclude(group = "com.sun.xml.ws", module = "policy")
     }
+    implementation("io.kotest:kotest-runner-junit5-jvm:4.1.1")
+    implementation("io.kotest:kotest-runner-junit5-jvm:4.1.1")
 
     testImplementation("org.koin:koin-test:$koinVersion")
     implementation("com.github.javafaker:javafaker:1.0.2") // flytt denne til test når generatorene ikke er nødvendige i prod-koden lenger
@@ -128,7 +131,14 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitJupiterVersion")
     implementation( "com.google.cloud:google-cloud-storage:$gcpStorageVersion")
     implementation("org.apache.kafka:kafka-clients:$kafkaClient")
-    //implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+
+
+    testImplementation("io.kotest:kotest-runner-junit5:$kotest")
+    testImplementation("io.kotest:kotest-property:$kotest")
+   // testImplementation("io.kotest:kotest-extensions-koin:$kotest")
+   // testImplementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+
+
 
 }
 

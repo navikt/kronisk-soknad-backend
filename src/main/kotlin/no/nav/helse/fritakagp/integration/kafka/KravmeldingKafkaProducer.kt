@@ -18,7 +18,7 @@ interface KravmeldingSender {
 
 }
 
-class KravmeldingKafkaProducer(private val props: MutableMap<String, Any>, private val topicName: String, private val om : ObjectMapper) :
+class KravmeldingKafkaProducer(private val props: Map<String, Any>, private val topicName: String, private val om : ObjectMapper) :
         KravmeldingSender {
     private var producer = KafkaProducer(props, StringSerializer(), StringSerializer())
 

@@ -1,21 +1,16 @@
 package no.nav.helse.fritakagp.integration.kafka
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import io.ktor.utils.io.*
 import no.nav.helse.fritakagp.domain.GravidSoeknad
 import no.nav.helse.fritakagp.domain.KroniskSoeknad
 import org.apache.kafka.clients.producer.KafkaProducer
-import org.apache.kafka.clients.producer.MockProducer
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.clients.producer.RecordMetadata
 import org.apache.kafka.common.header.internals.RecordHeader
 import org.apache.kafka.common.serialization.StringSerializer
 import java.util.concurrent.TimeUnit
 import org.apache.kafka.common.errors.AuthenticationException
-import org.apache.kafka.common.errors.SaslAuthenticationException
-import org.apache.kafka.common.errors.SslAuthenticationException
 import java.util.concurrent.ExecutionException
-import kotlin.math.expm1
 
 
 interface SoeknadmeldingSender {
@@ -23,24 +18,22 @@ interface SoeknadmeldingSender {
     fun sendMessage(melding: GravidSoeknad): RecordMetadata?
 }
 
-enum class ProducerType {
-    PROD, TEST
+interface KafkaProducerProvider {
+    fun createProducer(props : Map<String, Any>) : KafkaProducer<String, String>
 }
-class Producer(var type : ProducerType) {
-     fun createProducer(props: MutableMap<String, Any>) = when (type) {
-        ProducerType.PROD -> KafkaProducer(props, StringSerializer(), StringSerializer())
-        ProducerType.TEST -> MockProducer(true,  StringSerializer(), StringSerializer())
-    }
+
+class SoeknadmeldingKafkaProducerProvider : KafkaProducerProvider {
+    override fun createProducer(props: Map<String, Any>) = KafkaProducer(props, StringSerializer(), StringSerializer())
 }
 
 class SoeknadmeldingKafkaProducer(
     private val props: MutableMap<String, Any>,
     private val topicName: String,
     private val om: ObjectMapper,
-    private val producerFactory : Producer
+    private val producerProvider : KafkaProducerProvider
 ) :
     SoeknadmeldingSender {
-    private var producer = producerFactory.createProducer(props)
+    private var producer = producerProvider.createProducer(props)
 
 
 
@@ -65,7 +58,7 @@ class SoeknadmeldingKafkaProducer(
             if (ex.cause is AuthenticationException) {
                 producer.flush()
                 producer.close()
-                producer = producerFactory.createProducer(props)
+                producer = producerProvider.createProducer(props)
                 return sendMelding(melding, type)
             } else throw ex
         }

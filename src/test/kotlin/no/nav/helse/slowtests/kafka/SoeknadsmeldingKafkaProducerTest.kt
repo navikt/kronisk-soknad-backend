@@ -32,7 +32,7 @@ internal class SoeknadsmeldingKafkaProducerTest : SystemTestBase() {
     fun getMessages() {
         val consumer = SoeknadsmeldingKafkaConsumer(consumerFakeSaslConfig() as MutableMap<String, Any>, topicName)
         val noMessagesExpected = consumer.getMessagesToProcess()
-        val producer = SoeknadmeldingKafkaProducer(producerLocalSaslConfig() as MutableMap<String, Any>, topicName, om = om, Producer(ProducerType.PROD))
+        val producer = SoeknadmeldingKafkaProducer(producerLocalSaslConfig() as MutableMap<String, Any>, topicName, om = om, SoeknadmeldingKafkaProducerProvider())
         assertThat(noMessagesExpected).isEmpty()
 
         kafkaProdusent.createTopicIfNotExists()

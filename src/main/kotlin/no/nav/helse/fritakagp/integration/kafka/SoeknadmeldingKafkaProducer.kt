@@ -21,45 +21,28 @@ import kotlin.math.expm1
 interface SoeknadmeldingSender {
     fun sendMessage(melding: KroniskSoeknad): RecordMetadata?
     fun sendMessage(melding: GravidSoeknad): RecordMetadata?
-
 }
 
-class MockSoeknadmeldingKafkaProducer(
-    private val props: MutableMap<String, Any>
-) :
-    SoeknadmeldingSender {
-    override fun sendMessage(melding: KroniskSoeknad): RecordMetadata? {
-        return sendKafkaMessage("melding", "KroniskSoeknad")
-    }
-
-    override fun sendMessage(melding: GravidSoeknad): RecordMetadata? {
-        return sendKafkaMessage("melding", "GravidSoeknad")
-    }
-
-    private fun sendMelding(melding: String, type: String): RecordMetadata? {
-        val saslValue = props["sasl.jaas.config"] as String
-        if (!saslValue.contains("igroup"))
-            throw AuthenticationException("feil brukernavn")
-
-        return RecordMetadata(null,0,0,0,0,0,0)
-    }
-
-    private fun sendKafkaMessage(melding: String, type: String): RecordMetadata? {
-        return try {
-            sendMelding(melding, type)
-        } catch (ex: ExecutionException) {
-            throw ex
-        }
+enum class ProducerType {
+    PROD, TEST
+}
+class Producer(var type : ProducerType) {
+     fun createProducer(props: MutableMap<String, Any>) = when (type) {
+        ProducerType.PROD -> KafkaProducer(props, StringSerializer(), StringSerializer())
+        ProducerType.TEST -> MockProducer(true,  StringSerializer(), StringSerializer())
     }
 }
 
 class SoeknadmeldingKafkaProducer(
-    props: MutableMap<String, Any>,
+    private val props: MutableMap<String, Any>,
     private val topicName: String,
-    private val om: ObjectMapper
+    private val om: ObjectMapper,
+    private val producerFactory : Producer
 ) :
     SoeknadmeldingSender {
-    private var producer = KafkaProducer(props, StringSerializer(), StringSerializer())
+    private var producer = producerFactory.createProducer(props)
+
+
 
     override fun sendMessage(melding: KroniskSoeknad): RecordMetadata? {
         return sendKafkaMessage(om.writeValueAsString(melding), "KroniskSoeknad")
@@ -82,10 +65,9 @@ class SoeknadmeldingKafkaProducer(
             if (ex.cause is AuthenticationException) {
                 producer.flush()
                 producer.close()
-                producer = KafkaProducer(producerLocalConfig(), StringSerializer(), StringSerializer())
+                producer = producerFactory.createProducer(props)
                 return sendMelding(melding, type)
             } else throw ex
         }
     }
 }
-

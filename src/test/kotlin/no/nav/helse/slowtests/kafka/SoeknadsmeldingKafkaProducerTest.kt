@@ -2,9 +2,7 @@ package no.nav.helse.slowtests.kafka
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import no.nav.helse.GravidTestData
-import no.nav.helse.fritakagp.integration.kafka.SoeknadmeldingKafkaProducer
-import no.nav.helse.fritakagp.integration.kafka.consumerFakeConfig
-import no.nav.helse.fritakagp.integration.kafka.producerLocalConfig
+import no.nav.helse.fritakagp.integration.kafka.*
 import no.nav.helse.slowtests.kafka.KafkaAdminForTests.Companion.topicName
 import no.nav.helse.slowtests.systemtests.api.SystemTestBase
 import org.assertj.core.api.Assertions.assertThat
@@ -32,9 +30,9 @@ internal class SoeknadsmeldingKafkaProducerTest : SystemTestBase() {
 
     @Test
     fun getMessages() {
-        val consumer = SoeknadsmeldingKafkaConsumer(consumerFakeConfig(), topicName)
+        val consumer = SoeknadsmeldingKafkaConsumer(consumerFakeSaslConfig() as MutableMap<String, Any>, topicName)
         val noMessagesExpected = consumer.getMessagesToProcess()
-        val producer = SoeknadmeldingKafkaProducer(producerLocalConfig(), topicName, om = om)
+        val producer = SoeknadmeldingKafkaProducer(producerLocalSaslConfig() as MutableMap<String, Any>, topicName, om = om, Producer(ProducerType.PROD))
         assertThat(noMessagesExpected).isEmpty()
 
         kafkaProdusent.createTopicIfNotExists()
@@ -53,9 +51,4 @@ internal class SoeknadsmeldingKafkaProducerTest : SystemTestBase() {
 
         consumer.stop()
     }
-
-
-
-
-
 }

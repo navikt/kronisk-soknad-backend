@@ -1,9 +1,8 @@
 package no.nav.helse.fritakagp.processing.gravid.kafka
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import no.nav.helse.GravidTestData
-import no.nav.helse.fritakagp.integration.kafka.MockSoeknadmeldingKafkaProducer
-import no.nav.helse.fritakagp.integration.kafka.producerLocalSaslConfig
-import no.nav.helse.fritakagp.integration.kafka.producerLocalSaslConfigWrongAuth
+import no.nav.helse.fritakagp.integration.kafka.*
 import org.apache.kafka.clients.producer.RecordMetadata
 import org.apache.kafka.common.errors.AuthenticationException
 import org.junit.jupiter.api.Assertions
@@ -13,7 +12,7 @@ class GravidKravKafkaTest {
 
     @Test
     fun `funksjonen oppretter en feil hvis egenskapene ikke inneholder riktig brukernavn`() {
-        val mockProducer = MockSoeknadmeldingKafkaProducer(producerLocalSaslConfigWrongAuth() as MutableMap<String, Any>)
+        val mockProducer = SoeknadmeldingKafkaProducer(producerLocalSaslConfigWrongAuth() as MutableMap<String, Any>,"GravidTopic", om = ObjectMapper(), Producer(ProducerType.TEST) )
         Assertions.assertThrows(
             AuthenticationException::class.java,
             { mockProducer.sendMessage(GravidTestData.soeknadGravid)}
@@ -22,7 +21,7 @@ class GravidKravKafkaTest {
 
     @Test
     fun `funksjonen retunere RecordMetaData hvis egenskapene inneholder riktig brukernavn`() {
-        val mockProducer = MockSoeknadmeldingKafkaProducer(producerLocalSaslConfig() as MutableMap<String, Any>)
+        val mockProducer = SoeknadmeldingKafkaProducer(producerLocalSaslConfig() as MutableMap<String, Any>,"GravidTopic", om = ObjectMapper(), Producer(ProducerType.TEST) )
         val ret = mockProducer.sendMessage(GravidTestData.soeknadGravid)
 
         Assertions.assertEquals(ret!!::class.java, RecordMetadata::class.java)

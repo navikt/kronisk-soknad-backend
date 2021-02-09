@@ -35,8 +35,6 @@ class SoeknadmeldingKafkaProducer(
     SoeknadmeldingSender {
     private var producer = producerProvider.createProducer(props)
 
-
-
     override fun sendMessage(melding: KroniskSoeknad): RecordMetadata? {
         return sendKafkaMessage(om.writeValueAsString(melding), "KroniskSoeknad")
     }

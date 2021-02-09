@@ -9,6 +9,7 @@ import org.apache.kafka.clients.producer.RecordMetadata
 import org.apache.kafka.common.errors.AuthenticationException
 import org.apache.kafka.common.header.internals.RecordHeader
 import org.apache.kafka.common.serialization.StringSerializer
+import java.util.concurrent.ExecutionException
 import java.util.concurrent.TimeUnit
 
 
@@ -18,11 +19,20 @@ interface KravmeldingSender {
 
 }
 
-class KravmeldingKafkaProducer(private val props: Map<String, Any>, private val topicName: String, private val om : ObjectMapper) :
-        KravmeldingSender {
-    private var producer = KafkaProducer(props, StringSerializer(), StringSerializer())
+class KravmeldingKafkaProducerProvider : KafkaProducerProvider {
+    override fun createProducer(props: Map<String, Any>) = KafkaProducer(props, StringSerializer(), StringSerializer())
+}
 
-    override fun sendMessage(melding: KroniskKrav): RecordMetadata?{
+class KravmeldingKafkaProducer(
+    private val props: Map<String, Any>,
+    private val topicName: String,
+    private val om: ObjectMapper,
+    private val producerProvider : KafkaProducerProvider
+) :
+    KravmeldingSender {
+    private var producer = producerProvider.createProducer(props)
+
+    override fun sendMessage(melding: KroniskKrav): RecordMetadata? {
         return sendKafkaMessage(om.writeValueAsString(melding), "KroniskKrav")
     }
 
@@ -30,24 +40,22 @@ class KravmeldingKafkaProducer(private val props: Map<String, Any>, private val 
         return sendKafkaMessage(om.writeValueAsString(melding), "GravidKrav")
     }
 
-    private fun sendMelding(melding: String, type : String): RecordMetadata?{
+    private fun sendMelding(melding: String, type: String): RecordMetadata? {
         val record: ProducerRecord<String, String> = ProducerRecord(topicName, melding)
         record.headers().add(RecordHeader("type", type.toByteArray()))
         return producer.send(record).get(10, TimeUnit.SECONDS)
     }
 
-    private fun sendKafkaMessage(melding: String, type : String): RecordMetadata? {
+    private fun sendKafkaMessage(melding: String, type: String): RecordMetadata? {
         return try {
             sendMelding(melding, type)
-        } catch (ex : Exception) {
-            when(ex){
-                is AuthenticationException -> {
-                    producer.close()
-                    producer = KafkaProducer(props, StringSerializer(), StringSerializer())
-                    sendMelding(melding, type)
-                }
-                else -> throw ex
-            }
+        } catch (ex: ExecutionException) {
+            if (ex.cause is AuthenticationException) {
+                producer.flush()
+                producer.close()
+                producer = producerProvider.createProducer(props)
+                return sendMelding(melding, type)
+            } else throw ex
         }
 
     }

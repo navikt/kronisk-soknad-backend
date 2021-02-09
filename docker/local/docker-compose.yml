@@ -1,4 +1,4 @@
-version: '3'
+version: '3.4'
 services:
   fritakagp-database:
     build:
@@ -9,44 +9,14 @@ services:
     environment:
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=admin
-  openldap:
-    build: ldap
-    container_name: ldap
-    ports:
-    - "10636:636"
-    - "10389:389"
-    environment:
-    - "LDAP_TLS_VERIFY_CLIENT=try"
-  zookeeper:
-    #image: confluentinc/cp-zookeeper
-    build: zookeeper
-    container_name: zookeeper
-    environment:
-    - "ZOOKEEPER_CLIENT_PORT=2181"
-    - "ZOOKEEPER_AUTH_PROVIDER_1=org.apache.zookeeper.server.auth.SASLAuthenticationProvider"
+
+  fritakagp-kafka:
+    build:
+      context: ./kafka
+      dockerfile: kafka.Dockerfile
     ports:
       - "2181:2181"
-  kafka:
-    build: kafka
-    container_name: kafka
-    environment:
-    - "KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181"
-    - "KAFKA_LISTENERS=SASLPLAINTEXT://0.0.0.0:9092,SASLINTERNAL://kafka:9093"
-    - "KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=SASLPLAINTEXT:SASL_PLAINTEXT,SASLINTERNAL:SASL_PLAINTEXT"
-    - "KAFKA_ADVERTISED_LISTENERS=SASLPLAINTEXT://localhost:9092,SASLINTERNAL://kafka:9093"
-    - "KAFKA_PROTOCOL_NAME=SASLPLAINTEXT,SASLINTERNAL"
-    - "KAFKA_LISTENER_NAME_SASLPLAINTEXT_PLAIN_SASL_SERVER_CALLBACK_HANDLER_CLASS=no.nav.common.security.authentication.SimpleLDAPAuthentication"
-    - "KAFKA_LISTENER_NAME_SASLINTERNAL_PLAIN_SASL_SERVER_CALLBACK_HANDLER_CLASS=no.nav.common.security.authentication.SimpleLDAPAuthentication"
-    - "KAFKA_AUTHORIZER_CLASS_NAME=no.nav.common.security.authorization.SimpleLDAPAuthorizer"
-    - "KAFKA_SUPER_USERS=User:igroup"
-    - "KAFKA_INTER_BROKER_LISTENER_NAME=SASLINTERNAL"
-    - "KAFKA_SASL_MECHANISM_INTER_BROKER_PROTOCOL=PLAIN"
-    - "KAFKA_SASL_ENABLED_MECHANISMS=PLAIN"
-    - "KAFKA_DEFAULT_REPLICATION_FACTOR=1"
-    - "KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1"
-    - "KAFKA_AUTO_CREATE_TOPICS_ENABLE=false"
-    ports:
-    - "9092:9092"
-    depends_on:
-    - "zookeeper" 
-    - "openldap"
+      - "9092:9092"
+
+volumes:
+  data:

@@ -1,7 +1,6 @@
 package no.nav.helse.slowtests.kafka
 
 import no.nav.helse.fritakagp.integration.kafka.consumerFakeConfig
-import no.nav.helse.fritakagp.integration.kafka.consumerFakeSaslConfig
 import org.apache.kafka.clients.admin.AdminClient
 import org.apache.kafka.clients.admin.KafkaAdminClient
 import org.apache.kafka.clients.admin.NewTopic
@@ -19,7 +18,7 @@ class KafkaAdminForTests {
         const val topicName = "fritakagb-test"
     }
 
-    private val adminClient: AdminClient = KafkaAdminClient.create(consumerFakeSaslConfig())
+    private val adminClient: AdminClient = KafkaAdminClient.create(consumerFakeConfig())
     fun createTopicIfNotExists() {
         try {
             adminClient

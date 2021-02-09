@@ -173,7 +173,7 @@ fun Module.externalSystemClients(config: ApplicationConfig) {
     } bind BucketStorage::class
 
     single { SoeknadmeldingKafkaProducer(producerConfig(), config.getString("kafka_soeknad_topic_name"), get(), SoeknadmeldingKafkaProducerProvider()) } bind SoeknadmeldingSender::class
-    single { KravmeldingKafkaProducer(producerConfig(), config.getString("kafka_krav_topic_name"), get()) } bind KravmeldingSender::class
+    single { KravmeldingKafkaProducer(producerConfig(), config.getString("kafka_krav_topic_name"), get(), KravmeldingKafkaProducerProvider()) } bind KravmeldingSender::class
 }
 
 

@@ -33,6 +33,7 @@ class KroniskSoeknadProcessor(
         val JOB_TYPE = "kronisk-søknad-formidling"
         val dokumentasjonBrevkode = "soeknad_om_fritak_fra_agp_dokumentasjon"
     }
+    override val type: String get() = JOB_TYPE
 
     val digitalSoeknadBehandingsType = "ae0227"
     val fritakAGPBehandingsTema = "ab0338"
@@ -43,10 +44,10 @@ class KroniskSoeknadProcessor(
      * Prosesserer en kronisksøknad; journalfører søknaden og oppretter en oppgave for saksbehandler.
      * Jobbdataene forventes å være en UUID for en søknad som skal prosesseres.
      */
-    override fun prosesser(jobbDataString: String) {
-        val jobbData = om.readValue<JobbData>(jobbDataString)
+    override fun prosesser(jobb: Bakgrunnsjobb) {
+        val jobbData = om.readValue<JobbData>(jobb.data)
         val soeknad = kroniskSoeknadRepo.getById(jobbData.id)
-        requireNotNull(soeknad, { "Jobben indikerte en søknad med id $jobbData men den kunne ikke finnes" })
+        requireNotNull(soeknad, { "Jobben indikerte en søknad med id ${jobb.data} men den kunne ikke finnes" })
 
         try {
             if (soeknad.journalpostId == null) {

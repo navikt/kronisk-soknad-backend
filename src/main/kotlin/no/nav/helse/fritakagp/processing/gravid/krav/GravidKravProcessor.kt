@@ -36,6 +36,8 @@ class GravidKravProcessor(
         val dokumentasjonBrevkode = "krav_om_fritak_fra_agp_dokumentasjon"
     }
 
+    override val type: String get() = JOB_TYPE
+
     val digitalKravBehandingsType = "ae0227"
     val fritakAGPBehandingsTema = "ab0338"
 
@@ -45,10 +47,10 @@ class GravidKravProcessor(
      * Prosesserer et gravidkrav; journalfører kravet og oppretter en oppgave for saksbehandler.
      * Jobbdataene forventes å være en UUID for et krav som skal prosesseres.
      */
-    override fun prosesser(jobbDataString: String) {
-        val jobbData = om.readValue<JobbData>(jobbDataString)
+    override fun prosesser(jobb: Bakgrunnsjobb) {
+        val jobbData = om.readValue<JobbData>(jobb.data)
         val krav = gravidKravRepo.getById(jobbData.id)
-        requireNotNull(krav, { "Jobben indikerte et krav med id $jobbData men den kunne ikke finnes" })
+        requireNotNull(krav, { "Jobben indikerte et krav med id ${jobb.data} men den kunne ikke finnes" })
 
         try {
             if (krav.journalpostId == null) {

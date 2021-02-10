@@ -15,10 +15,8 @@ import no.nav.helse.fritakagp.KroniskKravMetrics
 import no.nav.helse.fritakagp.db.KroniskKravRepository
 import no.nav.helse.fritakagp.domain.KroniskKrav
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
-import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadKafkaProcessor
 import org.slf4j.LoggerFactory
 import java.time.LocalDate
-import java.time.LocalDateTime
 import java.util.*
 
 class KroniskKravProcessor(
@@ -35,6 +33,7 @@ class KroniskKravProcessor(
         val JOB_TYPE = "kronisk-krav-formidling"
         val dokumentasjonBrevkode = "krav_om_fritak_fra_agp_dokumentasjon"
     }
+    override val type: String get() = JOB_TYPE
 
     val digitalKravBehandingsType = "ae0227"
     val fritakAGPBehandingsTema = "ab0338"
@@ -45,10 +44,10 @@ class KroniskKravProcessor(
      * Prosesserer et kroniskkrav; journalfører kravet og oppretter en oppgave for saksbehandler.
      * Jobbdataene forventes å være en UUID for et krav som skal prosesseres.
      */
-    override fun prosesser(jobbDataString: String) {
-        val jobbData = om.readValue<JobbData>(jobbDataString)
+    override fun prosesser(jobb: Bakgrunnsjobb) {
+        val jobbData = om.readValue<JobbData>(jobb.data)
         val krav = kroniskKravRepo.getById(jobbData.id)
-        requireNotNull(krav, { "Jobben indikerte et krav med id $jobbData men den kunne ikke finnes" })
+        requireNotNull(krav, { "Jobben indikerte et krav med id ${jobb.data} men den kunne ikke finnes" })
 
         try {
             if (krav.journalpostId == null) {

@@ -41,12 +41,12 @@ class GravidKravProcessorTest {
 
     private val oppgaveId = 9999
     private val arkivReferanse = "12345"
-    private var jobbDataJson = ""
+    private var jobb = Bakgrunnsjobb(data = "", type = "test")
 
     @BeforeEach
     fun setup() {
         krav = GravidTestData.gravidKrav.copy()
-        jobbDataJson = objectMapper.writeValueAsString(GravidKravProcessor.JobbData(krav.id))
+        jobb = Bakgrunnsjobb( data = objectMapper.writeValueAsString(GravidKravProcessor.JobbData(krav.id)), type = "test")
         every { repositoryMock.getById(krav.id) } returns krav
         every { bucketStorageMock.getDocAsString(any()) } returns null
         every { pdlClientMock.personNavn(krav.sendtAv)} returns PdlHentPersonNavn.PdlPersonNavneliste(listOf(
@@ -64,7 +64,7 @@ class GravidKravProcessorTest {
     @Test
     fun `skal ikke journalføre når det allerede foreligger en journalpostId, men skal forsøke sletting fra bucket `() {
         krav.journalpostId = "joark"
-        prosessor.prosesser(jobbDataJson)
+        prosessor.prosesser(jobb)
 
         verify(exactly = 0) { joarkMock.journalførDokument(any(), any(), any()) }
         verify(exactly = 1) { bucketStorageMock.deleteDoc(krav.id) }
@@ -79,7 +79,7 @@ class GravidKravProcessorTest {
         val joarkRequest = slot<JournalpostRequest>()
         every { joarkMock.journalførDokument(capture(joarkRequest), any(), any()) } returns JournalpostResponse(arkivReferanse, true, "M", null, emptyList())
 
-        prosessor.prosesser(jobbDataJson)
+        prosessor.prosesser(jobb)
 
         verify(exactly = 1) { bucketStorageMock.getDocAsString(krav.id) }
         verify(exactly = 1) { bucketStorageMock.deleteDoc(krav.id) }
@@ -94,13 +94,13 @@ class GravidKravProcessorTest {
     @Test
     fun `skal ikke lage oppgave når det allerede foreligger en oppgaveId `() {
         krav.oppgaveId = "ppggssv"
-        prosessor.prosesser(jobbDataJson)
+        prosessor.prosesser(jobb)
         coVerify(exactly = 0) { oppgaveMock.opprettOppgave(any(), any()) }
     }
 
     @Test
     fun `skal journalføre, opprette oppgave og oppdatere søknaden i databasen`() {
-        prosessor.prosesser(jobbDataJson)
+        prosessor.prosesser(jobb)
 
         assertThat(krav.journalpostId).isEqualTo(arkivReferanse)
         assertThat(krav.oppgaveId).isEqualTo(oppgaveId.toString())
@@ -112,7 +112,7 @@ class GravidKravProcessorTest {
 
     @Test
     fun `skal opprette kafkasenderjobb`() {
-        prosessor.prosesser(jobbDataJson)
+        prosessor.prosesser(jobb)
 
         assertThat(krav.journalpostId).isEqualTo(arkivReferanse)
         assertThat(krav.oppgaveId).isEqualTo(oppgaveId.toString())
@@ -129,7 +129,7 @@ class GravidKravProcessorTest {
 
         coEvery { oppgaveMock.opprettOppgave(any(), any()) } throws IOException()
 
-        assertThrows<IOException> { prosessor.prosesser(jobbDataJson) }
+        assertThrows<IOException> { prosessor.prosesser(jobb) }
 
         assertThat(krav.journalpostId).isEqualTo(arkivReferanse)
         assertThat(krav.oppgaveId).isNull()

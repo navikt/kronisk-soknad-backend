@@ -15,10 +15,9 @@ import no.nav.helse.fritakagp.KroniskKravMetrics
 import no.nav.helse.fritakagp.db.KroniskKravRepository
 import no.nav.helse.fritakagp.domain.KroniskKrav
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
-import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadKafkaProcessor
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import org.slf4j.LoggerFactory
 import java.time.LocalDate
-import java.time.LocalDateTime
 import java.util.*
 
 class KroniskKravProcessor(
@@ -46,6 +45,7 @@ class KroniskKravProcessor(
      * Jobbdataene forventes å være en UUID for et krav som skal prosesseres.
      */
     override fun prosesser(jobbDataString: String) {
+        om.registerModule(JavaTimeModule())
         val jobbData = om.readValue<JobbData>(jobbDataString)
         val krav = kroniskKravRepo.getById(jobbData.id)
         requireNotNull(krav, { "Jobben indikerte et krav med id $jobbData men den kunne ikke finnes" })
@@ -114,13 +114,18 @@ class KroniskKravProcessor(
         journalfoeringsTittel: String
     ): List<Dokument> {
         val base64EnkodetPdf = Base64.getEncoder().encodeToString(pdfGenerator.lagPDF(krav))
-
+        val jsonOrginalDokument = om.writeValueAsString(krav)
 
         val dokumentListe = mutableListOf(
             Dokument(
                 dokumentVarianter = listOf(
                     DokumentVariant(
-                        fysiskDokument = base64EnkodetPdf
+                        fysiskDokument = base64EnkodetPdf,
+                    ),
+                    DokumentVariant(
+                            filtype = "json",
+                            fysiskDokument = jsonOrginalDokument,
+                            variantFormat = "ORGINAL"
                     )
                 ),
                 brevkode = "krav_om_fritak_fra_agp_kronisk",
@@ -135,6 +140,11 @@ class KroniskKravProcessor(
                         DokumentVariant(
                             fysiskDokument = it.base64Data,
                             filtype = if (it.extension == "jpg") "JPEG" else it.extension.toUpperCase()
+                        ),
+                        DokumentVariant(
+                                filtype = "json",
+                                fysiskDokument = jsonOrginalDokument,
+                                variantFormat = "ORGINAL"
                         )
                     ),
                     brevkode = dokumentasjonBrevkode,

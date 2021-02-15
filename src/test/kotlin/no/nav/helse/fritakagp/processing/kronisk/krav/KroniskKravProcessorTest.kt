@@ -1,6 +1,7 @@
 package no.nav.helse.fritakagp.processing.kronisk.krav
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import io.mockk.*
 import no.nav.helse.KroniskTestData
@@ -46,6 +47,7 @@ class KroniskKravProcessorTest {
     @BeforeEach
     fun setup() {
         krav = KroniskTestData.kroniskKrav.copy()
+        objectMapper.registerModule(JavaTimeModule())
         jobbDataJson = objectMapper.writeValueAsString(KroniskKravProcessor.JobbData(krav.id))
         every { repositoryMock.getById(krav.id) } returns krav
         every { bucketStorageMock.getDocAsString(any()) } returns null

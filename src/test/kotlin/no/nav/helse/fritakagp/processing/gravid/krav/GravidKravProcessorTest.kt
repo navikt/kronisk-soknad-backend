@@ -1,6 +1,7 @@
 package no.nav.helse.fritakagp.processing.gravid.krav
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import io.mockk.*
 import no.nav.helse.GravidTestData
@@ -46,6 +47,7 @@ class GravidKravProcessorTest {
     @BeforeEach
     fun setup() {
         krav = GravidTestData.gravidKrav.copy()
+        objectMapper.registerModule(JavaTimeModule())
         jobbDataJson = objectMapper.writeValueAsString(GravidKravProcessor.JobbData(krav.id))
         every { repositoryMock.getById(krav.id) } returns krav
         every { bucketStorageMock.getDocAsString(any()) } returns null

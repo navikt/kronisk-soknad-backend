@@ -1,6 +1,7 @@
 package no.nav.helse.fritakagp.processing.gravid.soeknad
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import io.mockk.*
 import no.nav.helse.GravidTestData
@@ -45,6 +46,7 @@ class GravidSoeknadProcessorTest {
     @BeforeEach
     fun setup() {
         soeknad = GravidTestData.soeknadGravid.copy()
+        objectMapper.registerModule(JavaTimeModule())
         jobbDataJson = objectMapper.writeValueAsString(GravidSoeknadProcessor.JobbData(soeknad.id))
         every { repositoryMock.getById(soeknad.id) } returns soeknad
         every { bucketStorageMock.getDocAsString(any()) } returns null

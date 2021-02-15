@@ -104,7 +104,6 @@ class FritakAgpApplication(val port: Int = 8080) : KoinComponent {
             registrer(get<KroniskKravKvitteringProcessor>())
 
             startAsync(true)
-            startAutoClean(24, 6)
         }
     }
 

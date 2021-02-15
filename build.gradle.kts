@@ -44,8 +44,8 @@ dependencies {
     // Forsøk å fjerne en og en og kjør snyk test --configuration-matching=runtimeClasspath
     implementation("commons-collections:commons-collections:3.2.2") // overstyrer transiente 3.2.1
     implementation("commons-codec:commons-codec:1.13") // overstyrer transiente 1.10
-    implementation("io.netty:netty-codec:4.1.53.Final") // overstyrer transiente 4.1.44
-    implementation("io.netty:netty-codec-http:4.1.53.Final") // overstyrer transiente 4.1.51.Final gjennom ktor-server-netty
+    implementation("io.netty:netty-codec:4.1.59.Final") // overstyrer transiente 4.1.44
+    implementation("io.netty:netty-codec-http:4.1.59.Final") // overstyrer transiente 4.1.51.Final gjennom ktor-server-netty
     implementation("junit:junit:4.13.1") // overstyrer transiente 4.12 gjennom koin-test
     implementation("org.apache.httpcomponents:httpclient:4.5.13") // overstyrer transiente 4.5.6 gjennom ktor-client-apache
     implementation("org.eclipse.jetty:jetty-server:9.4.35.v20201120")
@@ -55,7 +55,7 @@ dependencies {
 
 
 
-
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.12.1")
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
     implementation("io.ktor:ktor-jackson:$ktorVersion")
     implementation("io.ktor:ktor-client-core:$ktorVersion")

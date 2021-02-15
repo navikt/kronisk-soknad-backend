@@ -15,6 +15,7 @@ import no.nav.helse.fritakagp.KroniskSoeknadMetrics
 import no.nav.helse.fritakagp.db.KroniskSoeknadRepository
 import no.nav.helse.fritakagp.domain.KroniskSoeknad
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import org.slf4j.LoggerFactory
 import java.time.LocalDate
 import java.util.*
@@ -44,6 +45,7 @@ class KroniskSoeknadProcessor(
      * Jobbdataene forventes å være en UUID for en søknad som skal prosesseres.
      */
     override fun prosesser(jobbDataString: String) {
+        om.registerModule(JavaTimeModule())
         val jobbData = om.readValue<JobbData>(jobbDataString)
         val soeknad = kroniskSoeknadRepo.getById(jobbData.id)
         requireNotNull(soeknad, { "Jobben indikerte en søknad med id $jobbData men den kunne ikke finnes" })
@@ -115,7 +117,7 @@ class KroniskSoeknadProcessor(
         journalfoeringsTittel: String
     ): List<Dokument> {
         val base64EnkodetPdf = Base64.getEncoder().encodeToString(pdfGenerator.lagPDF(soeknad))
-
+        val jsonOrginalDokument = om.writeValueAsString(soeknad)
 
         val dokumentListe = mutableListOf(
             Dokument(
@@ -136,6 +138,11 @@ class KroniskSoeknadProcessor(
                         DokumentVariant(
                             fysiskDokument = it.base64Data,
                             filtype = if (it.extension == "jpg") "JPEG" else it.extension.toUpperCase()
+                        ),
+                        DokumentVariant(
+                            variantFormat = "ORGINAL",
+                            fysiskDokument = jsonOrginalDokument,
+                            filtype = "json"
                         )
                     ),
                     brevkode = dokumentasjonBrevkode,

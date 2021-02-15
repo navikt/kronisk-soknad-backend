@@ -2,6 +2,7 @@ package no.nav.helse.fritakagp.processing.gravid.soeknad
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import kotlinx.coroutines.runBlocking
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.Bakgrunnsjobb
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbProsesserer
@@ -44,6 +45,7 @@ class GravidSoeknadProcessor(
      * Jobbdataene forventes å være en UUID for en søknad som skal prosesseres.
      */
     override fun prosesser(jobbDataString: String) {
+        om.registerModule(JavaTimeModule())
         val jobbData = om.readValue<JobbData>(jobbDataString)
         val soeknad = gravidSoeknadRepo.getById(jobbData.id)
         requireNotNull(soeknad, { "Jobben indikerte en søknad med id $jobbData men den kunne ikke finnes" })
@@ -114,7 +116,7 @@ class GravidSoeknadProcessor(
         journalfoeringsTittel: String
     ): List<Dokument> {
         val base64EnkodetPdf = Base64.getEncoder().encodeToString(pdfGenerator.lagPDF(soeknad))
-
+        val jsonOrginalDokument = om.writeValueAsString(soeknad)
 
         val dokumentListe = mutableListOf(
             Dokument(
@@ -135,7 +137,12 @@ class GravidSoeknadProcessor(
                         DokumentVariant(
                             fysiskDokument = it.base64Data,
                             filtype = if (it.extension == "jpg") "JPEG" else it.extension.toUpperCase()
-                        )
+                        ),
+                            DokumentVariant(
+                                    variantFormat = "ORGINAL",
+                                    fysiskDokument = jsonOrginalDokument,
+                                    filtype = "json"
+                            )
                     ),
                     brevkode = dokumentasjonBrevkode,
                     tittel = "Helsedokumentasjon",

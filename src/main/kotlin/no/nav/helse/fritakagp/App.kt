@@ -86,26 +86,25 @@ class FritakAgpApplication(val port: Int = 8080) : KoinComponent {
     }
 
     private fun configAndStartBackgroundWorker() {
-        fun BakgrunnsjobbService.registrer(name: String, handler: BakgrunnsjobbProsesserer) =
-            this.leggTilBakgrunnsjobbProsesserer(name, handler)
         get<BakgrunnsjobbService>().apply {
-            registrer(GravidSoeknadProcessor.JOB_TYPE, get<GravidSoeknadProcessor>())
-            registrer(GravidSoeknadKafkaProcessor.JOB_TYPE, get<GravidSoeknadKafkaProcessor>())
-            registrer(GravidSoeknadKvitteringProcessor.JOB_TYPE, get<GravidSoeknadKvitteringProcessor>())
+            registrer(get<GravidSoeknadProcessor>())
+            registrer(get<GravidSoeknadKafkaProcessor>())
+            registrer(get<GravidSoeknadKvitteringProcessor>())
 
-            registrer(GravidKravProcessor.JOB_TYPE, get<GravidKravProcessor>())
-            registrer(GravidKravKafkaProcessor.JOB_TYPE, get<GravidKravKafkaProcessor>())
-            registrer(GravidKravKvitteringProcessor.JOB_TYPE, get<GravidKravKvitteringProcessor>())
+            registrer(get<GravidKravProcessor>())
+            registrer(get<GravidKravKafkaProcessor>())
+            registrer(get<GravidKravKvitteringProcessor>())
 
-            registrer(KroniskSoeknadProcessor.JOB_TYPE, get<KroniskSoeknadProcessor>())
-            registrer(KroniskSoeknadKafkaProcessor.JOB_TYPE, get<KroniskSoeknadKafkaProcessor>())
-            registrer(KroniskSoeknadKvitteringProcessor.JOB_TYPE, get<KroniskSoeknadKvitteringProcessor>())
+            registrer(get<KroniskSoeknadProcessor>())
+            registrer(get<KroniskSoeknadKafkaProcessor>())
+            registrer(get<KroniskSoeknadKvitteringProcessor>())
 
-            registrer(KroniskKravProcessor.JOB_TYPE, get<KroniskKravProcessor>())
-            registrer(KroniskKravKafkaProcessor.JOB_TYPE, get<KroniskKravKafkaProcessor>())
-            registrer(KroniskKravKvitteringProcessor.JOB_TYPE, get<KroniskKravKvitteringProcessor>())
+            registrer(get<KroniskKravProcessor>())
+            registrer(get<KroniskKravKafkaProcessor>())
+            registrer(get<KroniskKravKvitteringProcessor>())
 
             startAsync(true)
+            startAutoClean(24, 6)
         }
     }
 

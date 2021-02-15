@@ -7,6 +7,7 @@ import no.nav.helse.arbeidsgiver.bakgrunnsjobb.Bakgrunnsjobb
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbProsesserer
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbRepository
 import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.*
+import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OPPGAVETYPE_FORDELINGSOPPGAVE
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OppgaveKlient
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OpprettOppgaveRequest
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlClient
@@ -45,9 +46,7 @@ class KroniskKravProcessor(
      * Jobbdataene forventes å være en UUID for et krav som skal prosesseres.
      */
     override fun prosesser(jobb: Bakgrunnsjobb) {
-        val jobbData = om.readValue<JobbData>(jobb.data)
-        val krav = kroniskKravRepo.getById(jobbData.id)
-        requireNotNull(krav, { "Jobben indikerte et krav med id ${jobb.data} men den kunne ikke finnes" })
+        val krav = getOrThrow(jobb)
 
         try {
             if (krav.journalpostId == null) {
@@ -71,6 +70,22 @@ class KroniskKravProcessor(
         } finally {
             updateAndLogOnFailure(krav)
         }
+    }
+
+    private fun getOrThrow(jobb: Bakgrunnsjobb): KroniskKrav {
+        val jobbData = om.readValue<JobbData>(jobb.data)
+        val krav = kroniskKravRepo.getById(jobbData.id)
+        requireNotNull(krav, { "Jobben indikerte et krav med id ${jobb.data} men den kunne ikke finnes" })
+        return krav
+    }
+
+    /**
+     * Når vi gir opp, opprette en fordelingsoppgave til saksbehandler
+     */
+    override fun stoppet(jobb: Bakgrunnsjobb) {
+        val krav = getOrThrow(jobb)
+        val oppgaveId = opprettFordelingsOppgave(krav)
+        log.warn("Jobben ${jobb.uuid} feilet permanenet og resulterte i fordelignsoppgave $oppgaveId")
     }
 
     private fun updateAndLogOnFailure(krav: KroniskKrav) {
@@ -166,6 +181,30 @@ class KroniskKravProcessor(
 
         return runBlocking { oppgaveKlient.opprettOppgave(request, UUID.randomUUID().toString()).id.toString() }
     }
+
+
+    fun opprettFordelingsOppgave(krav: KroniskKrav): String {
+        val aktoerId = pdlClient.fullPerson(krav.identitetsnummer)?.hentIdenter?.trekkUtIdent(PdlIdent.PdlIdentGruppe.AKTORID)
+        requireNotNull(aktoerId, { "Fant ikke AktørID for fnr i ${krav.id}" })
+
+        val request = OpprettOppgaveRequest(
+            aktoerId = aktoerId,
+            journalpostId = krav.journalpostId,
+            beskrivelse = """
+                Fordelingsoppgave for refusjonskrav ifbm sykdom i aprbeidsgiverperioden med fritak fra arbeidsgiverperioden grunnet kronisk sykdom.
+            """.trimIndent(),
+            tema = "SYK",
+            behandlingstype = digitalKravBehandingsType,
+            oppgavetype = OPPGAVETYPE_FORDELINGSOPPGAVE,
+            behandlingstema = fritakAGPBehandingsTema,
+            aktivDato = LocalDate.now(),
+            fristFerdigstillelse = LocalDate.now().plusDays(7),
+            prioritet = "NORM"
+        )
+
+        return runBlocking { oppgaveKlient.opprettOppgave(request, UUID.randomUUID().toString()).id.toString() }
+    }
+
 
     data class JobbData(val id: UUID)
 

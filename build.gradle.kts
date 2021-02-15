@@ -146,9 +146,6 @@ java {
 }
 
 repositories {
-    jcenter()
-    mavenCentral()
-    maven("https://kotlin.bintray.com/ktor")
     maven {
         credentials {
             username = "x-access-token"
@@ -156,6 +153,10 @@ repositories {
         }
         setUrl("https://maven.pkg.github.com/navikt/helse-arbeidsgiver-felles-backend")
     }
+
+    jcenter()
+    mavenCentral()
+    maven("https://kotlin.bintray.com/ktor")
 }
 
 tasks.named<Jar>("jar") {

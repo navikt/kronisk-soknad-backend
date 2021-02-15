@@ -9,7 +9,9 @@ import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbRepository
 import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.DokarkivKlient
 import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.JournalpostRequest
 import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.JournalpostResponse
+import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OPPGAVETYPE_FORDELINGSOPPGAVE
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OppgaveKlient
+import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OpprettOppgaveRequest
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OpprettOppgaveResponse
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.*
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlHentFullPerson.PdlFullPersonliste
@@ -68,6 +70,17 @@ class GravidKravProcessorTest {
 
         verify(exactly = 0) { joarkMock.journalførDokument(any(), any(), any()) }
         verify(exactly = 1) { bucketStorageMock.deleteDoc(krav.id) }
+    }
+
+
+    @Test
+    fun `skal opprette fordelingsoppgave når stoppet`() {
+        prosessor.stoppet(jobb)
+
+        val oppgaveRequest = CapturingSlot<OpprettOppgaveRequest>()
+
+        coVerify(exactly = 1) { oppgaveMock.opprettOppgave(capture(oppgaveRequest), any()) }
+        assertThat(oppgaveRequest.captured.oppgavetype).isEqualTo(OPPGAVETYPE_FORDELINGSOPPGAVE)
     }
 
     @Test

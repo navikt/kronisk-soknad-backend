@@ -7,6 +7,7 @@ import no.nav.helse.arbeidsgiver.bakgrunnsjobb.Bakgrunnsjobb
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbProsesserer
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbRepository
 import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.*
+import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OPPGAVETYPE_FORDELINGSOPPGAVE
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OppgaveKlient
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OpprettOppgaveRequest
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlClient
@@ -15,10 +16,8 @@ import no.nav.helse.fritakagp.GravidKravMetrics
 import no.nav.helse.fritakagp.db.GravidKravRepository
 import no.nav.helse.fritakagp.domain.GravidKrav
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
-import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadKafkaProcessor
 import org.slf4j.LoggerFactory
 import java.time.LocalDate
-import java.time.LocalDateTime
 import java.util.*
 
 class GravidKravProcessor(
@@ -48,9 +47,7 @@ class GravidKravProcessor(
      * Jobbdataene forventes å være en UUID for et krav som skal prosesseres.
      */
     override fun prosesser(jobb: Bakgrunnsjobb) {
-        val jobbData = om.readValue<JobbData>(jobb.data)
-        val krav = gravidKravRepo.getById(jobbData.id)
-        requireNotNull(krav, { "Jobben indikerte et krav med id ${jobb.data} men den kunne ikke finnes" })
+        val krav = getOrThrow(jobb)
 
         try {
             if (krav.journalpostId == null) {
@@ -74,6 +71,22 @@ class GravidKravProcessor(
         } finally {
             updateAndLogOnFailure(krav)
         }
+    }
+
+    private fun getOrThrow(jobb: Bakgrunnsjobb): GravidKrav {
+        val jobbData = om.readValue<JobbData>(jobb.data)
+        val krav = gravidKravRepo.getById(jobbData.id)
+        requireNotNull(krav, { "Jobben indikerte et krav med id ${jobb.data} men den kunne ikke finnes" })
+        return krav
+    }
+
+    /**
+     * Når vi gir opp, opprette en fordelingsoppgave til saksbehandler
+     */
+    override fun stoppet(jobb: Bakgrunnsjobb) {
+        val krav = getOrThrow(jobb)
+        val oppgaveId = opprettFordelingsOppgave(krav)
+        log.warn("Jobben ${jobb.uuid} feilet permanenet og resulterte i fordelignsoppgave $oppgaveId")
     }
 
     private fun updateAndLogOnFailure(krav: GravidKrav) {
@@ -169,6 +182,30 @@ class GravidKravProcessor(
 
         return runBlocking { oppgaveKlient.opprettOppgave(request, UUID.randomUUID().toString()).id.toString() }
     }
+
+
+    fun opprettFordelingsOppgave(krav: GravidKrav): String {
+        val aktoerId = pdlClient.fullPerson(krav.identitetsnummer)?.hentIdenter?.trekkUtIdent(PdlIdent.PdlIdentGruppe.AKTORID)
+        requireNotNull(aktoerId, { "Fant ikke AktørID for fnr i ${krav.id}" })
+
+        val request = OpprettOppgaveRequest(
+            aktoerId = aktoerId,
+            journalpostId = krav.journalpostId,
+            beskrivelse = """
+                Fordelingsoppgave for refusjonskrav ifbm graviditet med fritak fra arbeidsgiverperioden grunnet graviditetsrelatert sykdom.
+            """.trimIndent(),
+            tema = "SYK",
+            behandlingstype = digitalKravBehandingsType,
+            oppgavetype = OPPGAVETYPE_FORDELINGSOPPGAVE,
+            behandlingstema = fritakAGPBehandingsTema,
+            aktivDato = LocalDate.now(),
+            fristFerdigstillelse = LocalDate.now().plusDays(7),
+            prioritet = "NORM"
+        )
+
+        return runBlocking { oppgaveKlient.opprettOppgave(request, UUID.randomUUID().toString()).id.toString() }
+    }
+
 
     data class JobbData(val id: UUID)
 

@@ -8,7 +8,7 @@ import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.util.*
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.Bakgrunnsjobb
-import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbRepository
+import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbService
 import no.nav.helse.arbeidsgiver.web.auth.AltinnAuthorizer
 import no.nav.helse.fritakagp.KroniskKravMetrics
 import no.nav.helse.fritakagp.KroniskSoeknadMetrics
@@ -33,7 +33,7 @@ fun Route.kroniskRoutes(
     datasource: DataSource,
     kroniskSoeknadRepo: KroniskSoeknadRepository,
     kroniskKravRepo: KroniskKravRepository,
-    bakgunnsjobbRepo: BakgrunnsjobbRepository,
+    bakgunnsjobbService: BakgrunnsjobbService,
     om: ObjectMapper,
     virusScanner: VirusScanner,
     bucket: BucketStorage,
@@ -61,21 +61,15 @@ fun Route.kroniskRoutes(
 
                 datasource.connection.use { connection ->
                     kroniskSoeknadRepo.insert(soeknad, connection)
-                    bakgunnsjobbRepo.save(
-                        Bakgrunnsjobb(
-                            maksAntallForsoek = 10,
-                            data = om.writeValueAsString(KroniskSoeknadProcessor.JobbData(soeknad.id)),
-                            type = KroniskSoeknadProcessor.JOB_TYPE
-                        ),
-                        connection
+                    bakgunnsjobbService.opprettJobb<KroniskSoeknadProcessor>(
+                        maksAntallForsoek = 8,
+                        data = om.writeValueAsString(KroniskSoeknadProcessor.JobbData(soeknad.id)),
+                        connection = connection
                     )
-                    bakgunnsjobbRepo.save(
-                        Bakgrunnsjobb(
-                            maksAntallForsoek = 10,
-                            data = om.writeValueAsString(KroniskSoeknadKvitteringProcessor.Jobbdata(soeknad.id)),
-                            type = KroniskSoeknadKvitteringProcessor.JOB_TYPE
-                        ),
-                        connection
+                    bakgunnsjobbService.opprettJobb<KroniskSoeknadKvitteringProcessor>(
+                        maksAntallForsoek = 10,
+                        data = om.writeValueAsString(KroniskSoeknadKvitteringProcessor.Jobbdata(soeknad.id)),
+                        connection = connection
                     )
                 }
 
@@ -101,21 +95,15 @@ fun Route.kroniskRoutes(
 
                 datasource.connection.use { connection ->
                     kroniskKravRepo.insert(krav, connection)
-                    bakgunnsjobbRepo.save(
-                        Bakgrunnsjobb(
-                            maksAntallForsoek = 10,
-                            data = om.writeValueAsString(KroniskKravProcessor.JobbData(krav.id)),
-                            type = KroniskKravProcessor.JOB_TYPE
-                        ),
-                        connection
+                    bakgunnsjobbService.opprettJobb<KroniskKravProcessor>(
+                        maksAntallForsoek = 8,
+                        data = om.writeValueAsString(KroniskKravProcessor.JobbData(krav.id)),
+                        connection = connection
                     )
-                    bakgunnsjobbRepo.save(
-                        Bakgrunnsjobb(
-                            maksAntallForsoek = 10,
-                            data = om.writeValueAsString(KroniskKravKvitteringProcessor.Jobbdata(krav.id)),
-                            type = KroniskKravKvitteringProcessor.JOB_TYPE
-                        ),
-                        connection
+                    bakgunnsjobbService.opprettJobb<KroniskKravKvitteringProcessor>(
+                        maksAntallForsoek = 10,
+                        data = om.writeValueAsString(KroniskKravKvitteringProcessor.Jobbdata(krav.id)),
+                        connection = connection
                     )
                 }
 

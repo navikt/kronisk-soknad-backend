@@ -1,6 +1,7 @@
 package no.nav.helse.fritakagp.processing.kronisk.soeknad
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import io.mockk.*
 import no.nav.helse.KroniskTestData
@@ -46,6 +47,7 @@ class KroniskSoeknadProcessorTest {
     @BeforeEach
     fun setup() {
         soeknad = KroniskTestData.soeknadKronisk.copy()
+        objectMapper.registerModule(JavaTimeModule())
         jobbDataJson = objectMapper.writeValueAsString(KroniskSoeknadProcessor.JobbData(soeknad.id))
         every { repositoryMock.getById(soeknad.id) } returns soeknad
         every { bucketStorageMock.getDocAsString(any()) } returns null

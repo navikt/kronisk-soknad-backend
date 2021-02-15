@@ -45,7 +45,6 @@ class GravidSoeknadProcessor(
      * Jobbdataene forventes å være en UUID for en søknad som skal prosesseres.
      */
     override fun prosesser(jobbDataString: String) {
-        om.registerModule(JavaTimeModule())
         val jobbData = om.readValue<JobbData>(jobbDataString)
         val soeknad = gravidSoeknadRepo.getById(jobbData.id)
         requireNotNull(soeknad, { "Jobben indikerte en søknad med id $jobbData men den kunne ikke finnes" })

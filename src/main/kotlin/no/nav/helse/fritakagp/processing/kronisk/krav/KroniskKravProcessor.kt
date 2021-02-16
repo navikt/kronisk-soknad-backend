@@ -45,7 +45,6 @@ class KroniskKravProcessor(
      * Jobbdataene forventes å være en UUID for et krav som skal prosesseres.
      */
     override fun prosesser(jobbDataString: String) {
-        om.registerModule(JavaTimeModule())
         val jobbData = om.readValue<JobbData>(jobbDataString)
         val krav = kroniskKravRepo.getById(jobbData.id)
         requireNotNull(krav, { "Jobben indikerte et krav med id $jobbData men den kunne ikke finnes" })

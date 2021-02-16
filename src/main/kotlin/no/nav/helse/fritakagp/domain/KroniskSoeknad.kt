@@ -16,6 +16,7 @@ data class KroniskSoeknad(
     val paakjenningBeskrivelse: String? = null,
     val fravaer: Set<FravaerData>,
     val bekreftet: Boolean,
+    val harVedlegg: Boolean = false,
 
     val sendtAv: String,
 

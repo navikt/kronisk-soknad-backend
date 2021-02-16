@@ -18,6 +18,7 @@ data class GravidSoeknad(
         val omplasseringAarsak: OmplasseringAarsak? = null,
         val sendtAv: String,
         val termindato: LocalDate?,
+        val harVedlegg: Boolean = false,
 
         /**
      * ID fra joark etter arkivering

@@ -4,11 +4,15 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import no.nav.helse.GravidTestData
+import no.nav.helse.fritakagp.db.GravidKravRepository
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
+import org.koin.test.inject
 
 class GravidKravHTTPTests : SystemTestBase() {
     private val kravGravidUrl = "/api/v1/gravid/krav"
+
+    val repo by inject<GravidKravRepository>()
 
     @Test
     fun `invalid json gives 400 Bad request`() = suspendableTest {
@@ -20,7 +24,7 @@ class GravidKravHTTPTests : SystemTestBase() {
             body = """
                 {
                     "fnr": "${GravidTestData.validIdentitetsnummer}",
-                    "orgnr": "${GravidTestData.fullValidRequest.virksomhetsnummer}",
+                    "orgnr": "${GravidTestData.fullValidSoeknadRequest.virksomhetsnummer}",
                     "tilrettelegge": true,
                     "tiltak": ["IKKE GYLDIG"]
                 }
@@ -55,7 +59,7 @@ class GravidKravHTTPTests : SystemTestBase() {
     }
 
     @Test
-    fun `Skal returnere Created når fil er vedlagt`() = suspendableTest {
+    fun `Skal returnere Created og lagre flagg når fil er vedlagt`() = suspendableTest {
         val response = httpClient.post<HttpResponse> {
             appUrl(kravGravidUrl)
             contentType(ContentType.Application.Json)
@@ -64,5 +68,8 @@ class GravidKravHTTPTests : SystemTestBase() {
         }
 
         Assertions.assertThat(response.status).isEqualTo(HttpStatusCode.Created)
+
+
+
     }
 }

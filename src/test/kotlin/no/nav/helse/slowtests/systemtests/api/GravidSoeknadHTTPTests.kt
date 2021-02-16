@@ -20,7 +20,7 @@ class GravidSoeknadHTTPTests : SystemTestBase() {
             body = """
                 {
                     "fnr": "${GravidTestData.validIdentitetsnummer}",
-                    "orgnr": "${GravidTestData.fullValidRequest.virksomhetsnummer}",
+                    "orgnr": "${GravidTestData.fullValidSoeknadRequest.virksomhetsnummer}",
                     "tilrettelegge": true,
                     "tiltak": ["IKKE GYLDIG"]
                 }
@@ -36,7 +36,7 @@ class GravidSoeknadHTTPTests : SystemTestBase() {
             appUrl(soeknadGravidUrl)
             contentType(ContentType.Application.Json)
             loggedInAs("123456789")
-            body = GravidTestData.fullValidRequest
+            body = GravidTestData.fullValidSoeknadRequest
         }
 
         Assertions.assertThat(response.status).isEqualTo(HttpStatusCode.Created)

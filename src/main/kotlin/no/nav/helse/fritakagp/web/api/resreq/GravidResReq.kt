@@ -1,11 +1,9 @@
 package no.nav.helse.fritakagp.web.api.resreq
 
+import io.ktor.application.*
 import no.nav.helse.arbeidsgiver.web.validation.isValidIdentitetsnummer
 import no.nav.helse.arbeidsgiver.web.validation.isValidOrganisasjonsnummer
-import no.nav.helse.fritakagp.domain.Arbeidsgiverperiode
-import no.nav.helse.fritakagp.domain.Omplassering
-import no.nav.helse.fritakagp.domain.OmplasseringAarsak
-import no.nav.helse.fritakagp.domain.Tiltak
+import no.nav.helse.fritakagp.domain.*
 import no.nav.helse.fritakagp.web.dto.validation.isGodskjentFiletyper
 import no.nav.helse.fritakagp.web.dto.validation.isNotStorreEnn
 import no.nav.helse.fritakagp.web.dto.validation.refusjonsDagerIkkeOverstigerPeriodelengde
@@ -58,6 +56,19 @@ data class GravidSoknadRequest(
            }
        }
    }
+    
+    fun toDomain(sendtAv: String) = GravidSoeknad(
+            virksomhetsnummer = virksomhetsnummer,
+            identitetsnummer = identitetsnummer,
+            sendtAv = sendtAv,
+            termindato = termindato,
+            omplassering = omplassering,
+            omplasseringAarsak = omplasseringAarsak,
+            tilrettelegge = tilrettelegge,
+            tiltak = tiltak,
+            tiltakBeskrivelse = tiltakBeskrivelse,
+            harVedlegg = !dokumentasjon.isNullOrEmpty()
+        )
 }
 
 
@@ -83,6 +94,15 @@ data class GravidKravRequest(
             }
         }
     }
+    
+    fun toDomain(sendtAv: String) = GravidKrav(
+        identitetsnummer = identitetsnummer,
+        virksomhetsnummer = virksomhetsnummer,
+        periode = periode,
+        sendtAv = sendtAv,
+        harVedlegg = !dokumentasjon.isNullOrEmpty()
+    )
+    
 }
 
 

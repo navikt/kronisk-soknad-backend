@@ -22,7 +22,7 @@ object GravidTestData {
         sendtAv = "09876543210"
     )
 
-    val fullValidRequest = GravidSoknadRequest(
+    val fullValidSoeknadRequest = GravidSoknadRequest(
         virksomhetsnummer = validOrgNr,
         identitetsnummer = validIdentitetsnummer,
         termindato = LocalDate.now().plusDays(25),

@@ -12,6 +12,7 @@ data class KroniskKrav(
     val virksomhetsnummer: String,
     val identitetsnummer: String,
     val perioder: Set<Arbeidsgiverperiode>,
+    val harVedlegg: Boolean = false,
 
     var journalpostId: String? = null,
 

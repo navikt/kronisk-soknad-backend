@@ -17,7 +17,7 @@ class AuthenticationTests : SystemTestBase() {
         val response = httpClient.post<HttpResponse> {
             appUrl(soeknadGravidUrl)
             contentType(ContentType.Application.Json)
-            body = GravidTestData.fullValidRequest
+            body = GravidTestData.fullValidSoeknadRequest
         }
 
         assertThat(response.status).isEqualTo(HttpStatusCode.Unauthorized)
@@ -30,7 +30,7 @@ class AuthenticationTests : SystemTestBase() {
             contentType(ContentType.Application.Json)
             loggedInAs("123456789")
 
-            body = GravidTestData.fullValidRequest
+            body = GravidTestData.fullValidSoeknadRequest
         }
 
         assertThat(response.status).isNotEqualTo(HttpStatusCode.Unauthorized)

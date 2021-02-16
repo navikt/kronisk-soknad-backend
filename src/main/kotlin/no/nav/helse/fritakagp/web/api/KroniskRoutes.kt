@@ -46,16 +46,7 @@ fun Route.kroniskRoutes(
                 request.validate()
                 val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
 
-                val soeknad = KroniskSoeknad(
-                    virksomhetsnummer = request.virksomhetsnummer,
-                    identitetsnummer = request.identitetsnummer,
-                    sendtAv = innloggetFnr,
-                    arbeidstyper = request.arbeidstyper,
-                    paakjenningstyper = request.paakjenningstyper,
-                    paakjenningBeskrivelse = request.paakjenningBeskrivelse,
-                    fravaer = request.fravaer,
-                    bekreftet = request.bekreftet
-                )
+                val soeknad = request.toDomain(innloggetFnr)
 
                 processDocumentForGCPStorage(request.dokumentasjon, virusScanner, bucket, soeknad.id)
 
@@ -90,12 +81,7 @@ fun Route.kroniskRoutes(
                 request.validate()
                 authorize(authorizer, request.virksomhetsnummer)
 
-                val krav = KroniskKrav(
-                    identitetsnummer = request.identitetsnummer,
-                    virksomhetsnummer = request.virksomhetsnummer,
-                    perioder = request.perioder,
-                    sendtAv = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
-                )
+                val krav = request.toDomain(hentIdentitetsnummerFraLoginToken(application.environment.config, call.request))
 
                 processDocumentForGCPStorage(request.dokumentasjon, virusScanner, bucket, krav.id)
 

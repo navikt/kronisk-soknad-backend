@@ -1,6 +1,8 @@
 package no.nav.helse.fritakagp.web.api.resreq
 
+import no.nav.helse.GravidTestData
 import no.nav.helse.KroniskTestData
+import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 
 class KroniskKravRequestTest{
@@ -24,6 +26,12 @@ class KroniskKravRequestTest{
         validationShouldFailFor(KroniskKravRequest::bekreftet) {
             KroniskTestData.kroniskKravRequestValid.copy(bekreftet = false).validate()
         }
+    }
+
+    @Test
+    internal fun `mapping til domenemodell tar med harVedleggflagg`() {
+        Assertions.assertThat(KroniskTestData.kroniskKravRequestMedFil.toDomain("123").harVedlegg).isTrue()
+        Assertions.assertThat(KroniskTestData.kroniskKravRequestValid.toDomain("123").harVedlegg).isFalse()
     }
 
     @Test

@@ -192,7 +192,7 @@ class GravidKravProcessor(
             aktoerId = aktoerId,
             journalpostId = krav.journalpostId,
             beskrivelse = """
-                Fordelingsoppgave for refusjonskrav ifbm graviditet med fritak fra arbeidsgiverperioden grunnet graviditetsrelatert sykdom.
+                Klarte ikke å opprette oppgave og/eller journalføre for dette refusjonskravet: ${krav.id}
             """.trimIndent(),
             tema = "SYK",
             behandlingstype = digitalKravBehandingsType,

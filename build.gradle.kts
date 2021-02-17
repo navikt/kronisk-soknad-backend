@@ -154,11 +154,18 @@ repositories {
         setUrl("https://maven.pkg.github.com/navikt/helse-arbeidsgiver-felles-backend")
     }
 
-    jcenter()
-    mavenCentral()
+    jcenter{
+        content {
+            excludeGroup("no.nav.helsearbeidsgiver")
+        }
+    }
+    mavenCentral{
+        content {
+            excludeGroup("no.nav.helsearbeidsgiver")
+        }
+    }
     maven("https://kotlin.bintray.com/ktor")
 }
-
 tasks.named<Jar>("jar") {
     baseName = ("app")
 

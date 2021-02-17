@@ -50,6 +50,17 @@ fun Route.gravidRoutes(
 ) {
     route("/gravid") {
         route("/soeknad") {
+
+            get("/{id}") {
+                val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
+                val form = gravidSoeknadRepo.getById(UUID.fromString(call.parameters["id"]))
+                if (form == null || form.identitetsnummer != innloggetFnr) {
+                    call.respond(HttpStatusCode.NotFound)
+                } else {
+                    call.respond(HttpStatusCode.OK, form)
+                }
+            }
+
             post {
                 val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
                 val request = call.receive<GravidSoknadRequest>()
@@ -79,6 +90,17 @@ fun Route.gravidRoutes(
         }
 
         route("/krav") {
+            get("/{id}") {
+                val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
+                val form = gravidKravRepo.getById(UUID.fromString(call.parameters["id"]))
+                if (form == null || form.identitetsnummer != innloggetFnr) {
+                    call.respond(HttpStatusCode.NotFound)
+                } else {
+                    call.respond(HttpStatusCode.OK, form)
+                }
+            }
+
+
             post {
                 val request = call.receive<GravidKravRequest>()
                 request.validate()

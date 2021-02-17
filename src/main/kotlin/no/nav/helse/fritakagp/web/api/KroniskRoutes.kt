@@ -26,6 +26,7 @@ import no.nav.helse.fritakagp.web.api.resreq.KroniskKravRequest
 import no.nav.helse.fritakagp.web.api.resreq.KroniskSoknadRequest
 import no.nav.helse.fritakagp.web.auth.authorize
 import no.nav.helse.fritakagp.web.auth.hentIdentitetsnummerFraLoginToken
+import java.util.*
 import javax.sql.DataSource
 
 @KtorExperimentalAPI
@@ -41,6 +42,16 @@ fun Route.kroniskRoutes(
 ) {
     route("/kronisk") {
         route("/soeknad") {
+            get("/{id}") {
+                val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
+                val form = kroniskSoeknadRepo.getById(UUID.fromString(call.parameters["id"]))
+                if (form == null || form.identitetsnummer != innloggetFnr) {
+                    call.respond(HttpStatusCode.NotFound)
+                } else {
+                    call.respond(HttpStatusCode.OK, form)
+                }
+            }
+
             post {
                 val request = call.receive<KroniskSoknadRequest>()
                 request.validate()
@@ -70,6 +81,16 @@ fun Route.kroniskRoutes(
         }
 
         route("/krav") {
+            get("/{id}") {
+                val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
+                val form = kroniskKravRepo.getById(UUID.fromString(call.parameters["id"]))
+                if (form == null || form.identitetsnummer != innloggetFnr) {
+                    call.respond(HttpStatusCode.NotFound)
+                } else {
+                    call.respond(HttpStatusCode.OK, form)
+                }
+            }
+
             post {
                 val request = call.receive<KroniskKravRequest>()
                 request.validate()

@@ -7,9 +7,9 @@ on:
 
 env:
   APP: fritakagp
-  DOCKER_IMAGE_NAME: docker.pkg.github.com/${{ github.repository }}/fritakagp
-  LATEST_TAG: docker.pkg.github.com/${{ github.repository }}/fritakagp:latest
-  IMAGE: docker.pkg.github.com/${{ github.repository }}/fritakagp:${{ github.sha }}
+  DOCKER_IMAGE_NAME: ghcr.io/navikt/${{ github.repository }}/fritakagp
+  LATEST_TAG: ghcr.io/navikt/${{ github.repository }}/fritakagp:latest
+  IMAGE: ghcr.io/navikt/${{ github.repository }}/fritakagp:${{ github.sha }}
 
 jobs:
   build:

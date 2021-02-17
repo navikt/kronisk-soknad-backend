@@ -1,11 +1,9 @@
 package no.nav.helse.fritakagp.web.api.resreq
 
+import io.ktor.application.*
 import no.nav.helse.arbeidsgiver.web.validation.isValidIdentitetsnummer
 import no.nav.helse.arbeidsgiver.web.validation.isValidOrganisasjonsnummer
-import no.nav.helse.fritakagp.domain.ArbeidsType
-import no.nav.helse.fritakagp.domain.Arbeidsgiverperiode
-import no.nav.helse.fritakagp.domain.FravaerData
-import no.nav.helse.fritakagp.domain.PaakjenningsType
+import no.nav.helse.fritakagp.domain.*
 import no.nav.helse.fritakagp.web.dto.validation.*
 import org.valiktor.functions.hasSize
 import org.valiktor.functions.isNotEmpty
@@ -53,8 +51,19 @@ data class KroniskSoknadRequest(
                 validate(KroniskSoknadRequest::dokumentasjon).isNotStorreEnn(10L * MB)
             }
         }
-
     }
+    
+    fun toDomain(sendtAv: String) = KroniskSoeknad(
+        virksomhetsnummer = virksomhetsnummer,
+        identitetsnummer = identitetsnummer,
+        sendtAv = sendtAv,
+        arbeidstyper = arbeidstyper,
+        paakjenningstyper = paakjenningstyper,
+        paakjenningBeskrivelse = paakjenningBeskrivelse,
+        fravaer = fravaer,
+        bekreftet = bekreftet,
+        harVedlegg = !dokumentasjon.isNullOrEmpty()
+    )
 }
 
 
@@ -80,4 +89,12 @@ data class KroniskKravRequest(
             }
         }
     }
+    
+    fun toDomain(sendtAv: String) = KroniskKrav(
+        identitetsnummer = identitetsnummer,
+        virksomhetsnummer = virksomhetsnummer,
+        perioder = perioder,
+        sendtAv = sendtAv,
+        harVedlegg = !dokumentasjon.isNullOrEmpty()
+    )
 }

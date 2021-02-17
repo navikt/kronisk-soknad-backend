@@ -55,17 +55,7 @@ fun Route.gravidRoutes(
                 val request = call.receive<GravidSoknadRequest>()
                 request.validate()
 
-                val soeknad = GravidSoeknad(
-                    virksomhetsnummer = request.virksomhetsnummer,
-                    identitetsnummer = request.identitetsnummer,
-                    sendtAv = innloggetFnr,
-                    termindato = request.termindato,
-                    omplassering = request.omplassering,
-                    omplasseringAarsak = request.omplasseringAarsak,
-                    tilrettelegge = request.tilrettelegge,
-                    tiltak = request.tiltak,
-                    tiltakBeskrivelse = request.tiltakBeskrivelse
-                )
+                val soeknad = request.toDomain(innloggetFnr)
 
                 processDocumentForGCPStorage(request.dokumentasjon, virusScanner, bucket, soeknad.id)
 
@@ -94,12 +84,7 @@ fun Route.gravidRoutes(
                 request.validate()
                 authorize(authorizer, request.virksomhetsnummer)
 
-                val krav = GravidKrav(
-                    identitetsnummer = request.identitetsnummer,
-                    virksomhetsnummer = request.virksomhetsnummer,
-                    periode = request.periode,
-                    sendtAv = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
-                )
+                val krav = request.toDomain(hentIdentitetsnummerFraLoginToken(application.environment.config, call.request))
 
                 processDocumentForGCPStorage(request.dokumentasjon, virusScanner, bucket, krav.id)
 

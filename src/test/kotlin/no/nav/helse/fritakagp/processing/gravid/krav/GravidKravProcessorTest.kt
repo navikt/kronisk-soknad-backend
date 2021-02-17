@@ -1,6 +1,7 @@
 package no.nav.helse.fritakagp.processing.gravid.krav
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import io.mockk.*
 import no.nav.helse.GravidTestData
@@ -49,6 +50,7 @@ class GravidKravProcessorTest {
     fun setup() {
         krav = GravidTestData.gravidKrav.copy()
         jobb = Bakgrunnsjobb( data = objectMapper.writeValueAsString(GravidKravProcessor.JobbData(krav.id)), type = "test")
+        objectMapper.registerModule(JavaTimeModule())
         every { repositoryMock.getById(krav.id) } returns krav
         every { bucketStorageMock.getDocAsString(any()) } returns null
         every { pdlClientMock.personNavn(krav.sendtAv)} returns PdlHentPersonNavn.PdlPersonNavneliste(listOf(
@@ -86,8 +88,9 @@ class GravidKravProcessorTest {
     @Test
     fun `Om det finnes ekstra dokumentasjon skal den journalføres og så slettes`() {
         val dokumentData = "test"
-        val filtype = "pdf"
-        every { bucketStorageMock.getDocAsString(krav.id) } returns BucketDocument(dokumentData, filtype)
+        val filtypeArkiv = "pdf"
+        val filtypeOrginal = "json"
+        every { bucketStorageMock.getDocAsString(krav.id) } returns BucketDocument(dokumentData, filtypeArkiv)
 
         val joarkRequest = slot<JournalpostRequest>()
         every { joarkMock.journalførDokument(capture(joarkRequest), any(), any()) } returns JournalpostResponse(arkivReferanse, true, "M", null, emptyList())
@@ -101,7 +104,11 @@ class GravidKravProcessorTest {
         val dokumentasjon = joarkRequest.captured.dokumenter.filter { it.brevkode == GravidKravProcessor.dokumentasjonBrevkode }.first()
 
         assertThat(dokumentasjon.dokumentVarianter[0].fysiskDokument).isEqualTo(dokumentData)
-        assertThat(dokumentasjon.dokumentVarianter[0].filtype).isEqualTo(filtype.toUpperCase())
+        assertThat(dokumentasjon.dokumentVarianter[0].filtype).isEqualTo(filtypeArkiv.toUpperCase())
+        assertThat(dokumentasjon.dokumentVarianter[0].variantFormat).isEqualTo("ARKIV")
+        assertThat(dokumentasjon.dokumentVarianter[1].fysiskDokument).contains(this.jobbDataJson.dropLast(2))
+        assertThat(dokumentasjon.dokumentVarianter[1].filtype).isEqualTo(filtypeOrginal)
+        assertThat(dokumentasjon.dokumentVarianter[1].variantFormat).isEqualTo("ORGINAL")
     }
 
     @Test

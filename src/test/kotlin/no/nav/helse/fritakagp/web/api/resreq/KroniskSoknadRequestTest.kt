@@ -4,6 +4,7 @@ import no.nav.helse.KroniskTestData
 import no.nav.helse.fritakagp.domain.FravaerData
 import no.nav.helse.fritakagp.domain.PaakjenningsType
 import no.nav.helse.toYearMonthString
+import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 
@@ -29,6 +30,13 @@ internal class KroniskSoknadRequestTest {
             KroniskTestData.fullValidRequest.copy(bekreftet = false).validate()
         }
     }
+
+    @Test
+    internal fun `mapping til domenemodell tar med harVedleggflagg`() {
+        Assertions.assertThat(KroniskTestData.kroniskSoknadMedFil.toDomain("123").harVedlegg).isTrue()
+        Assertions.assertThat(KroniskTestData.fullValidRequest.toDomain("123").harVedlegg).isFalse()
+    }
+
 
     @Test
     fun `Kan ikke ha eldre fraværsdata enn 2 år`() {

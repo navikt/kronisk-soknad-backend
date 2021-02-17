@@ -13,7 +13,7 @@ class NaisHealthEndpointTests : SystemTestBase() {
         val response = httpClient.get<String> {
             appUrl("/health/is-alive")
             contentType(ContentType.Application.Json)
-            body = GravidTestData.fullValidRequest
+            body = GravidTestData.fullValidSoeknadRequest
         }
 
         Assertions.assertThat(response).isNotBlank()
@@ -24,7 +24,7 @@ class NaisHealthEndpointTests : SystemTestBase() {
         val response = httpClient.get<String> {
             appUrl("/health/is-ready")
             contentType(ContentType.Application.Json)
-            body = GravidTestData.fullValidRequest
+            body = GravidTestData.fullValidSoeknadRequest
         }
 
         Assertions.assertThat(response).isNotBlank()

@@ -4,34 +4,35 @@ import no.nav.helse.GravidTestData
 import no.nav.helse.fritakagp.domain.Omplassering
 import no.nav.helse.fritakagp.domain.OmplasseringAarsak
 import no.nav.helse.fritakagp.domain.Tiltak
+import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 
-class GravidSoknadRequestTest{
+class GravidSoknadRequestTest {
 
     @Test
     internal fun `Gyldig FNR er påkrevd`() {
         validationShouldFailFor(GravidSoknadRequest::identitetsnummer) {
-            GravidTestData.fullValidRequest.copy(identitetsnummer = "01020312345").validate()
+            GravidTestData.fullValidSoeknadRequest.copy(identitetsnummer = "01020312345").validate()
         }
     }
 
     @Test
     internal fun `Gyldig OrgNr er påkrevd dersom det er oppgitt`() {
         validationShouldFailFor(GravidSoknadRequest::virksomhetsnummer) {
-            GravidTestData.fullValidRequest.copy(virksomhetsnummer = "098765432").validate()
+            GravidTestData.fullValidSoeknadRequest.copy(virksomhetsnummer = "098765432").validate()
         }
     }
 
     @Test
     fun `Når tiltak inneholder ANNET må tiltaksbeskrivelse ha innhold`() {
         validationShouldFailFor(GravidSoknadRequest::tiltakBeskrivelse) {
-            GravidTestData.fullValidRequest.copy(
+            GravidTestData.fullValidSoeknadRequest.copy(
                 tiltak = listOf(Tiltak.ANNET),
                 tiltakBeskrivelse = "",
             ).validate()
         }
 
-        GravidTestData.fullValidRequest.copy(
+        GravidTestData.fullValidSoeknadRequest.copy(
             tiltak = listOf(Tiltak.ANNET),
             tiltakBeskrivelse = "dette går bra",
         ).validate()
@@ -39,7 +40,7 @@ class GravidSoknadRequestTest{
 
     @Test
     fun `Om tiltak ikke inneholder ANNET er ikke tiltaksbeskrivelse påkrevd`() {
-        GravidTestData.fullValidRequest.copy(
+        GravidTestData.fullValidSoeknadRequest.copy(
             tiltak = listOf(Tiltak.TILPASSET_ARBEIDSTID),
             tiltakBeskrivelse = null
         ).validate()
@@ -48,20 +49,26 @@ class GravidSoknadRequestTest{
     @Test
     internal fun `Bekreftelse av egenerklæring er påkrevd`() {
         validationShouldFailFor(GravidSoknadRequest::bekreftet) {
-            GravidTestData.fullValidRequest.copy(bekreftet = false).validate()
+            GravidTestData.fullValidSoeknadRequest.copy(bekreftet = false).validate()
         }
+    }
+
+    @Test
+    internal fun `mapping til domenemodell tar med harVedleggflagg`() {
+        Assertions.assertThat(GravidTestData.gravidSoknadMedFil.toDomain("123").harVedlegg).isTrue()
+        Assertions.assertThat(GravidTestData.fullValidSoeknadRequest.toDomain("123").harVedlegg).isFalse()
     }
 
     @Test
     fun `Dersom omplassering ikke er mulig må det finnes en årsak`() {
         validationShouldFailFor(GravidSoknadRequest::omplasseringAarsak) {
-            GravidTestData.fullValidRequest.copy(
+            GravidTestData.fullValidSoeknadRequest.copy(
                 omplassering = Omplassering.IKKE_MULIG,
                 omplasseringAarsak = null
             ).validate()
         }
 
-        GravidTestData.fullValidRequest.copy(
+        GravidTestData.fullValidSoeknadRequest.copy(
             omplassering = Omplassering.IKKE_MULIG,
             omplasseringAarsak = OmplasseringAarsak.FAAR_IKKE_KONTAKT
         ).validate()

@@ -128,13 +128,18 @@ class KroniskKravProcessor(
         journalfoeringsTittel: String
     ): List<Dokument> {
         val base64EnkodetPdf = Base64.getEncoder().encodeToString(pdfGenerator.lagPDF(krav))
-
+        val jsonOrginalDokument = om.writeValueAsString(krav)
 
         val dokumentListe = mutableListOf(
             Dokument(
                 dokumentVarianter = listOf(
                     DokumentVariant(
-                        fysiskDokument = base64EnkodetPdf
+                        fysiskDokument = base64EnkodetPdf,
+                    ),
+                    DokumentVariant(
+                            filtype = "json",
+                            fysiskDokument = jsonOrginalDokument,
+                            variantFormat = "ORGINAL"
                     )
                 ),
                 brevkode = "krav_om_fritak_fra_agp_kronisk",
@@ -149,6 +154,11 @@ class KroniskKravProcessor(
                         DokumentVariant(
                             fysiskDokument = it.base64Data,
                             filtype = if (it.extension == "jpg") "JPEG" else it.extension.toUpperCase()
+                        ),
+                        DokumentVariant(
+                                filtype = "json",
+                                fysiskDokument = jsonOrginalDokument,
+                                variantFormat = "ORGINAL"
                         )
                     ),
                     brevkode = dokumentasjonBrevkode,

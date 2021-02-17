@@ -16,6 +16,7 @@ import no.nav.helse.fritakagp.KroniskSoeknadMetrics
 import no.nav.helse.fritakagp.db.KroniskSoeknadRepository
 import no.nav.helse.fritakagp.domain.KroniskSoeknad
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import org.slf4j.LoggerFactory
 import java.time.LocalDate
 import java.util.*
@@ -131,7 +132,7 @@ class KroniskSoeknadProcessor(
         journalfoeringsTittel: String
     ): List<Dokument> {
         val base64EnkodetPdf = Base64.getEncoder().encodeToString(pdfGenerator.lagPDF(soeknad))
-
+        val jsonOrginalDokument = om.writeValueAsString(soeknad)
 
         val dokumentListe = mutableListOf(
             Dokument(
@@ -152,6 +153,11 @@ class KroniskSoeknadProcessor(
                         DokumentVariant(
                             fysiskDokument = it.base64Data,
                             filtype = if (it.extension == "jpg") "JPEG" else it.extension.toUpperCase()
+                        ),
+                        DokumentVariant(
+                            variantFormat = "ORGINAL",
+                            fysiskDokument = jsonOrginalDokument,
+                            filtype = "json"
                         )
                     ),
                     brevkode = dokumentasjonBrevkode,

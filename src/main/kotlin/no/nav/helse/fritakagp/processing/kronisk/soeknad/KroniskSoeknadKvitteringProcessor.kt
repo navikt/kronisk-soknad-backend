@@ -2,11 +2,10 @@ package no.nav.helse.fritakagp.processing.kronisk.soeknad
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import no.nav.helse.arbeidsgiver.bakgrunnsjobb.Bakgrunnsjobb
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbProsesserer
 import no.nav.helse.fritakagp.KroniskSoeknadMetrics
 import no.nav.helse.fritakagp.db.KroniskSoeknadRepository
-import java.lang.IllegalArgumentException
-import java.time.LocalDateTime
 import java.util.*
 
 class KroniskSoeknadKvitteringProcessor(
@@ -18,11 +17,12 @@ class KroniskSoeknadKvitteringProcessor(
     companion object {
         val JOB_TYPE = "kronisk-søknad-altinn-kvittering"
     }
+    override val type: String get() = JOB_TYPE
 
-    override fun prosesser(jobbData: String) {
-        val kvitteringJobbData: Jobbdata = om.readValue(jobbData)
+    override fun prosesser(jobb: Bakgrunnsjobb) {
+        val kvitteringJobbData: Jobbdata = om.readValue(jobb.data)
         val soeknad = db.getById(kvitteringJobbData.soeknadId)
-            ?: throw IllegalArgumentException("Fant ikke søknaden i jobbdatanene $jobbData")
+            ?: throw IllegalArgumentException("Fant ikke søknaden i jobbdatanene ${jobb.data}")
 
         kroniskSoeknadKvitteringSender.send(soeknad)
         KroniskSoeknadMetrics.tellKvitteringSendt()

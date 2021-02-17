@@ -9,6 +9,7 @@ import io.ktor.routing.*
 import io.ktor.util.*
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.Bakgrunnsjobb
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbRepository
+import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbService
 import no.nav.helse.arbeidsgiver.web.auth.AltinnAuthorizer
 import no.nav.helse.fritakagp.GravidKravMetrics
 import no.nav.helse.fritakagp.GravidSoeknadMetrics
@@ -23,6 +24,7 @@ import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravKvitteringProcess
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravProcessor
 import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadKvitteringProcessor
 import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadProcessor
+import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravProcessor
 import no.nav.helse.fritakagp.web.api.resreq.GravidKravRequest
 import no.nav.helse.fritakagp.web.api.resreq.GravidSoknadRequest
 import no.nav.helse.fritakagp.web.auth.authorize
@@ -40,7 +42,7 @@ fun Route.gravidRoutes(
     datasource: DataSource,
     gravidSoeknadRepo: GravidSoeknadRepository,
     gravidKravRepo: GravidKravRepository,
-    bakgunnsjobbRepo: BakgrunnsjobbRepository,
+    bakgunnsjobbService: BakgrunnsjobbService,
     om: ObjectMapper,
     virusScanner: VirusScanner,
     bucket: BucketStorage,
@@ -55,25 +57,19 @@ fun Route.gravidRoutes(
 
                 val soeknad = request.toDomain(innloggetFnr)
 
-                processDocumentForGCPStorage(request.dokumentasjon, virusScanner, bucket, soeknad.id )
+                processDocumentForGCPStorage(request.dokumentasjon, virusScanner, bucket, soeknad.id)
 
                 datasource.connection.use { connection ->
                     gravidSoeknadRepo.insert(soeknad, connection)
-                    bakgunnsjobbRepo.save(
-                        Bakgrunnsjobb(
-                            maksAntallForsoek = 10,
-                            data = om.writeValueAsString(GravidSoeknadProcessor.JobbData(soeknad.id)),
-                            type = GravidSoeknadProcessor.JOB_TYPE
-                        ),
-                        connection
+                    bakgunnsjobbService.opprettJobb<GravidSoeknadProcessor>(
+                        maksAntallForsoek = 8,
+                        data = om.writeValueAsString(GravidSoeknadProcessor.JobbData(soeknad.id)),
+                        connection = connection
                     )
-                    bakgunnsjobbRepo.save(
-                        Bakgrunnsjobb(
-                            maksAntallForsoek = 10,
-                            data = om.writeValueAsString(GravidSoeknadKvitteringProcessor.Jobbdata(soeknad.id)),
-                            type = GravidSoeknadKvitteringProcessor.JOB_TYPE
-                        ),
-                        connection
+                    bakgunnsjobbService.opprettJobb<GravidSoeknadKvitteringProcessor>(
+                        maksAntallForsoek = 10,
+                        data = om.writeValueAsString(GravidSoeknadKvitteringProcessor.Jobbdata(soeknad.id)),
+                        connection = connection
                     )
                 }
 
@@ -94,21 +90,15 @@ fun Route.gravidRoutes(
 
                 datasource.connection.use { connection ->
                     gravidKravRepo.insert(krav, connection)
-                    bakgunnsjobbRepo.save(
-                        Bakgrunnsjobb(
-                            maksAntallForsoek = 10,
-                            data = om.writeValueAsString(GravidKravProcessor.JobbData(krav.id)),
-                            type = GravidKravProcessor.JOB_TYPE
-                        ),
-                        connection
+                    bakgunnsjobbService.opprettJobb<GravidKravProcessor>(
+                        maksAntallForsoek = 8,
+                        data = om.writeValueAsString(GravidKravProcessor.JobbData(krav.id)),
+                        connection = connection
                     )
-                    bakgunnsjobbRepo.save(
-                        Bakgrunnsjobb(
-                            maksAntallForsoek = 10,
-                            data = om.writeValueAsString(GravidKravKvitteringProcessor.Jobbdata(krav.id)),
-                            type = GravidKravKvitteringProcessor.JOB_TYPE
-                        ),
-                        connection
+                    bakgunnsjobbService.opprettJobb<GravidKravKvitteringProcessor>(
+                        maksAntallForsoek = 10,
+                        data = om.writeValueAsString(GravidKravKvitteringProcessor.Jobbdata(krav.id)),
+                        connection = connection
                     )
                 }
 
@@ -118,12 +108,20 @@ fun Route.gravidRoutes(
         }
     }
 }
-suspend fun processDocumentForGCPStorage(doc : String?, virusScanner: VirusScanner, bucket: BucketStorage, id : UUID)  {
+
+suspend fun processDocumentForGCPStorage(doc: String?, virusScanner: VirusScanner, bucket: BucketStorage, id: UUID) {
     if (!doc.isNullOrEmpty()) {
         val fileContent = extractBase64Del(doc)
         val fileExt = extractFilExtDel(doc)
         if (!virusScanner.scanDoc(decodeBase64File(fileContent))) {
-            throw ConstraintViolationException(setOf(DefaultConstraintViolation("dokumentasjon", constraint = VirusCheckConstraint())))
+            throw ConstraintViolationException(
+                setOf(
+                    DefaultConstraintViolation(
+                        "dokumentasjon",
+                        constraint = VirusCheckConstraint()
+                    )
+                )
+            )
         }
         bucket.uploadDoc(id, fileContent, fileExt)
     }

@@ -8,6 +8,7 @@ import no.nav.helse.arbeidsgiver.bakgrunnsjobb.Bakgrunnsjobb
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbProsesserer
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbRepository
 import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.*
+import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OPPGAVETYPE_FORDELINGSOPPGAVE
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OppgaveKlient
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OpprettOppgaveRequest
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlClient
@@ -34,6 +35,7 @@ class GravidSoeknadProcessor(
         val JOB_TYPE = "gravid-søknad-formidling"
         val dokumentasjonBrevkode = "soeknad_om_fritak_fra_agp_dokumentasjon"
     }
+    override val type: String get() = JOB_TYPE
 
     val digitalSoeknadBehandingsType = "ae0227"
     val fritakAGPBehandingsTema = "ab0338"
@@ -44,10 +46,10 @@ class GravidSoeknadProcessor(
      * Prosesserer en gravidsøknad; journalfører søknaden og oppretter en oppgave for saksbehandler.
      * Jobbdataene forventes å være en UUID for en søknad som skal prosesseres.
      */
-    override fun prosesser(jobbDataString: String) {
-        val jobbData = om.readValue<JobbData>(jobbDataString)
+    override fun prosesser(jobb: Bakgrunnsjobb) {
+        val jobbData = om.readValue<JobbData>(jobb.data)
         val soeknad = gravidSoeknadRepo.getById(jobbData.id)
-        requireNotNull(soeknad, { "Jobben indikerte en søknad med id $jobbData men den kunne ikke finnes" })
+        requireNotNull(soeknad, { "Jobben indikerte en søknad med id ${jobb.data} men den kunne ikke finnes" })
 
         try {
             if (soeknad.journalpostId == null) {
@@ -109,6 +111,23 @@ class GravidSoeknadProcessor(
         log.debug("Journalført ${soeknad.id} med ref ${response.journalpostId}")
         return response.journalpostId
     }
+
+    /**
+     * Når vi gir opp, opprette en fordelingsoppgave til saksbehandler
+     */
+    override fun stoppet(jobb: Bakgrunnsjobb) {
+        val soeknad = getSoeknadOrThrow(jobb)
+        val oppgaveId = opprettFordelingsOppgave(soeknad)
+        log.warn("Jobben ${jobb.uuid} feilet permanenet og resulterte i fordelignsoppgave $oppgaveId")
+    }
+
+    private fun getSoeknadOrThrow(jobb: Bakgrunnsjobb): GravidSoeknad {
+        val jobbData = om.readValue<JobbData>(jobb.data)
+        val soeknad = gravidSoeknadRepo.getById(jobbData.id)
+        requireNotNull(soeknad, { "Jobben indikerte en søknad med id ${jobb.data} men den kunne ikke finnes" })
+        return soeknad
+    }
+
 
     private fun createDocuments(
         soeknad: GravidSoeknad,
@@ -173,6 +192,29 @@ class GravidSoeknadProcessor(
 
         return runBlocking { oppgaveKlient.opprettOppgave(request, UUID.randomUUID().toString()).id.toString() }
     }
+
+    fun opprettFordelingsOppgave(soeknad: GravidSoeknad): String {
+        val aktoerId = pdlClient.fullPerson(soeknad.identitetsnummer)?.hentIdenter?.trekkUtIdent(PdlIdent.PdlIdentGruppe.AKTORID)
+        requireNotNull(aktoerId, { "Fant ikke AktørID for fnr i ${soeknad.id}" })
+
+        val request = OpprettOppgaveRequest(
+            aktoerId = aktoerId,
+            journalpostId = soeknad.journalpostId,
+            beskrivelse = """
+                Fordelingsoppgave for søknad om fritak fra arbeidsgiverperioden grunnet gravid sykdom.
+            """.trimIndent(),
+            tema = "SYK",
+            behandlingstype = digitalSoeknadBehandingsType,
+            oppgavetype = OPPGAVETYPE_FORDELINGSOPPGAVE,
+            behandlingstema = fritakAGPBehandingsTema,
+            aktivDato = LocalDate.now(),
+            fristFerdigstillelse = LocalDate.now().plusDays(7),
+            prioritet = "NORM"
+        )
+
+        return runBlocking { oppgaveKlient.opprettOppgave(request, UUID.randomUUID().toString()).id.toString() }
+    }
+
 
     data class JobbData(val id: UUID)
 

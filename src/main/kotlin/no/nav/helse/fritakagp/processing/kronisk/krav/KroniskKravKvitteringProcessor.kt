@@ -1,11 +1,10 @@
 package no.nav.helse.fritakagp.processing.kronisk.krav
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import no.nav.helse.arbeidsgiver.bakgrunnsjobb.Bakgrunnsjobb
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbProsesserer
 import no.nav.helse.fritakagp.KroniskKravMetrics
 import no.nav.helse.fritakagp.db.KroniskKravRepository
-import java.lang.IllegalArgumentException
-import java.time.LocalDateTime
 import java.util.*
 
 class KroniskKravKvitteringProcessor(
@@ -17,11 +16,12 @@ class KroniskKravKvitteringProcessor(
     companion object {
         val JOB_TYPE = "kronisk-krav-altinn-kvittering"
     }
+    override val type: String get() = JOB_TYPE
 
-    override fun prosesser(jobbData: String) {
-        val kvitteringJobbData = om.readValue(jobbData, Jobbdata::class.java)
+    override fun prosesser(jobb: Bakgrunnsjobb) {
+        val kvitteringJobbData = om.readValue(jobb.data, Jobbdata::class.java)
         val krav = db.getById(kvitteringJobbData.kravId)
-            ?: throw IllegalArgumentException("Fant ikke kravet i jobbdatanene $jobbData")
+            ?: throw IllegalArgumentException("Fant ikke kravet i jobbdatanene ${jobb.data}")
 
         kroniskKravKvitteringSender.send(krav)
         KroniskKravMetrics.tellKvitteringSendt()

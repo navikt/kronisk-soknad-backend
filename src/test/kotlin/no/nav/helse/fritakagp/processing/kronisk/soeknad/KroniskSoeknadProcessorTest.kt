@@ -10,7 +10,9 @@ import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbRepository
 import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.DokarkivKlient
 import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.JournalpostRequest
 import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.JournalpostResponse
+import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OPPGAVETYPE_FORDELINGSOPPGAVE
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OppgaveKlient
+import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OpprettOppgaveRequest
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OpprettOppgaveResponse
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.*
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlHentFullPerson.PdlFullPersonliste
@@ -20,6 +22,8 @@ import no.nav.helse.fritakagp.db.KroniskSoeknadRepository
 import no.nav.helse.fritakagp.domain.KroniskSoeknad
 import no.nav.helse.fritakagp.integration.gcp.BucketDocument
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
+import no.nav.helse.fritakagp.processing.BakgrunnsJobbUtils.emptyJob
+import no.nav.helse.fritakagp.processing.BakgrunnsJobbUtils.testJob
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -42,13 +46,13 @@ class KroniskSoeknadProcessorTest {
 
     private val oppgaveId = 9999
     private val arkivReferanse = "12345"
-    private var jobbDataJson = ""
+    private var jobb = emptyJob()
 
     @BeforeEach
     fun setup() {
         soeknad = KroniskTestData.soeknadKronisk.copy()
+        jobb = testJob(objectMapper.writeValueAsString(KroniskSoeknadProcessor.JobbData(soeknad.id)))
         objectMapper.registerModule(JavaTimeModule())
-        jobbDataJson = objectMapper.writeValueAsString(KroniskSoeknadProcessor.JobbData(soeknad.id))
         every { repositoryMock.getById(soeknad.id) } returns soeknad
         every { bucketStorageMock.getDocAsString(any()) } returns null
         every { pdlClientMock.personNavn(soeknad.sendtAv)} returns PdlHentPersonNavn.PdlPersonNavneliste(listOf(
@@ -65,10 +69,20 @@ class KroniskSoeknadProcessorTest {
     @Test
     fun `skal ikke journalføre når det allerede foreligger en journalpostId, men skal forsøke sletting fra bucket `() {
         soeknad.journalpostId = "joark"
-        prosessor.prosesser(jobbDataJson)
+        prosessor.prosesser(jobb)
 
         verify(exactly = 0) { joarkMock.journalførDokument(any(), any(), any()) }
         verify(exactly = 1) { bucketStorageMock.deleteDoc(soeknad.id) }
+    }
+
+    @Test
+    fun `skal opprette fordelingsoppgave når stoppet`() {
+        prosessor.stoppet(jobb)
+
+        val oppgaveRequest = CapturingSlot<OpprettOppgaveRequest>()
+
+        coVerify(exactly = 1) { oppgaveMock.opprettOppgave(capture(oppgaveRequest), any()) }
+        assertThat(oppgaveRequest.captured.oppgavetype).isEqualTo(OPPGAVETYPE_FORDELINGSOPPGAVE)
     }
 
     @Test
@@ -81,7 +95,8 @@ class KroniskSoeknadProcessorTest {
         val joarkRequest = slot<JournalpostRequest>()
         every { joarkMock.journalførDokument(capture(joarkRequest), any(), any()) } returns JournalpostResponse(arkivReferanse, true, "M", null, emptyList())
 
-        prosessor.prosesser(jobbDataJson)
+        val originalJsonDoc = objectMapper.writeValueAsString(soeknad)
+        prosessor.prosesser(jobb)
 
         verify(exactly = 1) { bucketStorageMock.getDocAsString(soeknad.id) }
         verify(exactly = 1) { bucketStorageMock.deleteDoc(soeknad.id) }
@@ -92,7 +107,7 @@ class KroniskSoeknadProcessorTest {
         assertThat(dokumentasjon.dokumentVarianter[0].fysiskDokument).isEqualTo(dokumentData)
         assertThat(dokumentasjon.dokumentVarianter[0].filtype).isEqualTo(filtypeArkiv.toUpperCase())
         assertThat(dokumentasjon.dokumentVarianter[0].variantFormat).isEqualTo("ARKIV")
-        assertThat(dokumentasjon.dokumentVarianter[1].fysiskDokument).contains(this.jobbDataJson.dropLast(2))
+        assertThat(dokumentasjon.dokumentVarianter[1].fysiskDokument).isEqualTo(originalJsonDoc)
         assertThat(dokumentasjon.dokumentVarianter[1].filtype).isEqualTo(filtypeOrginal)
         assertThat(dokumentasjon.dokumentVarianter[1].variantFormat).isEqualTo("ORGINAL")
     }
@@ -100,13 +115,13 @@ class KroniskSoeknadProcessorTest {
     @Test
     fun `skal ikke lage oppgave når det allerede foreligger en oppgaveId `() {
         soeknad.oppgaveId = "ppggssv"
-        prosessor.prosesser(jobbDataJson)
+        prosessor.prosesser(jobb)
         coVerify(exactly = 0) { oppgaveMock.opprettOppgave(any(), any()) }
     }
 
     @Test
     fun `skal journalføre, opprette oppgave og oppdatere søknaden i databasen`() {
-        prosessor.prosesser(jobbDataJson)
+        prosessor.prosesser(jobb)
 
         assertThat(soeknad.journalpostId).isEqualTo(arkivReferanse)
         assertThat(soeknad.oppgaveId).isEqualTo(oppgaveId.toString())
@@ -118,7 +133,7 @@ class KroniskSoeknadProcessorTest {
 
     @Test
     fun `skal opprette kafkasenderjobb`() {
-        prosessor.prosesser(jobbDataJson)
+        prosessor.prosesser(jobb)
 
         assertThat(soeknad.journalpostId).isEqualTo(arkivReferanse)
         assertThat(soeknad.oppgaveId).isEqualTo(oppgaveId.toString())
@@ -135,7 +150,7 @@ class KroniskSoeknadProcessorTest {
 
         coEvery { oppgaveMock.opprettOppgave(any(), any()) } throws IOException()
 
-        assertThrows<IOException> { prosessor.prosesser(jobbDataJson) }
+        assertThrows<IOException> { prosessor.prosesser(jobb) }
 
         assertThat(soeknad.journalpostId).isEqualTo(arkivReferanse)
         assertThat(soeknad.oppgaveId).isNull()

@@ -7,6 +7,7 @@ import no.nav.helse.arbeidsgiver.bakgrunnsjobb.Bakgrunnsjobb
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbProsesserer
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbRepository
 import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.*
+import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OPPGAVETYPE_FORDELINGSOPPGAVE
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OppgaveKlient
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OpprettOppgaveRequest
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlClient
@@ -20,6 +21,7 @@ import org.slf4j.LoggerFactory
 import java.time.LocalDate
 import java.util.*
 
+
 class KroniskSoeknadProcessor(
     private val kroniskSoeknadRepo: KroniskSoeknadRepository,
     private val dokarkivKlient: DokarkivKlient,
@@ -31,9 +33,9 @@ class KroniskSoeknadProcessor(
     private val bucketStorage: BucketStorage
 ) : BakgrunnsjobbProsesserer {
     companion object {
-        val JOB_TYPE = "kronisk-søknad-formidling"
         val dokumentasjonBrevkode = "soeknad_om_fritak_fra_agp_dokumentasjon"
     }
+    override val type: String get() = "kronisk-søknad-formidling"
 
     val digitalSoeknadBehandingsType = "ae0227"
     val fritakAGPBehandingsTema = "ab0338"
@@ -44,10 +46,8 @@ class KroniskSoeknadProcessor(
      * Prosesserer en kronisksøknad; journalfører søknaden og oppretter en oppgave for saksbehandler.
      * Jobbdataene forventes å være en UUID for en søknad som skal prosesseres.
      */
-    override fun prosesser(jobbDataString: String) {
-        val jobbData = om.readValue<JobbData>(jobbDataString)
-        val soeknad = kroniskSoeknadRepo.getById(jobbData.id)
-        requireNotNull(soeknad, { "Jobben indikerte en søknad med id $jobbData men den kunne ikke finnes" })
+    override fun prosesser(jobb: Bakgrunnsjobb) {
+        val soeknad = getSoeknadOrThrow(jobb)
 
         try {
             if (soeknad.journalpostId == null) {
@@ -73,6 +73,22 @@ class KroniskSoeknadProcessor(
         } finally {
             updateAndLogOnFailure(soeknad)
         }
+    }
+
+    /**
+     * Når vi gir opp, opprette en fordelingsoppgave til saksbehandler
+     */
+    override fun stoppet(jobb: Bakgrunnsjobb) {
+        val soeknad = getSoeknadOrThrow(jobb)
+        val oppgaveId = opprettFordelingsOppgave(soeknad)
+        log.warn("Jobben ${jobb.uuid} feilet permanenet og resulterte i fordelignsoppgave $oppgaveId")
+    }
+
+    private fun getSoeknadOrThrow(jobb: Bakgrunnsjobb): KroniskSoeknad {
+        val jobbData = om.readValue<JobbData>(jobb.data)
+        val soeknad = kroniskSoeknadRepo.getById(jobbData.id)
+        requireNotNull(soeknad, { "Jobben indikerte en søknad med id ${jobb.data} men den kunne ikke finnes" })
+        return soeknad
     }
 
     private fun updateAndLogOnFailure(soeknad: KroniskSoeknad) {
@@ -175,6 +191,27 @@ class KroniskSoeknadProcessor(
         return runBlocking { oppgaveKlient.opprettOppgave(request, UUID.randomUUID().toString()).id.toString() }
     }
 
-    data class JobbData(val id: UUID)
+    fun opprettFordelingsOppgave(soeknad: KroniskSoeknad): String {
+        val aktoerId = pdlClient.fullPerson(soeknad.identitetsnummer)?.hentIdenter?.trekkUtIdent(PdlIdent.PdlIdentGruppe.AKTORID)
+        requireNotNull(aktoerId, { "Fant ikke AktørID for fnr i ${soeknad.id}" })
 
+        val request = OpprettOppgaveRequest(
+            aktoerId = aktoerId,
+            journalpostId = soeknad.journalpostId,
+            beskrivelse = """
+                Fordelingsoppgave for søknad om fritak fra arbeidsgiverperioden grunnet kronisk sykdom.
+            """.trimIndent(),
+            tema = "SYK",
+            behandlingstype = digitalSoeknadBehandingsType,
+            oppgavetype = OPPGAVETYPE_FORDELINGSOPPGAVE,
+            behandlingstema = fritakAGPBehandingsTema,
+            aktivDato = LocalDate.now(),
+            fristFerdigstillelse = LocalDate.now().plusDays(7),
+            prioritet = "NORM"
+        )
+
+        return runBlocking { oppgaveKlient.opprettOppgave(request, UUID.randomUUID().toString()).id.toString() }
+    }
+
+    data class JobbData(val id: UUID)
 }

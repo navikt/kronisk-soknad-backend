@@ -64,9 +64,12 @@ jobs:
       - uses: actions/checkout@master
       - uses: nais/deploy/actions/deploy@master
         env:
+          TEAM: helsearbeidsgiver
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: dev-gcp
           RESOURCE: deploy/dev.yaml
+          REF: ${{ env.COMMIT }}
+          IMAGE: ${{ env.IMAGE }}
 
   deploy-krav-topic-to-dev:
     name: Deploy krav-topic to dev

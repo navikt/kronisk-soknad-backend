@@ -32,7 +32,7 @@ class KroniskSoeknadPDFGeneratorTest {
     }
 
     @Test
-        //@Disabled
+    @Disabled
     fun saveAndShowPdf() {
         // test for å visuelt sjekke ut PDFen
         val soeknad = KroniskTestData.soeknadKronisk

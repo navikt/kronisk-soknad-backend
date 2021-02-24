@@ -17,6 +17,8 @@ import no.nav.helse.fritakagp.GravidSoeknadMetrics
 import no.nav.helse.fritakagp.db.GravidSoeknadRepository
 import no.nav.helse.fritakagp.domain.GravidSoeknad
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
+import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
+import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor.Jobbdata.SkjemaType.*
 import org.slf4j.LoggerFactory
 import java.time.LocalDate
 import java.util.*
@@ -69,6 +71,13 @@ class GravidSoeknadProcessor(
                     maksAntallForsoek = 10,
                     data = om.writeValueAsString(GravidSoeknadKafkaProcessor.JobbData(soeknad.id)),
                     type = GravidSoeknadKafkaProcessor.JOB_TYPE
+                )
+            )
+            bakgrunnsjobbRepo.save(
+                Bakgrunnsjobb(
+                    maksAntallForsoek = 10,
+                    data = om.writeValueAsString(BrukernotifikasjonProcessor.Jobbdata(soeknad.id, GravidSøknad)),
+                    type = BrukernotifikasjonProcessor.JOB_TYPE
                 )
             )
 

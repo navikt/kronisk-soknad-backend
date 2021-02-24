@@ -10,14 +10,12 @@ import org.apache.kafka.common.serialization.StringSerializer
 private const val JAVA_KEYSTORE = "jks"
 private const val PKCS12 = "PKCS12"
 private const val LOCALHOST = "localhost:9092"
-private const val GROUP_ID_CONFIG = "helsearbeidsgiver-im-varsel-grace-period"
+private const val GROUP_ID_CONFIG = "helsearbeidsgiver-fritakagp"
 
 private fun envOrThrow(envVar: String) = System.getenv()[envVar] ?: throw IllegalStateException("$envVar er påkrevd miljøvariabel")
 
-fun producerConfig() = mutableMapOf<String, Any>(
+fun gcpCommonKafkaProps() = mutableMapOf<String, Any>(
     ProducerConfig.BOOTSTRAP_SERVERS_CONFIG to envOrThrow("KAFKA_BROKERS"),
-    ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG to StringSerializer::class.java.canonicalName,
-    ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG to StringSerializer::class.java.canonicalName,
     ProducerConfig.ACKS_CONFIG to "all",
 
     CommonClientConfigs.SECURITY_PROTOCOL_CONFIG to SecurityProtocol.SSL.name,
@@ -31,7 +29,7 @@ fun producerConfig() = mutableMapOf<String, Any>(
     SslConfigs.SSL_KEY_PASSWORD_CONFIG to envOrThrow("KAFKA_CREDSTORE_PASSWORD")
 )
 
-fun producerLocalConfig() = mutableMapOf<String, Any>(
+fun localCommonKafkaProps() = mutableMapOf<String, Any>(
     ProducerConfig.BOOTSTRAP_SERVERS_CONFIG to LOCALHOST,
     ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG to StringSerializer::class.java.canonicalName,
     ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG to StringSerializer::class.java.canonicalName,

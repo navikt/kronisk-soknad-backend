@@ -19,6 +19,13 @@ val FEILET_JOBB_COUNTER = Counter.build()
         .register()
 
 
+val BrukernotifikasjonerMetrics = Counter.build()
+    .namespace(METRICS_NS)
+    .name("brukernotifikasjoner")
+    .labelNames("skjematype")
+    .register()
+
+
 object GravidKravMetrics :
     ProseseringsMetrikker("gravid_krav", "Metrikker for krav, gravid")
 

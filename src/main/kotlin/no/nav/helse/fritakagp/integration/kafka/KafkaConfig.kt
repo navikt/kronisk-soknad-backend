@@ -1,8 +1,11 @@
 package no.nav.helse.fritakagp.integration.kafka
 
+import io.ktor.config.*
+import no.nav.helse.fritakagp.koin.getString
 import org.apache.kafka.clients.CommonClientConfigs
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.clients.producer.ProducerConfig
+import org.apache.kafka.common.config.SaslConfigs
 import org.apache.kafka.common.config.SslConfigs
 import org.apache.kafka.common.security.auth.SecurityProtocol
 import org.apache.kafka.common.serialization.StringSerializer
@@ -13,6 +16,14 @@ private const val LOCALHOST = "localhost:9092"
 private const val GROUP_ID_CONFIG = "helsearbeidsgiver-fritakagp"
 
 private fun envOrThrow(envVar: String) = System.getenv()[envVar] ?: throw IllegalStateException("$envVar er påkrevd miljøvariabel")
+
+fun onPremCommonKafkaProps(config: ApplicationConfig) =
+    mapOf(
+        CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG to config.getString("brukernotifikasjon.bootstrap_servers"),
+        CommonClientConfigs.SECURITY_PROTOCOL_CONFIG to "SASL_SSL",
+        SaslConfigs.SASL_JAAS_CONFIG to "org.apache.kafka.common.security.plain.PlainLoginModule required username=\"${config.getString("service_user.username")}\" password=\"${config.getString("service_user.password")}\";",
+        SaslConfigs.SASL_MECHANISM to "PLAIN"
+    )
 
 fun gcpCommonKafkaProps() = mutableMapOf<String, Any>(
     ProducerConfig.BOOTSTRAP_SERVERS_CONFIG to envOrThrow("KAFKA_BROKERS"),

@@ -1,6 +1,5 @@
 package no.nav.helse.fritakagp.integration.kafka
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import no.nav.brukernotifikasjon.schemas.Beskjed
 import no.nav.brukernotifikasjon.schemas.Nokkel
 import org.apache.kafka.clients.producer.ProducerRecord
@@ -24,7 +23,6 @@ class MockBrukernotifikasjonBeskjedSender : BrukernotifikasjonBeskjedSender {
 class BrukernotifikasjonBeskjedKafkaProducer(
     private val props: Map<String, Any>,
     private val topicName: String,
-    private val om: ObjectMapper,
     private val producerFactory : ProducerFactory<Nokkel, Beskjed>
 ) :
     BrukernotifikasjonBeskjedSender {

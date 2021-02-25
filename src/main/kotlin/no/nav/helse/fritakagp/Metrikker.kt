@@ -23,6 +23,7 @@ val BrukernotifikasjonerMetrics = Counter.build()
     .namespace(METRICS_NS)
     .name("brukernotifikasjoner")
     .labelNames("skjematype")
+    .help("Antall brukernotifikasjoner sendt")
     .register()
 
 

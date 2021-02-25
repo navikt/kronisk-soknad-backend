@@ -124,7 +124,7 @@ fun preprodConfig(config: ApplicationConfig) = module {
     single { GravidKravKafkaProcessor(get(), get(), get()) }
     single { KroniskSoeknadKafkaProcessor(get(), get(), get()) }
     single { KroniskKravKafkaProcessor(get(), get(), get()) }
-    single { BrukernotifikasjonProcessor(get(), get(), get(), get(), get(), get(), get(), config.getString("brukernotifikasjon.")) }
+    single { BrukernotifikasjonProcessor(get(), get(), get(), get(), get(), get(), config.getString("service_user.username"), "Https://fritak-agp-frontend.dev.nav.no/") }
 
     single { DefaultAltinnAuthorizer(get()) } bind AltinnAuthorizer::class
 }
@@ -177,9 +177,8 @@ fun Module.externalSystemClients(config: ApplicationConfig) {
     single { KravmeldingKafkaProducer(gcpCommonKafkaProps(), config.getString("kafka_krav_topic_name"), get(), StringKafkaProducerFactory()) } bind KravmeldingSender::class
 
     single { BrukernotifikasjonBeskjedKafkaProducer(
-        gcpCommonKafkaProps(),
+        onPremCommonKafkaProps(config),
         config.getString("brukernotifikasjon.topic_name"),
-        get(),
         BeskjedProducerFactory(config.getString("brukernotifikasjon.avro_schema_server_url")))
     } bind BrukernotifikasjonBeskjedSender::class
 }

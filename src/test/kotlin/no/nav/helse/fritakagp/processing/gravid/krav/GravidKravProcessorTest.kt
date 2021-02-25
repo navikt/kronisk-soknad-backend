@@ -22,7 +22,9 @@ import no.nav.helse.fritakagp.db.GravidKravRepository
 import no.nav.helse.fritakagp.domain.GravidKrav
 import no.nav.helse.fritakagp.integration.gcp.BucketDocument
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
+import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadKafkaProcessor
+import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravKafkaProcessor
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -132,18 +134,23 @@ class GravidKravProcessorTest {
     }
 
     @Test
-    fun `skal opprette kafkasenderjobb`() {
+    fun `skal opprette jobber`() {
         prosessor.prosesser(jobb)
 
-        assertThat(krav.journalpostId).isEqualTo(arkivReferanse)
-        assertThat(krav.oppgaveId).isEqualTo(oppgaveId.toString())
+        val opprettetJobber = mutableListOf<Bakgrunnsjobb>()
 
-        val opprettetBakgrunnsjobb = slot<Bakgrunnsjobb>()
-        verify(exactly = 1) { bakgrunnsjobbRepomock.save(capture(opprettetBakgrunnsjobb)) }
+        verify(exactly = 2) {
+            bakgrunnsjobbRepomock.save(capture(opprettetJobber))
+        }
 
-        assertThat(opprettetBakgrunnsjobb.captured.type).isEqualTo(GravidKravKafkaProcessor.JOB_TYPE)
-        assertThat(opprettetBakgrunnsjobb.captured.data).contains(krav.id.toString())
+        val kafkajobb = opprettetJobber.find {it.type == GravidKravKafkaProcessor.JOB_TYPE }
+        assertThat(kafkajobb?.data).contains(krav.id.toString())
+
+        val beskjedJobb = opprettetJobber.find {it.type == BrukernotifikasjonProcessor.JOB_TYPE }
+        assertThat(beskjedJobb?.data).contains(BrukernotifikasjonProcessor.Jobbdata.SkjemaType.GravidKrav.name)
+        assertThat(beskjedJobb?.data).contains(krav.id.toString())
     }
+
 
     @Test
     fun `Ved feil i oppgave skal joarkref lagres, og det skal det kastes exception oppover`() {

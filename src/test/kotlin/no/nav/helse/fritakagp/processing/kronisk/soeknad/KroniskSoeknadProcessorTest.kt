@@ -24,6 +24,9 @@ import no.nav.helse.fritakagp.integration.gcp.BucketDocument
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.processing.BakgrunnsJobbUtils.emptyJob
 import no.nav.helse.fritakagp.processing.BakgrunnsJobbUtils.testJob
+import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
+import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadKafkaProcessor
+import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravKafkaProcessor
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -132,17 +135,21 @@ class KroniskSoeknadProcessorTest {
     }
 
     @Test
-    fun `skal opprette kafkasenderjobb`() {
+    fun `skal opprette jobber`() {
         prosessor.prosesser(jobb)
 
-        assertThat(soeknad.journalpostId).isEqualTo(arkivReferanse)
-        assertThat(soeknad.oppgaveId).isEqualTo(oppgaveId.toString())
+        val opprettetJobber = mutableListOf<Bakgrunnsjobb>()
 
-        val opprettetBakgrunnsjobb = slot<Bakgrunnsjobb>()
-        verify(exactly = 1) { bakgrunnsjobbRepomock.save(capture(opprettetBakgrunnsjobb)) }
+        verify(exactly = 2) {
+            bakgrunnsjobbRepomock.save(capture(opprettetJobber))
+        }
 
-        assertThat(opprettetBakgrunnsjobb.captured.type).isEqualTo(KroniskSoeknadKafkaProcessor.JOB_TYPE)
-        assertThat(opprettetBakgrunnsjobb.captured.data).contains(soeknad.id.toString())
+        val kafkajobb = opprettetJobber.find {it.type == KroniskSoeknadKafkaProcessor.JOB_TYPE }
+        assertThat(kafkajobb?.data).contains(soeknad.id.toString())
+
+        val beskjedJobb = opprettetJobber.find {it.type == BrukernotifikasjonProcessor.JOB_TYPE }
+        assertThat(beskjedJobb?.data).contains(soeknad.id.toString())
+        assertThat(beskjedJobb?.data).contains(BrukernotifikasjonProcessor.Jobbdata.SkjemaType.KroniskSøknad.name)
     }
 
     @Test

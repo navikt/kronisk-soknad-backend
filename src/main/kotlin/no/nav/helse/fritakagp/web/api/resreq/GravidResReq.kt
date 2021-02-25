@@ -26,8 +26,6 @@ data class GravidSoknadRequest(
         val omplasseringAarsak: OmplasseringAarsak? = null,
         val bekreftet: Boolean,
 
-
-
         val dokumentasjon: String?
 ) {
    fun validate() {

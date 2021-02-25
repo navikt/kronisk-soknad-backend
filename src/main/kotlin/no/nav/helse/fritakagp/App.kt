@@ -14,6 +14,7 @@ import no.nav.helse.arbeidsgiver.system.AppEnv
 import no.nav.helse.arbeidsgiver.system.getEnvironment
 import no.nav.helse.fritakagp.koin.getAllOfType
 import no.nav.helse.fritakagp.koin.selectModuleBasedOnProfile
+import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravKafkaProcessor
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravKvitteringProcessor
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravProcessor
@@ -102,6 +103,8 @@ class FritakAgpApplication(val port: Int = 8080) : KoinComponent {
             registrer(get<KroniskKravProcessor>())
             registrer(get<KroniskKravKafkaProcessor>())
             registrer(get<KroniskKravKvitteringProcessor>())
+
+            registrer(get<BrukernotifikasjonProcessor>())
 
             startAsync(true)
         }

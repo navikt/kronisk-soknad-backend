@@ -19,6 +19,9 @@ val cxfVersion = "3.4.1"
 val jaxwsVersion = "2.3.1"
 val jaxwsToolsVersion = "2.3.3"
 val kafkaClient = "2.7.0"
+val confluentVersion = "6.0.1"
+val brukernotifikasjonSchemasVersion = "1.2021.01.18-11.12-b9c8c40b98d1"
+
 
 val githubPassword: String by project
 
@@ -75,6 +78,9 @@ dependencies {
     implementation("org.koin:koin-ktor:$koinVersion")
     implementation("no.nav.security:token-client-core:$tokenSupportVersion")
     implementation("no.nav.security:token-validation-ktor:$tokenSupportVersion")
+
+    implementation("com.github.navikt:brukernotifikasjon-schemas:$brukernotifikasjonSchemasVersion")
+
     implementation("javax.ws.rs:javax.ws.rs-api:2.1.1")
     implementation("no.nav.security:mock-oauth2-server:$mockOAuth2ServerVersion")
     implementation("no.nav.helsearbeidsgiver:helse-arbeidsgiver-felles-backend:2021.02.10-13-53-bb1ff")
@@ -127,6 +133,7 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitJupiterVersion")
     implementation( "com.google.cloud:google-cloud-storage:$gcpStorageVersion")
     implementation("org.apache.kafka:kafka-clients:$kafkaClient")
+    implementation("io.confluent:kafka-avro-serializer:$confluentVersion")
 
 }
 
@@ -165,6 +172,13 @@ repositories {
         }
     }
     maven("https://kotlin.bintray.com/ktor")
+    maven(url = "https://packages.confluent.io/maven/")
+
+    maven(url = "https://jitpack.io") {
+        content {
+            excludeGroup("no.nav.helsearbeidsgiver")
+        }
+    }
 }
 tasks.named<Jar>("jar") {
     baseName = ("app")

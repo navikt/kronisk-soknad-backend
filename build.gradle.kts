@@ -25,6 +25,8 @@ val brukernotifikasjonSchemasVersion = "1.2021.01.18-11.12-b9c8c40b98d1"
 
 val githubPassword: String by project
 
+
+
 plugins {
     application
     kotlin("jvm") version "1.4.20"
@@ -40,6 +42,9 @@ buildscript {
     dependencies {
         classpath("org.junit.platform:junit-platform-gradle-plugin:1.2.0")
     }
+}
+dependencyLocking {
+    lockAllConfigurations()
 }
 
 dependencies {

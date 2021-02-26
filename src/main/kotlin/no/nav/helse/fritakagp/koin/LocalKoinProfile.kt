@@ -57,7 +57,7 @@ fun localDevConfig(config: ApplicationConfig) = module {
     single { KroniskSoeknadKafkaProcessor(get(), get(), get()) }
     single { KroniskKravKafkaProcessor(get(), get(), get()) }
 
-    single { BrukernotifikasjonProcessor(get(), get(), get(), get(), get(), get(), "mock", "mock") }
+    single { BrukernotifikasjonProcessor(get(), get(), get(), get(), get(), get(), "mock", config.getString("brukernotifikasjon.frontend_app_url")) }
 
     single { DefaultAltinnAuthorizer(get()) } bind AltinnAuthorizer::class
 }

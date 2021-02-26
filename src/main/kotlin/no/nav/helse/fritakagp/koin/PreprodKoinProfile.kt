@@ -124,7 +124,7 @@ fun preprodConfig(config: ApplicationConfig) = module {
     single { GravidKravKafkaProcessor(get(), get(), get()) }
     single { KroniskSoeknadKafkaProcessor(get(), get(), get()) }
     single { KroniskKravKafkaProcessor(get(), get(), get()) }
-    single { BrukernotifikasjonProcessor(get(), get(), get(), get(), get(), get(), config.getString("service_user.username"), "https://fritak-agp-frontend.dev.nav.no/") }
+    single { BrukernotifikasjonProcessor(get(), get(), get(), get(), get(), get(), config.getString("service_user.username"), 3, "https://fritak-agp-frontend.dev.nav.no/") }
 
     single { DefaultAltinnAuthorizer(get()) } bind AltinnAuthorizer::class
 }

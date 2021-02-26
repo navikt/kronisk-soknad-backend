@@ -25,6 +25,7 @@ class BrukernotifikasjonProcessor(
     private val om: ObjectMapper,
     private val kafkaProducerFactory: BrukernotifikasjonBeskjedSender,
     private val serviceuserUsername: String,
+    private val sikkerhetsNivaa: Int = 4,
     private val frontendAppBaseUrl: String = "https://arbeidsgiver.nav.no/fritakagp"
 ) : BakgrunnsjobbProsesserer {
 
@@ -83,7 +84,7 @@ class BrukernotifikasjonProcessor(
             .withGrupperingsId(id.toString())
             .withFodselsnummer(identitetsnummer)
             .withLink(URL(linkUrl))
-            .withSikkerhetsnivaa(4)
+            .withSikkerhetsnivaa(sikkerhetsNivaa)
             .withSynligFremTil(synligFremTil)
             .withTekst("Arbeisdgiveren din har søkt om utvidet støtte fra NAV angående sykepenger til deg.")
             .withEksternVarsling(false)

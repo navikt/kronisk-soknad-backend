@@ -43,9 +43,6 @@ buildscript {
         classpath("org.junit.platform:junit-platform-gradle-plugin:1.2.0")
     }
 }
-dependencyLocking {
-    lockAllConfigurations()
-}
 
 dependencies {
     // SNYK-fikser - Disse kan fjernes etterhver som våre avhengigheter oppdaterer sine versjoner
@@ -61,9 +58,6 @@ dependencies {
     implementation("com.google.guava:guava:30.0-jre") //[Medium Severity][https://snyk.io/vuln/SNYK-JAVA-COMGOOGLEGUAVA-1015415] overstyrer versjon 29.0
     // -- end snyk fixes
 
-
-
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.12.1")
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
     implementation("io.ktor:ktor-jackson:$ktorVersion")
     implementation("io.ktor:ktor-client-core:$ktorVersion")

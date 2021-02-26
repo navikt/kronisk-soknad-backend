@@ -16,8 +16,6 @@ import no.nav.helse.arbeidsgiver.system.getEnvironment
 import no.nav.security.mock.oauth2.MockOAuth2Server
 import org.slf4j.LoggerFactory
 
-import java.net.InetAddress
-
 
 
 @KtorExperimentalAPI

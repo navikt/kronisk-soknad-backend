@@ -17,7 +17,7 @@ interface CustomConstraint : Constraint {
 class RefusjonsdagerKanIkkeOverstigePeriodelengdenConstraint : CustomConstraint
 fun <E> Validator<E>.Property<Arbeidsgiverperiode?>.refusjonsDagerIkkeOverstigerPeriodelengde() =
     this.validate(RefusjonsdagerKanIkkeOverstigePeriodelengdenConstraint()) { ps ->
-        return@validate ChronoUnit.DAYS.between(ps?.fom, ps?.tom?.plusDays(1)) > ps?.antallDagerMedRefusjon!!
+        return@validate ChronoUnit.DAYS.between(ps?.fom, ps?.tom?.plusDays(1)) >= ps?.antallDagerMedRefusjon!!
     }
 
 fun <E> Validator<E>.Property<Iterable<Arbeidsgiverperiode>?>.refujonsDagerIkkeOverstigerPeriodelengder() =

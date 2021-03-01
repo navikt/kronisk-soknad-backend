@@ -113,7 +113,7 @@ class KroniskSoeknadProcessorTest {
         assertThat(dokumentasjon.dokumentVarianter[0].variantFormat).isEqualTo("ARKIV")
         assertThat(dokumentasjon.dokumentVarianter[1].fysiskDokument).isEqualTo(originalJsonDoc)
         assertThat(dokumentasjon.dokumentVarianter[1].filtype).isEqualTo(filtypeOrginal)
-        assertThat(dokumentasjon.dokumentVarianter[1].variantFormat).isEqualTo("ORGINAL")
+        assertThat(dokumentasjon.dokumentVarianter[1].variantFormat).isEqualTo("ORIGINAL")
     }
 
     @Test

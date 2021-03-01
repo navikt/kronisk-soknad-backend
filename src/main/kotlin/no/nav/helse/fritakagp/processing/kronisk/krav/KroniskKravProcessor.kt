@@ -148,7 +148,7 @@ class KroniskKravProcessor(
                     DokumentVariant(
                             filtype = "JSON",
                             fysiskDokument = jsonOrginalDokument,
-                            variantFormat = "ORGINAL"
+                            variantFormat = "ORIGINAL"
                     )
                 ),
                 brevkode = "krav_om_fritak_fra_agp_kronisk",
@@ -167,7 +167,7 @@ class KroniskKravProcessor(
                         DokumentVariant(
                                 filtype = "JSON",
                                 fysiskDokument = jsonOrginalDokument,
-                                variantFormat = "ORGINAL"
+                                variantFormat = "ORIGINAL"
                         )
                     ),
                     brevkode = dokumentasjonBrevkode,

@@ -164,7 +164,7 @@ class GravidSoeknadProcessor(
                             filtype = if (it.extension == "jpg") "JPEG" else it.extension.toUpperCase()
                         ),
                             DokumentVariant(
-                                    variantFormat = "ORGINAL",
+                                    variantFormat = "ORIGINAL",
                                     fysiskDokument = jsonOrginalDokument,
                                     filtype = "JSON"
                             )

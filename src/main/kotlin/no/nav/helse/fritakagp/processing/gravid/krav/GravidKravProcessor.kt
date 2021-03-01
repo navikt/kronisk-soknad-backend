@@ -152,7 +152,7 @@ class GravidKravProcessor(
                         DokumentVariant(
                                 filtype = "JSON",
                                 fysiskDokument = jsonOrginalDokument,
-                                variantFormat = "ORGINAL"
+                                variantFormat = "ORIGINAL"
                         )
                 ),
                 brevkode = "krav_om_fritak_fra_agp_gravid",
@@ -171,7 +171,7 @@ class GravidKravProcessor(
                         DokumentVariant(
                                 filtype = "JSON",
                                 fysiskDokument = jsonOrginalDokument,
-                                variantFormat = "ORGINAL",
+                                variantFormat = "ORIGINAL",
                         )
                     ),
                     brevkode = dokumentasjonBrevkode,

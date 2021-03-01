@@ -112,7 +112,7 @@ class GravidKravProcessorTest {
         assertThat(dokumentasjon.dokumentVarianter[0].variantFormat).isEqualTo("ARKIV")
         assertThat(dokumentasjon.dokumentVarianter[1].fysiskDokument).isEqualTo(jsonOrginalDokument)
         assertThat(dokumentasjon.dokumentVarianter[1].filtype).isEqualTo(filtypeOrginal)
-        assertThat(dokumentasjon.dokumentVarianter[1].variantFormat).isEqualTo("ORGINAL")
+        assertThat(dokumentasjon.dokumentVarianter[1].variantFormat).isEqualTo("ORIGINAL")
     }
 
     @Test

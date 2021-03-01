@@ -166,7 +166,7 @@ class GravidSoeknadProcessor(
                             DokumentVariant(
                                     variantFormat = "ORGINAL",
                                     fysiskDokument = jsonOrginalDokument,
-                                    filtype = "json"
+                                    filtype = "JSON"
                             )
                     ),
                     brevkode = dokumentasjonBrevkode,

@@ -150,7 +150,7 @@ class GravidKravProcessor(
                         fysiskDokument = base64EnkodetPdf
                     ),
                         DokumentVariant(
-                                filtype = "json",
+                                filtype = "JSON",
                                 fysiskDokument = jsonOrginalDokument,
                                 variantFormat = "ORGINAL"
                         )
@@ -169,7 +169,7 @@ class GravidKravProcessor(
                             filtype = if (it.extension == "jpg") "JPEG" else it.extension.toUpperCase()
                         ),
                         DokumentVariant(
-                                filtype = "json",
+                                filtype = "JSON",
                                 fysiskDokument = jsonOrginalDokument,
                                 variantFormat = "ORGINAL",
                         )

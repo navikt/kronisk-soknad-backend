@@ -146,7 +146,7 @@ class KroniskKravProcessor(
                         fysiskDokument = base64EnkodetPdf,
                     ),
                     DokumentVariant(
-                            filtype = "json",
+                            filtype = "JSON",
                             fysiskDokument = jsonOrginalDokument,
                             variantFormat = "ORGINAL"
                     )
@@ -165,7 +165,7 @@ class KroniskKravProcessor(
                             filtype = if (it.extension == "jpg") "JPEG" else it.extension.toUpperCase()
                         ),
                         DokumentVariant(
-                                filtype = "json",
+                                filtype = "JSON",
                                 fysiskDokument = jsonOrginalDokument,
                                 variantFormat = "ORGINAL"
                         )

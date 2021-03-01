@@ -2,6 +2,7 @@ Fritak Arbeidsgiverperiode (AGP)
 [![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=navikt_fritakagp)](https://sonarcloud.io/dashboard?id=navikt_fritakagp)
 ================
 
+
 Backend for mottak av søknader om fritak fra AGP ved sykepenger.
 # Komme i gang
 

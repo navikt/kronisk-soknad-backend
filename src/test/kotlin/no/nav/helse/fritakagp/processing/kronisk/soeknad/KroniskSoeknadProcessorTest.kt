@@ -32,6 +32,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.io.IOException
+import java.util.*
 
 class KroniskSoeknadProcessorTest {
 
@@ -98,7 +99,7 @@ class KroniskSoeknadProcessorTest {
         val joarkRequest = slot<JournalpostRequest>()
         every { joarkMock.journalførDokument(capture(joarkRequest), any(), any()) } returns JournalpostResponse(arkivReferanse, true, "M", null, emptyList())
 
-        val originalJsonDoc = objectMapper.writeValueAsString(soeknad)
+        val originalJsonDoc = Base64.getEncoder().encodeToString(objectMapper.writeValueAsBytes(soeknad))
         prosessor.prosesser(jobb)
 
         verify(exactly = 1) { bucketStorageMock.getDocAsString(soeknad.id) }

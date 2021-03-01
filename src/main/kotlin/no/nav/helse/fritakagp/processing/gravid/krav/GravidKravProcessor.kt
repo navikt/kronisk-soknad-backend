@@ -141,7 +141,7 @@ class GravidKravProcessor(
         journalfoeringsTittel: String
     ): List<Dokument> {
         val base64EnkodetPdf = Base64.getEncoder().encodeToString(pdfGenerator.lagPDF(krav))
-        val jsonOrginalDokument = om.writeValueAsString(krav)
+        val jsonOrginalDokument = Base64.getEncoder().encodeToString(om.writeValueAsBytes(krav))
 
         val dokumentListe = mutableListOf(
             Dokument(

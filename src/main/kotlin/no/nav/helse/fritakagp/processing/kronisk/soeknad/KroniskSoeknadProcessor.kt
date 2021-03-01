@@ -141,8 +141,7 @@ class KroniskSoeknadProcessor(
         journalfoeringsTittel: String
     ): List<Dokument> {
         val base64EnkodetPdf = Base64.getEncoder().encodeToString(pdfGenerator.lagPDF(soeknad))
-        val jsonOrginalDokument = om.writeValueAsString(soeknad)
-
+        val jsonOrginalDokument = Base64.getEncoder().encodeToString(om.writeValueAsBytes(soeknad))
         val dokumentListe = mutableListOf(
             Dokument(
                 dokumentVarianter = listOf(

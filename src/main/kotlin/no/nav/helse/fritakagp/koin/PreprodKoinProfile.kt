@@ -22,6 +22,8 @@ import no.nav.helse.fritakagp.MetrikkVarsler
 import no.nav.helse.fritakagp.db.*
 import no.nav.helse.fritakagp.integration.altinn.CachedAuthRepo
 import no.nav.helse.fritakagp.integration.altinn.message.Clients
+import no.nav.helse.fritakagp.integration.brreg.BerregClient
+import no.nav.helse.fritakagp.integration.brreg.BerregClientImp
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.integration.gcp.BucketStorageImpl
 import no.nav.helse.fritakagp.integration.kafka.*
@@ -174,6 +176,7 @@ fun Module.externalSystemClients(config: ApplicationConfig) {
 
     single { SoeknadmeldingKafkaProducer(producerConfig(), config.getString("kafka_soeknad_topic_name"), get(), SoeknadmeldingKafkaProducerProvider()) } bind SoeknadmeldingSender::class
     single { KravmeldingKafkaProducer(producerConfig(), config.getString("kafka_krav_topic_name"), get(), KravmeldingKafkaProducerProvider()) } bind KravmeldingSender::class
+    single { BerregClientImp(get(), get(), config.getString("berreg_enhet_url"))} bind BerregClient::class
 }
 
 

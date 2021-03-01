@@ -102,9 +102,6 @@ class GravidKravProcessor(
 
     fun journalfør(krav: GravidKrav): String {
         val journalfoeringsTittel = "Krav om fritak fra arbeidsgiverperioden ifbm graviditet"
-        val pdlResponse = pdlClient.personNavn(krav.sendtAv)?.navn?.firstOrNull()
-        val innsenderNavn = if (pdlResponse != null) "${pdlResponse.fornavn} ${pdlResponse.etternavn}" else "Ukjent"
-
         val response = dokarkivKlient.journalførDokument(
             JournalpostRequest(
                 tittel = journalfoeringsTittel,
@@ -115,7 +112,7 @@ class GravidKravProcessor(
                 avsenderMottaker = AvsenderMottaker(
                     id = krav.sendtAv,
                     idType = IdType.FNR,
-                    navn = innsenderNavn
+                    navn = krav.virksomhetsnavn
                 ),
                 dokumenter = createDocuments(krav, journalfoeringsTittel),
                 datoMottatt = krav.opprettet.toLocalDate()

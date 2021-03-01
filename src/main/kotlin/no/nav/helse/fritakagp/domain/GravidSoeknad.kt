@@ -19,6 +19,7 @@ data class GravidSoeknad(
         val sendtAv: String,
         val termindato: LocalDate?,
         val harVedlegg: Boolean = false,
+        val virksomhetsnavn: String,
 
         /**
      * ID fra joark etter arkivering

@@ -76,3 +76,4 @@ fun extractBase64Del(dataUrl : String) : String = dataUrl.substringAfter("base64
 fun extractFilExtDel(dataUrl : String) : String = dataUrl.substring(0,dataUrl.indexOf(';')).substringAfter('/')
 
 class VirusCheckConstraint : CustomConstraint
+class EnhetsregisteretConstraint : CustomConstraint

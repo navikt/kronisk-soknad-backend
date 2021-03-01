@@ -7,15 +7,13 @@ import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.util.*
-import no.nav.helse.arbeidsgiver.bakgrunnsjobb.Bakgrunnsjobb
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbService
 import no.nav.helse.arbeidsgiver.web.auth.AltinnAuthorizer
 import no.nav.helse.fritakagp.KroniskKravMetrics
 import no.nav.helse.fritakagp.KroniskSoeknadMetrics
 import no.nav.helse.fritakagp.db.KroniskKravRepository
 import no.nav.helse.fritakagp.db.KroniskSoeknadRepository
-import no.nav.helse.fritakagp.domain.KroniskKrav
-import no.nav.helse.fritakagp.domain.KroniskSoeknad
+import no.nav.helse.fritakagp.integration.brreg.BerregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
 import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravKvitteringProcessor
@@ -38,7 +36,8 @@ fun Route.kroniskRoutes(
     om: ObjectMapper,
     virusScanner: VirusScanner,
     bucket: BucketStorage,
-    authorizer: AltinnAuthorizer
+    authorizer: AltinnAuthorizer,
+    berregService : BerregClient
 ) {
     route("/kronisk") {
         route("/soeknad") {
@@ -56,8 +55,8 @@ fun Route.kroniskRoutes(
                 val request = call.receive<KroniskSoknadRequest>()
                 request.validate()
                 val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
-
-                val soeknad = request.toDomain(innloggetFnr)
+                val virksomhetsnavn = berregService.getVirksomhetsNavn(request.virksomhetsnummer)
+                val soeknad = request.toDomain(innloggetFnr, virksomhetsnavn)
 
                 processDocumentForGCPStorage(request.dokumentasjon, virusScanner, bucket, soeknad.id)
 
@@ -95,8 +94,8 @@ fun Route.kroniskRoutes(
                 val request = call.receive<KroniskKravRequest>()
                 request.validate()
                 authorize(authorizer, request.virksomhetsnummer)
-
-                val krav = request.toDomain(hentIdentitetsnummerFraLoginToken(application.environment.config, call.request))
+                val krav = request.toDomain(hentIdentitetsnummerFraLoginToken(application.environment.config, call.request),
+                                            berregService.getVirksomhetsNavn(request.virksomhetsnummer))
 
                 processDocumentForGCPStorage(request.dokumentasjon, virusScanner, bucket, krav.id)
 

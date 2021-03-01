@@ -4,11 +4,11 @@ import no.nav.helse.fritakagp.domain.*
 import no.nav.helse.fritakagp.web.api.resreq.GravidKravRequest
 import no.nav.helse.fritakagp.web.api.resreq.GravidSoknadRequest
 import java.time.LocalDate
-import java.time.LocalDateTime
 
 object GravidTestData {
     val validIdentitetsnummer = "20015001543"
     val validOrgNr = "917404437"
+    val fakeVirksonhetsnavn = ""
 
     val soeknadGravid = GravidSoeknad(
         virksomhetsnummer = validOrgNr,
@@ -19,7 +19,8 @@ object GravidTestData {
         tiltakBeskrivelse = "Vi prøvde både det ene og det andre og det første kanskje virka litt men muligens and the andre ikke var så på stell men akk ja sånn lorem",
         omplassering = Omplassering.IKKE_MULIG,
         omplasseringAarsak = OmplasseringAarsak.HELSETILSTANDEN,
-        sendtAv = "09876543210"
+        sendtAv = "09876543210",
+        virksomhetsnavn = fakeVirksonhetsnavn
     )
 
     val fullValidSoeknadRequest = GravidSoknadRequest(
@@ -83,7 +84,8 @@ object GravidTestData {
             5,
             2590.8
         ),
-        sendtAv = validIdentitetsnummer
+        sendtAv = validIdentitetsnummer,
+        virksomhetsnavn = fakeVirksonhetsnavn
     )
 }
 

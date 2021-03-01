@@ -87,8 +87,6 @@ class GravidSoeknadProcessor(
 
     fun journalfør(soeknad: GravidSoeknad): String {
         val journalfoeringsTittel = "Søknad om fritak fra arbeidsgiverperioden ifbm graviditet"
-        val pdlResponse = pdlClient.personNavn(soeknad.sendtAv)?.navn?.firstOrNull()
-        val innsenderNavn = if (pdlResponse != null) "${pdlResponse.fornavn} ${pdlResponse.etternavn}" else "Ukjent"
 
         val response = dokarkivKlient.journalførDokument(
             JournalpostRequest(
@@ -100,7 +98,7 @@ class GravidSoeknadProcessor(
                 avsenderMottaker = AvsenderMottaker(
                     id = soeknad.sendtAv,
                     idType = IdType.FNR,
-                    navn = innsenderNavn
+                    navn = soeknad.virksomhetsnavn
                 ),
                 dokumenter = createDocuments(soeknad, journalfoeringsTittel),
                 datoMottatt = soeknad.opprettet.toLocalDate()

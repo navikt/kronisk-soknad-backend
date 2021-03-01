@@ -98,8 +98,6 @@ class KroniskKravProcessor(
 
     fun journalfør(krav: KroniskKrav): String {
         val journalfoeringsTittel = "Krav om fritak fra arbeidsgiverperioden ifbm kroniskitet"
-        val pdlResponse = pdlClient.personNavn(krav.sendtAv)?.navn?.firstOrNull()
-        val innsenderNavn = if (pdlResponse != null) "${pdlResponse.fornavn} ${pdlResponse.etternavn}" else "Ukjent"
 
         val response = dokarkivKlient.journalførDokument(
             JournalpostRequest(
@@ -111,7 +109,7 @@ class KroniskKravProcessor(
                 avsenderMottaker = AvsenderMottaker(
                     id = krav.sendtAv,
                     idType = IdType.FNR,
-                    navn = innsenderNavn
+                    navn = krav.virksomhetsnavn
                 ),
                 dokumenter = createDocuments(krav, journalfoeringsTittel),
                 datoMottatt = krav.opprettet.toLocalDate()

@@ -29,8 +29,8 @@ class GravidKravRequestTest{
 
     @Test
     internal fun `mapping til domenemodell tar med harVedleggflagg`() {
-        assertThat(GravidTestData.gravidKravRequestMedFil.toDomain("123").harVedlegg).isTrue()
-        assertThat(GravidTestData.gravidKravRequestValid.toDomain("123").harVedlegg).isFalse()
+        assertThat(GravidTestData.gravidKravRequestMedFil.toDomain("123", "Stark Industries").harVedlegg).isTrue()
+        assertThat(GravidTestData.gravidKravRequestValid.toDomain("123","Stark Industries").harVedlegg).isFalse()
 
     }
 

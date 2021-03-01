@@ -57,7 +57,7 @@ data class GravidSoknadRequest(
        }
    }
     
-    fun toDomain(sendtAv: String) = GravidSoeknad(
+    fun toDomain(sendtAv: String, virksomhetsnavn: String) = GravidSoeknad(
             virksomhetsnummer = virksomhetsnummer,
             identitetsnummer = identitetsnummer,
             sendtAv = sendtAv,
@@ -67,7 +67,8 @@ data class GravidSoknadRequest(
             tilrettelegge = tilrettelegge,
             tiltak = tiltak,
             tiltakBeskrivelse = tiltakBeskrivelse,
-            harVedlegg = !dokumentasjon.isNullOrEmpty()
+            harVedlegg = !dokumentasjon.isNullOrEmpty(),
+            virksomhetsnavn = virksomhetsnavn
         )
 }
 
@@ -95,12 +96,13 @@ data class GravidKravRequest(
         }
     }
     
-    fun toDomain(sendtAv: String) = GravidKrav(
+    fun toDomain(sendtAv: String, virksomhetsnavn: String) = GravidKrav(
         identitetsnummer = identitetsnummer,
         virksomhetsnummer = virksomhetsnummer,
         periode = periode,
         sendtAv = sendtAv,
-        harVedlegg = !dokumentasjon.isNullOrEmpty()
+        harVedlegg = !dokumentasjon.isNullOrEmpty(),
+        virksomhetsnavn = virksomhetsnavn
     )
     
 }

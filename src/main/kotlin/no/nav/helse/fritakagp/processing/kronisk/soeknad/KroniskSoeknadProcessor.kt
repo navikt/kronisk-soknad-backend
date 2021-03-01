@@ -103,8 +103,11 @@ class KroniskSoeknadProcessor(
     fun journalfør(soeknad: KroniskSoeknad): String {
         val journalfoeringsTittel = "Søknad om fritak fra arbeidsgiverperioden ifbm kronisk lidelse"
         val pdlResponse = pdlClient.personNavn(soeknad.sendtAv)?.navn?.firstOrNull()
-        val innsenderNavn = if (pdlResponse != null) "${pdlResponse.fornavn} ${pdlResponse.etternavn}" else "Ukjent"
-
+        val innsenderNavn = when {
+            soeknad.virksomhetsnavn.isNotBlank() -> soeknad.virksomhetsnavn
+            pdlResponse != null -> "${pdlResponse.fornavn} ${pdlResponse.etternavn}"
+            else -> "Ukjent"
+        }
         val response = dokarkivKlient.journalførDokument(
             JournalpostRequest(
                 tittel = journalfoeringsTittel,

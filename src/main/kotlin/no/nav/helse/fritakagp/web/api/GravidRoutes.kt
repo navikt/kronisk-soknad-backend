@@ -7,24 +7,20 @@ import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.util.*
-import no.nav.helse.arbeidsgiver.bakgrunnsjobb.Bakgrunnsjobb
-import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbRepository
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbService
 import no.nav.helse.arbeidsgiver.web.auth.AltinnAuthorizer
 import no.nav.helse.fritakagp.GravidKravMetrics
 import no.nav.helse.fritakagp.GravidSoeknadMetrics
 import no.nav.helse.fritakagp.db.GravidKravRepository
 import no.nav.helse.fritakagp.db.GravidSoeknadRepository
-import no.nav.helse.fritakagp.domain.GravidKrav
-import no.nav.helse.fritakagp.domain.GravidSoeknad
 import no.nav.helse.fritakagp.domain.decodeBase64File
+import no.nav.helse.fritakagp.integration.brreg.BerregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravKvitteringProcessor
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravProcessor
 import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadKvitteringProcessor
 import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadProcessor
-import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravProcessor
 import no.nav.helse.fritakagp.web.api.resreq.GravidKravRequest
 import no.nav.helse.fritakagp.web.api.resreq.GravidSoknadRequest
 import no.nav.helse.fritakagp.web.auth.authorize
@@ -46,7 +42,8 @@ fun Route.gravidRoutes(
     om: ObjectMapper,
     virusScanner: VirusScanner,
     bucket: BucketStorage,
-    authorizer: AltinnAuthorizer
+    authorizer: AltinnAuthorizer,
+    berregService : BerregClient
 ) {
     route("/gravid") {
         route("/soeknad") {
@@ -65,8 +62,8 @@ fun Route.gravidRoutes(
                 val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
                 val request = call.receive<GravidSoknadRequest>()
                 request.validate()
-
-                val soeknad = request.toDomain(innloggetFnr)
+                val virksomhetsnavn = berregService.getVirksomhetsNavn(request.virksomhetsnummer)
+                val soeknad = request.toDomain(innloggetFnr, virksomhetsnavn)
 
                 processDocumentForGCPStorage(request.dokumentasjon, virusScanner, bucket, soeknad.id)
 
@@ -106,7 +103,8 @@ fun Route.gravidRoutes(
                 request.validate()
                 authorize(authorizer, request.virksomhetsnummer)
 
-                val krav = request.toDomain(hentIdentitetsnummerFraLoginToken(application.environment.config, call.request))
+                val krav = request.toDomain(hentIdentitetsnummerFraLoginToken(application.environment.config, call.request),
+                                            berregService.getVirksomhetsNavn(request.virksomhetsnummer))
 
                 processDocumentForGCPStorage(request.dokumentasjon, virusScanner, bucket, krav.id)
 
@@ -130,7 +128,6 @@ fun Route.gravidRoutes(
         }
     }
 }
-
 suspend fun processDocumentForGCPStorage(doc: String?, virusScanner: VirusScanner, bucket: BucketStorage, id: UUID) {
     if (!doc.isNullOrEmpty()) {
         val fileContent = extractBase64Del(doc)

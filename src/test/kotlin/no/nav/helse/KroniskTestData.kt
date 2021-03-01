@@ -10,6 +10,7 @@ import kotlin.random.Random
 object KroniskTestData {
     val validIdentitetsnummer = "20015001543"
     val validOrgNr = "917404437"
+    val fakeVirksonhetsnavn = ""
 
     val soeknadKronisk = KroniskSoeknad(
         virksomhetsnummer = validOrgNr,
@@ -19,7 +20,8 @@ object KroniskTestData {
         fravaer = generateFravaersdata(),
         paakjenningstyper = setOf(PaakjenningsType.ALLERGENER, PaakjenningsType.TUNGE),
         paakjenningBeskrivelse = "Beskrivelse",
-        sendtAv = "09876543210"
+        sendtAv = "09876543210",
+        virksomhetsnavn = fakeVirksonhetsnavn
     )
 
     val fullValidRequest = KroniskSoknadRequest(
@@ -68,7 +70,8 @@ object KroniskTestData {
             5,
             2590.8
         )),
-        sendtAv = validIdentitetsnummer
+        sendtAv = validIdentitetsnummer,
+        virksomhetsnavn = fakeVirksonhetsnavn
     )
     
 }

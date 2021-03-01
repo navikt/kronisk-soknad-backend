@@ -33,8 +33,8 @@ internal class KroniskSoknadRequestTest {
 
     @Test
     internal fun `mapping til domenemodell tar med harVedleggflagg`() {
-        Assertions.assertThat(KroniskTestData.kroniskSoknadMedFil.toDomain("123").harVedlegg).isTrue()
-        Assertions.assertThat(KroniskTestData.fullValidRequest.toDomain("123").harVedlegg).isFalse()
+        Assertions.assertThat(KroniskTestData.kroniskSoknadMedFil.toDomain("123", "Stark Industries").harVedlegg).isTrue()
+        Assertions.assertThat(KroniskTestData.fullValidRequest.toDomain("123", "Stark Industries").harVedlegg).isFalse()
     }
 
 

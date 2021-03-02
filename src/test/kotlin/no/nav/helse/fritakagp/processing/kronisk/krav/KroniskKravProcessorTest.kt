@@ -20,11 +20,11 @@ import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlHentFullPerson.PdlGeografi
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlHentFullPerson.PdlIdentResponse
 import no.nav.helse.fritakagp.db.KroniskKravRepository
 import no.nav.helse.fritakagp.domain.KroniskKrav
+import no.nav.helse.fritakagp.integration.brreg.BerregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketDocument
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.processing.BakgrunnsJobbUtils.emptyJob
 import no.nav.helse.fritakagp.processing.BakgrunnsJobbUtils.testJob
-import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadKafkaProcessor
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -41,7 +41,8 @@ class KroniskKravProcessorTest {
     val pdfGeneratorMock = mockk<KroniskKravPDFGenerator>(relaxed = true)
     val bucketStorageMock = mockk<BucketStorage>(relaxed = true)
     val bakgrunnsjobbRepomock = mockk<BakgrunnsjobbRepository>(relaxed = true)
-    val prosessor = KroniskKravProcessor(repositoryMock, joarkMock, oppgaveMock, pdlClientMock, bakgrunnsjobbRepomock, pdfGeneratorMock, objectMapper, bucketStorageMock)
+    val berregClient = mockk<BerregClient>(relaxed = true)
+    val prosessor = KroniskKravProcessor(repositoryMock, joarkMock, oppgaveMock, pdlClientMock, bakgrunnsjobbRepomock, pdfGeneratorMock, objectMapper, bucketStorageMock, berregClient)
     lateinit var krav: KroniskKrav
 
     private val oppgaveId = 9999

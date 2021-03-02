@@ -14,62 +14,58 @@ import org.valiktor.validate
 import java.time.LocalDate
 
 data class GravidSoknadRequest(
-        val virksomhetsnummer: String,
-        val identitetsnummer: String,
-        val tilrettelegge: Boolean,
-        val termindato: LocalDate?,
+    val virksomhetsnummer: String,
+    val identitetsnummer: String,
+    val tilrettelegge: Boolean,
+    val termindato: LocalDate?,
 
-        val tiltak: List<Tiltak>? = null,
-        val tiltakBeskrivelse: String? = null,
+    val tiltak: List<Tiltak>? = null,
+    val tiltakBeskrivelse: String? = null,
 
-        val omplassering: Omplassering? = null,
-        val omplasseringAarsak: OmplasseringAarsak? = null,
-        val bekreftet: Boolean,
-
-
-
-        val dokumentasjon: String?
+    val omplassering: Omplassering? = null,
+    val omplasseringAarsak: OmplasseringAarsak? = null,
+    val bekreftet: Boolean,
+    val dokumentasjon: String?
 ) {
-   fun validate() {
-       validate(this) {
-           validate(GravidSoknadRequest::identitetsnummer).isValidIdentitetsnummer()
-           validate(GravidSoknadRequest::bekreftet).isTrue()
-           validate(GravidSoknadRequest::virksomhetsnummer).isValidOrganisasjonsnummer()
+    fun validate() {
+        validate(this) {
+            validate(GravidSoknadRequest::identitetsnummer).isValidIdentitetsnummer()
+            validate(GravidSoknadRequest::bekreftet).isTrue()
+            validate(GravidSoknadRequest::virksomhetsnummer).isValidOrganisasjonsnummer()
 
 
-           if (this@GravidSoknadRequest.tilrettelegge) {
-               validate(GravidSoknadRequest::tiltak).isNotNull()
+            if (this@GravidSoknadRequest.tilrettelegge) {
+                validate(GravidSoknadRequest::tiltak).isNotNull()
 
-               if (this@GravidSoknadRequest.tiltak?.contains(Tiltak.ANNET) == true) {
-                   validate(GravidSoknadRequest::tiltakBeskrivelse).isNotNull()
-                   validate(GravidSoknadRequest::tiltakBeskrivelse).isNotEmpty()
-               }
+                if (this@GravidSoknadRequest.tiltak?.contains(Tiltak.ANNET) == true) {
+                    validate(GravidSoknadRequest::tiltakBeskrivelse).isNotNull()
+                    validate(GravidSoknadRequest::tiltakBeskrivelse).isNotEmpty()
+                }
 
-               if (this@GravidSoknadRequest.omplassering == Omplassering.IKKE_MULIG) {
-                   validate(GravidSoknadRequest::omplasseringAarsak).isNotNull()
-               }
-           }
+                if (this@GravidSoknadRequest.omplassering == Omplassering.IKKE_MULIG) {
+                    validate(GravidSoknadRequest::omplasseringAarsak).isNotNull()
+                }
+            }
 
-           if (!this@GravidSoknadRequest.dokumentasjon.isNullOrEmpty()) {
-               validate(GravidSoknadRequest::dokumentasjon).isGodskjentFiletyper()
-               validate(GravidSoknadRequest::dokumentasjon).isNotStorreEnn(10L * MB)
-           }
-       }
-   }
-    
-    fun toDomain(sendtAv: String, virksomhetsnavn: String) = GravidSoeknad(
-            virksomhetsnummer = virksomhetsnummer,
-            identitetsnummer = identitetsnummer,
-            sendtAv = sendtAv,
-            termindato = termindato,
-            omplassering = omplassering,
-            omplasseringAarsak = omplasseringAarsak,
-            tilrettelegge = tilrettelegge,
-            tiltak = tiltak,
-            tiltakBeskrivelse = tiltakBeskrivelse,
-            harVedlegg = !dokumentasjon.isNullOrEmpty(),
-            virksomhetsnavn = virksomhetsnavn
-        )
+            if (!this@GravidSoknadRequest.dokumentasjon.isNullOrEmpty()) {
+                validate(GravidSoknadRequest::dokumentasjon).isGodskjentFiletyper()
+                validate(GravidSoknadRequest::dokumentasjon).isNotStorreEnn(10L * MB)
+            }
+        }
+    }
+
+    fun toDomain(sendtAv: String) = GravidSoeknad(
+        virksomhetsnummer = virksomhetsnummer,
+        identitetsnummer = identitetsnummer,
+        sendtAv = sendtAv,
+        termindato = termindato,
+        omplassering = omplassering,
+        omplasseringAarsak = omplasseringAarsak,
+        tilrettelegge = tilrettelegge,
+        tiltak = tiltak,
+        tiltakBeskrivelse = tiltakBeskrivelse,
+        harVedlegg = !dokumentasjon.isNullOrEmpty()
+    )
 }
 
 
@@ -95,16 +91,15 @@ data class GravidKravRequest(
             }
         }
     }
-    
-    fun toDomain(sendtAv: String, virksomhetsnavn: String) = GravidKrav(
+
+    fun toDomain(sendtAv: String) = GravidKrav(
         identitetsnummer = identitetsnummer,
         virksomhetsnummer = virksomhetsnummer,
         periode = periode,
         sendtAv = sendtAv,
-        harVedlegg = !dokumentasjon.isNullOrEmpty(),
-        virksomhetsnavn = virksomhetsnavn
+        harVedlegg = !dokumentasjon.isNullOrEmpty()
     )
-    
+
 }
 
 

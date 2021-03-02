@@ -20,6 +20,7 @@ import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlHentFullPerson.PdlGeografi
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlHentFullPerson.PdlIdentResponse
 import no.nav.helse.fritakagp.db.KroniskSoeknadRepository
 import no.nav.helse.fritakagp.domain.KroniskSoeknad
+import no.nav.helse.fritakagp.integration.brreg.BerregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketDocument
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.processing.BakgrunnsJobbUtils.emptyJob
@@ -40,8 +41,8 @@ class KroniskSoeknadProcessorTest {
     val pdfGeneratorMock = mockk<KroniskSoeknadPDFGenerator>(relaxed = true)
     val bucketStorageMock = mockk<BucketStorage>(relaxed = true)
     val bakgrunnsjobbRepomock = mockk<BakgrunnsjobbRepository>(relaxed = true)
-
-    val prosessor = KroniskSoeknadProcessor(repositoryMock, joarkMock, oppgaveMock, bakgrunnsjobbRepomock, pdlClientMock, pdfGeneratorMock, objectMapper, bucketStorageMock)
+    val berregClient = mockk<BerregClient>(relaxed = true)
+    val prosessor = KroniskSoeknadProcessor(repositoryMock, joarkMock, oppgaveMock, bakgrunnsjobbRepomock, pdlClientMock, pdfGeneratorMock, objectMapper, bucketStorageMock, berregClient)
     lateinit var soeknad: KroniskSoeknad
 
     private val oppgaveId = 9999

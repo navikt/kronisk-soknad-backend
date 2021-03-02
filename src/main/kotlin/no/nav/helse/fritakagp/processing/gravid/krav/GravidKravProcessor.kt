@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory
 import java.time.LocalDate
 import java.time.LocalDateTime
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import no.nav.helse.fritakagp.integration.brreg.BerregClient
 import java.util.*
 
 class GravidKravProcessor(
@@ -30,7 +31,8 @@ class GravidKravProcessor(
     private val bakgrunnsjobbRepo: BakgrunnsjobbRepository,
     private val pdfGenerator: GravidKravPDFGenerator,
     private val om: ObjectMapper,
-    private val bucketStorage: BucketStorage
+    private val bucketStorage: BucketStorage,
+    private val berregClient: BerregClient
 
 ) : BakgrunnsjobbProsesserer {
     companion object {
@@ -53,6 +55,11 @@ class GravidKravProcessor(
         val krav = getOrThrow(jobb)
 
         try {
+            if (krav.virksomhetsnavn == null) {
+                runBlocking {
+                    krav.virksomhetsnavn = berregClient.getVirksomhetsNavn(krav.virksomhetsnummer)
+                }
+            }
             if (krav.journalpostId == null) {
                 krav.journalpostId = journalfør(krav)
                 GravidKravMetrics.tellJournalfoert()
@@ -96,7 +103,10 @@ class GravidKravProcessor(
         try {
             gravidKravRepo.update(krav)
         } catch (e: Exception) {
-            throw RuntimeException("Feilet i å lagre ${krav.id} etter at en ekstern operasjon har blitt utført. JournalpostID: ${krav.journalpostId} OppgaveID: ${krav.oppgaveId}", e)
+            throw RuntimeException(
+                "Feilet i å lagre ${krav.id} etter at en ekstern operasjon har blitt utført. JournalpostID: ${krav.journalpostId} OppgaveID: ${krav.oppgaveId}",
+                e
+            )
         }
     }
 
@@ -112,7 +122,7 @@ class GravidKravProcessor(
                 avsenderMottaker = AvsenderMottaker(
                     id = krav.sendtAv,
                     idType = IdType.FNR,
-                    navn = krav.virksomhetsnavn
+                    navn = krav.virksomhetsnavn ?: "Arbeidsgiver Ukjent"
                 ),
                 dokumenter = createDocuments(krav, journalfoeringsTittel),
                 datoMottatt = krav.opprettet.toLocalDate()
@@ -137,11 +147,11 @@ class GravidKravProcessor(
                     DokumentVariant(
                         fysiskDokument = base64EnkodetPdf
                     ),
-                        DokumentVariant(
-                                filtype = "json",
-                                fysiskDokument = jsonOrginalDokument,
-                                variantFormat = "ORGINAL"
-                        )
+                    DokumentVariant(
+                        filtype = "json",
+                        fysiskDokument = jsonOrginalDokument,
+                        variantFormat = "ORGINAL"
+                    )
                 ),
                 brevkode = "krav_om_fritak_fra_agp_gravid",
                 tittel = journalfoeringsTittel,
@@ -157,9 +167,9 @@ class GravidKravProcessor(
                             filtype = if (it.extension == "jpg") "JPEG" else it.extension.toUpperCase()
                         ),
                         DokumentVariant(
-                                filtype = "json",
-                                fysiskDokument = jsonOrginalDokument,
-                                variantFormat = "ORGINAL",
+                            filtype = "json",
+                            fysiskDokument = jsonOrginalDokument,
+                            variantFormat = "ORGINAL",
                         )
                     ),
                     brevkode = dokumentasjonBrevkode,
@@ -172,7 +182,8 @@ class GravidKravProcessor(
     }
 
     fun opprettOppgave(krav: GravidKrav): String {
-        val aktoerId = pdlClient.fullPerson(krav.identitetsnummer)?.hentIdenter?.trekkUtIdent(PdlIdent.PdlIdentGruppe.AKTORID)
+        val aktoerId =
+            pdlClient.fullPerson(krav.identitetsnummer)?.hentIdenter?.trekkUtIdent(PdlIdent.PdlIdentGruppe.AKTORID)
         requireNotNull(aktoerId, { "Fant ikke AktørID for fnr i ${krav.id}" })
 
         val request = OpprettOppgaveRequest(
@@ -195,7 +206,8 @@ class GravidKravProcessor(
 
 
     fun opprettFordelingsOppgave(krav: GravidKrav): String {
-        val aktoerId = pdlClient.fullPerson(krav.identitetsnummer)?.hentIdenter?.trekkUtIdent(PdlIdent.PdlIdentGruppe.AKTORID)
+        val aktoerId =
+            pdlClient.fullPerson(krav.identitetsnummer)?.hentIdenter?.trekkUtIdent(PdlIdent.PdlIdentGruppe.AKTORID)
         requireNotNull(aktoerId, { "Fant ikke AktørID for fnr i ${krav.id}" })
 
         val request = OpprettOppgaveRequest(

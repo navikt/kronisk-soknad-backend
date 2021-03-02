@@ -55,8 +55,8 @@ class GravidSoknadRequestTest {
 
     @Test
     internal fun `mapping til domenemodell tar med harVedleggflagg`() {
-        Assertions.assertThat(GravidTestData.gravidSoknadMedFil.toDomain("123", "Stark Industries").harVedlegg).isTrue()
-        Assertions.assertThat(GravidTestData.fullValidSoeknadRequest.toDomain("123", "Stark Industries").harVedlegg).isFalse()
+        Assertions.assertThat(GravidTestData.gravidSoknadMedFil.toDomain("123").harVedlegg).isTrue()
+        Assertions.assertThat(GravidTestData.fullValidSoeknadRequest.toDomain("123").harVedlegg).isFalse()
     }
 
     @Test

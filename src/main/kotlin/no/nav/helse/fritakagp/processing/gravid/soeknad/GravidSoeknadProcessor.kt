@@ -16,6 +16,7 @@ import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlIdent
 import no.nav.helse.fritakagp.GravidSoeknadMetrics
 import no.nav.helse.fritakagp.db.GravidSoeknadRepository
 import no.nav.helse.fritakagp.domain.GravidSoeknad
+import no.nav.helse.fritakagp.integration.brreg.BerregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import org.slf4j.LoggerFactory
 import java.time.LocalDate
@@ -29,7 +30,8 @@ class GravidSoeknadProcessor(
     private val bakgrunnsjobbRepo: BakgrunnsjobbRepository,
     private val pdfGenerator: GravidSoeknadPDFGenerator,
     private val om: ObjectMapper,
-    private val bucketStorage: BucketStorage
+    private val bucketStorage: BucketStorage,
+    private val berregClient: BerregClient
 ) : BakgrunnsjobbProsesserer {
     companion object {
         val JOB_TYPE = "gravid-søknad-formidling"
@@ -52,6 +54,11 @@ class GravidSoeknadProcessor(
         requireNotNull(soeknad, { "Jobben indikerte en søknad med id ${jobb.data} men den kunne ikke finnes" })
 
         try {
+            if (soeknad.virksomhetsnavn == null) {
+                runBlocking {
+                    soeknad.virksomhetsnavn = berregClient.getVirksomhetsNavn(soeknad.virksomhetsnummer)
+                }
+            }
             if (soeknad.journalpostId == null) {
                 soeknad.journalpostId = journalfør(soeknad)
                 GravidSoeknadMetrics.tellJournalfoert()
@@ -98,7 +105,7 @@ class GravidSoeknadProcessor(
                 avsenderMottaker = AvsenderMottaker(
                     id = soeknad.sendtAv,
                     idType = IdType.FNR,
-                    navn = soeknad.virksomhetsnavn
+                    navn = soeknad.virksomhetsnavn ?: "Ukjent arbeidsgiver"
                 ),
                 dokumenter = createDocuments(soeknad, journalfoeringsTittel),
                 datoMottatt = soeknad.opprettet.toLocalDate()

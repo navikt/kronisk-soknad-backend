@@ -13,7 +13,6 @@ import no.nav.helse.fritakagp.KroniskKravMetrics
 import no.nav.helse.fritakagp.KroniskSoeknadMetrics
 import no.nav.helse.fritakagp.db.KroniskKravRepository
 import no.nav.helse.fritakagp.db.KroniskSoeknadRepository
-import no.nav.helse.fritakagp.integration.brreg.BerregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
 import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravKvitteringProcessor
@@ -36,8 +35,7 @@ fun Route.kroniskRoutes(
     om: ObjectMapper,
     virusScanner: VirusScanner,
     bucket: BucketStorage,
-    authorizer: AltinnAuthorizer,
-    berregService : BerregClient
+    authorizer: AltinnAuthorizer
 ) {
     route("/kronisk") {
         route("/soeknad") {
@@ -55,8 +53,7 @@ fun Route.kroniskRoutes(
                 val request = call.receive<KroniskSoknadRequest>()
                 request.validate()
                 val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
-                val virksomhetsnavn = berregService.getVirksomhetsNavn(request.virksomhetsnummer)
-                val soeknad = request.toDomain(innloggetFnr, virksomhetsnavn)
+                val soeknad = request.toDomain(innloggetFnr)
 
                 processDocumentForGCPStorage(request.dokumentasjon, virusScanner, bucket, soeknad.id)
 
@@ -94,8 +91,7 @@ fun Route.kroniskRoutes(
                 val request = call.receive<KroniskKravRequest>()
                 request.validate()
                 authorize(authorizer, request.virksomhetsnummer)
-                val krav = request.toDomain(hentIdentitetsnummerFraLoginToken(application.environment.config, call.request),
-                                            berregService.getVirksomhetsNavn(request.virksomhetsnummer))
+                val krav = request.toDomain(hentIdentitetsnummerFraLoginToken(application.environment.config, call.request))
 
                 processDocumentForGCPStorage(request.dokumentasjon, virusScanner, bucket, krav.id)
 

@@ -40,8 +40,8 @@ class GravidSoeknadProcessorTest {
     val pdfGeneratorMock = mockk<GravidSoeknadPDFGenerator>(relaxed = true)
     val bucketStorageMock = mockk<BucketStorage>(relaxed = true)
     val bakgrunnsjobbRepomock = mockk<BakgrunnsjobbRepository>(relaxed = true)
-    val prosessor = GravidSoeknadProcessor(repositoryMock, joarkMock, oppgaveMock, pdlClientMock, bakgrunnsjobbRepomock, pdfGeneratorMock, objectMapper, bucketStorageMock)
     val berregServiceMock = mockk<BerregClient>(relaxed = true)
+    val prosessor = GravidSoeknadProcessor(repositoryMock, joarkMock, oppgaveMock, pdlClientMock, bakgrunnsjobbRepomock, pdfGeneratorMock, objectMapper, bucketStorageMock, berregServiceMock)
 
     lateinit var soeknad: GravidSoeknad
 

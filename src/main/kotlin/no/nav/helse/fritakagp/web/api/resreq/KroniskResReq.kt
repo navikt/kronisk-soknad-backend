@@ -53,7 +53,7 @@ data class KroniskSoknadRequest(
         }
     }
     
-    fun toDomain(sendtAv: String, virksomhetsnavn: String) = KroniskSoeknad(
+    fun toDomain(sendtAv: String) = KroniskSoeknad(
         virksomhetsnummer = virksomhetsnummer,
         identitetsnummer = identitetsnummer,
         sendtAv = sendtAv,
@@ -62,8 +62,7 @@ data class KroniskSoknadRequest(
         paakjenningBeskrivelse = paakjenningBeskrivelse,
         fravaer = fravaer,
         bekreftet = bekreftet,
-        harVedlegg = !dokumentasjon.isNullOrEmpty(),
-        virksomhetsnavn = virksomhetsnavn
+        harVedlegg = !dokumentasjon.isNullOrEmpty()
     )
 }
 
@@ -91,12 +90,11 @@ data class KroniskKravRequest(
         }
     }
     
-    fun toDomain(sendtAv: String, virksomhetsnavn: String) = KroniskKrav(
+    fun toDomain(sendtAv: String) = KroniskKrav(
         identitetsnummer = identitetsnummer,
         virksomhetsnummer = virksomhetsnummer,
         perioder = perioder,
         sendtAv = sendtAv,
-        harVedlegg = !dokumentasjon.isNullOrEmpty(),
-        virksomhetsnavn = virksomhetsnavn
+        harVedlegg = !dokumentasjon.isNullOrEmpty()
     )
 }

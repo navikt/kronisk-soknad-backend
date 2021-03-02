@@ -15,6 +15,7 @@ import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlIdent
 import no.nav.helse.fritakagp.KroniskKravMetrics
 import no.nav.helse.fritakagp.db.KroniskKravRepository
 import no.nav.helse.fritakagp.domain.KroniskKrav
+import no.nav.helse.fritakagp.integration.brreg.BerregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import org.slf4j.LoggerFactory
 import java.time.LocalDate
@@ -28,7 +29,8 @@ class KroniskKravProcessor(
     private val bakgrunnsjobbRepo : BakgrunnsjobbRepository,
     private val pdfGenerator: KroniskKravPDFGenerator,
     private val om: ObjectMapper,
-    private val bucketStorage: BucketStorage
+    private val bucketStorage: BucketStorage,
+    private val berregClient: BerregClient
 ) : BakgrunnsjobbProsesserer {
     companion object {
         val JOB_TYPE = "kronisk-krav-formidling"
@@ -49,6 +51,11 @@ class KroniskKravProcessor(
         val krav = getOrThrow(jobb)
 
         try {
+            if (krav.virksomhetsnavn == null) {
+                runBlocking {
+                    krav.virksomhetsnavn = berregClient.getVirksomhetsNavn(krav.virksomhetsnummer)
+                }
+            }
             if (krav.journalpostId == null) {
                 krav.journalpostId = journalfør(krav)
                 KroniskKravMetrics.tellJournalfoert()
@@ -109,7 +116,7 @@ class KroniskKravProcessor(
                 avsenderMottaker = AvsenderMottaker(
                     id = krav.sendtAv,
                     idType = IdType.FNR,
-                    navn = krav.virksomhetsnavn
+                    navn = krav.virksomhetsnavn ?: "Ukjent arbeidsgiver"
                 ),
                 dokumenter = createDocuments(krav, journalfoeringsTittel),
                 datoMottatt = krav.opprettet.toLocalDate()

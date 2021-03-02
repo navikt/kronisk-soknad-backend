@@ -14,7 +14,6 @@ import no.nav.helse.fritakagp.GravidSoeknadMetrics
 import no.nav.helse.fritakagp.db.GravidKravRepository
 import no.nav.helse.fritakagp.db.GravidSoeknadRepository
 import no.nav.helse.fritakagp.domain.decodeBase64File
-import no.nav.helse.fritakagp.integration.brreg.BerregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravKvitteringProcessor
@@ -42,8 +41,7 @@ fun Route.gravidRoutes(
     om: ObjectMapper,
     virusScanner: VirusScanner,
     bucket: BucketStorage,
-    authorizer: AltinnAuthorizer,
-    berregService : BerregClient
+    authorizer: AltinnAuthorizer
 ) {
     route("/gravid") {
         route("/soeknad") {
@@ -62,8 +60,7 @@ fun Route.gravidRoutes(
                 val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
                 val request = call.receive<GravidSoknadRequest>()
                 request.validate()
-                val virksomhetsnavn = berregService.getVirksomhetsNavn(request.virksomhetsnummer)
-                val soeknad = request.toDomain(innloggetFnr, virksomhetsnavn)
+                val soeknad = request.toDomain(innloggetFnr)
 
                 processDocumentForGCPStorage(request.dokumentasjon, virusScanner, bucket, soeknad.id)
 
@@ -103,8 +100,7 @@ fun Route.gravidRoutes(
                 request.validate()
                 authorize(authorizer, request.virksomhetsnummer)
 
-                val krav = request.toDomain(hentIdentitetsnummerFraLoginToken(application.environment.config, call.request),
-                                            berregService.getVirksomhetsNavn(request.virksomhetsnummer))
+                val krav = request.toDomain(hentIdentitetsnummerFraLoginToken(application.environment.config, call.request))
 
                 processDocumentForGCPStorage(request.dokumentasjon, virusScanner, bucket, krav.id)
 

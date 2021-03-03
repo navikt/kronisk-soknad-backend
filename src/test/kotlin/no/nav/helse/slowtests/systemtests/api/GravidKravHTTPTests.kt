@@ -8,14 +8,16 @@ import io.ktor.http.*
 import no.nav.helse.GravidTestData
 import no.nav.helse.fritakagp.db.GravidKravRepository
 import no.nav.helse.fritakagp.domain.GravidKrav
-import no.nav.helse.fritakagp.integration.brreg.BerregClientImp
+import no.nav.helse.fritakagp.domain.GravidSoeknad
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
+import org.koin.core.inject
 import org.koin.test.inject
 import kotlin.test.assertFailsWith
 
 class GravidKravHTTPTests : SystemTestBase() {
     private val kravGravidUrl = "/api/v1/gravid/krav"
+
     @Test
     internal fun `Returnerer kravet når korrekt bruker er innlogget, 404 når ikke`() = suspendableTest {
         val repo by inject<GravidKravRepository>()

@@ -16,6 +16,8 @@ import no.nav.helse.fritakagp.integration.brreg.BerregClient
 import no.nav.helse.fritakagp.integration.brreg.MockBerregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.integration.gcp.MockBucketStorage
+import no.nav.helse.fritakagp.integration.kafka.BrukernotifikasjonBeskjedSender
+import no.nav.helse.fritakagp.integration.kafka.MockBrukernotifikasjonBeskjedSender
 import no.nav.helse.fritakagp.integration.virusscan.MockVirusScanner
 import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
 import org.koin.core.module.Module

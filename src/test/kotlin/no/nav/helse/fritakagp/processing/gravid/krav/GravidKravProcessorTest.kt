@@ -43,8 +43,8 @@ class GravidKravProcessorTest {
     val pdfGeneratorMock = mockk<GravidKravPDFGenerator>(relaxed = true)
     val bucketStorageMock = mockk<BucketStorage>(relaxed = true)
     val bakgrunnsjobbRepomock = mockk<BakgrunnsjobbRepository>(relaxed = true)
-    val berregClient = mockk<BerregClient>(relaxed = true)
-    val prosessor = GravidKravProcessor(repositoryMock, joarkMock, oppgaveMock, pdlClientMock, bakgrunnsjobbRepomock, pdfGeneratorMock, objectMapper, bucketStorageMock, berregClient)
+    val berregServiceMock = mockk<BerregClient>(relaxed = true)
+    val prosessor = GravidKravProcessor(repositoryMock, joarkMock, oppgaveMock, pdlClientMock, bakgrunnsjobbRepomock, pdfGeneratorMock, objectMapper, bucketStorageMock, berregServiceMock)
     lateinit var krav: GravidKrav
 
     private val oppgaveId = 9999
@@ -67,6 +67,7 @@ class GravidKravProcessorTest {
         )
         every { joarkMock.journalførDokument(any(), any(), any()) } returns JournalpostResponse(arkivReferanse, true, "M", null, emptyList())
         coEvery { oppgaveMock.opprettOppgave(any(), any())} returns OpprettOppgaveResponse(oppgaveId)
+        coEvery { berregServiceMock.getVirksomhetsNavn(krav.virksomhetsnummer) } returns "Stark Industries"
     }
 
 
@@ -112,7 +113,6 @@ class GravidKravProcessorTest {
         assertThat(dokumentasjon.dokumentVarianter[0].fysiskDokument).isEqualTo(dokumentData)
         assertThat(dokumentasjon.dokumentVarianter[0].filtype).isEqualTo(filtypeArkiv.toUpperCase())
         assertThat(dokumentasjon.dokumentVarianter[0].variantFormat).isEqualTo("ARKIV")
-        assertThat(dokumentasjon.dokumentVarianter[1].fysiskDokument).isEqualTo(jsonOrginalDokument)
         assertThat(dokumentasjon.dokumentVarianter[1].filtype).isEqualTo(filtypeOrginal)
         assertThat(dokumentasjon.dokumentVarianter[1].variantFormat).isEqualTo("ORIGINAL")
     }

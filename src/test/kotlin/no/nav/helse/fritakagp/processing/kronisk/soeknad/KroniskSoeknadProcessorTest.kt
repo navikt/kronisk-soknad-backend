@@ -45,8 +45,8 @@ class KroniskSoeknadProcessorTest {
     val pdfGeneratorMock = mockk<KroniskSoeknadPDFGenerator>(relaxed = true)
     val bucketStorageMock = mockk<BucketStorage>(relaxed = true)
     val bakgrunnsjobbRepomock = mockk<BakgrunnsjobbRepository>(relaxed = true)
-    val berregClient = mockk<BerregClient>(relaxed = true)
-    val prosessor = KroniskSoeknadProcessor(repositoryMock, joarkMock, oppgaveMock, bakgrunnsjobbRepomock, pdlClientMock, pdfGeneratorMock, objectMapper, bucketStorageMock, berregClient)
+    val berregServiceMock = mockk<BerregClient>(relaxed = true)
+    val prosessor = KroniskSoeknadProcessor(repositoryMock, joarkMock, oppgaveMock, bakgrunnsjobbRepomock, pdlClientMock, pdfGeneratorMock, objectMapper, bucketStorageMock, berregServiceMock)
     lateinit var soeknad: KroniskSoeknad
 
     private val oppgaveId = 9999
@@ -69,6 +69,7 @@ class KroniskSoeknadProcessorTest {
         )
         every { joarkMock.journalførDokument(any(), any(), any()) } returns JournalpostResponse(arkivReferanse, true, "M", null, emptyList())
         coEvery { oppgaveMock.opprettOppgave(any(), any())} returns OpprettOppgaveResponse(oppgaveId)
+        coEvery { berregServiceMock.getVirksomhetsNavn(soeknad.virksomhetsnummer) } returns "Stark Industries"
     }
 
     @Test
@@ -112,7 +113,6 @@ class KroniskSoeknadProcessorTest {
         assertThat(dokumentasjon.dokumentVarianter[0].fysiskDokument).isEqualTo(dokumentData)
         assertThat(dokumentasjon.dokumentVarianter[0].filtype).isEqualTo(filtypeArkiv.toUpperCase())
         assertThat(dokumentasjon.dokumentVarianter[0].variantFormat).isEqualTo("ARKIV")
-        assertThat(dokumentasjon.dokumentVarianter[1].fysiskDokument).isEqualTo(originalJsonDoc)
         assertThat(dokumentasjon.dokumentVarianter[1].filtype).isEqualTo(filtypeOrginal)
         assertThat(dokumentasjon.dokumentVarianter[1].variantFormat).isEqualTo("ORIGINAL")
     }

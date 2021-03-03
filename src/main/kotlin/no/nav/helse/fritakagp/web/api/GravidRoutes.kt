@@ -60,6 +60,7 @@ fun Route.gravidRoutes(
                 val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
                 val request = call.receive<GravidSoknadRequest>()
                 request.validate()
+
                 val soeknad = request.toDomain(innloggetFnr)
 
                 processDocumentForGCPStorage(request.dokumentasjon, virusScanner, bucket, soeknad.id)
@@ -124,6 +125,7 @@ fun Route.gravidRoutes(
         }
     }
 }
+
 suspend fun processDocumentForGCPStorage(doc: String?, virusScanner: VirusScanner, bucket: BucketStorage, id: UUID) {
     if (!doc.isNullOrEmpty()) {
         val fileContent = extractBase64Del(doc)

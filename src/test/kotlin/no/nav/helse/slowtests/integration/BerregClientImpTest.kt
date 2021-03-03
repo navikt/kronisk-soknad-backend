@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test
 import kotlin.test.assertFailsWith
 
 class BrregClientImpTest  : SystemTestBase() {
-    private val kravGravidUrl = "/api/v1/gravid/krav"
     private val enhetsUrl ="data.brreg.no/enhetsregisteret/api/enheter"
 
     @Test

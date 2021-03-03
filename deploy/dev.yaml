@@ -46,6 +46,7 @@ spec:
       external:
         - host: helsearbeidsgiver-proxy.dev-fss-pub.nais.io
         - host: tt02.altinn.no
+        - host: data.brreg.no
 
       rules:
         - application: helsearbeidsgiver-proxy

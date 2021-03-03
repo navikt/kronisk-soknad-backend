@@ -16,7 +16,6 @@ import kotlin.test.assertFailsWith
 
 class GravidKravHTTPTests : SystemTestBase() {
     private val kravGravidUrl = "/api/v1/gravid/krav"
-    private val enhetsUrl ="data.brreg.no/enhetsregisteret/api/enheter"
     @Test
     internal fun `Returnerer kravet når korrekt bruker er innlogget, 404 når ikke`() = suspendableTest {
         val repo by inject<GravidKravRepository>()

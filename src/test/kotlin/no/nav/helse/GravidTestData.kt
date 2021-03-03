@@ -8,7 +8,6 @@ import java.time.LocalDate
 object GravidTestData {
     val validIdentitetsnummer = "20015001543"
     val validOrgNr = "917404437"
-    val fakeVirksonhetsnavn = ""
 
     val soeknadGravid = GravidSoeknad(
         virksomhetsnummer = validOrgNr,
@@ -19,8 +18,7 @@ object GravidTestData {
         tiltakBeskrivelse = "Vi prøvde både det ene og det andre og det første kanskje virka litt men muligens and the andre ikke var så på stell men akk ja sånn lorem",
         omplassering = Omplassering.IKKE_MULIG,
         omplasseringAarsak = OmplasseringAarsak.HELSETILSTANDEN,
-        sendtAv = "09876543210",
-        virksomhetsnavn = fakeVirksonhetsnavn
+        sendtAv = "09876543210"
     )
 
     val fullValidSoeknadRequest = GravidSoknadRequest(
@@ -84,8 +82,7 @@ object GravidTestData {
             5,
             2590.8
         ),
-        sendtAv = validIdentitetsnummer,
-        virksomhetsnavn = fakeVirksonhetsnavn
+        sendtAv = validIdentitetsnummer
     )
 }
 

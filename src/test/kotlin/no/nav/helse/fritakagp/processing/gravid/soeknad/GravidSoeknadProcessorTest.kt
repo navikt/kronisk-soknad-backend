@@ -65,6 +65,7 @@ class GravidSoeknadProcessorTest {
         )
         every { joarkMock.journalførDokument(any(), any(), any()) } returns JournalpostResponse(arkivReferanse, true, "M", null, emptyList())
         coEvery { oppgaveMock.opprettOppgave(any(), any())} returns OpprettOppgaveResponse(oppgaveId)
+        coEvery { berregServiceMock.getVirksomhetsNavn(soeknad.virksomhetsnummer) } returns "Stark Industries"
     }
 
 
@@ -127,10 +128,12 @@ class GravidSoeknadProcessorTest {
 
         assertThat(soeknad.journalpostId).isEqualTo(arkivReferanse)
         assertThat(soeknad.oppgaveId).isEqualTo(oppgaveId.toString())
+        assertThat(soeknad.virksomhetsnavn).isEqualTo("Stark Industries")
 
         verify(exactly = 1) { joarkMock.journalførDokument(any(), true, any()) }
         coVerify(exactly = 1) { oppgaveMock.opprettOppgave(any(), any()) }
         verify(exactly = 1) { repositoryMock.update(soeknad) }
+        coVerify(exactly = 1) { berregServiceMock.getVirksomhetsNavn(soeknad.virksomhetsnummer) }
     }
 
     @Test

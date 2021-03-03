@@ -19,6 +19,7 @@ data class KroniskSoeknad(
     val harVedlegg: Boolean = false,
 
     val sendtAv: String,
+    var virksomhetsnavn: String? = null,
 
     /**
          * ID fra joark etter arkivering

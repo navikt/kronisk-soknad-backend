@@ -19,6 +19,7 @@ import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor.Jobbdata.SkjemaType
+import no.nav.helse.fritakagp.integration.brreg.BerregClient
 import org.slf4j.LoggerFactory
 import java.time.LocalDate
 import java.util.*
@@ -32,7 +33,8 @@ class KroniskSoeknadProcessor(
     private val pdlClient: PdlClient,
     private val pdfGenerator: KroniskSoeknadPDFGenerator,
     private val om: ObjectMapper,
-    private val bucketStorage: BucketStorage
+    private val bucketStorage: BucketStorage,
+    private val berregClient: BerregClient
 ) : BakgrunnsjobbProsesserer {
     companion object {
         val dokumentasjonBrevkode = "soeknad_om_fritak_fra_agp_dokumentasjon"
@@ -52,6 +54,11 @@ class KroniskSoeknadProcessor(
         val soeknad = getSoeknadOrThrow(jobb)
 
         try {
+            if (soeknad.virksomhetsnavn == null) {
+                runBlocking {
+                    soeknad.virksomhetsnavn = berregClient.getVirksomhetsNavn(soeknad.virksomhetsnummer)
+                }
+            }
             if (soeknad.journalpostId == null) {
                 soeknad.journalpostId = journalfør(soeknad)
                 KroniskSoeknadMetrics.tellJournalfoert()
@@ -111,8 +118,6 @@ class KroniskSoeknadProcessor(
 
     fun journalfør(soeknad: KroniskSoeknad): String {
         val journalfoeringsTittel = "Søknad om fritak fra arbeidsgiverperioden ifbm kronisk lidelse"
-        val pdlResponse = pdlClient.personNavn(soeknad.sendtAv)?.navn?.firstOrNull()
-        val innsenderNavn = if (pdlResponse != null) "${pdlResponse.fornavn} ${pdlResponse.etternavn}" else "Ukjent"
 
         val response = dokarkivKlient.journalførDokument(
             JournalpostRequest(
@@ -124,7 +129,7 @@ class KroniskSoeknadProcessor(
                 avsenderMottaker = AvsenderMottaker(
                     id = soeknad.sendtAv,
                     idType = IdType.FNR,
-                    navn = innsenderNavn
+                    navn = soeknad.virksomhetsnavn ?: "Ukjent arbeidsgiver"
                 ),
                 dokumenter = createDocuments(soeknad, journalfoeringsTittel),
                 datoMottatt = soeknad.opprettet.toLocalDate()

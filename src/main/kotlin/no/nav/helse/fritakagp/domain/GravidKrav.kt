@@ -17,5 +17,6 @@ data class GravidKrav(
 
     var journalpostId: String? = null,
 
-    var oppgaveId: String? = null
+    var oppgaveId: String? = null,
+    var virksomhetsnavn: String? = null
 ) : SimpleJsonbEntity

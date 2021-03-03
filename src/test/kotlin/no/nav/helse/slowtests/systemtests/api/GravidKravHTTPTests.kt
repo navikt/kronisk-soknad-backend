@@ -1,5 +1,7 @@
 package no.nav.helse.slowtests.systemtests.api
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import io.ktor.client.features.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
@@ -11,6 +13,7 @@ import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import org.koin.core.inject
 import org.koin.test.inject
+import kotlin.test.assertFailsWith
 
 class GravidKravHTTPTests : SystemTestBase() {
     private val kravGravidUrl = "/api/v1/gravid/krav"
@@ -105,8 +108,5 @@ class GravidKravHTTPTests : SystemTestBase() {
         }
 
         Assertions.assertThat(response.status).isEqualTo(HttpStatusCode.Created)
-
-
-
     }
 }

@@ -4,7 +4,6 @@ import no.nav.helse.fritakagp.domain.*
 import no.nav.helse.fritakagp.web.api.resreq.GravidKravRequest
 import no.nav.helse.fritakagp.web.api.resreq.GravidSoknadRequest
 import java.time.LocalDate
-import java.time.LocalDateTime
 
 object GravidTestData {
     val validIdentitetsnummer = "20015001543"

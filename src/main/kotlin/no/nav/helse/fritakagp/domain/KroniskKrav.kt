@@ -16,5 +16,6 @@ data class KroniskKrav(
         val kontrollDager: Int?,
         var journalpostId: String? = null,
 
-        var oppgaveId: String? = null
+        var oppgaveId: String? = null,
+        var virksomhetsnavn: String? = null
 ) : SimpleJsonbEntity

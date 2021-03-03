@@ -15,6 +15,7 @@ import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlIdent
 import no.nav.helse.fritakagp.KroniskKravMetrics
 import no.nav.helse.fritakagp.db.KroniskKravRepository
 import no.nav.helse.fritakagp.domain.KroniskKrav
+import no.nav.helse.fritakagp.integration.brreg.BerregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor.Jobbdata.SkjemaType
@@ -30,7 +31,8 @@ class KroniskKravProcessor(
     private val bakgrunnsjobbRepo : BakgrunnsjobbRepository,
     private val pdfGenerator: KroniskKravPDFGenerator,
     private val om: ObjectMapper,
-    private val bucketStorage: BucketStorage
+    private val bucketStorage: BucketStorage,
+    private val berregClient: BerregClient
 ) : BakgrunnsjobbProsesserer {
     companion object {
         val JOB_TYPE = "kronisk-krav-formidling"
@@ -51,6 +53,11 @@ class KroniskKravProcessor(
         val krav = getOrThrow(jobb)
 
         try {
+            if (krav.virksomhetsnavn == null) {
+                runBlocking {
+                    krav.virksomhetsnavn = berregClient.getVirksomhetsNavn(krav.virksomhetsnummer)
+                }
+            }
             if (krav.journalpostId == null) {
                 krav.journalpostId = journalfør(krav)
                 KroniskKravMetrics.tellJournalfoert()
@@ -108,8 +115,6 @@ class KroniskKravProcessor(
 
     fun journalfør(krav: KroniskKrav): String {
         val journalfoeringsTittel = "Krav om fritak fra arbeidsgiverperioden ifbm kroniskitet"
-        val pdlResponse = pdlClient.personNavn(krav.sendtAv)?.navn?.firstOrNull()
-        val innsenderNavn = if (pdlResponse != null) "${pdlResponse.fornavn} ${pdlResponse.etternavn}" else "Ukjent"
 
         val response = dokarkivKlient.journalførDokument(
             JournalpostRequest(
@@ -121,7 +126,7 @@ class KroniskKravProcessor(
                 avsenderMottaker = AvsenderMottaker(
                     id = krav.sendtAv,
                     idType = IdType.FNR,
-                    navn = innsenderNavn
+                    navn = krav.virksomhetsnavn ?: "Ukjent arbeidsgiver"
                 ),
                 dokumenter = createDocuments(krav, journalfoeringsTittel),
                 datoMottatt = krav.opprettet.toLocalDate()

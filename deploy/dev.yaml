@@ -47,6 +47,7 @@ spec:
         - host: helsearbeidsgiver-proxy.dev-fss-pub.nais.io
         - host: tt02.altinn.no
         - host: kafka-schema-registry.nais-q.adeo.no
+        - host: data.brreg.no
 
       rules:
         - application: helsearbeidsgiver-proxy
@@ -79,7 +80,8 @@ spec:
       value: helse-arbeidsgiver-fritakagb-bucket
     - name: ALTINN_SERVICE_OWNER_GW_URL
       value: https://api-gw-q1.oera.no/ekstern/altinn/api/serviceowner
-
+    - name: ENHETSREGISTERET
+      value: data.brreg.no/enhetsregisteret/api/enheter
     - name: AVRO_SCHEMA_SERVER_URL
       value: https://kafka-schema-registry.nais-q.adeo.no
     - name: ON_PREM_KAFKA_BROKERS

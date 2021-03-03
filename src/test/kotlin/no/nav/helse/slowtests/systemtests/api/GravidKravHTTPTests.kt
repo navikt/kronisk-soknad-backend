@@ -96,22 +96,4 @@ class GravidKravHTTPTests : SystemTestBase() {
 
         Assertions.assertThat(response.status).isEqualTo(HttpStatusCode.Created)
     }
-
-    @Test
-    fun `Skal returnere ARBEIDS- OG VELFERDSETATEN`() = suspendableTest {
-        val om = ObjectMapper()
-        val client = BerregClientImp(httpClient, om, enhetsUrl)
-        val navn = client.getVirksomhetsNavn("889640782")
-        Assertions.assertThat(navn).isEqualTo("ARBEIDS- OG VELFERDSETATEN")
-    }
-
-    @Test
-    fun `Skal returnere 404`() = suspendableTest {
-        val om = ObjectMapper()
-        val fakeOrgNr = "123456789"
-        val errmsg = "Client request(https://${enhetsUrl}/$fakeOrgNr) invalid: 404"
-        val client = BerregClientImp(httpClient, om, enhetsUrl)
-        val exception = assertFailsWith<ClientRequestException> { client.getVirksomhetsNavn(fakeOrgNr) }
-        Assertions.assertThat(exception.message).contains(errmsg)
-    }
 }

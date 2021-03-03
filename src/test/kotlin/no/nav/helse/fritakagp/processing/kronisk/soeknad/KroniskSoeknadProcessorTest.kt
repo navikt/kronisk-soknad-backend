@@ -32,6 +32,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.io.IOException
+import java.util.*
 
 class KroniskSoeknadProcessorTest {
 
@@ -92,13 +93,13 @@ class KroniskSoeknadProcessorTest {
     fun `Om det finnes ekstra dokumentasjon skal den journalføres og så slettes`() {
         val dokumentData = "test"
         val filtypeArkiv = "pdf"
-        val filtypeOrginal = "json"
+        val filtypeOrginal = "JSON"
         every { bucketStorageMock.getDocAsString(soeknad.id) } returns BucketDocument(dokumentData, filtypeArkiv)
 
         val joarkRequest = slot<JournalpostRequest>()
         every { joarkMock.journalførDokument(capture(joarkRequest), any(), any()) } returns JournalpostResponse(arkivReferanse, true, "M", null, emptyList())
 
-        val originalJsonDoc = objectMapper.writeValueAsString(soeknad)
+        val originalJsonDoc = Base64.getEncoder().encodeToString(objectMapper.writeValueAsBytes(soeknad))
         prosessor.prosesser(jobb)
 
         verify(exactly = 1) { bucketStorageMock.getDocAsString(soeknad.id) }
@@ -112,7 +113,7 @@ class KroniskSoeknadProcessorTest {
         assertThat(dokumentasjon.dokumentVarianter[0].variantFormat).isEqualTo("ARKIV")
         assertThat(dokumentasjon.dokumentVarianter[1].fysiskDokument).isEqualTo(originalJsonDoc)
         assertThat(dokumentasjon.dokumentVarianter[1].filtype).isEqualTo(filtypeOrginal)
-        assertThat(dokumentasjon.dokumentVarianter[1].variantFormat).isEqualTo("ORGINAL")
+        assertThat(dokumentasjon.dokumentVarianter[1].variantFormat).isEqualTo("ORIGINAL")
     }
 
     @Test

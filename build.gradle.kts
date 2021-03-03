@@ -43,9 +43,6 @@ buildscript {
         classpath("org.junit.platform:junit-platform-gradle-plugin:1.2.0")
     }
 }
-dependencyLocking {
-    lockAllConfigurations()
-}
 
 dependencies {
     // SNYK-fikser - Disse kan fjernes etterhver som våre avhengigheter oppdaterer sine versjoner
@@ -61,9 +58,6 @@ dependencies {
     implementation("com.google.guava:guava:30.0-jre") //[Medium Severity][https://snyk.io/vuln/SNYK-JAVA-COMGOOGLEGUAVA-1015415] overstyrer versjon 29.0
     // -- end snyk fixes
 
-
-
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.12.1")
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
     implementation("io.ktor:ktor-jackson:$ktorVersion")
     implementation("io.ktor:ktor-client-core:$ktorVersion")
@@ -88,7 +82,7 @@ dependencies {
 
     implementation("javax.ws.rs:javax.ws.rs-api:2.1.1")
     implementation("no.nav.security:mock-oauth2-server:$mockOAuth2ServerVersion")
-    implementation("no.nav.helsearbeidsgiver:helse-arbeidsgiver-felles-backend:2021.02.26-14-35-02259")
+    implementation("no.nav.helsearbeidsgiver:helse-arbeidsgiver-felles-backend:2021.03.02-15-19-eb0ee")
     implementation("no.nav.common:log:2.2020.10.15_11.43-b1f02e7bd6ae")
 
     implementation(kotlin("stdlib"))

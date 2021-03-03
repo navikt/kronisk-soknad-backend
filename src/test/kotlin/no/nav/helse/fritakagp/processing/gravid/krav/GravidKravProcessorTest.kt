@@ -30,6 +30,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.io.IOException
+import java.util.*
 
 class GravidKravProcessorTest {
 
@@ -91,13 +92,13 @@ class GravidKravProcessorTest {
     fun `Om det finnes ekstra dokumentasjon skal den journalføres og så slettes`() {
         val dokumentData = "test"
         val filtypeArkiv = "pdf"
-        val filtypeOrginal = "json"
+        val filtypeOrginal = "JSON"
         every { bucketStorageMock.getDocAsString(krav.id) } returns BucketDocument(dokumentData, filtypeArkiv)
 
         val joarkRequest = slot<JournalpostRequest>()
         every { joarkMock.journalførDokument(capture(joarkRequest), any(), any()) } returns JournalpostResponse(arkivReferanse, true, "M", null, emptyList())
 
-        val orginalJsonDoc = objectMapper.writeValueAsString(krav)
+        val jsonOrginalDokument = Base64.getEncoder().encodeToString(objectMapper.writeValueAsBytes(krav))
         prosessor.prosesser(jobb)
 
         verify(exactly = 1) { bucketStorageMock.getDocAsString(krav.id) }
@@ -109,9 +110,9 @@ class GravidKravProcessorTest {
         assertThat(dokumentasjon.dokumentVarianter[0].fysiskDokument).isEqualTo(dokumentData)
         assertThat(dokumentasjon.dokumentVarianter[0].filtype).isEqualTo(filtypeArkiv.toUpperCase())
         assertThat(dokumentasjon.dokumentVarianter[0].variantFormat).isEqualTo("ARKIV")
-        assertThat(dokumentasjon.dokumentVarianter[1].fysiskDokument).isEqualTo(orginalJsonDoc)
+        assertThat(dokumentasjon.dokumentVarianter[1].fysiskDokument).isEqualTo(jsonOrginalDokument)
         assertThat(dokumentasjon.dokumentVarianter[1].filtype).isEqualTo(filtypeOrginal)
-        assertThat(dokumentasjon.dokumentVarianter[1].variantFormat).isEqualTo("ORGINAL")
+        assertThat(dokumentasjon.dokumentVarianter[1].variantFormat).isEqualTo("ORIGINAL")
     }
 
     @Test

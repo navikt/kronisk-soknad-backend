@@ -142,8 +142,7 @@ class GravidSoeknadProcessor(
         journalfoeringsTittel: String
     ): List<Dokument> {
         val base64EnkodetPdf = Base64.getEncoder().encodeToString(pdfGenerator.lagPDF(soeknad))
-        val jsonOrginalDokument = om.writeValueAsString(soeknad)
-
+        val jsonOrginalDokument = Base64.getEncoder().encodeToString(om.writeValueAsBytes(soeknad))
         val dokumentListe = mutableListOf(
             Dokument(
                 dokumentVarianter = listOf(
@@ -165,9 +164,9 @@ class GravidSoeknadProcessor(
                             filtype = if (it.extension == "jpg") "JPEG" else it.extension.toUpperCase()
                         ),
                             DokumentVariant(
-                                    variantFormat = "ORGINAL",
+                                    variantFormat = "ORIGINAL",
                                     fysiskDokument = jsonOrginalDokument,
-                                    filtype = "json"
+                                    filtype = "JSON"
                             )
                     ),
                     brevkode = dokumentasjonBrevkode,

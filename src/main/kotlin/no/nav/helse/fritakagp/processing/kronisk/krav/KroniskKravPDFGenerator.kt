@@ -29,12 +29,12 @@ class KroniskKravPDFGenerator {
         val startY = mediaBox.upperRightY - MARGIN_Y
         content.newLineAtOffset(startX, startY)
         content.setFont(font, FONT_SIZE + 4)
-        content.showText("Søknad om Fritak fra arbeidsgiverperioden")
+        content.showText("Krav om refusjon av sykepenger i arbeidsgiverperioden")
         content.setFont(font, FONT_SIZE)
 
         content.writeTextWrapped("Mottatt: ${TIMESTAMP_FORMAT.format(krav.opprettet)}", 4)
         content.writeTextWrapped("Person (FNR): ${krav.identitetsnummer}")
-        content.writeTextWrapped("Arbeidsgiver oppgitt i søknad: ${krav.virksomhetsnummer}")
+        content.writeTextWrapped("Arbeidsgiver oppgitt i krav: ${krav.virksomhetsnummer}")
         content.writeTextWrapped("Perioder", 2)
 
         krav.perioder.forEach {

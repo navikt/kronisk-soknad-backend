@@ -52,21 +52,21 @@ class BrukernotifikasjonProcessor(
         return when(jobbData.skjemaType) {
             Jobbdata.SkjemaType.KroniskKrav -> {
                 val skjema = kroniskKravRepo.getById(jobbData.skjemaId) ?: throw IllegalArgumentException("Fant ikke $jobbData")
-                buildBeskjed(skjema.id, "$frontendAppBaseUrl/kronisk/krav/${skjema.id}", skjema.identitetsnummer, skjema.opprettet)
+                buildBeskjed(skjema.id, "$frontendAppBaseUrl/kronisk/krav/${skjema.id}", skjema.identitetsnummer, skjema.opprettet, skjema.virksomhetsnavn)
             }
 
             Jobbdata.SkjemaType.KroniskSøknad -> {
                 val skjema = kroniskSoeknadRepo.getById(jobbData.skjemaId) ?: throw IllegalArgumentException("Fant ikke $jobbData")
-                buildBeskjed(skjema.id, "$frontendAppBaseUrl/kronisk/soeknad/${skjema.id}", skjema.identitetsnummer, skjema.opprettet)
+                buildBeskjed(skjema.id, "$frontendAppBaseUrl/kronisk/soeknad/${skjema.id}", skjema.identitetsnummer, skjema.opprettet, skjema.virksomhetsnavn)
             }
 
             Jobbdata.SkjemaType.GravidKrav -> {
                 val skjema = gravidKravRepo.getById(jobbData.skjemaId) ?: throw IllegalArgumentException("Fant ikke $jobbData")
-                buildBeskjed(skjema.id, "$frontendAppBaseUrl/gravid/krav/${skjema.id}", skjema.identitetsnummer, skjema.opprettet)
+                buildBeskjed(skjema.id, "$frontendAppBaseUrl/gravid/krav/${skjema.id}", skjema.identitetsnummer, skjema.opprettet, skjema.virksomhetsnavn)
             }
             Jobbdata.SkjemaType.GravidSøknad -> {
                 val skjema = gravidSoeknadRepo.getById(jobbData.skjemaId) ?: throw IllegalArgumentException("Fant ikke $jobbData")
-                buildBeskjed(skjema.id, "$frontendAppBaseUrl/gravid/soeknad/${skjema.id}", skjema.identitetsnummer, skjema.opprettet)
+                buildBeskjed(skjema.id, "$frontendAppBaseUrl/gravid/soeknad/${skjema.id}", skjema.identitetsnummer, skjema.opprettet, skjema.virksomhetsnavn)
             }
         }
     }
@@ -76,17 +76,19 @@ class BrukernotifikasjonProcessor(
         linkUrl: String,
         identitetsnummer: String,
         hendselstidspunkt: LocalDateTime,
-
+        virksomhetsNavn: String?
         ): Beskjed {
 
         val synligFremTil =  LocalDateTime.now().plusDays(31)
+        val ukjentArbeidsgiver = "Arbeidsgiveren din"
+
         val beskjed = BeskjedBuilder()
             .withGrupperingsId(id.toString())
             .withFodselsnummer(identitetsnummer)
             .withLink(URL(linkUrl))
             .withSikkerhetsnivaa(sikkerhetsNivaa)
             .withSynligFremTil(synligFremTil)
-            .withTekst("Arbeisdgiveren din har søkt om utvidet støtte fra NAV angående sykepenger til deg.")
+            .withTekst("${virksomhetsNavn ?: ukjentArbeidsgiver} har søkt om utvidet støtte fra NAV angående sykepenger til deg.")
             .withEksternVarsling(false)
             .withTidspunkt(hendselstidspunkt)
             .build()

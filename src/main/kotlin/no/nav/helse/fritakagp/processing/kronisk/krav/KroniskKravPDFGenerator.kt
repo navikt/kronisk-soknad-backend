@@ -34,7 +34,7 @@ class KroniskKravPDFGenerator {
 
         content.writeTextWrapped("Mottatt: ${TIMESTAMP_FORMAT.format(krav.opprettet)}", 4)
         content.writeTextWrapped("Person (FNR): ${krav.identitetsnummer}")
-        content.writeTextWrapped("Arbeidsgiver oppgitt i krav: ${krav.virksomhetsnummer}")
+        content.writeTextWrapped("Arbeidsgiver oppgitt i krav: ${krav.virksomhetsnavn} (${krav.virksomhetsnummer})")
         content.writeTextWrapped("Perioder", 2)
 
         krav.perioder.forEach {

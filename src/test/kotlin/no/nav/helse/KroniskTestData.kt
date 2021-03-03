@@ -50,7 +50,8 @@ object KroniskTestData {
             2590.8
         )),
         bekreftet = true,
-        dokumentasjon = null
+        dokumentasjon = null,
+        kontrollDager = null
     )
 
     val kroniskKravRequestMedFil = kroniskKravRequestValid.copy(
@@ -68,7 +69,8 @@ object KroniskTestData {
             5,
             2590.8
         )),
-        sendtAv = validIdentitetsnummer
+        sendtAv = validIdentitetsnummer,
+        kontrollDager = null
     )
     
 }

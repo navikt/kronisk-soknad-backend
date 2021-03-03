@@ -24,11 +24,15 @@ import no.nav.helse.fritakagp.domain.GravidSoeknad
 import no.nav.helse.fritakagp.integration.brreg.BerregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketDocument
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
+import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
+import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor.Jobbdata.SkjemaType
+import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravKafkaProcessor
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.io.IOException
+import java.util.*
 
 class GravidSoeknadProcessorTest {
 
@@ -82,13 +86,13 @@ class GravidSoeknadProcessorTest {
     fun `Om det finnes ekstra dokumentasjon skal den journalføres og så slettes`() {
         val dokumentData = "test"
         val filtypeArkiv = "pdf"
-        val filtypeOrginal = "json"
+        val filtypeOrginal = "JSON"
         every { bucketStorageMock.getDocAsString(soeknad.id) } returns BucketDocument(dokumentData, filtypeArkiv)
 
         val joarkRequest = slot<JournalpostRequest>()
         every { joarkMock.journalførDokument(capture(joarkRequest), any(), any()) } returns JournalpostResponse(arkivReferanse, true, "M", null, emptyList())
 
-        val orginalJsonDoc = objectMapper.writeValueAsString(soeknad)
+        val orginalJsonDoc = Base64.getEncoder().encodeToString(objectMapper.writeValueAsBytes(soeknad))
         prosessor.prosesser(jobb)
 
         verify(exactly = 1) { bucketStorageMock.getDocAsString(soeknad.id) }
@@ -102,7 +106,7 @@ class GravidSoeknadProcessorTest {
         assertThat(dokumentasjon.dokumentVarianter[0].variantFormat).isEqualTo("ARKIV")
         assertThat(dokumentasjon.dokumentVarianter[1].fysiskDokument).isEqualTo(orginalJsonDoc)
         assertThat(dokumentasjon.dokumentVarianter[1].filtype).isEqualTo(filtypeOrginal)
-        assertThat(dokumentasjon.dokumentVarianter[1].variantFormat).isEqualTo("ORGINAL")
+        assertThat(dokumentasjon.dokumentVarianter[1].variantFormat).isEqualTo("ORIGINAL")
     }
 
     @Test
@@ -137,17 +141,21 @@ class GravidSoeknadProcessorTest {
     }
 
     @Test
-    fun `skal opprette kafkasenderjobb`() {
+    fun `skal opprette jobber`() {
         prosessor.prosesser(jobb)
 
-        assertThat(soeknad.journalpostId).isEqualTo(arkivReferanse)
-        assertThat(soeknad.oppgaveId).isEqualTo(oppgaveId.toString())
+        val opprettetJobber = mutableListOf<Bakgrunnsjobb>()
 
-        val opprettetBakgrunnsjobb = slot<Bakgrunnsjobb>()
-        verify(exactly = 1) { bakgrunnsjobbRepomock.save(capture(opprettetBakgrunnsjobb)) }
+        verify(exactly = 2) {
+            bakgrunnsjobbRepomock.save(capture(opprettetJobber))
+        }
 
-        assertThat(opprettetBakgrunnsjobb.captured.type).isEqualTo(GravidSoeknadKafkaProcessor.JOB_TYPE)
-        assertThat(opprettetBakgrunnsjobb.captured.data).contains(soeknad.id.toString())
+        val kafkajobb = opprettetJobber.find {it.type == GravidSoeknadKafkaProcessor.JOB_TYPE }
+        assertThat(kafkajobb?.data).contains(soeknad.id.toString())
+
+        val beskjedJobb = opprettetJobber.find {it.type == BrukernotifikasjonProcessor.JOB_TYPE }
+        assertThat(beskjedJobb?.data).contains(soeknad.id.toString())
+        assertThat(beskjedJobb?.data).contains(SkjemaType.GravidSøknad.name)
     }
 
     @Test

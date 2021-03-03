@@ -18,22 +18,14 @@ interface SoeknadmeldingSender {
     fun sendMessage(melding: GravidSoeknad): RecordMetadata?
 }
 
-interface KafkaProducerProvider {
-    fun createProducer(props : Map<String, Any>) : KafkaProducer<String, String>
-}
-
-class SoeknadmeldingKafkaProducerProvider : KafkaProducerProvider {
-    override fun createProducer(props: Map<String, Any>) = KafkaProducer(props, StringSerializer(), StringSerializer())
-}
-
 class SoeknadmeldingKafkaProducer(
     private val props: MutableMap<String, Any>,
     private val topicName: String,
     private val om: ObjectMapper,
-    private val producerProvider : KafkaProducerProvider
+    private val producerFactory : ProducerFactory<String, String>
 ) :
     SoeknadmeldingSender {
-    private var producer = producerProvider.createProducer(props)
+    private var producer = producerFactory.createProducer(props)
 
     override fun sendMessage(melding: KroniskSoeknad): RecordMetadata? {
         return sendKafkaMessage(om.writeValueAsString(melding), "KroniskSoeknad")
@@ -56,7 +48,7 @@ class SoeknadmeldingKafkaProducer(
             if (ex.cause is AuthenticationException) {
                 producer.flush()
                 producer.close()
-                producer = producerProvider.createProducer(props)
+                producer = producerFactory.createProducer(props)
                 return sendMelding(melding, type)
             } else throw ex
         }

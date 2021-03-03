@@ -68,13 +68,12 @@ data class KroniskSoknadRequest(
 
 
 data class KroniskKravRequest(
-    val virksomhetsnummer: String,
-    val identitetsnummer: String,
-    val perioder: Set<Arbeidsgiverperiode>,
-
-    val bekreftet: Boolean,
-
-    val dokumentasjon: String?
+        val virksomhetsnummer: String,
+        val identitetsnummer: String,
+        val perioder: Set<Arbeidsgiverperiode>,
+        val bekreftet: Boolean,
+        val dokumentasjon: String?,
+        val kontrollDager: Int?
 ) {
    fun validate() {
         validate(this) {
@@ -95,6 +94,7 @@ data class KroniskKravRequest(
         virksomhetsnummer = virksomhetsnummer,
         perioder = perioder,
         sendtAv = sendtAv,
-        harVedlegg = !dokumentasjon.isNullOrEmpty()
+        harVedlegg = !dokumentasjon.isNullOrEmpty(),
+        kontrollDager = kontrollDager
     )
 }

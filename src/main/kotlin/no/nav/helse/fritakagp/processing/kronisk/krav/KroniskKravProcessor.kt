@@ -17,6 +17,8 @@ import no.nav.helse.fritakagp.db.KroniskKravRepository
 import no.nav.helse.fritakagp.domain.KroniskKrav
 import no.nav.helse.fritakagp.integration.brreg.BerregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
+import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
+import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor.Jobbdata.SkjemaType
 import org.slf4j.LoggerFactory
 import java.time.LocalDate
 import java.util.*
@@ -74,6 +76,14 @@ class KroniskKravProcessor(
                     type = KroniskKravKafkaProcessor.JOB_TYPE
                 )
             )
+            bakgrunnsjobbRepo.save(
+                Bakgrunnsjobb(
+                    maksAntallForsoek = 10,
+                    data = om.writeValueAsString(BrukernotifikasjonProcessor.Jobbdata(krav.id, SkjemaType.KroniskKrav)),
+                    type = BrukernotifikasjonProcessor.JOB_TYPE
+                )
+            )
+
         } finally {
             updateAndLogOnFailure(krav)
         }
@@ -133,8 +143,7 @@ class KroniskKravProcessor(
         journalfoeringsTittel: String
     ): List<Dokument> {
         val base64EnkodetPdf = Base64.getEncoder().encodeToString(pdfGenerator.lagPDF(krav))
-        val jsonOrginalDokument = om.writeValueAsString(krav)
-
+        val jsonOrginalDokument = Base64.getEncoder().encodeToString(om.writeValueAsBytes(krav))
         val dokumentListe = mutableListOf(
             Dokument(
                 dokumentVarianter = listOf(
@@ -142,9 +151,9 @@ class KroniskKravProcessor(
                         fysiskDokument = base64EnkodetPdf,
                     ),
                     DokumentVariant(
-                            filtype = "json",
+                            filtype = "JSON",
                             fysiskDokument = jsonOrginalDokument,
-                            variantFormat = "ORGINAL"
+                            variantFormat = "ORIGINAL"
                     )
                 ),
                 brevkode = "krav_om_fritak_fra_agp_kronisk",
@@ -161,9 +170,9 @@ class KroniskKravProcessor(
                             filtype = if (it.extension == "jpg") "JPEG" else it.extension.toUpperCase()
                         ),
                         DokumentVariant(
-                                filtype = "json",
+                                filtype = "JSON",
                                 fysiskDokument = jsonOrginalDokument,
-                                variantFormat = "ORGINAL"
+                                variantFormat = "ORIGINAL"
                         )
                     ),
                     brevkode = dokumentasjonBrevkode,

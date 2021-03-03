@@ -17,6 +17,8 @@ import no.nav.helse.fritakagp.db.KroniskSoeknadRepository
 import no.nav.helse.fritakagp.domain.KroniskSoeknad
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
+import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor.Jobbdata.SkjemaType
 import no.nav.helse.fritakagp.integration.brreg.BerregClient
 import org.slf4j.LoggerFactory
 import java.time.LocalDate
@@ -74,6 +76,13 @@ class KroniskSoeknadProcessor(
                     maksAntallForsoek = 10,
                     data = om.writeValueAsString(KroniskSoeknadKafkaProcessor.JobbData(soeknad.id)),
                     type = KroniskSoeknadKafkaProcessor.JOB_TYPE
+                )
+            )
+            bakgrunnsjobbRepo.save(
+                Bakgrunnsjobb(
+                    maksAntallForsoek = 10,
+                    data = om.writeValueAsString(BrukernotifikasjonProcessor.Jobbdata(soeknad.id, SkjemaType.KroniskSøknad)),
+                    type = BrukernotifikasjonProcessor.JOB_TYPE
                 )
             )
 
@@ -137,8 +146,7 @@ class KroniskSoeknadProcessor(
         journalfoeringsTittel: String
     ): List<Dokument> {
         val base64EnkodetPdf = Base64.getEncoder().encodeToString(pdfGenerator.lagPDF(soeknad))
-        val jsonOrginalDokument = om.writeValueAsString(soeknad)
-
+        val jsonOrginalDokument = Base64.getEncoder().encodeToString(om.writeValueAsBytes(soeknad))
         val dokumentListe = mutableListOf(
             Dokument(
                 dokumentVarianter = listOf(
@@ -160,9 +168,9 @@ class KroniskSoeknadProcessor(
                             filtype = if (it.extension == "jpg") "JPEG" else it.extension.toUpperCase()
                         ),
                         DokumentVariant(
-                            variantFormat = "ORGINAL",
+                            variantFormat = "ORIGINAL",
                             fysiskDokument = jsonOrginalDokument,
-                            filtype = "json"
+                            filtype = "JSON"
                         )
                     ),
                     brevkode = dokumentasjonBrevkode,

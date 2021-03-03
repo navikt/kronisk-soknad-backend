@@ -13,6 +13,7 @@ data class GravidKrav(
     val identitetsnummer: String,
     val periode: Arbeidsgiverperiode,
     val harVedlegg: Boolean = false,
+    val kontrollDager: Int?,
 
     var journalpostId: String? = null,
 

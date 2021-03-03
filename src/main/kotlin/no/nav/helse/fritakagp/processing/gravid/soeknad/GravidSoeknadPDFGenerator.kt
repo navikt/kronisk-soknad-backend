@@ -15,7 +15,8 @@ class GravidSoeknadPDFGenerator {
     private val MARGIN_X = 40f
     private val MARGIN_Y = 40f
     private val FONT_NAME = "fonts/SourceSansPro-Regular.ttf"
-    val TIMESTAMP_FORMAT = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss")
+    private val terminaDatoIkkeOppgitt = "Ikke oppgitt"
+
 
     fun lagPDF(soeknad: GravidSoeknad): ByteArray {
         val doc = PDDocument()
@@ -34,6 +35,7 @@ class GravidSoeknadPDFGenerator {
 
         content.writeTextWrapped("Mottatt: ${TIMESTAMP_FORMAT.format(soeknad.opprettet)}", 4)
         content.writeTextWrapped("Person (FNR): ${soeknad.identitetsnummer}")
+        content.writeTextWrapped("Termindato: ${soeknad.termindato?.format(DATE_FORMAT) ?: terminaDatoIkkeOppgitt}")
         content.writeTextWrapped("Arbeidsgiver oppgitt i søknad: ${soeknad.virksomhetsnummer}")
         content.writeTextWrapped(
                 "Har dere prøvd å tilrettelegge arbeidsdagen slik at den gravide kan jobbe til tross for helseplagene?", 2
@@ -71,5 +73,10 @@ class GravidSoeknadPDFGenerator {
             this.newLineAtOffset(0F, -LINE_HEIGHT * spacing)
             this.showText(it)
         }
+    }
+
+    companion object {
+        val TIMESTAMP_FORMAT = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss")
+        val DATE_FORMAT = DateTimeFormatter.ofPattern("dd.MM.yyyy")
     }
 }

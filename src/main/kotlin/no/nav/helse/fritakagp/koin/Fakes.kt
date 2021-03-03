@@ -23,6 +23,7 @@ import org.koin.dsl.bind
 
 fun Module.mockExternalDependecies() {
     single { MockAltinnRepo(get()) } bind AltinnOrganisationsRepository::class
+    single { MockBrukernotifikasjonBeskjedSender() } bind BrukernotifikasjonBeskjedSender::class
 
     single {
         object : DokarkivKlient {

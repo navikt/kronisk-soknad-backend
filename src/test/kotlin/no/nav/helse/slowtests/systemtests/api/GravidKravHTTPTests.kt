@@ -73,6 +73,18 @@ class GravidKravHTTPTests : SystemTestBase() {
     }
 
     @Test
+    fun `Skal returnere Created ved periode på en dag`() = suspendableTest {
+        val response = httpClient.post<HttpResponse> {
+            appUrl(kravGravidUrl)
+            contentType(ContentType.Application.Json)
+            loggedInAs("123456789")
+            body = GravidTestData.gravidKravRequestValidPeriode1Dag
+        }
+
+        Assertions.assertThat(response.status).isEqualTo(HttpStatusCode.Created)
+    }
+
+    @Test
     fun `Skal returnere forbidden hvis virksomheten ikke er i auth listen fra altinn`() = suspendableTest {
         val response = httpClient.post<HttpResponse> {
             appUrl(kravGravidUrl)

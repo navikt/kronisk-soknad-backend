@@ -25,11 +25,14 @@ import no.nav.helse.fritakagp.integration.gcp.BucketDocument
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.processing.BakgrunnsJobbUtils.emptyJob
 import no.nav.helse.fritakagp.processing.BakgrunnsJobbUtils.testJob
+import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
+import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadKafkaProcessor
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.io.IOException
+import java.util.*
 
 class KroniskKravProcessorTest {
 
@@ -91,14 +94,14 @@ class KroniskKravProcessorTest {
     fun `Om det finnes ekstra dokumentasjon skal den journalføres og så slettes`() {
         val dokumentData = "test"
         val filtypeArkiv = "pdf"
-        val filtypeOrginal = "json"
+        val filtypeOrginal = "JSON"
 
         every { bucketStorageMock.getDocAsString(krav.id) } returns BucketDocument(dokumentData, filtypeArkiv)
 
         val joarkRequest = slot<JournalpostRequest>()
         every { joarkMock.journalførDokument(capture(joarkRequest), any(), any()) } returns JournalpostResponse(arkivReferanse, true, "M", null, emptyList())
 
-        val orginalJsonDoc = objectMapper.writeValueAsString(krav)
+        val orginalJsonDoc = Base64.getEncoder().encodeToString(objectMapper.writeValueAsBytes(krav))
         prosessor.prosesser(jobb)
 
         verify(exactly = 1) { bucketStorageMock.getDocAsString(krav.id) }
@@ -112,7 +115,7 @@ class KroniskKravProcessorTest {
         assertThat(dokumentasjon.dokumentVarianter[0].variantFormat).isEqualTo("ARKIV")
         assertThat(dokumentasjon.dokumentVarianter[1].fysiskDokument).isEqualTo(orginalJsonDoc)
         assertThat(dokumentasjon.dokumentVarianter[1].filtype).isEqualTo(filtypeOrginal)
-        assertThat(dokumentasjon.dokumentVarianter[1].variantFormat).isEqualTo("ORGINAL")
+        assertThat(dokumentasjon.dokumentVarianter[1].variantFormat).isEqualTo("ORIGINAL")
     }
 
     @Test
@@ -135,17 +138,21 @@ class KroniskKravProcessorTest {
     }
 
     @Test
-    fun `skal opprette kafkasenderjobb`() {
+    fun `skal opprette jobber`() {
         prosessor.prosesser(jobb)
 
-        assertThat(krav.journalpostId).isEqualTo(arkivReferanse)
-        assertThat(krav.oppgaveId).isEqualTo(oppgaveId.toString())
+        val opprettetJobber = mutableListOf<Bakgrunnsjobb>()
 
-        val opprettetBakgrunnsjobb = slot<Bakgrunnsjobb>()
-        verify(exactly = 1) { bakgrunnsjobbRepomock.save(capture(opprettetBakgrunnsjobb)) }
+        verify(exactly = 2) {
+            bakgrunnsjobbRepomock.save(capture(opprettetJobber))
+        }
 
-        assertThat(opprettetBakgrunnsjobb.captured.type).isEqualTo(KroniskKravKafkaProcessor.JOB_TYPE)
-        assertThat(opprettetBakgrunnsjobb.captured.data).contains(krav.id.toString())
+        val kafkajobb = opprettetJobber.find {it.type == KroniskKravKafkaProcessor.JOB_TYPE }
+        assertThat(kafkajobb?.data).contains(krav.id.toString())
+
+        val beskjedJobb = opprettetJobber.find {it.type == BrukernotifikasjonProcessor.JOB_TYPE }
+        assertThat(beskjedJobb?.data).contains(BrukernotifikasjonProcessor.Jobbdata.SkjemaType.KroniskKrav.name)
+        assertThat(beskjedJobb?.data).contains(krav.id.toString())
     }
 
     @Test

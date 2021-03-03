@@ -65,7 +65,8 @@ object GravidTestData {
             2590.8
         ),
         bekreftet = true,
-        dokumentasjon = null
+        dokumentasjon = null,
+        kontrollDager = null
     )
 
     val gravidKravRequestMedFil = gravidKravRequestValid.copy(
@@ -83,7 +84,8 @@ object GravidTestData {
             5,
             2590.8
         ),
-        sendtAv = validIdentitetsnummer
+        sendtAv = validIdentitetsnummer,
+        kontrollDager = null
     )
 }
 

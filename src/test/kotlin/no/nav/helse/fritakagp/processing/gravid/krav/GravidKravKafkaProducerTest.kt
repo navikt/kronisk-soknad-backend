@@ -7,9 +7,9 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import no.nav.helse.GravidTestData
-import no.nav.helse.fritakagp.integration.kafka.KafkaProducerProvider
+import no.nav.helse.fritakagp.integration.kafka.ProducerFactory
 import no.nav.helse.fritakagp.integration.kafka.KravmeldingKafkaProducer
-import no.nav.helse.fritakagp.integration.kafka.producerLocalConfig
+import no.nav.helse.fritakagp.integration.kafka.localCommonKafkaProps
 import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.clients.producer.RecordMetadata
 import org.apache.kafka.common.errors.AuthenticationException
@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit
 
 class GravidKravKafkaProducerTest {
     val omMock = ObjectMapper().registerModules(KotlinModule(),JavaTimeModule())
-    val producerProviderMock = mockk<KafkaProducerProvider>()
+    val producerProviderMock = mockk<ProducerFactory<String, String>>()
     val unauthorizedProducerMock = mockk<KafkaProducer<String, String>>(relaxed = true)
     val authedProducerMock = mockk<KafkaProducer<String, String>>(relaxed = true)
 
@@ -34,7 +34,7 @@ class GravidKravKafkaProducerTest {
     @Test
     internal fun  `Failure to rotate password throws execption after trying again once`() {
         every { producerProviderMock.createProducer(any()) } returns unauthorizedProducerMock
-        val kravmelding = KravmeldingKafkaProducer(producerLocalConfig(), "test", omMock, producerProviderMock)
+        val kravmelding = KravmeldingKafkaProducer(localCommonKafkaProps(), "test", omMock, producerProviderMock)
 
         assertThrows<ExecutionException> {
             kravmelding.sendMessage(GravidTestData.gravidKrav)
@@ -48,7 +48,7 @@ class GravidKravKafkaProducerTest {
     @Test
     internal fun  `Success to rotate password returns record with no error`() {
         every { producerProviderMock.createProducer(any()) } returns unauthorizedProducerMock
-        val kravmelding = KravmeldingKafkaProducer(producerLocalConfig(), "test", omMock, producerProviderMock)
+        val kravmelding = KravmeldingKafkaProducer(localCommonKafkaProps(), "test", omMock, producerProviderMock)
         every { producerProviderMock.createProducer(any()) } returns authedProducerMock
 
         kravmelding.sendMessage(GravidTestData.gravidKrav)

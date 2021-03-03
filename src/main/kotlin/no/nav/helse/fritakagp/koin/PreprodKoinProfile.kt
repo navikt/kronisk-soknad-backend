@@ -30,6 +30,7 @@ import no.nav.helse.fritakagp.integration.oauth2.OAuth2ClientPropertiesConfig
 import no.nav.helse.fritakagp.integration.oauth2.TokenResolver
 import no.nav.helse.fritakagp.integration.virusscan.ClamavVirusScannerImp
 import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
+import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.gravid.krav.*
 import no.nav.helse.fritakagp.processing.gravid.soeknad.*
 import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravAltinnKvitteringSender
@@ -45,7 +46,6 @@ import org.koin.core.module.Module
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import javax.sql.DataSource
-
 
 @KtorExperimentalAPI
 fun preprodConfig(config: ApplicationConfig) = module {
@@ -124,6 +124,7 @@ fun preprodConfig(config: ApplicationConfig) = module {
     single { GravidKravKafkaProcessor(get(), get(), get()) }
     single { KroniskSoeknadKafkaProcessor(get(), get(), get()) }
     single { KroniskKravKafkaProcessor(get(), get(), get()) }
+    single { BrukernotifikasjonProcessor(get(), get(), get(), get(), get(), get(), config.getString("service_user.username"), "https://fritak-agp-frontend.dev.nav.no/") }
 
     single { DefaultAltinnAuthorizer(get()) } bind AltinnAuthorizer::class
 }
@@ -172,8 +173,14 @@ fun Module.externalSystemClients(config: ApplicationConfig) {
         )
     } bind BucketStorage::class
 
-    single { SoeknadmeldingKafkaProducer(producerConfig(), config.getString("kafka_soeknad_topic_name"), get(), SoeknadmeldingKafkaProducerProvider()) } bind SoeknadmeldingSender::class
-    single { KravmeldingKafkaProducer(producerConfig(), config.getString("kafka_krav_topic_name"), get(), KravmeldingKafkaProducerProvider()) } bind KravmeldingSender::class
+    single { SoeknadmeldingKafkaProducer(gcpCommonKafkaProps(), config.getString("kafka_soeknad_topic_name"), get(), StringKafkaProducerFactory()) } bind SoeknadmeldingSender::class
+    single { KravmeldingKafkaProducer(gcpCommonKafkaProps(), config.getString("kafka_krav_topic_name"), get(), StringKafkaProducerFactory()) } bind KravmeldingSender::class
+
+    single { BrukernotifikasjonBeskjedKafkaProducer(
+        onPremCommonKafkaProps(config),
+        config.getString("brukernotifikasjon.topic_name"),
+        BeskjedProducerFactory(config.getString("brukernotifikasjon.avro_schema_server_url")))
+    } bind BrukernotifikasjonBeskjedSender::class
 }
 
 

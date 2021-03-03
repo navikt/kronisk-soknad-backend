@@ -16,6 +16,8 @@ import no.nav.helse.fritakagp.KroniskKravMetrics
 import no.nav.helse.fritakagp.db.KroniskKravRepository
 import no.nav.helse.fritakagp.domain.KroniskKrav
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
+import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
+import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor.Jobbdata.SkjemaType
 import org.slf4j.LoggerFactory
 import java.time.LocalDate
 import java.util.*
@@ -67,6 +69,14 @@ class KroniskKravProcessor(
                     type = KroniskKravKafkaProcessor.JOB_TYPE
                 )
             )
+            bakgrunnsjobbRepo.save(
+                Bakgrunnsjobb(
+                    maksAntallForsoek = 10,
+                    data = om.writeValueAsString(BrukernotifikasjonProcessor.Jobbdata(krav.id, SkjemaType.KroniskKrav)),
+                    type = BrukernotifikasjonProcessor.JOB_TYPE
+                )
+            )
+
         } finally {
             updateAndLogOnFailure(krav)
         }

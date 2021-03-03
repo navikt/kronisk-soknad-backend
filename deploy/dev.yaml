@@ -46,6 +46,7 @@ spec:
       external:
         - host: helsearbeidsgiver-proxy.dev-fss-pub.nais.io
         - host: tt02.altinn.no
+        - host: kafka-schema-registry.nais-q.adeo.no
 
       rules:
         - application: helsearbeidsgiver-proxy
@@ -78,6 +79,13 @@ spec:
       value: helse-arbeidsgiver-fritakagb-bucket
     - name: ALTINN_SERVICE_OWNER_GW_URL
       value: https://api-gw-q1.oera.no/ekstern/altinn/api/serviceowner
+
+    - name: AVRO_SCHEMA_SERVER_URL
+      value: https://kafka-schema-registry.nais-q.adeo.no
+    - name: ON_PREM_KAFKA_BROKERS
+      value: SSL://b27apvl00045.preprod.local:8443,SSL://b27apvl00046.preprod.local:8443,SSL://b27apvl00047.preprod.local:8443
+    - name: KAFKA_BESKJED_TOPIC_NAME
+      value: aapen-brukernotifikasjon-nyBeskjed-v1
 
 
   gcp:

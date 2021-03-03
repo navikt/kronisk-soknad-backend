@@ -10,6 +10,7 @@ import no.nav.helse.arbeidsgiver.web.auth.AltinnAuthorizer
 import no.nav.helse.arbeidsgiver.web.auth.DefaultAltinnAuthorizer
 import no.nav.helse.fritakagp.db.*
 import no.nav.helse.fritakagp.integration.kafka.*
+import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.gravid.krav.*
 import no.nav.helse.fritakagp.processing.gravid.soeknad.*
 import no.nav.helse.fritakagp.processing.kronisk.krav.*
@@ -30,8 +31,8 @@ fun localDevConfig(config: ApplicationConfig) = module {
     single { PostgresKroniskSoeknadRepository(get(), get()) } bind KroniskSoeknadRepository::class
     single { PostgresKroniskKravRepository(get(), get()) } bind KroniskKravRepository::class
 
-    single { SoeknadmeldingKafkaProducer(producerLocalConfig(), config.getString("kafka_soeknad_topic_name"), get(), SoeknadmeldingKafkaProducerProvider())} bind SoeknadmeldingSender::class
-    single { KravmeldingKafkaProducer(producerLocalConfig(), config.getString("kafka_krav_topic_name"), get(), KravmeldingKafkaProducerProvider()) } bind KravmeldingSender::class
+    single { SoeknadmeldingKafkaProducer(localCommonKafkaProps(), config.getString("kafka_soeknad_topic_name"), get(), StringKafkaProducerFactory())} bind SoeknadmeldingSender::class
+    single { KravmeldingKafkaProducer(localCommonKafkaProps(), config.getString("kafka_krav_topic_name"), get(), StringKafkaProducerFactory()) } bind KravmeldingSender::class
 
     single { PostgresBakgrunnsjobbRepository(get()) } bind BakgrunnsjobbRepository::class
     single { BakgrunnsjobbService(get()) }
@@ -55,6 +56,8 @@ fun localDevConfig(config: ApplicationConfig) = module {
     single { GravidKravKafkaProcessor(get(), get(), get()) }
     single { KroniskSoeknadKafkaProcessor(get(), get(), get()) }
     single { KroniskKravKafkaProcessor(get(), get(), get()) }
+
+    single { BrukernotifikasjonProcessor(get(), get(), get(), get(), get(), get(), "mock", config.getString("brukernotifikasjon.frontend_app_url")) }
 
     single { DefaultAltinnAuthorizer(get()) } bind AltinnAuthorizer::class
 }

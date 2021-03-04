@@ -15,7 +15,7 @@ import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlIdent
 import no.nav.helse.fritakagp.GravidSoeknadMetrics
 import no.nav.helse.fritakagp.db.GravidSoeknadRepository
 import no.nav.helse.fritakagp.domain.GravidSoeknad
-import no.nav.helse.fritakagp.integration.brreg.BerregClient
+import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor.Jobbdata.SkjemaType.GravidSøknad
@@ -32,7 +32,7 @@ class GravidSoeknadProcessor(
     private val pdfGenerator: GravidSoeknadPDFGenerator,
     private val om: ObjectMapper,
     private val bucketStorage: BucketStorage,
-    private val berregClient: BerregClient
+    private val brregClient: BrregClient
 ) : BakgrunnsjobbProsesserer {
     companion object {
         val JOB_TYPE = "gravid-søknad-formidling"
@@ -57,7 +57,7 @@ class GravidSoeknadProcessor(
         try {
             if (soeknad.virksomhetsnavn == null) {
                 runBlocking {
-                    soeknad.virksomhetsnavn = berregClient.getVirksomhetsNavn(soeknad.virksomhetsnummer)
+                    soeknad.virksomhetsnavn = brregClient.getVirksomhetsNavn(soeknad.virksomhetsnummer)
                 }
             }
             if (soeknad.journalpostId == null) {

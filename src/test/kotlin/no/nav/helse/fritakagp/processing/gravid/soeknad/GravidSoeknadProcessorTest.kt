@@ -3,7 +3,6 @@ package no.nav.helse.fritakagp.processing.gravid.soeknad
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
-import io.ktor.client.*
 import io.mockk.*
 import no.nav.helse.GravidTestData
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.Bakgrunnsjobb
@@ -21,12 +20,11 @@ import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlHentFullPerson.PdlGeografi
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlHentFullPerson.PdlIdentResponse
 import no.nav.helse.fritakagp.db.GravidSoeknadRepository
 import no.nav.helse.fritakagp.domain.GravidSoeknad
-import no.nav.helse.fritakagp.integration.brreg.BerregClient
+import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketDocument
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor.Jobbdata.SkjemaType
-import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravKafkaProcessor
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -44,7 +42,7 @@ class GravidSoeknadProcessorTest {
     val pdfGeneratorMock = mockk<GravidSoeknadPDFGenerator>(relaxed = true)
     val bucketStorageMock = mockk<BucketStorage>(relaxed = true)
     val bakgrunnsjobbRepomock = mockk<BakgrunnsjobbRepository>(relaxed = true)
-    val berregServiceMock = mockk<BerregClient>(relaxed = true)
+    val berregServiceMock = mockk<BrregClient>(relaxed = true)
     val prosessor = GravidSoeknadProcessor(repositoryMock, joarkMock, oppgaveMock, pdlClientMock, bakgrunnsjobbRepomock, pdfGeneratorMock, objectMapper, bucketStorageMock, berregServiceMock)
 
     lateinit var soeknad: GravidSoeknad

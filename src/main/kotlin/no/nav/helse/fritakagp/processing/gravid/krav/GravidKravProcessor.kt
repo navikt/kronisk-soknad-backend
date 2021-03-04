@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory
 import java.time.LocalDate
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor.Jobbdata.SkjemaType
-import no.nav.helse.fritakagp.integration.brreg.BerregClient
+import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import java.util.*
 
 class GravidKravProcessor(
@@ -32,7 +32,7 @@ class GravidKravProcessor(
     private val pdfGenerator: GravidKravPDFGenerator,
     private val om: ObjectMapper,
     private val bucketStorage: BucketStorage,
-    private val berregClient: BerregClient
+    private val brregClient: BrregClient
 
 ) : BakgrunnsjobbProsesserer {
     companion object {
@@ -57,7 +57,7 @@ class GravidKravProcessor(
         try {
             if (krav.virksomhetsnavn == null) {
                 runBlocking {
-                    krav.virksomhetsnavn = berregClient.getVirksomhetsNavn(krav.virksomhetsnummer)
+                    krav.virksomhetsnavn = brregClient.getVirksomhetsNavn(krav.virksomhetsnummer)
                 }
             }
             if (krav.journalpostId == null) {

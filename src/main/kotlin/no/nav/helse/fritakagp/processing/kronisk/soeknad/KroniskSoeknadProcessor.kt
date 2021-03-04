@@ -16,10 +16,9 @@ import no.nav.helse.fritakagp.KroniskSoeknadMetrics
 import no.nav.helse.fritakagp.db.KroniskSoeknadRepository
 import no.nav.helse.fritakagp.domain.KroniskSoeknad
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor.Jobbdata.SkjemaType
-import no.nav.helse.fritakagp.integration.brreg.BerregClient
+import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import org.slf4j.LoggerFactory
 import java.time.LocalDate
 import java.util.*
@@ -34,7 +33,7 @@ class KroniskSoeknadProcessor(
     private val pdfGenerator: KroniskSoeknadPDFGenerator,
     private val om: ObjectMapper,
     private val bucketStorage: BucketStorage,
-    private val berregClient: BerregClient
+    private val brregClient: BrregClient
 ) : BakgrunnsjobbProsesserer {
     companion object {
         val dokumentasjonBrevkode = "soeknad_om_fritak_fra_agp_dokumentasjon"
@@ -56,7 +55,7 @@ class KroniskSoeknadProcessor(
         try {
             if (soeknad.virksomhetsnavn == null) {
                 runBlocking {
-                    soeknad.virksomhetsnavn = berregClient.getVirksomhetsNavn(soeknad.virksomhetsnummer)
+                    soeknad.virksomhetsnavn = brregClient.getVirksomhetsNavn(soeknad.virksomhetsnummer)
                 }
             }
             if (soeknad.journalpostId == null) {

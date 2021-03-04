@@ -31,6 +31,7 @@ plugins {
     application
     kotlin("jvm") version "1.4.20"
     id("com.github.ben-manes.versions") version "0.27.0"
+    id("com.autonomousapps.dependency-analysis") version "0.71.0"
     jacoco
 }
 
@@ -47,14 +48,49 @@ buildscript {
 dependencies {
     // SNYK-fikser - Disse kan fjernes etterhver som våre avhengigheter oppdaterer sine versjoner
     // Forsøk å fjerne en og en og kjør snyk test --configuration-matching=runtimeClasspath
-    implementation("commons-collections:commons-collections:3.2.2") // overstyrer transiente 3.2.1
+    constraints {
+        implementation("commons-collections:commons-collections") {
+            version {
+                strictly("3.2.2")
+            }
+            because("snyk control")
+        }
+        implementation("org.apache.httpcomponents:httpclient") {
+            version {
+                strictly("4.5.13")
+            }
+            because("snyk control")
+        }
+        implementation("io.netty:netty-codec-http2") {
+            version {
+                strictly("4.1.59.Final")
+            }
+            because("snyk control")
+        }
+        implementation("org.yaml:snakeyaml") {
+            version {
+                strictly("1.27")
+            }
+            because("snyk control")
+        }
+        implementation("junit:junit") {
+            version {
+                strictly("4.13.1")
+            }
+            because("overstyrer transiente 4.12 gjennom koin-test")
+        }
+        implementation("io.netty:netty-transport-native-epoll") {
+            version {
+                strictly("4.1.59.Final")
+            }
+            because("snyk control")
+        }
+
+    }
     implementation("commons-codec:commons-codec:1.13") // overstyrer transiente 1.10
     implementation("io.netty:netty-codec:4.1.59.Final") // overstyrer transiente 4.1.44
     implementation("io.netty:netty-codec-http:4.1.59.Final") // overstyrer transiente 4.1.51.Final gjennom ktor-server-netty
-    implementation("junit:junit:4.13.1") // overstyrer transiente 4.12 gjennom koin-test
-    implementation("org.apache.httpcomponents:httpclient:4.5.13") // overstyrer transiente 4.5.6 gjennom ktor-client-apache
     implementation("org.eclipse.jetty:jetty-server:9.4.37.v20210219")
-    implementation("org.yaml:snakeyaml:1.26") //overstyrer versjon 1.23 via githubjavafaker 1.02
     implementation("com.google.guava:guava:30.0-jre") //[Medium Severity][https://snyk.io/vuln/SNYK-JAVA-COMGOOGLEGUAVA-1015415] overstyrer versjon 29.0
     // -- end snyk fixes
 
@@ -220,5 +256,5 @@ task<Test>("slowTests") {
 }
 
 tasks.withType<Wrapper> {
-    gradleVersion = "6.0.1"
+    gradleVersion = "6.8.2"
 }

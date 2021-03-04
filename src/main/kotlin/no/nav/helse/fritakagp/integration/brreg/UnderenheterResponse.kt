@@ -1,26 +1,18 @@
 package no.nav.helse.fritakagp.integration.brreg
 
-data class BerregResponse(
+data class UnderenheterResponse(
     val _links: Links,
     val antallAnsatte: Int,
-    val forretningsadresse: Forretningsadresse,
-    val hjemmeside: String,
-    val institusjonellSektorkode: InstitusjonellSektorkode,
-    val konkurs: Boolean,
-    val maalform: String,
+    val beliggenhetsadresse: Beliggenhetsadresse,
     val naeringskode1: Naeringskode1,
     val navn: String,
+    val oppstartsdato: String,
     val organisasjonsform: Organisasjonsform,
     val organisasjonsnummer: String,
     val overordnetEnhet: String,
     val postadresse: Postadresse,
     val registreringsdatoEnhetsregisteret: String,
-    val registrertIForetaksregisteret: Boolean,
-    val registrertIFrivillighetsregisteret: Boolean,
-    val registrertIMvaregisteret: Boolean,
-    val registrertIStiftelsesregisteret: Boolean,
-    val underAvvikling: Boolean,
-    val underTvangsavviklingEllerTvangsopplosning: Boolean
+    val registrertIMvaregisteret: Boolean
 )
 
 data class Links(
@@ -28,7 +20,7 @@ data class Links(
     val self: Self
 )
 
-data class Forretningsadresse(
+data class Beliggenhetsadresse(
     val adresse: List<String>,
     val kommune: String,
     val kommunenummer: String,
@@ -36,11 +28,6 @@ data class Forretningsadresse(
     val landkode: String,
     val postnummer: String,
     val poststed: String
-)
-
-data class InstitusjonellSektorkode(
-    val beskrivelse: String,
-    val kode: String
 )
 
 data class Naeringskode1(
@@ -79,3 +66,9 @@ data class LinksX(
 data class SelfX(
     val href: String
 )
+
+data class SelfXX(
+    val href: String
+)
+
+

@@ -18,6 +18,14 @@ class BrregClientImpTest  : SystemTestBase() {
     }
 
     @Test
+    fun `Skal returnere OSLO TAXI AS`() = suspendableTest {
+        val om = ObjectMapper()
+        val client = BrregClientImp(httpClient, om, enhetsUrl)
+        val navn = client.getVirksomhetsNavn("976172035")
+        Assertions.assertThat(navn).isEqualTo("OSLO TAXI AS")
+    }
+
+    @Test
     fun `Skal returnere Ukjent arbeidsgiver`() = suspendableTest {
         val om = ObjectMapper()
         val client = BrregClientImp(httpClient, om, enhetsUrl)
@@ -25,3 +33,4 @@ class BrregClientImpTest  : SystemTestBase() {
         Assertions.assertThat(navn).isEqualTo("Ukjent arbeidsgiver")
     }
 }
+

@@ -22,7 +22,7 @@ class BrregClientImp(private val httpClient: HttpClient, private val om: ObjectM
     override suspend fun getVirksomhetsNavn(orgnr: String): String? {
         var navn : String? = null
         try {
-            navn =  httpClient.get<UnderenheterResponse>(
+            navn =  httpClient.get<UnderenheterNavnResponse>(
                 url {
                     protocol = URLProtocol.HTTPS
                     host = berreUrl

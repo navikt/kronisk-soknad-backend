@@ -39,7 +39,6 @@ fun preprodConfig(config: ApplicationConfig) = module {
     single { PostgresGravidKravRepository(get(), get()) } bind GravidKravRepository::class
     single { PostgresKroniskKravRepository(get(), get()) } bind KroniskKravRepository::class
 
-
     single { PostgresBakgrunnsjobbRepository(get()) } bind BakgrunnsjobbRepository::class
     single { BakgrunnsjobbService(get(), bakgrunnsvarsler = MetrikkVarsler()) }
 

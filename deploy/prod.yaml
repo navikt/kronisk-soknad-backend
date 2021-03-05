@@ -87,6 +87,8 @@ spec:
       value: SASL_SSL://a01apvl00145.adeo.no:8443,SASL_SSL://a01apvl00146.adeo.no:8443,SASL_SSL://a01apvl00147.adeo.no:8443,SASL_SSL://a01apvl00149.adeo.no:8443
     - name: KAFKA_BESKJED_TOPIC_NAME
       value: aapen-brukernotifikasjon-nyBeskjed-v1
+    - name: PROXY_SCOPE
+      value: api://prod-fss.helsearbeidsgiver.helsearbeidsgiver-proxy/.default
 
 
   gcp:

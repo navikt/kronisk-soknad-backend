@@ -79,7 +79,7 @@ spec:
     - name: GCP_BUCKET_NAME
       value: helse-arbeidsgiver-fritakagb-bucket-prod
     - name: ALTINN_SERVICE_OWNER_GW_URL
-      value: https://api-gw.adeo.no/ekstern/altinn/api/serviceowner
+      value: https://api-gw.oera.no/ekstern/altinn/api/serviceowner
     - name: ENHETSREGISTERET
       value: data.brreg.no/enhetsregisteret/api/underenheter
     - name: AVRO_SCHEMA_SERVER_URL

@@ -1,0 +1,108 @@
+apiVersion: "nais.io/v1alpha1"
+kind: "Application"
+metadata:
+  name: fritakagp
+  namespace: helsearbeidsgiver
+  labels:
+    team: helsearbeidsgiver
+spec:
+  image: {{image}}
+  port: 8080
+  liveness:
+    path: /health/is-alive
+    initialDelay: 10
+    timeout: 2
+    periodSeconds: 30
+    failureThreshold: 10
+  readiness:
+    path: /health/is-ready
+    initialDelay: 10
+    timeout: 2
+    periodSeconds: 5
+    failureThreshold: 10
+  ingresses:
+    - https://arbeidsgiver.nav.no/fritak-agp-api
+  prometheus:
+    enabled: true
+  replicas:
+    max: 1
+    min: 1
+  resources:
+    limits:
+      cpu: 3500m
+      memory: 1000Mi
+    requests:
+      cpu: 400m
+      memory: 200Mi
+  leaderElection: false
+  secureLogs:
+    enabled: true
+  azure:
+    application:
+      enabled: true
+
+  accessPolicy:
+    outbound:
+      external:
+        - host: helsearbeidsgiver-proxy.prod-fss-pub.nais.io
+        - host: altinn.no
+        - host: kafka-schema-registry.nais.adeo.no
+        - host: data.brreg.no
+
+      rules:
+        - application: helsearbeidsgiver-proxy
+          namespace: helsearbeidsgiver
+          cluster: prod-fss
+
+  envFrom:
+    # servicebrukerens passord som er  hentet fra vault og lagt inn slik: https://doc.nais.io/security/secrets/kubernetes-secrets/
+    - secret: service-user-password-prod
+    - secret: altinn-user-password-prod
+    - secret: altinn-api-gw-keys-prod
+    - configmap: loginservice-idporten # tilgjengeliggjør LOGINSERVICE_IDPORTEN_DISCOVERY_URL og LOGINSERVICE_IDPORTEN_AUDIENCE
+  env:
+    - name: KOIN_PROFILE
+      value: PROD
+    - name: DOKARKIV_URL
+      value: https://helsearbeidsgiver-proxy.prod-fss-pub.nais.io/dokarkiv
+    - name: OPPGAVEBEHANDLING_URL
+      value: https://helsearbeidsgiver-proxy.prod-fss-pub.nais.io/oppgave
+    - name: PDL_URL
+      value: https://helsearbeidsgiver-proxy.prod-fss-pub.nais.io/pdl
+    - name: ALTINN_ENDPOINT
+      value: https://altinn.no/ServiceEngineExternal/CorrespondenceAgencyExternalBasic.svc
+    - name: CLAM_AV_URL
+      value: http://clamav.clamav.svc.cluster.local/scan
+    - name: GCP_PRJ_ID
+      value: helsearbeidsgiver-prod-8a1c
+    - name: GCP_BUCKET_NAME
+      value: helse-arbeidsgiver-fritakagb-bucket-prod
+    - name: ALTINN_SERVICE_OWNER_GW_URL
+      value: https://api-gw.adeo.no/ekstern/altinn/api/serviceowner
+    - name: ENHETSREGISTERET
+      value: data.brreg.no/enhetsregisteret/api/underenheter
+    - name: AVRO_SCHEMA_SERVER_URL
+      value: https://kafka-schema-registry.nais-q.adeo.no
+    - name: ON_PREM_KAFKA_BROKERS
+      value: SASL_SSL://a01apvl00145.adeo.no:8443,SASL_SSL://a01apvl00146.adeo.no:8443,SASL_SSL://a01apvl00147.adeo.no:8443,SASL_SSL://a01apvl00149.adeo.no:8443
+    - name: KAFKA_BESKJED_TOPIC_NAME
+      value: aapen-brukernotifikasjon-nyBeskjed-v1
+
+
+  gcp:
+    sqlInstances:
+      - type: POSTGRES_11
+        databases:
+          - name: fritakagp-db
+            diskAutoresize: true
+    buckets:
+      - name: helse-arbeidsgiver-fritakagb-bucket-prod
+        #retentionPeriodDays: 30
+         # lifecycleCondition:
+         # age: 7
+         # createdBefore: 2020-01-01
+         # numNewerVersions: 2
+        #  withState: ANY
+
+  kafka:
+    pool: nav-prod    # enum of nav-dev, nav-prod

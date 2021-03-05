@@ -82,7 +82,7 @@ spec:
     - name: ENHETSREGISTERET
       value: data.brreg.no/enhetsregisteret/api/underenheter
     - name: AVRO_SCHEMA_SERVER_URL
-      value: https://kafka-schema-registry.nais-q.adeo.no
+      value: https://kafka-schema-registry.nais.adeo.no
     - name: ON_PREM_KAFKA_BROKERS
       value: SASL_SSL://a01apvl00145.adeo.no:8443,SASL_SSL://a01apvl00146.adeo.no:8443,SASL_SSL://a01apvl00147.adeo.no:8443,SASL_SSL://a01apvl00149.adeo.no:8443
     - name: KAFKA_BESKJED_TOPIC_NAME

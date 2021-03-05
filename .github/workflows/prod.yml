@@ -67,27 +67,3 @@ jobs:
           RESOURCE: deploy/prod.yaml
           REF: ${{ env.COMMIT }}
           IMAGE: ${{ env.IMAGE }}
-
-  deploy-krav-topic-to-prod:
-    name: Deploy krav-topic to prod
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - uses: actions/checkout@master
-      - uses: nais/deploy/actions/deploy@master
-        env:
-          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
-          CLUSTER: prod-gcp
-          RESOURCE: deploy/krav-topic-prod.yaml
-
-  deploy-soeknad-topic-to-prod:
-    name: Deploy søknad-topic to prod
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - uses: actions/checkout@master
-      - uses: nais/deploy/actions/deploy@master
-        env:
-          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
-          CLUSTER: prod-gcp
-          RESOURCE: deploy/soeknad-topic-prod.yaml

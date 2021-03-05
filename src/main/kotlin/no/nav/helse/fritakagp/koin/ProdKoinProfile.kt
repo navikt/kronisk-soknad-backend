@@ -97,7 +97,7 @@ fun prodConfig(config: ApplicationConfig) = module {
     single { GravidKravKafkaProcessor(get(), get(), get()) }
     single { KroniskSoeknadKafkaProcessor(get(), get(), get()) }
     single { KroniskKravKafkaProcessor(get(), get(), get()) }
-    single { BrukernotifikasjonProcessor(get(), get(), get(), get(), get(), get(), config.getString("service_user.username"), 4, "https://arbeidsgiver.nav.no/fritak-agp/") }
+    single { BrukernotifikasjonProcessor(get(), get(), get(), get(), get(), get(), config.getString("service_user.username"), 4, "https://arbeidsgiver.nav.no/fritak-agp") }
 
     single { DefaultAltinnAuthorizer(get()) } bind AltinnAuthorizer::class
 }

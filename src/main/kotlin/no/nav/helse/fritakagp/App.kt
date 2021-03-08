@@ -68,7 +68,6 @@ class FritakAgpApplication(val port: Int = 8080) : KoinComponent {
     private fun configAndStartWebserver() {
         webserver = embeddedServer(Netty, applicationEngineEnvironment {
             config = appConfig
-
             connector {
                 port = this@FritakAgpApplication.port
             }

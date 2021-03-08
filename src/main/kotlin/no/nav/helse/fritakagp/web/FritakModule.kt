@@ -35,7 +35,8 @@ fun Application.fritakModule(config: ApplicationConfig = environment.config) {
     }
 
     routing {
-        route("/api/v1") {
+        val apiBasePath = if (config.getEnvironment() == AppEnv.PROD) "/fritak-agp-api" else ""
+        route("$apiBasePath/api/v1") {
             systemRoutes()
             authenticate {
                 kroniskRoutes(get(), get(), get(), get(), get(), get(), get(), get())

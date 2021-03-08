@@ -12,19 +12,14 @@ import io.ktor.routing.*
 import io.ktor.util.*
 import no.nav.helse.arbeidsgiver.system.AppEnv
 import no.nav.helse.arbeidsgiver.system.getEnvironment
+import no.nav.helse.arbeidsgiver.system.getString
 import no.nav.helse.fritakagp.web.api.*
 import no.nav.security.token.support.ktor.tokenValidationSupport
 import org.koin.ktor.ext.get
-import org.slf4j.event.Level
-import java.time.LocalDate
-
 
 @KtorExperimentalLocationsAPI
 @KtorExperimentalAPI
 fun Application.fritakModule(config: ApplicationConfig = environment.config) {
-    install(CallLogging) {
-        level = Level.INFO
-    }
 
     install(Authentication) {
         tokenValidationSupport(config = config)
@@ -39,8 +34,8 @@ fun Application.fritakModule(config: ApplicationConfig = environment.config) {
     }
 
     routing {
-
-        route("/api/v1") {
+        val apiBasePath = config.getString("ktor.application.basepath")
+        route("$apiBasePath/api/v1") {
             systemRoutes()
             authenticate {
                 kroniskRoutes(get(), get(), get(), get(), get(), get(), get(), get())

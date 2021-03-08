@@ -36,7 +36,7 @@ class GravidSoeknadAltinnKvitteringSender(
                     mapKvitteringTilInsertCorrespondence(kvittering)
             )
             if (receiptExternal.receiptStatusCode != ReceiptStatusEnum.OK) {
-                throw RuntimeException("Fikk uventet statuskode fra Altinn: ${receiptExternal.receiptStatusCode}")
+                throw RuntimeException("Fikk uventet statuskode fra Altinn: ${receiptExternal.receiptStatusCode} ${receiptExternal.receiptText}")
             }
         } catch (e: ICorrespondenceAgencyExternalBasicInsertCorrespondenceBasicV2AltinnFaultFaultFaultMessage) {
             throw RuntimeException("Feil fra altinn: ${e.faultInfo}", e)

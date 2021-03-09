@@ -1,7 +1,7 @@
 package no.nav.helse.fritakagp.integration.kafka
 
 import io.ktor.config.*
-import no.nav.helse.fritakagp.koin.getString
+import no.nav.helse.arbeidsgiver.system.getString
 import org.apache.kafka.clients.CommonClientConfigs
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.clients.producer.ProducerConfig

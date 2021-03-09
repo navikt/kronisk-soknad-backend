@@ -92,6 +92,8 @@ spec:
       value: api://prod-fss.helsearbeidsgiver.helsearbeidsgiver-proxy/.default
     - name: KTOR_APPLICATION_BASEPATH
       value: /fritak-agp-api
+    - name: RUN_BACKGROUND_WORKERS
+      value: false
 
   gcp:
     sqlInstances:

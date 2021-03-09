@@ -5,13 +5,13 @@ import io.ktor.config.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import io.ktor.util.*
-import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbProsesserer
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbService
 import no.nav.helse.arbeidsgiver.kubernetes.KubernetesProbeManager
 import no.nav.helse.arbeidsgiver.kubernetes.LivenessComponent
 import no.nav.helse.arbeidsgiver.kubernetes.ReadynessComponent
 import no.nav.helse.arbeidsgiver.system.AppEnv
 import no.nav.helse.arbeidsgiver.system.getEnvironment
+import no.nav.helse.arbeidsgiver.system.getString
 import no.nav.helse.fritakagp.koin.getAllOfType
 import no.nav.helse.fritakagp.koin.selectModuleBasedOnProfile
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
@@ -86,26 +86,28 @@ class FritakAgpApplication(val port: Int = 8080) : KoinComponent {
     }
 
     private fun configAndStartBackgroundWorker() {
-        get<BakgrunnsjobbService>().apply {
-            registrer(get<GravidSoeknadProcessor>())
-            registrer(get<GravidSoeknadKafkaProcessor>())
-            registrer(get<GravidSoeknadKvitteringProcessor>())
+        if (appConfig.getString("run_background_workers") == "true") {
+            get<BakgrunnsjobbService>().apply {
+                registrer(get<GravidSoeknadProcessor>())
+                registrer(get<GravidSoeknadKafkaProcessor>())
+                registrer(get<GravidSoeknadKvitteringProcessor>())
 
-            registrer(get<GravidKravProcessor>())
-            registrer(get<GravidKravKafkaProcessor>())
-            registrer(get<GravidKravKvitteringProcessor>())
+                registrer(get<GravidKravProcessor>())
+                registrer(get<GravidKravKafkaProcessor>())
+                registrer(get<GravidKravKvitteringProcessor>())
 
-            registrer(get<KroniskSoeknadProcessor>())
-            registrer(get<KroniskSoeknadKafkaProcessor>())
-            registrer(get<KroniskSoeknadKvitteringProcessor>())
+                registrer(get<KroniskSoeknadProcessor>())
+                registrer(get<KroniskSoeknadKafkaProcessor>())
+                registrer(get<KroniskSoeknadKvitteringProcessor>())
 
-            registrer(get<KroniskKravProcessor>())
-            registrer(get<KroniskKravKafkaProcessor>())
-            registrer(get<KroniskKravKvitteringProcessor>())
+                registrer(get<KroniskKravProcessor>())
+                registrer(get<KroniskKravKafkaProcessor>())
+                registrer(get<KroniskKravKvitteringProcessor>())
 
-            registrer(get<BrukernotifikasjonProcessor>())
+                registrer(get<BrukernotifikasjonProcessor>())
 
-            startAsync(true)
+                startAsync(true)
+            }
         }
     }
 

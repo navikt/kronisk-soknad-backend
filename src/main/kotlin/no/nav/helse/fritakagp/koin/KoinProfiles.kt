@@ -86,10 +86,6 @@ val common = module {
 }
 
 // utils
-@KtorExperimentalAPI
-fun ApplicationConfig.getString(path: String): String {
-    return this.property(path).getString()
-}
 
 @KtorExperimentalAPI
 fun ApplicationConfig.getjdbcUrlFromProperties(): String {

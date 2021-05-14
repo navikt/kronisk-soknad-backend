@@ -36,8 +36,8 @@ fun Application.fritakModule(config: ApplicationConfig = environment.config) {
     routing {
         val apiBasePath = config.getString("ktor.application.basepath")
         route("$apiBasePath/api/v1") {
-            systemRoutes()
             authenticate {
+                systemRoutes()
                 kroniskRoutes(get(), get(), get(), get(), get(), get(), get(), get())
                 gravidRoutes(get(), get(), get(), get(), get(), get(), get(), get())
                 altinnRoutes(get())

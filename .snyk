@@ -22,15 +22,23 @@ ignore:
     - '*':
         reason: None Given
         expires: 2021-07-01T12:39:32.328Z
-  SNYK-JAVA-IONETTY-1089809
+  SNYK-JAVA-IONETTY-1089809:
     - '*':
         reason: None Given
         expires: 2021-07-01T12:39:32.328Z
-  SNYK-JAVA-COMNIMBUSDS-1243767
+  SNYK-JAVA-COMNIMBUSDS-1243767:
     - '*':
         reason: None Given
         expires: 2021-07-01T12:39:32.328Z
-  SNYK-JAVA-ORGAPACHEPDFBOX-1088012
+  SNYK-JAVA-ORGAPACHEPDFBOX-1088012:
+    - '*':
+        reason: None Given
+        expires: 2021-07-01T12:39:32.328Z
+  SNYK-JAVA-ORGBOUNCYCASTLE-1296075:
+    - '*':
+        reason: None Given
+        expires: 2021-07-01T12:39:32.328Z
+  SNYK-JAVA-ORGGLASSFISHJERSEYCORE-1255637:
     - '*':
         reason: None Given
         expires: 2021-07-01T12:39:32.328Z

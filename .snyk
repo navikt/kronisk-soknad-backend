@@ -10,4 +10,20 @@ ignore:
     - '*':
         reason: None Given
         expires: 2021-06-03T12:39:32.328Z
+  SNYK-JAVA-IONETTY-1083991:
+    - '*':
+        reason: None Given
+        expires: 2021-07-01T12:39:32.328Z
+  SNYK-JAVA-NETMINIDEV-1078499:
+    - '*':
+        reason: None Given
+        expires: 2021-07-01T12:39:32.328Z
+  SNYK-JAVA-ORGAPACHEPDFBOX-1088011:
+    - '*':
+        reason: None Given
+        expires: 2021-07-01T12:39:32.328Z
+  SNYK-JAVA-ORGECLIPSEJETTY-1090340:
+    - '*':
+        reason: None Given
+        expires: 2021-07-01T12:39:32.328Z
 patch: {}

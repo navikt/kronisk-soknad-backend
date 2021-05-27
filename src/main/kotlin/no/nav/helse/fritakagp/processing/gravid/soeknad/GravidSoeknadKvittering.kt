@@ -6,6 +6,8 @@ import no.altinn.schemas.services.serviceengine.correspondence._2010._10.InsertC
 import no.altinn.services.serviceengine.correspondence._2009._10.ICorrespondenceAgencyExternalBasic
 import no.altinn.services.serviceengine.correspondence._2009._10.ICorrespondenceAgencyExternalBasicInsertCorrespondenceBasicV2AltinnFaultFaultFaultMessage
 import no.nav.helse.fritakagp.domain.GravidSoeknad
+import no.nav.helse.fritakagp.domain.Omplassering
+import no.nav.helse.fritakagp.domain.Tiltak
 import java.time.format.DateTimeFormatter
 
 interface GravidSoeknadKvitteringSender {
@@ -56,24 +58,23 @@ class GravidSoeknadAltinnKvitteringSender(
                <div class="melding">
             <p>Kvittering for mottatt søknad om fritak fra arbeidsgiverperioden grunnet risiko for høyt sykefravær knyttet til graviditet.</p>
             <p>Virksomhetsnummer: ${kvittering.virksomhetsnummer}</p>
-            <p>${kvittering.opprettet.format(dateTimeFormatterMedKl)}/p>
+            <p>${kvittering.opprettet.format(dateTimeFormatterMedKl)}</p>
             <p>Søknaden vil bli behandlet fortløpende. Ved behov vil NAV innhente ytterligere dokumentasjon.
              Har dere spørsmål, ring NAVs arbeidsgivertelefon 55 55 33 36.</p>
             <p>Dere har innrapportert følgende:</p>
             <ul>
-                <li>Fødselsnummer: xxxxxxxxxxx
-                <li>Forsøkt tilrettelegging [Ja/Nei]
-                <li>Tiltak: [Liste over tiltak]
-                <li>Forsøkt omplassering: [Ja/Nei/Ikke mulig + grunn]
-                <li>Dokumentasjon vedlagt: [Ja/Nei]
-                <li>>Mottatt: dd.mm.åååå kl tt:mm</li>
-                <li>Innrapportert av [fnr på innsender]</li>
+                <li>Fødselsnummer: ${kvittering.identitetsnummer}</li>
+                <li>Dokumentasjon vedlagt: ${jaEllerNei(kvittering.harVedlegg)}</li>
+                <li>Forsøkt tilrettelegging: ${jaEllerNei(kvittering.tilrettelegge)}</li>                
+                <li>Tiltak:${ lagreTiltak(kvittering.tiltak) } </li>
+                <li>Forsøkt omplassering: ${lagreOmplasseringStr(kvittering)}</li>               
+                <li>Mottatt: ${kvittering.opprettet.format(dateTimeFormatterMedKl)}</li>
+                <li>Innrapportert av: ${kvittering.sendtAv}</li>
             </ul>
                </div>
            </body>
         </html>
     """.trimIndent()
-
 
         val meldingsInnhold = ExternalContentV2()
             .withLanguageCode("1044")
@@ -90,5 +91,28 @@ class GravidSoeknadAltinnKvitteringSender(
             .withServiceEdition("1")
             .withContent(meldingsInnhold)
     }
+    fun jaEllerNei(verdi : Boolean) = if (verdi) "Ja" else "Nei"
+    fun lagreOmplasseringStr(kvittering: GravidSoeknad) : String {
+        return if (kvittering.omplassering != null)
+            if (kvittering.omplassering == Omplassering.IKKE_MULIG)
+                """
+                    ${kvittering.omplassering!!.beskrivelse} fordi  ${kvittering.omplasseringAarsak?.beskrivelse}
+                """
+            else
+                kvittering.omplassering!!.beskrivelse
+        else ""
+    }
 
+    fun lagreTiltak(tiltak: List<Tiltak>?) : String {
+        var ret = ""
+        if (tiltak != null) {
+            ret += "<ul>"
+            for (t in tiltak)
+                ret += "<li>${t.beskrivelse}</li>"
+            ret += "</ul>"
+        } else
+            ret = "Ingen tiltak"
+
+        return ret
+    }
 }

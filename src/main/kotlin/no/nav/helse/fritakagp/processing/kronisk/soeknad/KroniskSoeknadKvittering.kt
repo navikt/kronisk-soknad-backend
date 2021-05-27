@@ -56,18 +56,15 @@ class KroniskSoeknadAltinnKvitteringSender(
                <div class="melding">
             <p>Kvittering for mottatt søknad om fritak fra arbeidsgiverperioden grunnet risiko for høyt sykefravær knyttet til kronisk sykdom.</p>
             <p>Virksomhetsnummer: ${kvittering.virksomhetsnummer}</p>
-            <p>${kvittering.opprettet.format(dateTimeFormatterMedKl)}/p>
+            <p>${kvittering.opprettet.format(dateTimeFormatterMedKl)}</p>
             <p>Søknaden vil bli behandlet fortløpende. Ved behov vil NAV innhente ytterligere dokumentasjon.
              Har dere spørsmål, ring NAVs arbeidsgivertelefon 55 55 33 36.</p>
             <p>Dere har innrapportert følgende:</p>
             <ul>
-                <li>Fødselsnummer: xxxxxxxxxxx
-                <li>Forsøkt tilrettelegging [Ja/Nei]
-                <li>Tiltak: [Liste over tiltak]
-                <li>Forsøkt omplassering: [Ja/Nei/Ikke mulig + grunn]
-                <li>Dokumentasjon vedlagt: [Ja/Nei]
-                <li>>Mottatt: dd.mm.åååå kl tt:mm</li>
-                <li>Innrapportert av [fnr på innsender]</li>
+                <li>Fødselsnummer: ${kvittering.identitetsnummer} </li>
+                <li>Dokumentasjon vedlagt: ${if (kvittering.harVedlegg) "Ja" else "Nei"} </li>
+                <li>Mottatt:  ${kvittering.opprettet.format(dateTimeFormatterMedKl)}  </li>  
+                <li>Innrapportert av: ${kvittering.sendtAv}</li>        
             </ul>
                </div>
            </body>

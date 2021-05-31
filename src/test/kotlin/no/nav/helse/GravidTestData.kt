@@ -57,12 +57,12 @@ object GravidTestData {
     val gravidKravRequestValid = GravidKravRequest(
         virksomhetsnummer = validOrgNr,
         identitetsnummer = validIdentitetsnummer,
-        periode = Arbeidsgiverperiode(
+        perioder = setOf(Arbeidsgiverperiode(
             LocalDate.of(2020, 1, 5),
             LocalDate.of(2020, 1, 10),
             2,
             2590.8
-        ),
+        )),
         bekreftet = true,
         dokumentasjon = null,
         kontrollDager = null
@@ -77,12 +77,12 @@ object GravidTestData {
     val gravidKravRequestValidPeriode1Dag = GravidKravRequest(
         virksomhetsnummer = validOrgNr,
         identitetsnummer = validIdentitetsnummer,
-        periode = Arbeidsgiverperiode(
+        perioder = setOf(Arbeidsgiverperiode(
             LocalDate.of(2020, 2, 1),
             LocalDate.of(2020, 2, 1),
             1,
             123.8
-        ),
+        )),
         bekreftet = true,
         dokumentasjon = null,
         kontrollDager = null
@@ -92,12 +92,12 @@ object GravidTestData {
     val gravidKrav = GravidKrav(
         virksomhetsnummer = validOrgNr,
         identitetsnummer = validIdentitetsnummer,
-        periode = Arbeidsgiverperiode(
+        perioder = setOf(Arbeidsgiverperiode(
             LocalDate.of(2020, 1, 5),
             LocalDate.of(2020, 1, 10),
             5,
             2590.8
-        ),
+        )),
         sendtAv = validIdentitetsnummer,
         kontrollDager = null
     )

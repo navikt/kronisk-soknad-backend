@@ -1,12 +1,11 @@
 package no.nav.helse.fritakagp.web.api.resreq
 
-import io.ktor.application.*
 import no.nav.helse.arbeidsgiver.web.validation.isValidIdentitetsnummer
 import no.nav.helse.arbeidsgiver.web.validation.isValidOrganisasjonsnummer
 import no.nav.helse.fritakagp.domain.*
 import no.nav.helse.fritakagp.web.dto.validation.isGodskjentFiletyper
 import no.nav.helse.fritakagp.web.dto.validation.isNotStorreEnn
-import no.nav.helse.fritakagp.web.dto.validation.refusjonsDagerIkkeOverstigerPeriodelengde
+import no.nav.helse.fritakagp.web.dto.validation.refujonsDagerIkkeOverstigerPeriodelengder
 import org.valiktor.functions.isNotEmpty
 import org.valiktor.functions.isNotNull
 import org.valiktor.functions.isTrue
@@ -73,7 +72,7 @@ data class GravidSoknadRequest(
 data class GravidKravRequest(
     val virksomhetsnummer: String,
     val identitetsnummer: String,
-    val periode: Arbeidsgiverperiode,
+    val perioder: Set<Arbeidsgiverperiode>,
 
     val bekreftet: Boolean,
     val kontrollDager: Int?,
@@ -84,7 +83,7 @@ data class GravidKravRequest(
             validate(GravidKravRequest::identitetsnummer).isValidIdentitetsnummer()
             validate(GravidKravRequest::virksomhetsnummer).isValidOrganisasjonsnummer()
             validate(GravidKravRequest::bekreftet).isTrue()
-            validate(GravidKravRequest::periode).refusjonsDagerIkkeOverstigerPeriodelengde()
+            validate(GravidKravRequest::perioder).refujonsDagerIkkeOverstigerPeriodelengder()
 
             if (!this@GravidKravRequest.dokumentasjon.isNullOrEmpty()) {
                 validate(GravidKravRequest::dokumentasjon).isGodskjentFiletyper()
@@ -96,7 +95,7 @@ data class GravidKravRequest(
     fun toDomain(sendtAv: String) = GravidKrav(
         identitetsnummer = identitetsnummer,
         virksomhetsnummer = virksomhetsnummer,
-        periode = periode,
+        perioder = perioder,
         sendtAv = sendtAv,
         harVedlegg = !dokumentasjon.isNullOrEmpty(),
         kontrollDager = kontrollDager

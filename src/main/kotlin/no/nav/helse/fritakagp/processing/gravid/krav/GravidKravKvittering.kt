@@ -5,7 +5,9 @@ import no.altinn.schemas.services.serviceengine.correspondence._2010._10.Externa
 import no.altinn.schemas.services.serviceengine.correspondence._2010._10.InsertCorrespondenceV2
 import no.altinn.services.serviceengine.correspondence._2009._10.ICorrespondenceAgencyExternalBasic
 import no.altinn.services.serviceengine.correspondence._2009._10.ICorrespondenceAgencyExternalBasicInsertCorrespondenceBasicV2AltinnFaultFaultFaultMessage
+import no.nav.helse.fritakagp.domain.Arbeidsgiverperiode
 import no.nav.helse.fritakagp.domain.GravidKrav
+import no.nav.helse.fritakagp.processing.kronisk.krav.lagrePerioder
 import java.time.format.DateTimeFormatter
 
 interface GravidKravKvitteringSender {
@@ -63,13 +65,11 @@ class GravidKravAltinnKvitteringSender(
             <p>Dere har innrapportert følgende:</p>
             <ul>
                 <li>Fødselsnummer: ${kvittering.identitetsnummer}</li>
-                <li>Dokumentasjon vedlagt: ${if (kvittering.harVedlegg) "Ja" else "Nei"}</li>
-                <li>Fra dato: ${kvittering.periode.fom.format(dateFormatter)}</li>
-                <li>Til dato: ${kvittering.periode.tom.format(dateFormatter)}</li>
-                <li>Antal dager med refusjon: ${kvittering.periode.antallDagerMedRefusjon}</li>
-                <li>Beløp: ${kvittering.periode.beloep}</li>                
+                <li>Dokumentasjon vedlagt: ${if (kvittering.harVedlegg) "Ja" else "Nei"}</li>                      
                 <li>Mottatt: ${kvittering.opprettet.format(dateTimeFormatterMedKl)}</li>
                 <li>Innrapportert av: ${kvittering.sendtAv}</li>
+                <li>Perioder: </li>
+                <ul> ${lagrePerioder(kvittering.perioder)}</ul>
             </ul>
                </div>
            </body>

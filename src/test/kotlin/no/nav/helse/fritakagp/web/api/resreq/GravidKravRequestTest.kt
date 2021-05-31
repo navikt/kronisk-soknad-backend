@@ -1,6 +1,7 @@
 package no.nav.helse.fritakagp.web.api.resreq
 
 import no.nav.helse.GravidTestData
+import no.nav.helse.KroniskTestData
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -36,9 +37,9 @@ class GravidKravRequestTest{
 
     @Test
     internal fun `Antall refusjonsdager kan ikke overstige periodelengden`() {
-        validationShouldFailFor(GravidKravRequest::periode) {
+        validationShouldFailFor(GravidKravRequest::perioder) {
             GravidTestData.gravidKravRequestValid.copy(
-                periode = GravidTestData.gravidKravRequestValid.periode.copy(antallDagerMedRefusjon = 21)
+                perioder = setOf(GravidTestData.gravidKravRequestValid.perioder.first().copy(antallDagerMedRefusjon = 21))
             ).validate()
         }
     }

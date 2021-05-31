@@ -90,10 +90,11 @@ class KroniskKravAltinnKvitteringSender(
             .withServiceEdition("1")
             .withContent(meldingsInnhold)
     }
+}
 
-    fun lagrePerioder(perioder: Set<Arbeidsgiverperiode>) : String {
+fun lagrePerioder(perioder: Set<Arbeidsgiverperiode>) : String {
 
-        val head =  """
+    val head =  """
             <table style="width:50%">
               <tr>
                 <th>Fra dato</th>
@@ -102,22 +103,21 @@ class KroniskKravAltinnKvitteringSender(
                 <th>Beløp</th>
               </tr>"""
 
-        val tail = "</table>"
-        var rader = ""
-        for( p in perioder)
-            rader += lagePeriod(p)
+    val tail = "</table>"
+    var rader = ""
+    for( p in perioder)
+        rader += lagePeriod(p)
 
-        return head + rader + tail
-    }
-    fun lagePeriod(periode : Arbeidsgiverperiode) : String {
-        val dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
+    return head + rader + tail
+}
 
-        return """<tr>
+fun lagePeriod(periode : Arbeidsgiverperiode) : String {
+    val dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
+
+    return """<tr>
                 <td style="text-align:center">${periode.fom.format(dateFormatter)}</td>
                 <td style="text-align:center">${periode.tom.format(dateFormatter)}</td>
                 <td style="text-align:center">${periode.antallDagerMedRefusjon}</td>
                 <td style="text-align:center">${periode.beloep}</td>
             </tr>"""
-    }
-
 }

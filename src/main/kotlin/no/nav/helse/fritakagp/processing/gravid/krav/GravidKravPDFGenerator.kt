@@ -36,10 +36,12 @@ class GravidKravPDFGenerator {
         content.writeTextWrapped("Person (FNR): ${krav.identitetsnummer}")
         content.writeTextWrapped("Arbeidsgiver oppgitt i krav: ${krav.virksomhetsnavn} (${krav.virksomhetsnummer})")
         content.writeTextWrapped("Arbeidsgiverperiode", 2)
-        content.writeTextWrapped("FOM: ${krav.periode.fom}")
-        content.writeTextWrapped("TOM: ${krav.periode.tom}")
-        content.writeTextWrapped("Antall dager det kreves refusjon for: ${krav.periode.antallDagerMedRefusjon}")
-        content.writeTextWrapped("Refusjonskrav (NOK): ${krav.periode.beloep}")
+        krav.perioder.forEach {
+            content.writeTextWrapped("FOM: ${it.fom}")
+            content.writeTextWrapped("TOM: ${it.tom}")
+            content.writeTextWrapped("Antall dager det kreves refusjon for: ${it.antallDagerMedRefusjon}")
+            content.writeTextWrapped("Refusjonskrav (NOK): ${it.beloep}")
+        }
 
         content.endText()
         content.close()

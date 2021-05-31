@@ -45,6 +45,7 @@ class GravidKravAltinnKvitteringSender(
 
     fun mapKvitteringTilInsertCorrespondence(kvittering: GravidKrav): InsertCorrespondenceV2 {
         val dateTimeFormatterMedKl = DateTimeFormatter.ofPattern("dd.MM.yyyy 'kl.' HH:mm")
+        val dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
         val tittel = "Kvittering for mottatt refusjonskrav fra arbeidsgiverperioden grunnet graviditet"
 
         val innhold = """
@@ -56,24 +57,24 @@ class GravidKravAltinnKvitteringSender(
                <div class="melding">
             <p>Kvittering for mottatt krav om fritak fra arbeidsgiverperioden grunnet risiko for høyt sykefravær knyttet til graviditet.</p>
             <p>Virksomhetsnummer: ${kvittering.virksomhetsnummer}</p>
-            <p>${kvittering.opprettet.format(dateTimeFormatterMedKl)}/p>
+            <p>${kvittering.opprettet.format(dateTimeFormatterMedKl)}</p>
             <p>Kravet vil bli behandlet fortløpende. Ved behov vil NAV innhente ytterligere dokumentasjon.
              Har dere spørsmål, ring NAVs arbeidsgivertelefon 55 55 33 36.</p>
             <p>Dere har innrapportert følgende:</p>
             <ul>
-                <li>Fødselsnummer: xxxxxxxxxxx
-                <li>Forsøkt tilrettelegging [Ja/Nei]
-                <li>Tiltak: [Liste over tiltak]
-                <li>Forsøkt omplassering: [Ja/Nei/Ikke mulig + grunn]
-                <li>Dokumentasjon vedlagt: [Ja/Nei]
-                <li>>Mottatt: dd.mm.åååå kl tt:mm</li>
-                <li>Innrapportert av [fnr på innsender]</li>
+                <li>Fødselsnummer: ${kvittering.identitetsnummer}</li>
+                <li>Dokumentasjon vedlagt: ${if (kvittering.harVedlegg) "Ja" else "Nei"}</li>
+                <li>Fra dato: ${kvittering.periode.fom.format(dateFormatter)}</li>
+                <li>Til dato: ${kvittering.periode.tom.format(dateFormatter)}</li>
+                <li>Antal dager med refusjon: ${kvittering.periode.antallDagerMedRefusjon}</li>
+                <li>Beløp: ${kvittering.periode.beloep}</li>                
+                <li>Mottatt: ${kvittering.opprettet.format(dateTimeFormatterMedKl)}</li>
+                <li>Innrapportert av: ${kvittering.sendtAv}</li>
             </ul>
                </div>
            </body>
         </html>
     """.trimIndent()
-
 
         val meldingsInnhold = ExternalContentV2()
             .withLanguageCode("1044")

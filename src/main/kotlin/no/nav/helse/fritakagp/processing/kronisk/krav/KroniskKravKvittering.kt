@@ -5,6 +5,7 @@ import no.altinn.schemas.services.serviceengine.correspondence._2010._10.Externa
 import no.altinn.schemas.services.serviceengine.correspondence._2010._10.InsertCorrespondenceV2
 import no.altinn.services.serviceengine.correspondence._2009._10.ICorrespondenceAgencyExternalBasic
 import no.altinn.services.serviceengine.correspondence._2009._10.ICorrespondenceAgencyExternalBasicInsertCorrespondenceBasicV2AltinnFaultFaultFaultMessage
+import no.nav.helse.fritakagp.domain.Arbeidsgiverperiode
 import no.nav.helse.fritakagp.domain.KroniskKrav
 import java.time.format.DateTimeFormatter
 
@@ -56,15 +57,17 @@ class KroniskKravAltinnKvitteringSender(
                <div class="melding">
             <p>Kvittering for mottatt krav om fritak fra arbeidsgiverperioden grunnet risiko for høyt sykefravær knyttet til kronisk sykdom.</p>
             <p>Virksomhetsnummer: ${kvittering.virksomhetsnummer}</p>
-            <p>${kvittering.opprettet.format(dateTimeFormatterMedKl)}/p>
+            <p>${kvittering.opprettet.format(dateTimeFormatterMedKl)}</p>
             <p>Kravet vil bli behandlet fortløpende. Ved behov vil NAV innhente ytterligere dokumentasjon.
              Har dere spørsmål, ring NAVs arbeidsgivertelefon 55 55 33 36.</p>
             <p>Dere har innrapportert følgende:</p>
             <ul>
-                <li>Fødselsnummer: xxxxxxxxxxx
-                <li>Dokumentasjon vedlagt: [Ja/Nei]
-                <li>>Mottatt: dd.mm.åååå kl tt:mm</li>
-                <li>Innrapportert av [fnr på innsender]</li>
+                <li>Fødselsnummer: ${kvittering.identitetsnummer} </li>
+                <li>Dokumentasjon vedlagt: ${if (kvittering.harVedlegg) "Ja" else "Nei"} </li>
+                <li>Mottatt:  ${kvittering.opprettet.format(dateTimeFormatterMedKl)}  </li>  
+                <li>Innrapportert av: ${kvittering.sendtAv}</li>  
+                <li>Perioder: </li>
+                <ul> ${lagrePerioder(kvittering.perioder)}</ul>
             </ul>
                </div>
            </body>
@@ -86,6 +89,35 @@ class KroniskKravAltinnKvitteringSender(
             .withServiceCode(altinnTjenesteKode)
             .withServiceEdition("1")
             .withContent(meldingsInnhold)
+    }
+
+    fun lagrePerioder(perioder: Set<Arbeidsgiverperiode>) : String {
+
+        val head =  """
+            <table style="width:50%">
+              <tr>
+                <th>Fra dato</th>
+                <th>Til dato</th>
+                <th>Dager med refusjon</th>
+                <th>Beløp</th>
+              </tr>"""
+
+        val tail = "</table>"
+        var rader = ""
+        for( p in perioder)
+            rader += lagePeriod(p)
+
+        return head + rader + tail
+    }
+    fun lagePeriod(periode : Arbeidsgiverperiode) : String {
+        val dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
+
+        return """<tr>
+                <td style="text-align:center">${periode.fom.format(dateFormatter)}</td>
+                <td style="text-align:center">${periode.tom.format(dateFormatter)}</td>
+                <td style="text-align:center">${periode.antallDagerMedRefusjon}</td>
+                <td style="text-align:center">${periode.beloep}</td>
+            </tr>"""
     }
 
 }

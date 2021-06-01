@@ -69,7 +69,7 @@ spec:
     - name: OPPGAVEBEHANDLING_URL
       value: https://oppgave-q1.dev-fss-pub.nais.io
     - name: PDL_URL
-      value: https://helsearbeidsgiver-proxy.prod-fss-pub.nais.io/pdl
+      value: https://pdl-api.prod-fss-pub.nais.io
     - name: ALTINN_ENDPOINT
       value: https://altinn.no/ServiceEngineExternal/CorrespondenceAgencyExternalBasic.svc
     - name: CLAM_AV_URL

@@ -65,11 +65,11 @@ spec:
     - name: KOIN_PROFILE
       value: PREPROD
     - name: DOKARKIV_URL
-      value: https://helsearbeidsgiver-proxy.dev-fss-pub.nais.io/dokarkiv
+      value: https//dokarkiv.dev-fss-pub.nais.io
     - name: OPPGAVEBEHANDLING_URL
-      value: https://helsearbeidsgiver-proxy.dev-fss-pub.nais.io/oppgave
+      value: https://oppgave-q1.dev-fss-pub.nais.io
     - name: PDL_URL
-      value: https://helsearbeidsgiver-proxy.dev-fss-pub.nais.io/pdl
+      value: https://pdl-api.dev-fss-pub.nais.io
     - name: ALTINN_ENDPOINT
       value: https://tt02.altinn.no/ServiceEngineExternal/CorrespondenceAgencyExternalBasic.svc
     - name: CLAM_AV_URL

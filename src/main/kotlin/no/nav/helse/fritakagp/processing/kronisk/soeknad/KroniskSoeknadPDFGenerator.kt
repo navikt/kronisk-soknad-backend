@@ -1,6 +1,7 @@
 package no.nav.helse.fritakagp.processing.kronisk.soeknad
 
 import no.nav.helse.fritakagp.domain.KroniskSoeknad
+import no.nav.helse.fritakagp.processing.gravid.krav.getPDFTimeStampFormat
 import org.apache.commons.lang3.text.WordUtils
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.pdmodel.PDPage
@@ -17,7 +18,6 @@ class KroniskSoeknadPDFGenerator {
     private val MARGIN_X = 40f
     private val MARGIN_Y = 40f
     private val FONT_NAME = "fonts/SourceSansPro-Regular.ttf"
-    val TIMESTAMP_FORMAT = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss")
 
 
     fun lagPDF(soeknad: KroniskSoeknad): ByteArray {
@@ -37,7 +37,7 @@ class KroniskSoeknadPDFGenerator {
         content.showText("Søknad om sykepenger for kronisk sykdom")
         content.setFont(font, FONT_SIZE)
 
-        content.writeTextWrapped("Mottatt: ${TIMESTAMP_FORMAT.format(soeknad.opprettet)}", 4)
+        content.writeTextWrapped("Mottatt: ${getPDFTimeStampFormat().format(soeknad.opprettet)}", 4)
         content.writeTextWrapped("Person (FNR): ${soeknad.identitetsnummer}")
         content.writeTextWrapped("Arbeidsgiver oppgitt i søknad: ${soeknad.virksomhetsnavn} (${soeknad.virksomhetsnummer})")
         content.writeTextWrapped("Hva slags arbeid utfører den ansatte?", 2)

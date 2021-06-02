@@ -43,7 +43,17 @@ class GravidSoeknadProcessorTest {
     val bucketStorageMock = mockk<BucketStorage>(relaxed = true)
     val bakgrunnsjobbRepomock = mockk<BakgrunnsjobbRepository>(relaxed = true)
     val berregServiceMock = mockk<BrregClient>(relaxed = true)
-    val prosessor = GravidSoeknadProcessor(repositoryMock, joarkMock, oppgaveMock, pdlClientMock, bakgrunnsjobbRepomock, pdfGeneratorMock, objectMapper, bucketStorageMock, berregServiceMock)
+    val prosessor = GravidSoeknadProcessor(
+        repositoryMock,
+        joarkMock,
+        oppgaveMock,
+        pdlClientMock,
+        bakgrunnsjobbRepomock,
+        pdfGeneratorMock,
+        objectMapper,
+        bucketStorageMock,
+        berregServiceMock
+    )
 
     lateinit var soeknad: GravidSoeknad
 
@@ -54,19 +64,36 @@ class GravidSoeknadProcessorTest {
     @BeforeEach
     fun setup() {
         soeknad = GravidTestData.soeknadGravid.copy()
-        jobb = Bakgrunnsjobb(data = objectMapper.writeValueAsString(GravidSoeknadProcessor.JobbData(soeknad.id)), type = "test")
+        jobb = Bakgrunnsjobb(
+            data = objectMapper.writeValueAsString(GravidSoeknadProcessor.JobbData(soeknad.id)),
+            type = "test"
+        )
         objectMapper.registerModule(JavaTimeModule())
         every { repositoryMock.getById(soeknad.id) } returns soeknad
         every { bucketStorageMock.getDocAsString(any()) } returns null
-        every { pdlClientMock.personNavn(soeknad.sendtAv)} returns PdlHentPersonNavn.PdlPersonNavneliste(listOf(
-            PdlHentPersonNavn.PdlPersonNavneliste.PdlPersonNavn("Ola", "M", "Avsender", PdlPersonNavnMetadata("freg"))))
-        every { pdlClientMock.fullPerson(soeknad.identitetsnummer)} returns PdlHentFullPerson(
+        every { pdlClientMock.personNavn(soeknad.sendtAv) } returns PdlHentPersonNavn.PdlPersonNavneliste(
+            listOf(
+                PdlHentPersonNavn.PdlPersonNavneliste.PdlPersonNavn(
+                    "Ola",
+                    "M",
+                    "Avsender",
+                    PdlPersonNavnMetadata("freg")
+                )
+            )
+        )
+        every { pdlClientMock.fullPerson(soeknad.identitetsnummer) } returns PdlHentFullPerson(
             PdlFullPersonliste(emptyList(), emptyList(), emptyList(), emptyList(), emptyList()),
             PdlIdentResponse(listOf(PdlIdent("aktør-id", PdlIdent.PdlIdentGruppe.AKTORID))),
             PdlHentFullPerson.PdlGeografiskTilknytning(UTLAND, null, null, "SWE")
         )
-        every { joarkMock.journalførDokument(any(), any(), any()) } returns JournalpostResponse(arkivReferanse, true, "M", null, emptyList())
-        coEvery { oppgaveMock.opprettOppgave(any(), any())} returns OpprettOppgaveResponse(oppgaveId)
+        every { joarkMock.journalførDokument(any(), any(), any()) } returns JournalpostResponse(
+            arkivReferanse,
+            true,
+            "M",
+            null,
+            emptyList()
+        )
+        coEvery { oppgaveMock.opprettOppgave(any(), any()) } returns OpprettOppgaveResponse(oppgaveId)
         coEvery { berregServiceMock.getVirksomhetsNavn(soeknad.virksomhetsnummer) } returns "Stark Industries"
     }
 
@@ -88,7 +115,13 @@ class GravidSoeknadProcessorTest {
         every { bucketStorageMock.getDocAsString(soeknad.id) } returns BucketDocument(dokumentData, filtypeArkiv)
 
         val joarkRequest = slot<JournalpostRequest>()
-        every { joarkMock.journalførDokument(capture(joarkRequest), any(), any()) } returns JournalpostResponse(arkivReferanse, true, "M", null, emptyList())
+        every { joarkMock.journalførDokument(capture(joarkRequest), any(), any()) } returns JournalpostResponse(
+            arkivReferanse,
+            true,
+            "M",
+            null,
+            emptyList()
+        )
 
         val orginalJsonDoc = Base64.getEncoder().encodeToString(objectMapper.writeValueAsBytes(soeknad))
         prosessor.prosesser(jobb)
@@ -97,7 +130,9 @@ class GravidSoeknadProcessorTest {
         verify(exactly = 1) { bucketStorageMock.deleteDoc(soeknad.id) }
 
         assertThat((joarkRequest.captured.dokumenter)).hasSize(2)
-        val dokumentasjon = joarkRequest.captured.dokumenter.filter { it.brevkode == GravidSoeknadProcessor.dokumentasjonBrevkode }.first()
+        val dokumentasjon =
+            joarkRequest.captured.dokumenter.filter { it.brevkode == GravidSoeknadProcessor.dokumentasjonBrevkode }
+                .first()
 
         assertThat(dokumentasjon.dokumentVarianter[0].fysiskDokument).isEqualTo(dokumentData)
         assertThat(dokumentasjon.dokumentVarianter[0].filtype).isEqualTo(filtypeArkiv.toUpperCase())
@@ -147,10 +182,10 @@ class GravidSoeknadProcessorTest {
             bakgrunnsjobbRepomock.save(capture(opprettetJobber))
         }
 
-        val kafkajobb = opprettetJobber.find {it.type == GravidSoeknadKafkaProcessor.JOB_TYPE }
+        val kafkajobb = opprettetJobber.find { it.type == GravidSoeknadKafkaProcessor.JOB_TYPE }
         assertThat(kafkajobb?.data).contains(soeknad.id.toString())
 
-        val beskjedJobb = opprettetJobber.find {it.type == BrukernotifikasjonProcessor.JOB_TYPE }
+        val beskjedJobb = opprettetJobber.find { it.type == BrukernotifikasjonProcessor.JOB_TYPE }
         assertThat(beskjedJobb?.data).contains(soeknad.id.toString())
         assertThat(beskjedJobb?.data).contains(SkjemaType.GravidSøknad.name)
     }
@@ -169,5 +204,4 @@ class GravidSoeknadProcessorTest {
         coVerify(exactly = 1) { oppgaveMock.opprettOppgave(any(), any()) }
         verify(exactly = 1) { repositoryMock.update(soeknad) }
     }
-
 }

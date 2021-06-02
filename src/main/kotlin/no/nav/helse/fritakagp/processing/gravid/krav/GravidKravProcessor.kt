@@ -15,12 +15,14 @@ import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlIdent
 import no.nav.helse.fritakagp.GravidKravMetrics
 import no.nav.helse.fritakagp.db.GravidKravRepository
 import no.nav.helse.fritakagp.domain.GravidKrav
+import no.nav.helse.fritakagp.domain.generereGravidkKravBeskrivelse
+import no.nav.helse.fritakagp.domain.genererePeriodeTable
+import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
-import org.slf4j.LoggerFactory
-import java.time.LocalDate
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor.Jobbdata.SkjemaType
-import no.nav.helse.fritakagp.integration.brreg.BrregClient
+import org.slf4j.LoggerFactory
+import java.time.LocalDate
 import java.util.*
 
 class GravidKravProcessor(
@@ -187,14 +189,12 @@ class GravidKravProcessor(
 
     fun opprettOppgave(krav: GravidKrav): String {
         val aktoerId = pdlClient.fullPerson(krav.identitetsnummer)?.hentIdenter?.trekkUtIdent(PdlIdent.PdlIdentGruppe.AKTORID)
-        requireNotNull(aktoerId, { "Fant ikke AktørID for fnr i ${krav.id}" })
+        requireNotNull(aktoerId) { "Fant ikke AktørID for fnr i ${krav.id}" }
 
         val request = OpprettOppgaveRequest(
             aktoerId = aktoerId,
             journalpostId = krav.journalpostId,
-            beskrivelse = """
-                Krav om refusjon av arbeidsgiverperioden ifbm. graviditet
-            """.trimIndent(),
+            beskrivelse = generereGravidkKravBeskrivelse(krav, "Krav om refusjon av arbeidsgiverperioden ifbm. graviditet"),
             tema = "SYK",
             behandlingstype = digitalKravBehandingsType,
             oppgavetype = "BEH_SAK",
@@ -210,14 +210,12 @@ class GravidKravProcessor(
 
     fun opprettFordelingsOppgave(krav: GravidKrav): String {
         val aktoerId = pdlClient.fullPerson(krav.identitetsnummer)?.hentIdenter?.trekkUtIdent(PdlIdent.PdlIdentGruppe.AKTORID)
-        requireNotNull(aktoerId, { "Fant ikke AktørID for fnr i ${krav.id}" })
+        requireNotNull(aktoerId) { "Fant ikke AktørID for fnr i ${krav.id}" }
 
         val request = OpprettOppgaveRequest(
             aktoerId = aktoerId,
             journalpostId = krav.journalpostId,
-            beskrivelse = """
-                Klarte ikke å opprette oppgave og/eller journalføre for dette refusjonskravet: ${krav.id}
-            """.trimIndent(),
+            beskrivelse = generereGravidkKravBeskrivelse(krav, "Klarte ikke å opprette oppgave og/eller journalføre for dette refusjonskravet: ${krav.id}"),
             tema = "SYK",
             behandlingstype = digitalKravBehandingsType,
             oppgavetype = OPPGAVETYPE_FORDELINGSOPPGAVE,
@@ -234,3 +232,4 @@ class GravidKravProcessor(
     data class JobbData(val id: UUID)
 
 }
+

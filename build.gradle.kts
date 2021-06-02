@@ -170,6 +170,8 @@ dependencies {
     implementation("org.apache.kafka:kafka-clients:$kafkaClient")
     implementation("io.confluent:kafka-avro-serializer:$confluentVersion")
 
+    implementation("de.m3y.kformat:kformat:0.7")
+
 }
 
 tasks.named<KotlinCompile>("compileKotlin")

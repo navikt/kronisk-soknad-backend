@@ -15,6 +15,7 @@ import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlIdent
 import no.nav.helse.fritakagp.KroniskSoeknadMetrics
 import no.nav.helse.fritakagp.db.KroniskSoeknadRepository
 import no.nav.helse.fritakagp.domain.KroniskSoeknad
+import no.nav.helse.fritakagp.domain.generereKroniskSoeknadBeskrivelse
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor.Jobbdata.SkjemaType
@@ -183,14 +184,12 @@ class KroniskSoeknadProcessor(
 
     fun opprettOppgave(soeknad: KroniskSoeknad): String {
         val aktoerId = pdlClient.fullPerson(soeknad.identitetsnummer)?.hentIdenter?.trekkUtIdent(PdlIdent.PdlIdentGruppe.AKTORID)
-        requireNotNull(aktoerId, { "Fant ikke AktørID for fnr i ${soeknad.id}" })
+        requireNotNull(aktoerId) { "Fant ikke AktørID for fnr i ${soeknad.id}" }
 
         val request = OpprettOppgaveRequest(
             aktoerId = aktoerId,
             journalpostId = soeknad.journalpostId,
-            beskrivelse = """
-                Søknad om fritak fra arbeidsgiverperioden ifbm kronisk lidelse
-            """.trimIndent(),
+            beskrivelse = generereKroniskSoeknadBeskrivelse(soeknad, "Søknad om fritak fra arbeidsgiverperioden ifbm kronisk lidelse"),
             tema = "SYK",
             behandlingstype = digitalSoeknadBehandingsType,
             oppgavetype = "BEH_SAK",
@@ -205,14 +204,12 @@ class KroniskSoeknadProcessor(
 
     fun opprettFordelingsOppgave(soeknad: KroniskSoeknad): String {
         val aktoerId = pdlClient.fullPerson(soeknad.identitetsnummer)?.hentIdenter?.trekkUtIdent(PdlIdent.PdlIdentGruppe.AKTORID)
-        requireNotNull(aktoerId, { "Fant ikke AktørID for fnr i ${soeknad.id}" })
+        requireNotNull(aktoerId) { "Fant ikke AktørID for fnr i ${soeknad.id}" }
 
         val request = OpprettOppgaveRequest(
             aktoerId = aktoerId,
             journalpostId = soeknad.journalpostId,
-            beskrivelse = """
-                Fordelingsoppgave for søknad om fritak fra arbeidsgiverperioden grunnet kronisk sykdom.
-            """.trimIndent(),
+            beskrivelse = generereKroniskSoeknadBeskrivelse(soeknad, "Fordelingsoppgave for søknad om fritak fra arbeidsgiverperioden grunnet kronisk sykdom."),
             tema = "SYK",
             behandlingstype = digitalSoeknadBehandingsType,
             oppgavetype = OPPGAVETYPE_FORDELINGSOPPGAVE,

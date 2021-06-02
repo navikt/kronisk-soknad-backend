@@ -15,7 +15,7 @@ class GravidKravPDFGenerator {
     private val MARGIN_X = 40f
     private val MARGIN_Y = 40f
     private val FONT_NAME = "fonts/SourceSansPro-Regular.ttf"
-    val TIMESTAMP_FORMAT = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss")
+
 
     fun lagPDF(krav: GravidKrav): ByteArray {
         val doc = PDDocument()
@@ -32,7 +32,7 @@ class GravidKravPDFGenerator {
         content.showText("Krav om refusjon av sykepenger i arbeidsgiverperioden")
         content.setFont(font, FONT_SIZE)
 
-        content.writeTextWrapped("Mottatt: ${TIMESTAMP_FORMAT.format(krav.opprettet)}", 4)
+        content.writeTextWrapped("Mottatt: ${getPDFTimeStampFormat().format(krav.opprettet)}", 4)
         content.writeTextWrapped("Person (FNR): ${krav.identitetsnummer}")
         content.writeTextWrapped("Arbeidsgiver oppgitt i krav: ${krav.virksomhetsnavn} (${krav.virksomhetsnummer})")
         content.writeTextWrapped("Arbeidsgiverperiode", 2)
@@ -59,3 +59,5 @@ class GravidKravPDFGenerator {
         }
     }
 }
+
+fun getPDFTimeStampFormat() =  DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss")

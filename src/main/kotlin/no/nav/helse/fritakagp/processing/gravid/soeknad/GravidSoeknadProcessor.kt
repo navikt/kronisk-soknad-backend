@@ -15,6 +15,7 @@ import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlIdent
 import no.nav.helse.fritakagp.GravidSoeknadMetrics
 import no.nav.helse.fritakagp.db.GravidSoeknadRepository
 import no.nav.helse.fritakagp.domain.GravidSoeknad
+import no.nav.helse.fritakagp.domain.generereGravidSoeknadBeskrivelse
 import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
@@ -185,14 +186,12 @@ class GravidSoeknadProcessor(
 
     fun opprettOppgave(soeknad: GravidSoeknad): String {
         val aktoerId = pdlClient.fullPerson(soeknad.identitetsnummer)?.hentIdenter?.trekkUtIdent(PdlIdent.PdlIdentGruppe.AKTORID)
-        requireNotNull(aktoerId, { "Fant ikke AktørID for fnr i ${soeknad.id}" })
+        requireNotNull(aktoerId) { "Fant ikke AktørID for fnr i ${soeknad.id}" }
 
         val request = OpprettOppgaveRequest(
             aktoerId = aktoerId,
             journalpostId = soeknad.journalpostId,
-            beskrivelse = """
-                Søknad om fritak fra arbeidsgiverperioden ifbm. graviditet
-            """.trimIndent(),
+            beskrivelse = generereGravidSoeknadBeskrivelse(soeknad, "Søknad om fritak fra arbeidsgiverperioden ifbm. graviditet"),
             tema = "SYK",
             behandlingstype = digitalSoeknadBehandingsType,
             oppgavetype = "BEH_SAK",
@@ -207,14 +206,12 @@ class GravidSoeknadProcessor(
 
     fun opprettFordelingsOppgave(soeknad: GravidSoeknad): String {
         val aktoerId = pdlClient.fullPerson(soeknad.identitetsnummer)?.hentIdenter?.trekkUtIdent(PdlIdent.PdlIdentGruppe.AKTORID)
-        requireNotNull(aktoerId, { "Fant ikke AktørID for fnr i ${soeknad.id}" })
+        requireNotNull(aktoerId) { "Fant ikke AktørID for fnr i ${soeknad.id}" }
 
         val request = OpprettOppgaveRequest(
             aktoerId = aktoerId,
             journalpostId = soeknad.journalpostId,
-            beskrivelse = """
-                Fordelingsoppgave for søknad om fritak fra arbeidsgiverperioden grunnet gravid sykdom.
-            """.trimIndent(),
+            beskrivelse = generereGravidSoeknadBeskrivelse(soeknad, "Fordelingsoppgave for søknad om fritak fra arbeidsgiverperioden grunnet gravid sykdom."),
             tema = "SYK",
             behandlingstype = digitalSoeknadBehandingsType,
             oppgavetype = OPPGAVETYPE_FORDELINGSOPPGAVE,

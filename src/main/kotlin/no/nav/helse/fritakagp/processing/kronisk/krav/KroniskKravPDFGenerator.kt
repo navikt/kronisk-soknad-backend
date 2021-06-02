@@ -1,6 +1,7 @@
 package no.nav.helse.fritakagp.processing.kronisk.krav
 
 import no.nav.helse.fritakagp.domain.KroniskKrav
+import no.nav.helse.fritakagp.processing.gravid.krav.getPDFTimeStampFormat
 import org.apache.commons.lang3.text.WordUtils
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.pdmodel.PDPage
@@ -15,7 +16,6 @@ class KroniskKravPDFGenerator {
     private val MARGIN_X = 40f
     private val MARGIN_Y = 40f
     private val FONT_NAME = "fonts/SourceSansPro-Regular.ttf"
-    val TIMESTAMP_FORMAT = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss")
 
     fun lagPDF(krav: KroniskKrav): ByteArray {
         val doc = PDDocument()
@@ -32,7 +32,7 @@ class KroniskKravPDFGenerator {
         content.showText("Krav om refusjon av sykepenger i arbeidsgiverperioden")
         content.setFont(font, FONT_SIZE)
 
-        content.writeTextWrapped("Mottatt: ${TIMESTAMP_FORMAT.format(krav.opprettet)}", 4)
+        content.writeTextWrapped("Mottatt: ${getPDFTimeStampFormat().format(krav.opprettet)}", 4)
         content.writeTextWrapped("Person (FNR): ${krav.identitetsnummer}")
         content.writeTextWrapped("Arbeidsgiver oppgitt i krav: ${krav.virksomhetsnavn} (${krav.virksomhetsnummer})")
         content.writeTextWrapped("Perioder", 2)

@@ -91,7 +91,7 @@ spec:
     - name: RUN_BACKGROUND_WORKERS
       value: "false"
     - name: CLIENT_NAME
-      value: fritakagp-api.intern.nav.no,arbeidsgiver.nav.no/fritak-agp-api
+      value: fritakagp-api.intern.nav.no
 
   gcp:
     sqlInstances:

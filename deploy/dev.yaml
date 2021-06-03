@@ -44,15 +44,12 @@ spec:
   accessPolicy:
     outbound:
       external:
-        - host: helsearbeidsgiver-proxy.dev-fss-pub.nais.io
         - host: tt02.altinn.no
         - host: kafka-schema-registry.nais-q.adeo.no
         - host: data.brreg.no
-
-      rules:
-        - application: helsearbeidsgiver-proxy
-          namespace: helsearbeidsgiver
-          cluster: dev-fss
+        - host: dokarkiv.dev-fss-pub.nais.io
+        - host: oppgave-q1.dev-fss-pub.nais.io
+        - host: pdl-api.dev-fss-pub.nais.io
 
   envFrom:
     # servicebrukerens passord som er  hentet fra vault og lagt inn slik: https://doc.nais.io/security/secrets/kubernetes-secrets/
@@ -65,7 +62,7 @@ spec:
     - name: KOIN_PROFILE
       value: PREPROD
     - name: DOKARKIV_URL
-      value: https//dokarkiv.dev-fss-pub.nais.io
+      value: https://dokarkiv.dev-fss-pub.nais.io
     - name: OPPGAVEBEHANDLING_URL
       value: https://oppgave-q1.dev-fss-pub.nais.io
     - name: PDL_URL

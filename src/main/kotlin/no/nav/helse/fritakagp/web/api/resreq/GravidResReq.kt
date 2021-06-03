@@ -76,6 +76,7 @@ data class GravidKravRequest(
 
     val bekreftet: Boolean,
     val kontrollDager: Int?,
+    val antallDager: Int,
     val dokumentasjon: String?
 ) {
     fun validate() {
@@ -98,7 +99,8 @@ data class GravidKravRequest(
         perioder = perioder,
         sendtAv = sendtAv,
         harVedlegg = !dokumentasjon.isNullOrEmpty(),
-        kontrollDager = kontrollDager
+        kontrollDager = kontrollDager,
+        antallDager = antallDager
     )
     
 }

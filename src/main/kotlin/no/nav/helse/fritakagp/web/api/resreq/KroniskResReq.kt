@@ -73,7 +73,8 @@ data class KroniskKravRequest(
         val perioder: Set<Arbeidsgiverperiode>,
         val bekreftet: Boolean,
         val dokumentasjon: String?,
-        val kontrollDager: Int?
+        val kontrollDager: Int?,
+        val antallDager: Int
 ) {
    fun validate() {
         validate(this) {
@@ -95,6 +96,7 @@ data class KroniskKravRequest(
         perioder = perioder,
         sendtAv = sendtAv,
         harVedlegg = !dokumentasjon.isNullOrEmpty(),
-        kontrollDager = kontrollDager
+        kontrollDager = kontrollDager,
+        antallDager = antallDager
     )
 }

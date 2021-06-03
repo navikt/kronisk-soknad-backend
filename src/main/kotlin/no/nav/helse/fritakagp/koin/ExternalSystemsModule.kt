@@ -12,6 +12,7 @@ import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlClient
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlClientImpl
 import no.nav.helse.arbeidsgiver.system.getString
 import no.nav.helse.arbeidsgiver.web.auth.AltinnOrganisationsRepository
+import no.nav.helse.fritakagp.integration.GrunnbeløpClient
 import no.nav.helse.fritakagp.integration.altinn.CachedAuthRepo
 import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.brreg.BrregClientImp
@@ -42,6 +43,8 @@ fun Module.externalSystemClients(config: ApplicationConfig) {
             )
         )
     } bind AltinnOrganisationsRepository::class
+
+    single { GrunnbeløpClient(get()) }
 
     single {
         val clientConfig = OAuth2ClientPropertiesConfig(config)

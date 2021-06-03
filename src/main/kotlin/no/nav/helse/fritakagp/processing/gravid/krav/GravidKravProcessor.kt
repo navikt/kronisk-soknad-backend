@@ -17,6 +17,7 @@ import no.nav.helse.fritakagp.db.GravidKravRepository
 import no.nav.helse.fritakagp.domain.GravidKrav
 import no.nav.helse.fritakagp.domain.generereGravidkKravBeskrivelse
 import no.nav.helse.fritakagp.domain.genererePeriodeTable
+import no.nav.helse.fritakagp.integration.GrunnbeløpClient
 import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor

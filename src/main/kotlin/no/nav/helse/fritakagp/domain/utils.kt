@@ -2,7 +2,6 @@ package no.nav.helse.fritakagp.domain
 
 import de.m3y.kformat.Table
 import de.m3y.kformat.table
-import no.nav.helse.fritakagp.integration.GrunnbeløpClient
 import no.nav.helse.fritakagp.processing.gravid.krav.getPDFTimeStampFormat
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -108,30 +107,3 @@ fun genererePeriodeTable(perioder : Set<Arbeidsgiverperiode>) : String {
 }
 
 
-class BeløpBeregning(
-    val grunnbeløpClient: GrunnbeløpClient
-) {
-    val seksG = grunnbeløpClient.hentGrunnbeløp().grunnbeløp * 6.0
-
-    fun beregnBeløpKronisk(krav : KroniskKrav) {
-        krav.perioder.forEach {
-            val arslonn = it.månedsinntekt * 12
-            it.dagsats = if (arslonn < seksG)
-                arslonn / krav.antallDager
-            else
-                seksG / krav.antallDager
-            it.belop = it.dagsats * it.antallDagerMedRefusjon
-        }
-    }
-    fun beregnBeløpGravid(krav : GravidKrav) {
-        krav.perioder.forEach {
-            val arslonn = it.månedsinntekt * 12
-            it.dagsats = if (arslonn < seksG)
-                arslonn / krav.antallDager
-            else
-                seksG / krav.antallDager
-            it.belop = it.dagsats * it.antallDagerMedRefusjon
-        }
-    }
-
-}

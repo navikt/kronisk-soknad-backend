@@ -74,6 +74,7 @@ data class KroniskKravRequest(
         val bekreftet: Boolean,
         val dokumentasjon: String?,
         val kontrollDager: Int?,
+        val månedsinntekt: Double,
         val antallDager: Int
 ) {
    fun validate() {
@@ -97,6 +98,7 @@ data class KroniskKravRequest(
         sendtAv = sendtAv,
         harVedlegg = !dokumentasjon.isNullOrEmpty(),
         kontrollDager = kontrollDager,
-        antallDager = antallDager
+        antallDager = antallDager,
+        månedsinntekt = månedsinntekt
     )
 }

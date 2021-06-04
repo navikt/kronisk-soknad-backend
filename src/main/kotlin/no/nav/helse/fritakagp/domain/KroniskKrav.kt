@@ -15,6 +15,7 @@ data class KroniskKrav(
         val harVedlegg: Boolean = false,
         val kontrollDager: Int?,
         val antallDager: Int,
+        val månedsinntekt: Double,
 
         var journalpostId: String? = null,
 

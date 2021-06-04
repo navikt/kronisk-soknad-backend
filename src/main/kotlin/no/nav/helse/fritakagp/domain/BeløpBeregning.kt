@@ -3,27 +3,28 @@ package no.nav.helse.fritakagp.domain
 import no.nav.helse.fritakagp.integration.GrunnbeløpClient
 
 class BeløpBeregning(
-    val grunnbeløpClient: GrunnbeløpClient
+    grunnbeløpClient: GrunnbeløpClient
 ) {
-    val seksG = grunnbeløpClient.hentGrunnbeløp().grunnbeløp * 6.0
+    private val seksG = grunnbeløpClient.hentGrunnbeløp().grunnbeløp * 6.0
 
     fun beregnBeløpKronisk(krav : KroniskKrav) {
-        krav.perioder.forEach {
-            val arslonn = it.månedsinntekt * 12
-            it.dagsats = if (arslonn < seksG)
-                arslonn / krav.antallDager
-            else
-                seksG / krav.antallDager
-            it.belop = it.dagsats * it.antallDagerMedRefusjon
-        }
+        val arslonn = krav.månedsinntekt * 12
+        beregnPeriodeData(krav.perioder, krav.antallDager, arslonn)
+
     }
+
+
     fun beregnBeløpGravid(krav : GravidKrav) {
-        krav.perioder.forEach {
-            val arslonn = it.månedsinntekt * 12
+        val arslonn = krav.månedsinntekt * 12
+        beregnPeriodeData(krav.perioder, krav.antallDager, arslonn)
+    }
+
+    private fun beregnPeriodeData(perioder: Set<Arbeidsgiverperiode>, antallDager: Int, arslonn: Double) {
+        perioder.forEach {
             it.dagsats = if (arslonn < seksG)
-                arslonn / krav.antallDager
+                arslonn / antallDager
             else
-                seksG / krav.antallDager
+                seksG / antallDager
             it.belop = it.dagsats * it.antallDagerMedRefusjon
         }
     }

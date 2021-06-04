@@ -6,9 +6,7 @@ import no.nav.helse.fritakagp.domain.*
 import no.nav.helse.fritakagp.web.dto.validation.isGodskjentFiletyper
 import no.nav.helse.fritakagp.web.dto.validation.isNotStorreEnn
 import no.nav.helse.fritakagp.web.dto.validation.refujonsDagerIkkeOverstigerPeriodelengder
-import org.valiktor.functions.isNotEmpty
-import org.valiktor.functions.isNotNull
-import org.valiktor.functions.isTrue
+import org.valiktor.functions.*
 import org.valiktor.validate
 import java.time.LocalDate
 
@@ -86,6 +84,7 @@ data class GravidKravRequest(
             validate(GravidKravRequest::virksomhetsnummer).isValidOrganisasjonsnummer()
             validate(GravidKravRequest::bekreftet).isTrue()
             validate(GravidKravRequest::perioder).refujonsDagerIkkeOverstigerPeriodelengder()
+            validate(GravidKravRequest::månedsinntekt).isGreaterThan(0.0).isLessThanOrEqualTo(TiMil)
 
             if (!this@GravidKravRequest.dokumentasjon.isNullOrEmpty()) {
                 validate(GravidKravRequest::dokumentasjon).isGodskjentFiletyper()
@@ -107,5 +106,5 @@ data class GravidKravRequest(
     
 }
 
-
+const val TiMil = 10000000.0
 const val MB = 1024 * 1024

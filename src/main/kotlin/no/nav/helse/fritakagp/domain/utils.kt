@@ -72,6 +72,7 @@ fun generereKroniskKravBeskrivelse(krav: KroniskKrav, desc : String) : String {
         appendLine("Mottatt: ${getPDFTimeStampFormat().format(krav.opprettet)}")
         appendLine("Person (FNR): ${krav.identitetsnummer}")
         appendLine("Arbeidsgiver oppgitt i krav: ${krav.virksomhetsnavn} (${krav.virksomhetsnummer})")
+        appendLine("Beregnet månedsinntekt (NOK): ${krav.månedsinntekt}")
         appendLine("Periode:")
         appendLine(genererePeriodeTable(krav.perioder))
     }
@@ -83,6 +84,7 @@ fun generereGravidkKravBeskrivelse(krav: GravidKrav, desc : String) : String {
         appendLine("Mottatt: ${getPDFTimeStampFormat().format(krav.opprettet)}")
         appendLine("Person (FNR): ${krav.identitetsnummer}")
         appendLine("Arbeidsgiver oppgitt i krav: ${krav.virksomhetsnavn} (${krav.virksomhetsnummer})")
+        appendLine("Beregnet månedsinntekt (NOK): ${krav.månedsinntekt}")
         appendLine("Periode:")
         appendLine(genererePeriodeTable(krav.perioder))
     }
@@ -92,7 +94,7 @@ fun genererePeriodeTable(perioder : Set<Arbeidsgiverperiode>) : String {
     return table {
         header("FOM", "TOM", "Antall dager det kreves refusjon for", "Refusjonskrav (NOK)", "Dagsats", "Beløp")
         for (p in perioder) {
-            row(p.fom.atStartOfDay(),p.tom.atStartOfDay(),p.antallDagerMedRefusjon,p.månedsinntekt, p.dagsats, p.belop)
+            row(p.fom.atStartOfDay(),p.tom.atStartOfDay(),p.antallDagerMedRefusjon, p.dagsats, p.belop)
         }
         hints {
             alignment("FOM", Table.Hints.Alignment.LEFT)

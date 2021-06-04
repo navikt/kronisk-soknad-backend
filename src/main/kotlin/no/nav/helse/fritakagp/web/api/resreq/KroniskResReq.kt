@@ -5,10 +5,7 @@ import no.nav.helse.arbeidsgiver.web.validation.isValidIdentitetsnummer
 import no.nav.helse.arbeidsgiver.web.validation.isValidOrganisasjonsnummer
 import no.nav.helse.fritakagp.domain.*
 import no.nav.helse.fritakagp.web.dto.validation.*
-import org.valiktor.functions.hasSize
-import org.valiktor.functions.isNotEmpty
-import org.valiktor.functions.isNotNull
-import org.valiktor.functions.isTrue
+import org.valiktor.functions.*
 import org.valiktor.validate
 
 data class KroniskSoknadRequest(
@@ -83,6 +80,7 @@ data class KroniskKravRequest(
             validate(KroniskKravRequest::virksomhetsnummer).isValidOrganisasjonsnummer()
             validate(KroniskKravRequest::bekreftet).isTrue()
             validate(KroniskKravRequest::perioder).refujonsDagerIkkeOverstigerPeriodelengder()
+            validate(KroniskKravRequest::månedsinntekt).isGreaterThan(0.0).isLessThanOrEqualTo(TiMil)
 
             if (!this@KroniskKravRequest.dokumentasjon.isNullOrEmpty()) {
                 validate(KroniskKravRequest::dokumentasjon).isGodskjentFiletyper()

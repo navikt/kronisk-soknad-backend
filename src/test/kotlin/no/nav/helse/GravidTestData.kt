@@ -60,12 +60,13 @@ object GravidTestData {
         perioder = setOf(Arbeidsgiverperiode(
             LocalDate.of(2020, 1, 5),
             LocalDate.of(2020, 1, 10),
-            2,
-            2590.8
+            2
         )),
         bekreftet = true,
         dokumentasjon = null,
-        kontrollDager = null
+        kontrollDager = null,
+        månedsinntekt = 2590.8,
+        antallDager = 4
     )
 
     val gravidKravRequestMedFil = gravidKravRequestValid.copy(
@@ -80,12 +81,13 @@ object GravidTestData {
         perioder = setOf(Arbeidsgiverperiode(
             LocalDate.of(2020, 2, 1),
             LocalDate.of(2020, 2, 1),
-            1,
-            123.8
+            1
         )),
         bekreftet = true,
         dokumentasjon = null,
-        kontrollDager = null
+        kontrollDager = null,
+        månedsinntekt = 123.8,
+        antallDager = 4
     )
 
 
@@ -95,11 +97,12 @@ object GravidTestData {
         perioder = setOf(Arbeidsgiverperiode(
             LocalDate.of(2020, 1, 5),
             LocalDate.of(2020, 1, 10),
-            5,
-            2590.8
+            5
         )),
         sendtAv = validIdentitetsnummer,
-        kontrollDager = null
+        kontrollDager = null,
+        månedsinntekt = 2590.8,
+        antallDager = 4
     )
 }
 

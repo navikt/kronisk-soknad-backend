@@ -68,6 +68,7 @@ class GravidKravAltinnKvitteringSender(
                 <li>Dokumentasjon vedlagt: ${if (kvittering.harVedlegg) "Ja" else "Nei"}</li>                      
                 <li>Mottatt: ${kvittering.opprettet.format(dateTimeFormatterMedKl)}</li>
                 <li>Innrapportert av: ${kvittering.sendtAv}</li>
+                <li>Beregnet månedsinntekt (NOK): ${kvittering.månedsinntekt}</li>
                 <li>Perioder: </li>
                 <ul> ${lagrePerioder(kvittering.perioder)}</ul>
             </ul>

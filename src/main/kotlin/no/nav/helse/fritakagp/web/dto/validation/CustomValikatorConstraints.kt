@@ -22,11 +22,19 @@ fun <E> Validator<E>.Property<Arbeidsgiverperiode?>.refusjonsDagerIkkeOverstiger
 
 fun <E> Validator<E>.Property<Iterable<Arbeidsgiverperiode>?>.refujonsDagerIkkeOverstigerPeriodelengder() =
     this.validate(RefusjonsdagerKanIkkeOverstigePeriodelengdenConstraint()) { ps ->
-        !ps!!.any { p ->
-            ChronoUnit.DAYS.between(p.fom, p.tom.plusDays(1)) < p.antallDagerMedRefusjon
+        return@validate ps!!.any { p ->
+            val diff = ChronoUnit.DAYS.between(p.fom, p.tom)
+            if( diff == 0L) p.antallDagerMedRefusjon == 1  else diff >= p.antallDagerMedRefusjon
         }
     }
 
+class FraDatoKanIkkeKommeEtterTomDato : CustomConstraint
+fun <E> Validator<E>.Property<Iterable<Arbeidsgiverperiode>?>.datoerHarRiktigRekkefolge() =
+    this.validate(FraDatoKanIkkeKommeEtterTomDato()) { ps ->
+        return@validate ps!!.any { p ->
+            (p.fom.isEqual(p.tom) || p.fom.isBefore(p.tom))
+        }
+    }
 
 class DataUrlExtensionConstraints: CustomConstraint
 fun <E> Validator<E>.Property<String?>.isGodskjentFiletyper() =

@@ -4,6 +4,7 @@ import no.nav.helse.GravidTestData
 import no.nav.helse.KroniskTestData
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import java.time.LocalDate
 
 class GravidKravRequestTest{
 
@@ -40,6 +41,17 @@ class GravidKravRequestTest{
         validationShouldFailFor(GravidKravRequest::perioder) {
             GravidTestData.gravidKravRequestValid.copy(
                 perioder = setOf(GravidTestData.gravidKravRequestValid.perioder.first().copy(antallDagerMedRefusjon = 21))
+            ).validate()
+        }
+    }
+
+    @Test
+    internal fun `Til dato kan ikke komme før fra dato`() {
+        validationShouldFailFor(GravidKravRequest::perioder) {
+            GravidTestData.gravidKravRequestValid.copy(
+                perioder = setOf(GravidTestData.gravidKravRequestValid.perioder.first().copy(fom = LocalDate.of(2020, 1, 10),
+                    tom = LocalDate.of(2020, 1, 5),
+                    antallDagerMedRefusjon = -5)) //slik at validationShouldFailFor() kaster ikke to unntak
             ).validate()
         }
     }

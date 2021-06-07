@@ -67,9 +67,9 @@ spec:
     - name: DOKARKIV_URL
       value: https://helsearbeidsgiver-proxy.dev.adeo.no/dokarkiv
     - name: OPPGAVEBEHANDLING_URL
-      value: https://helsearbeidsgiver-proxy.dev.intern.nav.no/oppgave
+      value: https://oppgave-q1.dev-fss-pub.nais.io
     - name: PDL_URL
-      value: https://helsearbeidsgiver-proxy.dev.intern.nav.no/pdl
+      value: https://pdl-api.dev-fss-pub.nais.io
     - name: ALTINN_ENDPOINT
       value: https://tt02.altinn.no/ServiceEngineExternal/CorrespondenceAgencyExternalBasic.svc
     - name: CLAM_AV_URL

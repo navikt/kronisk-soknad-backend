@@ -1,9 +1,9 @@
 package no.nav.helse.fritakagp.web.api.resreq
 
-import no.nav.helse.GravidTestData
 import no.nav.helse.KroniskTestData
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
+import java.time.LocalDate
 
 class KroniskKravRequestTest{
 
@@ -30,8 +30,8 @@ class KroniskKravRequestTest{
 
     @Test
     internal fun `mapping til domenemodell tar med harVedleggflagg`() {
-        Assertions.assertThat(KroniskTestData.kroniskKravRequestMedFil.toDomain("123").harVedlegg).isTrue()
-        Assertions.assertThat(KroniskTestData.kroniskKravRequestValid.toDomain("123").harVedlegg).isFalse()
+        Assertions.assertThat(KroniskTestData.kroniskKravRequestMedFil.toDomain("123").harVedlegg).isTrue
+        Assertions.assertThat(KroniskTestData.kroniskKravRequestValid.toDomain("123").harVedlegg).isFalse
     }
 
     @Test
@@ -39,6 +39,17 @@ class KroniskKravRequestTest{
         validationShouldFailFor(KroniskKravRequest::perioder) {
             KroniskTestData.kroniskKravRequestValid.copy(
                 perioder = setOf(KroniskTestData.kroniskKravRequestValid.perioder.first().copy(antallDagerMedRefusjon = 21))
+            ).validate()
+        }
+    }
+
+    @Test
+    internal fun `Til dato kan ikke komme før fra dato`() {
+        validationShouldFailFor(KroniskKravRequest::perioder) {
+            KroniskTestData.kroniskKravRequestValid.copy(
+                perioder = setOf(KroniskTestData.kroniskKravRequestValid.perioder.first().copy(fom = LocalDate.of(2020, 1, 10),
+                    tom = LocalDate.of(2020, 1, 5),
+                antallDagerMedRefusjon = -5)) //slik at validationShouldFailFor() kaster ikke to unntak
             ).validate()
         }
     }

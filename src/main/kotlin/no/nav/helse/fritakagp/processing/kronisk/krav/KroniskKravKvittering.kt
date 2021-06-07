@@ -67,7 +67,6 @@ class KroniskKravAltinnKvitteringSender(
                 <li>Dokumentasjon vedlagt: ${if (kvittering.harVedlegg) "Ja" else "Nei"} </li>
                 <li>Mottatt:  ${kvittering.opprettet.format(dateTimeFormatterMedKl)}  </li>  
                 <li>Innrapportert av: ${kvittering.sendtAv}</li>
-                <li>Beregnet månedsinntekt (NOK): ${kvittering.månedsinntekt}</li>
                 <li>Perioder: </li>
                 <ul> ${lagrePerioder(kvittering.perioder)}</ul>
             </ul>
@@ -101,8 +100,9 @@ fun lagrePerioder(perioder: Set<Arbeidsgiverperiode>) : String {
                 <th>Fra dato</th>
                 <th>Til dato</th>
                 <th>Dager med refusjon</th>
-                <th>Dagsats</th>
-                <th>Beløp</th>
+                <th>Beregnet månedsinntekt (NOK)</th>
+                <th>Dagsats (NOK)</th>
+                <th>Beløp (NOK)</th>
               </tr>"""
 
     val tail = "</table>"
@@ -120,6 +120,7 @@ fun lagePeriod(periode : Arbeidsgiverperiode) : String {
                 <td style="text-align:center">${periode.fom.format(dateFormatter)}</td>
                 <td style="text-align:center">${periode.tom.format(dateFormatter)}</td>
                 <td style="text-align:center">${periode.antallDagerMedRefusjon}</td>
+                <td style="text-align:center">${periode.månedsinntekt}</td>
                 <td style="text-align:center">${periode.dagsats}</td>
                 <td style="text-align:center">${periode.belop}</td>                
             </tr>"""

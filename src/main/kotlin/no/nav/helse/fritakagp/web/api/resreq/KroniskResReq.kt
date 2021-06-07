@@ -71,7 +71,6 @@ data class KroniskKravRequest(
         val bekreftet: Boolean,
         val dokumentasjon: String?,
         val kontrollDager: Int?,
-        val månedsinntekt: Double,
         val antallDager: Int
 ) {
    fun validate() {
@@ -80,7 +79,7 @@ data class KroniskKravRequest(
             validate(KroniskKravRequest::virksomhetsnummer).isValidOrganisasjonsnummer()
             validate(KroniskKravRequest::bekreftet).isTrue()
             validate(KroniskKravRequest::perioder).refujonsDagerIkkeOverstigerPeriodelengder()
-            validate(KroniskKravRequest::månedsinntekt).isGreaterThan(0.0).isLessThanOrEqualTo(TiMil)
+            validate(KroniskKravRequest::perioder).maanedsInntektErMellomNullOgTiMil()
 
             if (!this@KroniskKravRequest.dokumentasjon.isNullOrEmpty()) {
                 validate(KroniskKravRequest::dokumentasjon).isGodskjentFiletyper()
@@ -96,7 +95,6 @@ data class KroniskKravRequest(
         sendtAv = sendtAv,
         harVedlegg = !dokumentasjon.isNullOrEmpty(),
         kontrollDager = kontrollDager,
-        antallDager = antallDager,
-        månedsinntekt = månedsinntekt
+        antallDager = antallDager
     )
 }

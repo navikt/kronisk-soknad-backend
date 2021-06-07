@@ -7,20 +7,13 @@ class BeløpBeregning(
 ) {
     private val seksG = grunnbeløpClient.hentGrunnbeløp().grunnbeløp * 6.0
 
-    fun beregnBeløpKronisk(krav : KroniskKrav) {
-        val arslonn = krav.månedsinntekt * 12
-        beregnPeriodeData(krav.perioder, krav.antallDager, arslonn)
+    fun beregnBeløpKronisk(krav : KroniskKrav)  = beregnPeriodeData(krav.perioder, krav.antallDager)
 
-    }
+    fun beregnBeløpGravid(krav : GravidKrav) = beregnPeriodeData(krav.perioder, krav.antallDager)
 
-
-    fun beregnBeløpGravid(krav : GravidKrav) {
-        val arslonn = krav.månedsinntekt * 12
-        beregnPeriodeData(krav.perioder, krav.antallDager, arslonn)
-    }
-
-    private fun beregnPeriodeData(perioder: Set<Arbeidsgiverperiode>, antallDager: Int, arslonn: Double) {
+    private fun beregnPeriodeData(perioder: Set<Arbeidsgiverperiode>, antallDager: Int) {
         perioder.forEach {
+            val arslonn = it.månedsinntekt * 12
             it.dagsats = if (arslonn < seksG)
                 arslonn / antallDager
             else
@@ -28,5 +21,4 @@ class BeløpBeregning(
             it.belop = it.dagsats * it.antallDagerMedRefusjon
         }
     }
-
 }

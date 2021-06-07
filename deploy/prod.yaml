@@ -45,6 +45,7 @@ spec:
   accessPolicy:
     outbound:
       external:
+        - host: helsearbeidsgiver-proxy.prod-fss-pub.nais.io
         - host: altinn.no
         - host: kafka-schema-registry.nais.adeo.no
         - host: data.brreg.no
@@ -52,6 +53,10 @@ spec:
         - host: oppgave-q1.dev-fss-pub.nais.io
         - host: pdl-api.prod-fss-pub.nais.io
 
+      rules:
+        - application: helsearbeidsgiver-proxy
+          namespace: helsearbeidsgiver
+          cluster: prod-fss
 
   envFrom:
     # servicebrukerens passord som er  hentet fra vault og lagt inn slik: https://doc.nais.io/security/secrets/kubernetes-secrets/
@@ -86,12 +91,12 @@ spec:
       value: SASL_SSL://a01apvl00145.adeo.no:8443,SASL_SSL://a01apvl00146.adeo.no:8443,SASL_SSL://a01apvl00147.adeo.no:8443,SASL_SSL://a01apvl00149.adeo.no:8443
     - name: KAFKA_BESKJED_TOPIC_NAME
       value: aapen-brukernotifikasjon-nyBeskjed-v1
+    - name: PROXY_SCOPE
+      value: api://prod-fss.helsearbeidsgiver.helsearbeidsgiver-proxy/.default
     - name: KTOR_APPLICATION_BASEPATH
       value: /fritak-agp-api
     - name: RUN_BACKGROUND_WORKERS
       value: "false"
-    - name: CLIENT_NAME
-      value: prod-gcp:helsearbeidsgiver:fritakagp
 
   gcp:
     sqlInstances:

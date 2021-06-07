@@ -27,7 +27,13 @@ fun <E> Validator<E>.Property<Iterable<Arbeidsgiverperiode>?>.refujonsDagerIkkeO
         }
     }
 
-
+class MaanedsInntektErStorreEnTiMil : CustomConstraint
+fun <E> Validator<E>.Property<Iterable<Arbeidsgiverperiode>?>.maanedsInntektErMellomNullOgTiMil() =
+    this.validate(MaanedsInntektErStorreEnTiMil()) { ps ->
+        ps!!.any { p ->
+            p.månedsinntekt > 0.0 && p.månedsinntekt <= TiMil
+        }
+    }
 class DataUrlExtensionConstraints: CustomConstraint
 fun <E> Validator<E>.Property<String?>.isGodskjentFiletyper() =
     this.validate(DataUrlExtensionConstraints()){
@@ -76,3 +82,6 @@ fun extractBase64Del(dataUrl : String) : String = dataUrl.substringAfter("base64
 fun extractFilExtDel(dataUrl : String) : String = dataUrl.substring(0,dataUrl.indexOf(';')).substringAfter('/')
 
 class VirusCheckConstraint : CustomConstraint
+
+
+const val TiMil = 10000000.0

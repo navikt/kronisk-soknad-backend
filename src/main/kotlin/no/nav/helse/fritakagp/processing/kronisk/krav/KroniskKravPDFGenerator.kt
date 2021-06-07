@@ -35,13 +35,13 @@ class KroniskKravPDFGenerator {
         content.writeTextWrapped("Mottatt: ${getPDFTimeStampFormat().format(krav.opprettet)}", 4)
         content.writeTextWrapped("Person (FNR): ${krav.identitetsnummer}")
         content.writeTextWrapped("Arbeidsgiver oppgitt i krav: ${krav.virksomhetsnavn} (${krav.virksomhetsnummer})")
-        content.writeTextWrapped("Beregnet månedsinntekt (NOK): ${krav.månedsinntekt}")
         content.writeTextWrapped("Perioder", 2)
 
         krav.perioder.forEach {
             content.writeTextWrapped("FOM: ${it.fom}")
             content.writeTextWrapped("TOM: ${it.tom}")
             content.writeTextWrapped("Antall dager det kreves refusjon for: ${it.antallDagerMedRefusjon}")
+            content.writeTextWrapped("Beregnet månedsinntekt (NOK): ${it.månedsinntekt}")
             content.writeTextWrapped("Dagsats (NOK): ${it.dagsats}")
             content.writeTextWrapped("Beløp (NOK): ${it.belop}")
             content.writeTextWrapped("")

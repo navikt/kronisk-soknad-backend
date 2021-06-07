@@ -86,7 +86,7 @@ spec:
     - name: KAFKA_BESKJED_TOPIC_NAME
       value: aapen-brukernotifikasjon-nyBeskjed-v1
     - name: CLIENT_NAME
-      value: dev-gcp:helsearbeidsgiver:fritakagp
+      value: api://dev-gcp:helsearbeidsgiver:fritakagp/.default
 
 
   gcp:

@@ -23,8 +23,8 @@ fun <E> Validator<E>.Property<Arbeidsgiverperiode?>.refusjonsDagerIkkeOverstiger
 fun <E> Validator<E>.Property<Iterable<Arbeidsgiverperiode>?>.refujonsDagerIkkeOverstigerPeriodelengder() =
     this.validate(RefusjonsdagerKanIkkeOverstigePeriodelengdenConstraint()) { ps ->
         return@validate ps!!.any { p ->
-            println(ChronoUnit.DAYS.between(p.fom, p.tom))
-            ChronoUnit.DAYS.between(p.fom, p.tom) >= p.antallDagerMedRefusjon
+            val diff = ChronoUnit.DAYS.between(p.fom, p.tom)
+            if( diff == 0L) p.antallDagerMedRefusjon == 1  else diff >= p.antallDagerMedRefusjon
         }
     }
 
@@ -32,7 +32,7 @@ class FraDatoKanIkkeKommeEtterTomDato : CustomConstraint
 fun <E> Validator<E>.Property<Iterable<Arbeidsgiverperiode>?>.datoerHarRiktigRekkefolge() =
     this.validate(FraDatoKanIkkeKommeEtterTomDato()) { ps ->
         return@validate ps!!.any { p ->
-            p.fom.isBefore(p.tom)
+            (p.fom.isEqual(p.tom) || p.fom.isBefore(p.tom))
         }
     }
 

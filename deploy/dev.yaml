@@ -91,7 +91,7 @@ spec:
     - name: PROXY_SCOPE
       value: api://dev-fss.helsearbeidsgiver.helsearbeidsgiver-proxy/.default
     - name: OPPGAVE_SCOPE
-      value: api://dev-fss.oppgavebehandling.oppgave-q1/.default
+      value: api://dev-fss.oppgavehandtering.oppgave-q1/.default
   gcp:
     sqlInstances:
       - type: POSTGRES_11

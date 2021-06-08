@@ -46,7 +46,7 @@ fun Module.externalSystemClients(config: ApplicationConfig) {
     } bind AltinnOrganisationsRepository::class
 
     single (named("PDL_SCOPE")){
-        val clientConfig = OAuth2ClientPropertiesConfig(config, "PDL_SCOPE")
+        val clientConfig = OAuth2ClientPropertiesConfig(config, "pdlscope")
         val tokenResolver = TokenResolver()
         val oauthHttpClient = DefaultOAuth2HttpClient(get())
         val accessTokenService = OAuth2AccessTokenService(
@@ -61,7 +61,7 @@ fun Module.externalSystemClients(config: ApplicationConfig) {
     }  bind AccessTokenProvider::class
 
     single (named("OPPGAVE_SCOPE")){
-        val clientConfig = OAuth2ClientPropertiesConfig(config, "OPPGAVE_SCOPE")
+        val clientConfig = OAuth2ClientPropertiesConfig(config, "oppgavescope")
         val tokenResolver = TokenResolver()
         val oauthHttpClient = DefaultOAuth2HttpClient(get())
         val accessTokenService = OAuth2AccessTokenService(
@@ -76,7 +76,7 @@ fun Module.externalSystemClients(config: ApplicationConfig) {
     }  bind AccessTokenProvider::class
 
     single (named("PROXY_SCOPE")){
-        val clientConfig = OAuth2ClientPropertiesConfig(config, "PROXY_SCOPE")
+        val clientConfig = OAuth2ClientPropertiesConfig(config, "proxyscope")
         val tokenResolver = TokenResolver()
         val oauthHttpClient = DefaultOAuth2HttpClient(get())
         val accessTokenService = OAuth2AccessTokenService(
@@ -91,7 +91,7 @@ fun Module.externalSystemClients(config: ApplicationConfig) {
     }  bind AccessTokenProvider::class
 
     single (named("DOKARKIV_SCOPE")){
-        val clientConfig = OAuth2ClientPropertiesConfig(config, "DOKARKIV_SCOPE")
+        val clientConfig = OAuth2ClientPropertiesConfig(config, "dokarkivscope")
         val tokenResolver = TokenResolver()
         val oauthHttpClient = DefaultOAuth2HttpClient(get())
         val accessTokenService = OAuth2AccessTokenService(

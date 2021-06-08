@@ -10,7 +10,8 @@ import java.net.URI
 
 @KtorExperimentalAPI
 class OAuth2ClientPropertiesConfig(
-    applicationConfig: ApplicationConfig
+    applicationConfig: ApplicationConfig,
+    scope: String
 ) {
     internal val clientConfig: Map<String, ClientProperties> =
         applicationConfig.configList(CLIENTS_PATH)
@@ -21,7 +22,7 @@ class OAuth2ClientPropertiesConfig(
                     URI(clientConfig.propertyToString("token_endpoint_url")),
                     wellKnownUrl?.let { URI(it) },
                     OAuth2GrantType(clientConfig.propertyToString("grant_type")),
-                    clientConfig.propertyToStringOrNull("scope")?.split(","),
+                    clientConfig.propertyToStringOrNull(scope)?.split(","),
                     ClientAuthenticationProperties(
                         clientConfig.propertyToString("authentication.client_id"),
                         ClientAuthenticationMethod(

@@ -28,6 +28,7 @@ import no.nav.security.token.support.client.core.oauth2.OAuth2AccessTokenService
 import no.nav.security.token.support.client.core.oauth2.OnBehalfOfTokenClient
 import no.nav.security.token.support.client.core.oauth2.TokenExchangeClient
 import org.koin.core.module.Module
+import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 
 fun Module.externalSystemClients(config: ApplicationConfig) {
@@ -43,8 +44,8 @@ fun Module.externalSystemClients(config: ApplicationConfig) {
         )
     } bind AltinnOrganisationsRepository::class
 
-    single {
-        val clientConfig = OAuth2ClientPropertiesConfig(config)
+    single (named("PDL_SCOPE")){
+        val clientConfig = OAuth2ClientPropertiesConfig(config, "PDL_SCOPE")
         val tokenResolver = TokenResolver()
         val oauthHttpClient = DefaultOAuth2HttpClient(get())
         val accessTokenService = OAuth2AccessTokenService(
@@ -56,11 +57,56 @@ fun Module.externalSystemClients(config: ApplicationConfig) {
 
         val azureAdConfig = clientConfig.clientConfig["azure_ad"] ?: error("Fant ikke config i application.conf")
         OAuth2TokenProvider(accessTokenService, azureAdConfig)
-    } bind AccessTokenProvider::class
+    }  bind AccessTokenProvider::class
 
-    single { PdlClientImpl(config.getString("pdl_url"), get(), get(), get()) } bind PdlClient::class
-    single { DokarkivKlientImpl(config.getString("dokarkiv.base_url"), get(), get()) } bind DokarkivKlient::class
-    single { OppgaveKlientImpl(config.getString("oppgavebehandling.url"), get(), get()) } bind OppgaveKlient::class
+    single (named("OPPGAVE_SCOPE")){
+        val clientConfig = OAuth2ClientPropertiesConfig(config, "OPPGAVE_SCOPE")
+        val tokenResolver = TokenResolver()
+        val oauthHttpClient = DefaultOAuth2HttpClient(get())
+        val accessTokenService = OAuth2AccessTokenService(
+            tokenResolver,
+            OnBehalfOfTokenClient(oauthHttpClient),
+            ClientCredentialsTokenClient(oauthHttpClient),
+            TokenExchangeClient(oauthHttpClient)
+        )
+
+        val azureAdConfig = clientConfig.clientConfig["azure_ad"] ?: error("Fant ikke config i application.conf")
+        OAuth2TokenProvider(accessTokenService, azureAdConfig)
+    }  bind AccessTokenProvider::class
+
+    single (named("PROXY_SCOPE")){
+        val clientConfig = OAuth2ClientPropertiesConfig(config, "PROXY_SCOPE")
+        val tokenResolver = TokenResolver()
+        val oauthHttpClient = DefaultOAuth2HttpClient(get())
+        val accessTokenService = OAuth2AccessTokenService(
+            tokenResolver,
+            OnBehalfOfTokenClient(oauthHttpClient),
+            ClientCredentialsTokenClient(oauthHttpClient),
+            TokenExchangeClient(oauthHttpClient)
+        )
+
+        val azureAdConfig = clientConfig.clientConfig["azure_ad"] ?: error("Fant ikke config i application.conf")
+        OAuth2TokenProvider(accessTokenService, azureAdConfig)
+    }  bind AccessTokenProvider::class
+
+    single (named("DOKARKIV_SCOPE")){
+        val clientConfig = OAuth2ClientPropertiesConfig(config, "DOKARKIV_SCOPE")
+        val tokenResolver = TokenResolver()
+        val oauthHttpClient = DefaultOAuth2HttpClient(get())
+        val accessTokenService = OAuth2AccessTokenService(
+            tokenResolver,
+            OnBehalfOfTokenClient(oauthHttpClient),
+            ClientCredentialsTokenClient(oauthHttpClient),
+            TokenExchangeClient(oauthHttpClient)
+        )
+
+        val azureAdConfig = clientConfig.clientConfig["azure_ad"] ?: error("Fant ikke config i application.conf")
+        OAuth2TokenProvider(accessTokenService, azureAdConfig)
+    }  bind AccessTokenProvider::class
+
+    single { PdlClientImpl(config.getString("pdl_url"), get(qualifier = named("PDL_SCOPE")), get(), get()) } bind PdlClient::class
+    single { DokarkivKlientImpl(config.getString("dokarkiv.base_url"), get(), get(qualifier = named("DOKARKIV_SCOPE"))) } bind DokarkivKlient::class
+    single { OppgaveKlientImpl(config.getString("oppgavebehandling.url"), get(qualifier = named("OPPGAVE_SCOPE")), get()) } bind OppgaveKlient::class
     single {
         ClamavVirusScannerImp(
             get(),

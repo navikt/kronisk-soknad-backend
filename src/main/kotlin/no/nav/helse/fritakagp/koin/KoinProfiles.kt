@@ -97,12 +97,11 @@ fun ApplicationConfig.getjdbcUrlFromProperties(): String {
     )
 }
 
-
 inline fun <reified T : Any> Koin.getAllOfType(): Collection<T> =
     let { koin ->
         koin.rootScope.beanRegistry
             .getAllDefinitions()
             .filter { it.kind == Kind.Single }
-            .map { koin.get<Any>(clazz = it.primaryType, qualifier = null, parameters = null) }
+            .map { koin.get<Any>(clazz = it.primaryType, qualifier = it.qualifier, parameters = null) }
             .filterIsInstance<T>()
     }

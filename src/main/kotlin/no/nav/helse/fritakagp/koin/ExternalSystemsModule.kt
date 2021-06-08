@@ -32,6 +32,7 @@ import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 
 fun Module.externalSystemClients(config: ApplicationConfig) {
+    val accessTokenProviderError = "Fant ikke config i application.conf"
     single {
         CachedAuthRepo(
             AltinnRestClient(
@@ -55,7 +56,7 @@ fun Module.externalSystemClients(config: ApplicationConfig) {
             TokenExchangeClient(oauthHttpClient)
         )
 
-        val azureAdConfig = clientConfig.clientConfig["azure_ad"] ?: error("Fant ikke config i application.conf")
+        val azureAdConfig = clientConfig.clientConfig["azure_ad"] ?: error(accessTokenProviderError)
         OAuth2TokenProvider(accessTokenService, azureAdConfig)
     }  bind AccessTokenProvider::class
 
@@ -70,7 +71,7 @@ fun Module.externalSystemClients(config: ApplicationConfig) {
             TokenExchangeClient(oauthHttpClient)
         )
 
-        val azureAdConfig = clientConfig.clientConfig["azure_ad"] ?: error("Fant ikke config i application.conf")
+        val azureAdConfig = clientConfig.clientConfig["azure_ad"] ?: error(accessTokenProviderError)
         OAuth2TokenProvider(accessTokenService, azureAdConfig)
     }  bind AccessTokenProvider::class
 
@@ -85,7 +86,7 @@ fun Module.externalSystemClients(config: ApplicationConfig) {
             TokenExchangeClient(oauthHttpClient)
         )
 
-        val azureAdConfig = clientConfig.clientConfig["azure_ad"] ?: error("Fant ikke config i application.conf")
+        val azureAdConfig = clientConfig.clientConfig["azure_ad"] ?: error(accessTokenProviderError)
         OAuth2TokenProvider(accessTokenService, azureAdConfig)
     }  bind AccessTokenProvider::class
 
@@ -100,7 +101,7 @@ fun Module.externalSystemClients(config: ApplicationConfig) {
             TokenExchangeClient(oauthHttpClient)
         )
 
-        val azureAdConfig = clientConfig.clientConfig["azure_ad"] ?: error("Fant ikke config i application.conf")
+        val azureAdConfig = clientConfig.clientConfig["azure_ad"] ?: error(accessTokenProviderError)
         OAuth2TokenProvider(accessTokenService, azureAdConfig)
     }  bind AccessTokenProvider::class
 

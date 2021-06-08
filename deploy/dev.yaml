@@ -92,6 +92,11 @@ spec:
       value: api://dev-fss.helsearbeidsgiver.helsearbeidsgiver-proxy/.default
     - name: OPPGAVE_SCOPE
       value: api://dev-fss.oppgavehandtering.oppgave-q1/.default
+    - name: PDL_SCOPE
+      value: api://dev-fss.pdl.pdl-api/.default
+    - name: DOKARKIV_SCOPE
+      value: api://dev-fss.teamdokumenthandtering.dokarkiv/.default
+
   gcp:
     sqlInstances:
       - type: POSTGRES_11

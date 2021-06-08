@@ -45,22 +45,22 @@ fun Module.externalSystemClients(config: ApplicationConfig) {
         )
     } bind AltinnOrganisationsRepository::class
 
-    single (named("PDL_SCOPE")){
-        val clientConfig = OAuth2ClientPropertiesConfig(config, "pdlscope")
-        val tokenResolver = TokenResolver()
-        val oauthHttpClient = DefaultOAuth2HttpClient(get())
-        val accessTokenService = OAuth2AccessTokenService(
-            tokenResolver,
-            OnBehalfOfTokenClient(oauthHttpClient),
-            ClientCredentialsTokenClient(oauthHttpClient),
-            TokenExchangeClient(oauthHttpClient)
-        )
+//    single (named("PDL")){
+//        val clientConfig = OAuth2ClientPropertiesConfig(config, "pdlscope")
+//        val tokenResolver = TokenResolver()
+//        val oauthHttpClient = DefaultOAuth2HttpClient(get())
+//        val accessTokenService = OAuth2AccessTokenService(
+//            tokenResolver,
+//            OnBehalfOfTokenClient(oauthHttpClient),
+//            ClientCredentialsTokenClient(oauthHttpClient),
+//            TokenExchangeClient(oauthHttpClient)
+//        )
+//
+//        val azureAdConfig = clientConfig.clientConfig["azure_ad"] ?: error(accessTokenProviderError)
+//        OAuth2TokenProvider(accessTokenService, azureAdConfig)
+//    }  bind AccessTokenProvider::class
 
-        val azureAdConfig = clientConfig.clientConfig["azure_ad"] ?: error(accessTokenProviderError)
-        OAuth2TokenProvider(accessTokenService, azureAdConfig)
-    }  bind AccessTokenProvider::class
-
-    single (named("OPPGAVE_SCOPE")){
+    single (named("OPPGAVE")){
         val clientConfig = OAuth2ClientPropertiesConfig(config, "oppgavescope")
         val tokenResolver = TokenResolver()
         val oauthHttpClient = DefaultOAuth2HttpClient(get())
@@ -75,7 +75,7 @@ fun Module.externalSystemClients(config: ApplicationConfig) {
         OAuth2TokenProvider(accessTokenService, azureAdConfig)
     }  bind AccessTokenProvider::class
 
-    single (named("PROXY_SCOPE")){
+    single (named("PROXY")){
         val clientConfig = OAuth2ClientPropertiesConfig(config, "proxyscope")
         val tokenResolver = TokenResolver()
         val oauthHttpClient = DefaultOAuth2HttpClient(get())
@@ -90,7 +90,7 @@ fun Module.externalSystemClients(config: ApplicationConfig) {
         OAuth2TokenProvider(accessTokenService, azureAdConfig)
     }  bind AccessTokenProvider::class
 
-    single (named("DOKARKIV_SCOPE")){
+    single (named("DOKARKIV")){
         val clientConfig = OAuth2ClientPropertiesConfig(config, "dokarkivscope")
         val tokenResolver = TokenResolver()
         val oauthHttpClient = DefaultOAuth2HttpClient(get())
@@ -105,9 +105,9 @@ fun Module.externalSystemClients(config: ApplicationConfig) {
         OAuth2TokenProvider(accessTokenService, azureAdConfig)
     }  bind AccessTokenProvider::class
 
-    single { PdlClientImpl(config.getString("pdl_url"), get(qualifier = named("PROXY_SCOPE")), get(), get()) } bind PdlClient::class
-    single { DokarkivKlientImpl(config.getString("dokarkiv.base_url"), get(), get(qualifier = named("DOKARKIV_SCOPE"))) } bind DokarkivKlient::class
-    single { OppgaveKlientImpl(config.getString("oppgavebehandling.url"), get(qualifier = named("OPPGAVE_SCOPE")), get()) } bind OppgaveKlient::class
+    single { PdlClientImpl(config.getString("pdl_url"), get(qualifier = named("PROXY")), get(), get()) } bind PdlClient::class
+    single { DokarkivKlientImpl(config.getString("dokarkiv.base_url"), get(), get(qualifier = named("DOKARKIV"))) } bind DokarkivKlient::class
+    single { OppgaveKlientImpl(config.getString("oppgavebehandling.url"), get(qualifier = named("OPPGAVE")), get()) } bind OppgaveKlient::class
     single {
         ClamavVirusScannerImp(
             get(),

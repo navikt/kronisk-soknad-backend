@@ -105,7 +105,7 @@ fun Module.externalSystemClients(config: ApplicationConfig) {
         OAuth2TokenProvider(accessTokenService, azureAdConfig)
     }  bind AccessTokenProvider::class
 
-    single { PdlClientImpl(config.getString("pdl_url"), get(qualifier = named("PDL_SCOPE")), get(), get()) } bind PdlClient::class
+    single { PdlClientImpl(config.getString("pdl_url"), get(qualifier = named("PROXY_SCOPE")), get(), get()) } bind PdlClient::class
     single { DokarkivKlientImpl(config.getString("dokarkiv.base_url"), get(), get(qualifier = named("DOKARKIV_SCOPE"))) } bind DokarkivKlient::class
     single { OppgaveKlientImpl(config.getString("oppgavebehandling.url"), get(qualifier = named("OPPGAVE_SCOPE")), get()) } bind OppgaveKlient::class
     single {

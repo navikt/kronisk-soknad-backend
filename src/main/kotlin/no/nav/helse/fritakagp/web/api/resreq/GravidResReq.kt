@@ -6,6 +6,7 @@ import no.nav.helse.fritakagp.domain.*
 import no.nav.helse.fritakagp.web.dto.validation.datoerHarRiktigRekkefolge
 import no.nav.helse.fritakagp.web.dto.validation.isGodskjentFiletyper
 import no.nav.helse.fritakagp.web.dto.validation.isNotStorreEnn
+import no.nav.helse.fritakagp.web.dto.validation.maanedsInntektErMellomNullOgTiMil
 import no.nav.helse.fritakagp.web.dto.validation.refujonsDagerIkkeOverstigerPeriodelengder
 import org.valiktor.functions.isNotEmpty
 import org.valiktor.functions.isNotNull
@@ -77,6 +78,7 @@ data class GravidKravRequest(
 
     val bekreftet: Boolean,
     val kontrollDager: Int?,
+    val antallDager: Int,
     val dokumentasjon: String?
 ) {
     fun validate() {
@@ -86,6 +88,7 @@ data class GravidKravRequest(
             validate(GravidKravRequest::bekreftet).isTrue()
             validate(GravidKravRequest::perioder).datoerHarRiktigRekkefolge()
             validate(GravidKravRequest::perioder).refujonsDagerIkkeOverstigerPeriodelengder()
+            validate(GravidKravRequest::perioder).maanedsInntektErMellomNullOgTiMil()
 
             if (!this@GravidKravRequest.dokumentasjon.isNullOrEmpty()) {
                 validate(GravidKravRequest::dokumentasjon).isGodskjentFiletyper()
@@ -100,7 +103,8 @@ data class GravidKravRequest(
         perioder = perioder,
         sendtAv = sendtAv,
         harVedlegg = !dokumentasjon.isNullOrEmpty(),
-        kontrollDager = kontrollDager
+        kontrollDager = kontrollDager,
+        antallDager = antallDager
     )
     
 }

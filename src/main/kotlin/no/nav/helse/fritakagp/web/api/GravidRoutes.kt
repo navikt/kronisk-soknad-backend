@@ -13,6 +13,7 @@ import no.nav.helse.fritakagp.GravidKravMetrics
 import no.nav.helse.fritakagp.GravidSoeknadMetrics
 import no.nav.helse.fritakagp.db.GravidKravRepository
 import no.nav.helse.fritakagp.db.GravidSoeknadRepository
+import no.nav.helse.fritakagp.domain.BeløpBeregning
 import no.nav.helse.fritakagp.domain.decodeBase64File
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
@@ -41,7 +42,8 @@ fun Route.gravidRoutes(
     om: ObjectMapper,
     virusScanner: VirusScanner,
     bucket: BucketStorage,
-    authorizer: AltinnAuthorizer
+    authorizer: AltinnAuthorizer,
+    belopBeregning: BeløpBeregning
 ) {
     route("/gravid") {
         route("/soeknad") {
@@ -102,7 +104,7 @@ fun Route.gravidRoutes(
                 authorize(authorizer, request.virksomhetsnummer)
 
                 val krav = request.toDomain(hentIdentitetsnummerFraLoginToken(application.environment.config, call.request))
-
+                belopBeregning.beregnBeløpGravid(krav)
                 processDocumentForGCPStorage(request.dokumentasjon, virusScanner, bucket, krav.id)
 
                 datasource.connection.use { connection ->

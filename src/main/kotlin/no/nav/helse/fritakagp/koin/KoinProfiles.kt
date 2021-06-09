@@ -14,6 +14,7 @@ import io.ktor.client.*
 import io.ktor.client.engine.apache.*
 import io.ktor.client.features.json.*
 import io.ktor.config.*
+import io.ktor.http.*
 import io.ktor.util.*
 import no.nav.helse.arbeidsgiver.integrasjoner.altinn.AltinnOrganisasjon
 import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.DokarkivKlient
@@ -78,6 +79,9 @@ val common = module {
                 configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
                 configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
             }
+            acceptContentTypes += ContentType("application", "json")
+            acceptContentTypes += ContentType("application", "json + hal")
+            acceptContentTypes += ContentType("application", "text/html")
         }
     }
 

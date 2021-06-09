@@ -29,9 +29,11 @@ import no.nav.security.token.support.client.core.oauth2.OAuth2AccessTokenService
 import no.nav.security.token.support.client.core.oauth2.OnBehalfOfTokenClient
 import no.nav.security.token.support.client.core.oauth2.TokenExchangeClient
 import org.koin.core.module.Module
+import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 
 fun Module.externalSystemClients(config: ApplicationConfig) {
+    val accessTokenProviderError = "Fant ikke config i application.conf"
     single {
         CachedAuthRepo(
             AltinnRestClient(
@@ -46,8 +48,23 @@ fun Module.externalSystemClients(config: ApplicationConfig) {
 
     single { GrunnbeløpClient(get()) }
 
-    single {
-        val clientConfig = OAuth2ClientPropertiesConfig(config)
+//    single (named("PDL")){
+//        val clientConfig = OAuth2ClientPropertiesConfig(config, "pdlscope")
+//        val tokenResolver = TokenResolver()
+//        val oauthHttpClient = DefaultOAuth2HttpClient(get())
+//        val accessTokenService = OAuth2AccessTokenService(
+//            tokenResolver,
+//            OnBehalfOfTokenClient(oauthHttpClient),
+//            ClientCredentialsTokenClient(oauthHttpClient),
+//            TokenExchangeClient(oauthHttpClient)
+//        )
+//
+//        val azureAdConfig = clientConfig.clientConfig["azure_ad"] ?: error(accessTokenProviderError)
+//        OAuth2TokenProvider(accessTokenService, azureAdConfig)
+//    }  bind AccessTokenProvider::class
+
+    single (named("OPPGAVE")){
+        val clientConfig = OAuth2ClientPropertiesConfig(config, "oppgavescope")
         val tokenResolver = TokenResolver()
         val oauthHttpClient = DefaultOAuth2HttpClient(get())
         val accessTokenService = OAuth2AccessTokenService(
@@ -57,13 +74,43 @@ fun Module.externalSystemClients(config: ApplicationConfig) {
             TokenExchangeClient(oauthHttpClient)
         )
 
-        val azureAdConfig = clientConfig.clientConfig["azure_ad"] ?: error("Fant ikke config i application.conf")
+        val azureAdConfig = clientConfig.clientConfig["azure_ad"] ?: error(accessTokenProviderError)
         OAuth2TokenProvider(accessTokenService, azureAdConfig)
-    } bind AccessTokenProvider::class
+    }  bind AccessTokenProvider::class
 
-    single { PdlClientImpl(config.getString("pdl_url"), get(), get(), get()) } bind PdlClient::class
-    single { DokarkivKlientImpl(config.getString("dokarkiv.base_url"), get(), get()) } bind DokarkivKlient::class
-    single { OppgaveKlientImpl(config.getString("oppgavebehandling.url"), get(), get()) } bind OppgaveKlient::class
+    single (named("PROXY")){
+        val clientConfig = OAuth2ClientPropertiesConfig(config, "proxyscope")
+        val tokenResolver = TokenResolver()
+        val oauthHttpClient = DefaultOAuth2HttpClient(get())
+        val accessTokenService = OAuth2AccessTokenService(
+            tokenResolver,
+            OnBehalfOfTokenClient(oauthHttpClient),
+            ClientCredentialsTokenClient(oauthHttpClient),
+            TokenExchangeClient(oauthHttpClient)
+        )
+
+        val azureAdConfig = clientConfig.clientConfig["azure_ad"] ?: error(accessTokenProviderError)
+        OAuth2TokenProvider(accessTokenService, azureAdConfig)
+    }  bind AccessTokenProvider::class
+
+    single (named("DOKARKIV")){
+        val clientConfig = OAuth2ClientPropertiesConfig(config, "dokarkivscope")
+        val tokenResolver = TokenResolver()
+        val oauthHttpClient = DefaultOAuth2HttpClient(get())
+        val accessTokenService = OAuth2AccessTokenService(
+            tokenResolver,
+            OnBehalfOfTokenClient(oauthHttpClient),
+            ClientCredentialsTokenClient(oauthHttpClient),
+            TokenExchangeClient(oauthHttpClient)
+        )
+
+        val azureAdConfig = clientConfig.clientConfig["azure_ad"] ?: error(accessTokenProviderError)
+        OAuth2TokenProvider(accessTokenService, azureAdConfig)
+    }  bind AccessTokenProvider::class
+
+    single { PdlClientImpl(config.getString("pdl_url"), get(qualifier = named("PROXY")), get(), get()) } bind PdlClient::class
+    single { DokarkivKlientImpl(config.getString("dokarkiv.base_url"), get(), get(qualifier = named("DOKARKIV"))) } bind DokarkivKlient::class
+    single { OppgaveKlientImpl(config.getString("oppgavebehandling.url"), get(qualifier = named("OPPGAVE")), get()) } bind OppgaveKlient::class
     single {
         ClamavVirusScannerImp(
             get(),

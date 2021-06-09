@@ -1,6 +1,8 @@
 package no.nav.helse.fritakagp.domain
 
 import no.nav.helse.fritakagp.integration.GrunnbeløpClient
+import java.math.BigDecimal
+import java.math.RoundingMode
 
 class BeløpBeregning(
     grunnbeløpClient: GrunnbeløpClient
@@ -15,10 +17,12 @@ class BeløpBeregning(
         perioder.forEach {
             val arslonn = it.månedsinntekt * 12
             it.dagsats = if (arslonn < seksG)
-                arslonn / antallDager
+                round2DigitDecimal(arslonn / antallDager)
             else
-                seksG / antallDager
+                round2DigitDecimal(seksG / antallDager)
             it.belop = it.dagsats * it.antallDagerMedRefusjon
         }
     }
+
+    private fun round2DigitDecimal(value : Double) : Double = BigDecimal(value).setScale(2, RoundingMode.HALF_UP).toDouble()
 }

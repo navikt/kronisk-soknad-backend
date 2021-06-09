@@ -3,11 +3,14 @@ package no.nav.helse.fritakagp.web.api.resreq
 import no.nav.helse.arbeidsgiver.web.validation.isValidIdentitetsnummer
 import no.nav.helse.arbeidsgiver.web.validation.isValidOrganisasjonsnummer
 import no.nav.helse.fritakagp.domain.*
+import no.nav.helse.fritakagp.web.dto.validation.datoerHarRiktigRekkefolge
 import no.nav.helse.fritakagp.web.dto.validation.isGodskjentFiletyper
 import no.nav.helse.fritakagp.web.dto.validation.isNotStorreEnn
 import no.nav.helse.fritakagp.web.dto.validation.maanedsInntektErMellomNullOgTiMil
 import no.nav.helse.fritakagp.web.dto.validation.refujonsDagerIkkeOverstigerPeriodelengder
-import org.valiktor.functions.*
+import org.valiktor.functions.isNotEmpty
+import org.valiktor.functions.isNotNull
+import org.valiktor.functions.isTrue
 import org.valiktor.validate
 import java.time.LocalDate
 
@@ -83,6 +86,7 @@ data class GravidKravRequest(
             validate(GravidKravRequest::identitetsnummer).isValidIdentitetsnummer()
             validate(GravidKravRequest::virksomhetsnummer).isValidOrganisasjonsnummer()
             validate(GravidKravRequest::bekreftet).isTrue()
+            validate(GravidKravRequest::perioder).datoerHarRiktigRekkefolge()
             validate(GravidKravRequest::perioder).refujonsDagerIkkeOverstigerPeriodelengder()
             validate(GravidKravRequest::perioder).maanedsInntektErMellomNullOgTiMil()
 

@@ -95,7 +95,7 @@ spec:
     - name: PDL_SCOPE
       value: api://dev-fss.pdl.pdl-api/.default
     - name: DOKARKIV_SCOPE
-      value: api://dev-fss.teamdokumenthandtering.dokarkiv-q1/.default
+      value: api://dev-fss.teamdokumenthandtering.dokarkiv_q1/.default
 
   gcp:
     sqlInstances:

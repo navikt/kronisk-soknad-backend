@@ -83,7 +83,6 @@ object GravidTestData {
             1,
             123.8
         )),
-
         bekreftet = true,
         dokumentasjon = null,
         kontrollDager = null

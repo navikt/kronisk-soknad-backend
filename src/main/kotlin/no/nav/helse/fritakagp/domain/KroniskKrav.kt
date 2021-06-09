@@ -14,8 +14,6 @@ data class KroniskKrav(
         val perioder: Set<Arbeidsgiverperiode>,
         val harVedlegg: Boolean = false,
         val kontrollDager: Int?,
-        val antallDager: Int,
-
         var journalpostId: String? = null,
 
         var oppgaveId: String? = null,

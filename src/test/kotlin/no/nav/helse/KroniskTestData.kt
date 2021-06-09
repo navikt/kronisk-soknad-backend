@@ -47,12 +47,11 @@ object KroniskTestData {
             LocalDate.of(2020, 1, 5),
             LocalDate.of(2020, 1, 10),
             2,
-            månedsinntekt = 2590.8
+            2590.8
         )),
         bekreftet = true,
         dokumentasjon = null,
-        kontrollDager = null,
-        antallDager = 4
+        kontrollDager = null
     )
 
     val kroniskKravRequestMedFil = kroniskKravRequestValid.copy(
@@ -68,11 +67,10 @@ object KroniskTestData {
             LocalDate.of(2020, 1, 5),
             LocalDate.of(2020, 1, 10),
             5,
-            månedsinntekt = 2590.8
+            2590.8
         )),
         sendtAv = validIdentitetsnummer,
-        kontrollDager = null,
-        antallDager = 4
+        kontrollDager = null
     )
     
 }

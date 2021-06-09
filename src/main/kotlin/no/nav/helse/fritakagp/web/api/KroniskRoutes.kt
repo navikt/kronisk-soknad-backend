@@ -13,7 +13,6 @@ import no.nav.helse.fritakagp.KroniskKravMetrics
 import no.nav.helse.fritakagp.KroniskSoeknadMetrics
 import no.nav.helse.fritakagp.db.KroniskKravRepository
 import no.nav.helse.fritakagp.db.KroniskSoeknadRepository
-import no.nav.helse.fritakagp.domain.BeløpBeregning
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
 import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravKvitteringProcessor
@@ -36,8 +35,7 @@ fun Route.kroniskRoutes(
     om: ObjectMapper,
     virusScanner: VirusScanner,
     bucket: BucketStorage,
-    authorizer: AltinnAuthorizer,
-    belopBeregning: BeløpBeregning
+    authorizer: AltinnAuthorizer
 ) {
     route("/kronisk") {
         route("/soeknad") {
@@ -57,6 +55,7 @@ fun Route.kroniskRoutes(
                 val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
 
                 val soeknad = request.toDomain(innloggetFnr)
+
                 processDocumentForGCPStorage(request.dokumentasjon, virusScanner, bucket, soeknad.id)
 
                 datasource.connection.use { connection ->
@@ -95,7 +94,7 @@ fun Route.kroniskRoutes(
                 authorize(authorizer, request.virksomhetsnummer)
 
                 val krav = request.toDomain(hentIdentitetsnummerFraLoginToken(application.environment.config, call.request))
-                belopBeregning.beregnBeløpKronisk(krav)
+
                 processDocumentForGCPStorage(request.dokumentasjon, virusScanner, bucket, krav.id)
 
                 datasource.connection.use { connection ->

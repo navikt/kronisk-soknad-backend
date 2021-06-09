@@ -41,9 +41,7 @@ class KroniskKravPDFGenerator {
             content.writeTextWrapped("FOM: ${it.fom}")
             content.writeTextWrapped("TOM: ${it.tom}")
             content.writeTextWrapped("Antall dager det kreves refusjon for: ${it.antallDagerMedRefusjon}")
-            content.writeTextWrapped("Beregnet månedsinntekt (NOK): ${it.månedsinntekt}")
-            content.writeTextWrapped("Dagsats (NOK): ${it.dagsats}")
-            content.writeTextWrapped("Beløp (NOK): ${it.belop}")
+            content.writeTextWrapped("Refusjonskrav (NOK): ${it.beloep}")
             content.writeTextWrapped("")
         }
 

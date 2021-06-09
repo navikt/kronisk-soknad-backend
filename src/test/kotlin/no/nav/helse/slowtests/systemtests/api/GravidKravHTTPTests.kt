@@ -1,14 +1,19 @@
 package no.nav.helse.slowtests.systemtests.api
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import io.ktor.client.features.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import no.nav.helse.GravidTestData
 import no.nav.helse.fritakagp.db.GravidKravRepository
 import no.nav.helse.fritakagp.domain.GravidKrav
+import no.nav.helse.fritakagp.domain.GravidSoeknad
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
+import org.koin.core.inject
 import org.koin.test.inject
+import kotlin.test.assertFailsWith
 
 class GravidKravHTTPTests : SystemTestBase() {
     private val kravGravidUrl = "/api/v1/gravid/krav"

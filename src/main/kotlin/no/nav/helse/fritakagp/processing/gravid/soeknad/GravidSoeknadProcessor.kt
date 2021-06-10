@@ -207,11 +207,16 @@ class GravidSoeknadProcessor(
                 oppgaveKlient.opprettOppgave(request, UUID.randomUUID().toString()).id.toString()
             } catch(ex:Exception) {
                 var error = """Response fra opprettOppgave:
-                    | message : ${ex.message}"""
-
-                    /*| content : ${ex.response.content.readByte()}
+                    | message : ${ex.message}                    
+                    | cause : ${ex.cause}
+                    | suppressed : ${ex.suppressed}
+                    """
+                if (ex is ResponseException)
+                    error += """
+                    | content : ${ex.response.content.readByte()}
                     | headers : ${ex.response.headers["Content-Type"]}                                                            
-                    | status : ${ex.response.status}""".trimMargin()*/
+                    | status : ${ex.response.status}""${'"'}                            
+                        """.trimIndent()
                 log.error(error)
                 throw ex
             }

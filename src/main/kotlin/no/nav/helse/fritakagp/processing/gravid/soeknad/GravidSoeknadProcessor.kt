@@ -213,7 +213,7 @@ class GravidSoeknadProcessor(
                     | headers : ${ex.response.headers["Content-Type"]}                                                            
                     | status : ${ex.response.status}""".trimMargin()*/
                 log.error(error)
-                error
+                throw ex
             }
         }
     }

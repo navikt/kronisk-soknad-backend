@@ -2,6 +2,7 @@ package no.nav.helse.fritakagp.processing.gravid.soeknad
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import io.ktor.client.features.*
 import kotlinx.coroutines.runBlocking
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.Bakgrunnsjobb
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbProsesserer
@@ -201,7 +202,18 @@ class GravidSoeknadProcessor(
             prioritet = "NORM"
         )
 
-        return runBlocking { oppgaveKlient.opprettOppgave(request, UUID.randomUUID().toString()).id.toString() }
+        return runBlocking {
+            try {
+                oppgaveKlient.opprettOppgave(request, UUID.randomUUID().toString()).id.toString()
+            } catch(ex: ResponseException) {
+                log.warn("""Response fra opprettOppgave:
+                    | message : ${ex.message}
+                    | content : ${ex.response.content.readByte()}
+                    | headers : ${ex.response.headers["Content-Type"]}                                                            
+                    | status : ${ex.response.status}""".trimMargin())
+                ex.localizedMessage
+            }
+        }
     }
 
     fun opprettFordelingsOppgave(soeknad: GravidSoeknad): String {

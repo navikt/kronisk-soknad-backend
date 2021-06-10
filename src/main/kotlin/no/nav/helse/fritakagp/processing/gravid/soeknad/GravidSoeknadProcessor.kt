@@ -209,7 +209,17 @@ class GravidSoeknadProcessor(
                 var error = """Response fra opprettOppgave:
                     | message : ${ex.message}                    
                     | cause : ${ex.cause}
-                    | suppressed : ${strex(ex.suppressed)}
+                    | request : 
+                    | aktoerId = ${request.aktoerId}                                                    
+                    | journalpostId = ${request.journalpostId}
+                    | beskrivelse = ${request.beskrivelse}
+                    | tema = ${request.tema}
+                    | behandlingstype = ${request.behandlingstype}
+                    | oppgavetype = ${request.oppgavetype}
+                    | behandlingstema = ${request.behandlingstema}
+                    | aktivDato = ${request.aktivDato}
+                    | fristFerdigstillelse = ${request.fristFerdigstillelse}
+                    | prioritet = ${request.prioritet} 
                     """
 
                 log.error(error)

@@ -209,20 +209,21 @@ class GravidSoeknadProcessor(
                 var error = """Response fra opprettOppgave:
                     | message : ${ex.message}                    
                     | cause : ${ex.cause}
-                    | suppressed : ${ex.suppressed}
+                    | suppressed : ${strex(ex.suppressed)}
                     """
-                if (ex is ResponseException)
-                    error += """
-                    | content : ${ex.response.content.readByte()}
-                    | headers : ${ex.response.headers["Content-Type"]}                                                            
-                    | status : ${ex.response.status}""${'"'}                            
-                        """.trimIndent()
+
                 log.error(error)
                 throw ex
             }
         }
     }
+    fun strex(exes : Array<Throwable>) : String{
+        var err : String  = ""
+        for (e in exes)
+            err += e.message + " ||||| "
 
+        return err
+    }
     fun opprettFordelingsOppgave(soeknad: GravidSoeknad): String {
         val aktoerId = pdlClient.fullPerson(soeknad.identitetsnummer)?.hentIdenter?.trekkUtIdent(PdlIdent.PdlIdentGruppe.AKTORID)
         requireNotNull(aktoerId) { "Fant ikke AktørID for fnr i ${soeknad.id}" }

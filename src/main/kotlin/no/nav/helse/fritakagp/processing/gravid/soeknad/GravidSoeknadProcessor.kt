@@ -205,12 +205,13 @@ class GravidSoeknadProcessor(
         return runBlocking {
             try {
                 oppgaveKlient.opprettOppgave(request, UUID.randomUUID().toString()).id.toString()
-            } catch(ex: ResponseException) {
+            } catch(ex:Exception) {
                 var error = """Response fra opprettOppgave:
-                    | message : ${ex.message}
-                    | content : ${ex.response.content.readByte()}
+                    | message : ${ex.message}"""
+
+                    /*| content : ${ex.response.content.readByte()}
                     | headers : ${ex.response.headers["Content-Type"]}                                                            
-                    | status : ${ex.response.status}""".trimMargin()
+                    | status : ${ex.response.status}""".trimMargin()*/
                 log.error(error)
                 error
             }

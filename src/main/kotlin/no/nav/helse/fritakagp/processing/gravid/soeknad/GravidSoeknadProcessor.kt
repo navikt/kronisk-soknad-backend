@@ -206,12 +206,13 @@ class GravidSoeknadProcessor(
             try {
                 oppgaveKlient.opprettOppgave(request, UUID.randomUUID().toString()).id.toString()
             } catch(ex: ResponseException) {
-                log.warn("""Response fra opprettOppgave:
+                var error = """Response fra opprettOppgave:
                     | message : ${ex.message}
                     | content : ${ex.response.content.readByte()}
                     | headers : ${ex.response.headers["Content-Type"]}                                                            
-                    | status : ${ex.response.status}""".trimMargin())
-                ex.localizedMessage
+                    | status : ${ex.response.status}""".trimMargin()
+                log.error(error)
+                error
             }
         }
     }

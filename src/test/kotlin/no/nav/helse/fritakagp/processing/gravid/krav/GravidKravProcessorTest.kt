@@ -64,7 +64,7 @@ class GravidKravProcessorTest {
         every { pdlClientMock.personNavn(krav.sendtAv)} returns PdlHentPersonNavn.PdlPersonNavneliste(listOf(
             PdlHentPersonNavn.PdlPersonNavneliste.PdlPersonNavn("Ola", "M", "Avsender", PdlPersonNavnMetadata("freg"))))
         every { pdlClientMock.fullPerson(krav.identitetsnummer)} returns PdlHentFullPerson(
-            PdlFullPersonliste(emptyList(), emptyList(), emptyList(), emptyList(), emptyList()),
+            PdlFullPersonliste(emptyList(), emptyList(), emptyList(), emptyList(),emptyList(),emptyList(), emptyList()),
             PdlIdentResponse(listOf(PdlIdent("aktør-id", PdlIdent.PdlIdentGruppe.AKTORID))),
             PdlHentFullPerson.PdlGeografiskTilknytning(UTLAND, null, null, "SWE")
         )

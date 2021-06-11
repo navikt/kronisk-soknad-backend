@@ -48,6 +48,8 @@ fun Module.mockExternalDependecies() {
                         emptyList(),
                         emptyList(),
                         emptyList(),
+                        emptyList(),
+                        emptyList(),
                         emptyList()
                     ),
 

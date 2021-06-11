@@ -14,6 +14,7 @@ import io.ktor.client.*
 import io.ktor.client.engine.apache.*
 import io.ktor.client.features.json.*
 import io.ktor.config.*
+import io.ktor.http.*
 import io.ktor.util.*
 import no.nav.helse.arbeidsgiver.integrasjoner.altinn.AltinnOrganisasjon
 import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.DokarkivKlient
@@ -96,6 +97,7 @@ fun ApplicationConfig.getjdbcUrlFromProperties(): String {
         this.property("database.name").getString()
     )
 }
+
 
 inline fun <reified T : Any> Koin.getAllOfType(): Collection<T> =
     let { koin ->

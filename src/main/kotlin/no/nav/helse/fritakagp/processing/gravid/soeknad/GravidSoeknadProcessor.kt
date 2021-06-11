@@ -2,6 +2,7 @@ package no.nav.helse.fritakagp.processing.gravid.soeknad
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import io.ktor.client.features.*
 import kotlinx.coroutines.runBlocking
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.Bakgrunnsjobb
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbProsesserer
@@ -201,9 +202,38 @@ class GravidSoeknadProcessor(
             prioritet = "NORM"
         )
 
-        return runBlocking { oppgaveKlient.opprettOppgave(request, UUID.randomUUID().toString()).id.toString() }
-    }
+        return runBlocking {
+            try {
+                oppgaveKlient.opprettOppgave(request, UUID.randomUUID().toString()).id.toString()
+            } catch(ex:Exception) {
+                var error = """Response fra opprettOppgave:
+                    | message : ${ex.message}                    
+                    | cause : ${ex.cause}
+                    | request : 
+                    | aktoerId = ${request.aktoerId}                                                    
+                    | journalpostId = ${request.journalpostId}
+                    | beskrivelse = ${request.beskrivelse}
+                    | tema = ${request.tema}
+                    | behandlingstype = ${request.behandlingstype}
+                    | oppgavetype = ${request.oppgavetype}
+                    | behandlingstema = ${request.behandlingstema}
+                    | aktivDato = ${request.aktivDato}
+                    | fristFerdigstillelse = ${request.fristFerdigstillelse}
+                    | prioritet = ${request.prioritet} 
+                    """
 
+                log.error(error)
+                throw ex
+            }
+        }
+    }
+    fun strex(exes : Array<Throwable>) : String{
+        var err : String  = ""
+        for (e in exes)
+            err += e.message + " ||||| "
+
+        return err
+    }
     fun opprettFordelingsOppgave(soeknad: GravidSoeknad): String {
         val aktoerId = pdlClient.fullPerson(soeknad.identitetsnummer)?.hentIdenter?.trekkUtIdent(PdlIdent.PdlIdentGruppe.AKTORID)
         requireNotNull(aktoerId) { "Fant ikke AktørID for fnr i ${soeknad.id}" }

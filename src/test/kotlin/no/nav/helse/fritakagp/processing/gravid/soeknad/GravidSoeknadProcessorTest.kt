@@ -82,7 +82,7 @@ class GravidSoeknadProcessorTest {
             )
         )
         every { pdlClientMock.fullPerson(soeknad.identitetsnummer) } returns PdlHentFullPerson(
-            PdlFullPersonliste(emptyList(), emptyList(), emptyList(), emptyList(), emptyList()),
+            PdlFullPersonliste(emptyList(), emptyList(), emptyList(), emptyList(), emptyList(), emptyList(), emptyList()),
             PdlIdentResponse(listOf(PdlIdent("aktør-id", PdlIdent.PdlIdentGruppe.AKTORID))),
             PdlHentFullPerson.PdlGeografiskTilknytning(UTLAND, null, null, "SWE")
         )

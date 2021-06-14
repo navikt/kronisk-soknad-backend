@@ -82,7 +82,7 @@ class GravidSoeknadProcessorTest {
             )
         )
         every { pdlClientMock.fullPerson(soeknad.identitetsnummer) } returns PdlHentFullPerson(
-            PdlFullPersonliste(emptyList(), emptyList(), emptyList(), emptyList(), emptyList()),
+            PdlFullPersonliste(emptyList(), emptyList(), emptyList(), emptyList(), emptyList(), emptyList(), emptyList()),
             PdlIdentResponse(listOf(PdlIdent("aktør-id", PdlIdent.PdlIdentGruppe.AKTORID))),
             PdlHentFullPerson.PdlGeografiskTilknytning(UTLAND, null, null, "SWE")
         )
@@ -93,7 +93,7 @@ class GravidSoeknadProcessorTest {
             null,
             emptyList()
         )
-        coEvery { oppgaveMock.opprettOppgave(any(), any()) } returns OpprettOppgaveResponse(oppgaveId)
+        coEvery { oppgaveMock.opprettOppgave(any(), any()) } returns GravidTestData.gravidOpprettOpgaveResponse.copy(id = oppgaveId)
         coEvery { berregServiceMock.getVirksomhetsNavn(soeknad.virksomhetsnummer) } returns "Stark Industries"
     }
 

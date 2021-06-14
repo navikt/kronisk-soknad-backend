@@ -66,7 +66,8 @@ class KroniskKravProcessorTest {
             PdlHentFullPerson.PdlGeografiskTilknytning(UTLAND, null, null, "SWE")
         )
         every { joarkMock.journalførDokument(any(), any(), any()) } returns JournalpostResponse(arkivReferanse, true, "M", null, emptyList())
-        coEvery { oppgaveMock.opprettOppgave(any(), any())} returns KroniskTestData.kroniskOpprettOpgaveResponse.copy(id = oppgaveId)
+        val mockOpprettOppgaveResponse = KroniskTestData.kroniskOpprettOpgaveResponse.copy(id = oppgaveId)
+        coEvery { oppgaveMock.opprettOppgave(any(), any())} returns mockOpprettOppgaveResponse
         coEvery { berregServiceMock.getVirksomhetsNavn(krav.virksomhetsnummer) } returns "Stark Industries"
     }
 

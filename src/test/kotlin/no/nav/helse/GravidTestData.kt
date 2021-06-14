@@ -116,8 +116,9 @@ object GravidTestData {
         oppgavetype = "JFR",
         versjon = 1,
         aktivDato = LocalDate.now(),
-        Prioritet.NORM,
-        Status.UNDER_BEHANDLING
+        prioritet= Prioritet.NORM,
+        status= Status.UNDER_BEHANDLING
     )
+
 }
 

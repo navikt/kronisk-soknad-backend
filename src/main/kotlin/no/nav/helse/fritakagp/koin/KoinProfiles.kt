@@ -79,7 +79,7 @@ val common = module {
                 configure(SerializationFeature.INDENT_OUTPUT, true)
                 configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
                 configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
-                accept(ContentType.Application.Json)
+                accept(ContentType.Application.HalJson)
             }
         }
     }

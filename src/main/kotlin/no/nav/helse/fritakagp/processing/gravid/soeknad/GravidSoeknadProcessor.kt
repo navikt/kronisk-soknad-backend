@@ -211,7 +211,7 @@ class GravidSoeknadProcessor(
                 log.info("Json : $json")
 
                 oppgaveResponse.id.toString()
-            } catch(ex: Exception) {
+            } catch(ex: Throwable) {
                 log.error(ex.stackTraceToString())
 
                 throw ex

@@ -69,8 +69,7 @@ class GravidKravProcessorTest {
             PdlHentFullPerson.PdlGeografiskTilknytning(UTLAND, null, null, "SWE")
         )
         every { joarkMock.journalførDokument(any(), any(), any()) } returns JournalpostResponse(arkivReferanse, true, "M", null, emptyList())
-        val mockOpprettOppgaveResponse = GravidTestData.gravidOpprettOpgaveResponse.copy(id = oppgaveId)
-        coEvery { oppgaveMock.opprettOppgave(any(), any())} returns mockOpprettOppgaveResponse
+        coEvery { oppgaveMock.opprettOppgave(any(), any())} returns GravidTestData.gravidOpprettOpgaveResponse.copy(id = oppgaveId)
         coEvery { berregServiceMock.getVirksomhetsNavn(krav.virksomhetsnummer) } returns "Stark Industries"
     }
 

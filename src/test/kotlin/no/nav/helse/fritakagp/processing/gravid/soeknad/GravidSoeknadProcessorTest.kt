@@ -94,8 +94,7 @@ class GravidSoeknadProcessorTest {
             null,
             emptyList()
         )
-        val mockOpprettOppgaveResponse = gravidOpprettOpgaveResponse.copy(id = oppgaveId)
-        coEvery { oppgaveMock.opprettOppgave(any(), any()) } returns mockOpprettOppgaveResponse
+        coEvery { oppgaveMock.opprettOppgave(any(), any()) } returns gravidOpprettOpgaveResponse.copy(id = oppgaveId)
         coEvery { berregServiceMock.getVirksomhetsNavn(soeknad.virksomhetsnummer) } returns "Stark Industries"
     }
 

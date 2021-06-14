@@ -206,11 +206,7 @@ class GravidSoeknadProcessor(
 
         return runBlocking {
             try {
-                val oppgaveResponse = oppgaveKlient.opprettOppgave(request, UUID.randomUUID().toString())
-                val json = om.writeValueAsString(oppgaveResponse)
-                log.info("Json : $json")
-
-                oppgaveResponse.id.toString()
+                oppgaveKlient.opprettOppgave(request, UUID.randomUUID().toString()).id.toString()
             } catch(ex: Throwable) {
                 log.error(ex.stackTraceToString())
 

@@ -88,6 +88,17 @@ object KroniskTestData {
         Prioritet.NORM,
         Status.UNDER_BEHANDLING
     )
+
+    val kroniskOpprettOpgaveResponse = OpprettOppgaveResponse(
+        id = 1234,
+        tildeltEnhetsnr = "0100",
+        tema = "KON",
+        oppgavetype = "JFR",
+        versjon = 1,
+        aktivDato = LocalDate.now(),
+        Prioritet.NORM,
+        Status.UNDER_BEHANDLING
+    )
     
 }
 

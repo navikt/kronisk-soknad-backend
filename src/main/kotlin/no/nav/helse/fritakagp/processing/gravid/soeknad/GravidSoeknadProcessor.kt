@@ -204,7 +204,9 @@ class GravidSoeknadProcessor(
             prioritet = "NORM"
         )
 
-        return runBlocking { oppgaveKlient.opprettOppgave(request, UUID.randomUUID().toString()).id.toString() }
+        return runBlocking {
+                oppgaveKlient.opprettOppgave(request, UUID.randomUUID().toString()).id.toString()
+        }
     }
 
     fun opprettFordelingsOppgave(soeknad: GravidSoeknad): String {

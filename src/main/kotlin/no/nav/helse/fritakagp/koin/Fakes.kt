@@ -82,8 +82,7 @@ fun Module.mockExternalDependecies() {
             override suspend fun opprettOppgave(
                 opprettOppgaveRequest: OpprettOppgaveRequest,
                 callId: String
-            ): OpprettOppgaveResponse = OpprettOppgaveResponse(1234,
-                tildeltEnhetsnrval= "0100",
+            ): OpprettOppgaveResponse = OpprettOppgaveResponse(1234, "0100",
                 tema = "KON",
                 oppgavetype = "JFR",
                 versjon = 1,

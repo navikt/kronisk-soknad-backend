@@ -78,7 +78,7 @@ object KroniskTestData {
 
     val kroniskOpprettOpgaveResponse = OpprettOppgaveResponse(
         id = 1234,
-        tildeltEnhetsnrval = "0100",
+        tildeltEnhetsnr = "0100",
         tema = "KON",
         oppgavetype = "JFR",
         versjon = 1,

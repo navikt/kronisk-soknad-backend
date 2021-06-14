@@ -2,7 +2,9 @@ package no.nav.helse.fritakagp.processing.gravid.soeknad
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import io.ktor.client.call.*
 import io.ktor.client.features.*
+import io.ktor.util.*
 import kotlinx.coroutines.runBlocking
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.Bakgrunnsjobb
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbProsesserer
@@ -204,9 +206,13 @@ class GravidSoeknadProcessor(
 
         return runBlocking {
             try {
-                oppgaveKlient.opprettOppgave(request, UUID.randomUUID().toString()).id.toString()
-            } catch(ex:Exception) {
-                log.error(ex.stackTraceToString())
+                val oppgaveResponse = oppgaveKlient.opprettOppgave(request, UUID.randomUUID().toString())
+                log.info("oppgavetype : ${oppgaveResponse.oppgavetype}" )
+                log.info("id : ${oppgaveResponse.id}" )
+                oppgaveResponse.id.toString()
+            } catch(ex: NoTransformationFoundException) {
+                log.error(ex.message)
+                log.error(ex.cause.toString())
                 throw ex
             }
         }

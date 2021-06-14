@@ -81,7 +81,7 @@ class KroniskKravHTTPTests : SystemTestBase() {
     fun `Skal returnere forbidden hvis virksomheten ikke er i auth listen fra altinn`() = suspendableTest {
         val exception = assertThrows<ClientRequestException>
         {
-            val response = httpClient.post<HttpResponse> {
+            httpClient.post<HttpResponse> {
                 appUrl(kravKroniskUrl)
                 contentType(ContentType.Application.Json)
                 loggedInAs("123456789")

@@ -206,7 +206,15 @@ class GravidSoeknadProcessor(
             try {
                 oppgaveKlient.opprettOppgave(request, UUID.randomUUID().toString()).id.toString()
             } catch(ex:Exception) {
-                var error = """Response fra opprettOppgave:
+                if (ex is ClientRequestException) {
+                    var error = """Response fra opprettOppgave:
+                        | status : ${ex.response.status}
+                        | content: ${ex.response.content}
+                        | headers: ${ex.response.headers}
+                    """.trimMargin()
+                    log.error(error)
+                } else {
+                    var error = """Response fra opprettOppgave:
                     | message : ${ex.message}                    
                     | cause : ${ex.cause}
                     | request : 
@@ -221,8 +229,9 @@ class GravidSoeknadProcessor(
                     | fristFerdigstillelse = ${request.fristFerdigstillelse}
                     | prioritet = ${request.prioritet} 
                     """
+                    log.error(error)
+                }
 
-                log.error(error)
                 throw ex
             }
         }

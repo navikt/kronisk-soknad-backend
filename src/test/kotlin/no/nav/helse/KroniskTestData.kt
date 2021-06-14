@@ -1,5 +1,8 @@
 package no.nav.helse
 
+import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OpprettOppgaveResponse
+import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.Prioritet
+import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.Status
 import no.nav.helse.fritakagp.domain.*
 import no.nav.helse.fritakagp.web.api.resreq.KroniskKravRequest
 import no.nav.helse.fritakagp.web.api.resreq.KroniskSoknadRequest
@@ -71,6 +74,17 @@ object KroniskTestData {
         )),
         sendtAv = validIdentitetsnummer,
         kontrollDager = null
+    )
+
+    val kroniskOpprettOpgaveResponse = OpprettOppgaveResponse(
+        id = 1234,
+        tildeltEnhetsnrval = "0100",
+        tema = "KON",
+        oppgavetype = "JFR",
+        versjon = 1,
+        aktivDato = LocalDate.now(),
+        Prioritet.NORM,
+        Status.UNDER_BEHANDLING
     )
     
 }

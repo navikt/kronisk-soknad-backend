@@ -1,5 +1,6 @@
 package no.nav.helse.slowtests.systemtests.api
 
+import io.ktor.client.features.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
@@ -9,6 +10,7 @@ import no.nav.helse.fritakagp.domain.GravidSoeknad
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.koin.core.inject
 
 class GravidSoeknadHTTPTests : SystemTestBase() {
@@ -20,13 +22,16 @@ class GravidSoeknadHTTPTests : SystemTestBase() {
 
         repo.insert(GravidTestData.soeknadGravid)
 
-        val accessDenied = httpClient.get<HttpResponse> {
-            appUrl("$soeknadGravidUrl/${GravidTestData.soeknadGravid.id}")
-            contentType(ContentType.Application.Json)
-            loggedInAs("123456789")
+        val exception = assertThrows<ClientRequestException>
+        {
+            httpClient.get<HttpResponse> {
+                appUrl("$soeknadGravidUrl/${GravidTestData.soeknadGravid.id}")
+                contentType(ContentType.Application.Json)
+                loggedInAs("123456789")
+            }
         }
 
-        assertThat(accessDenied.status).isEqualTo(HttpStatusCode.NotFound)
+        assertThat(exception.response.status).isEqualTo(HttpStatusCode.NotFound)
 
         val accessGrantedForm = httpClient.get<GravidSoeknad> {
             appUrl("$soeknadGravidUrl/${GravidTestData.soeknadGravid.id}")
@@ -39,12 +44,14 @@ class GravidSoeknadHTTPTests : SystemTestBase() {
 
     @Test
     fun `invalid enum fields gives 400 Bad request`() = suspendableTest {
-        val response = httpClient.post<HttpResponse> {
-            appUrl(soeknadGravidUrl)
-            contentType(ContentType.Application.Json)
-            loggedInAs("123456789")
+        val exception = assertThrows<ClientRequestException>
+        {
+            httpClient.post<HttpResponse> {
+                appUrl(soeknadGravidUrl)
+                contentType(ContentType.Application.Json)
+                loggedInAs("123456789")
 
-            body = """
+                body = """
                 {
                     "fnr": "${GravidTestData.validIdentitetsnummer}",
                     "orgnr": "${GravidTestData.fullValidSoeknadRequest.virksomhetsnummer}",
@@ -52,9 +59,10 @@ class GravidSoeknadHTTPTests : SystemTestBase() {
                     "tiltak": ["IKKE GYLDIG"]
                 }
             """.trimIndent()
+            }
         }
 
-        Assertions.assertThat(response.status).isEqualTo(HttpStatusCode.BadRequest)
+        assertThat(exception.response.status).isEqualTo(HttpStatusCode.BadRequest)
     }
 
     @Test
@@ -66,7 +74,7 @@ class GravidSoeknadHTTPTests : SystemTestBase() {
             body = GravidTestData.fullValidSoeknadRequest
         }
 
-        Assertions.assertThat(response.status).isEqualTo(HttpStatusCode.Created)
+        assertThat(response.status).isEqualTo(HttpStatusCode.Created)
     }
 
     @Test
@@ -78,6 +86,6 @@ class GravidSoeknadHTTPTests : SystemTestBase() {
             body = GravidTestData.gravidSoknadMedFil
         }
 
-        Assertions.assertThat(response.status).isEqualTo(HttpStatusCode.Created)
+        assertThat(response.status).isEqualTo(HttpStatusCode.Created)
     }
 }

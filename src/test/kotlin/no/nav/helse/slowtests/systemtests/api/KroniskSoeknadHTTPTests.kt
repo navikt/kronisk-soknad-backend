@@ -1,5 +1,6 @@
 package no.nav.helse.slowtests.systemtests.api
 
+import io.ktor.client.features.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
@@ -10,6 +11,7 @@ import no.nav.helse.fritakagp.domain.*
 import no.nav.helse.fritakagp.web.api.resreq.KroniskSoknadRequest
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.koin.test.inject
 
 class KroniskSoeknadHTTPTests : SystemTestBase() {
@@ -20,14 +22,16 @@ class KroniskSoeknadHTTPTests : SystemTestBase() {
         val repo by inject<KroniskSoeknadRepository>()
 
         repo.insert(KroniskTestData.soeknadKronisk)
-
-        val accessDenied = httpClient.get<HttpResponse> {
-            appUrl("$soeknadKroniskUrl/${KroniskTestData.soeknadKronisk.id}")
-            contentType(ContentType.Application.Json)
-            loggedInAs("123456789")
+        val exception = assertThrows<ClientRequestException>
+        {
+            httpClient.get<HttpResponse> {
+                appUrl("$soeknadKroniskUrl/${KroniskTestData.soeknadKronisk.id}")
+                contentType(ContentType.Application.Json)
+                loggedInAs("123456789")
+            }
         }
 
-        Assertions.assertThat(accessDenied.status).isEqualTo(HttpStatusCode.NotFound)
+        Assertions.assertThat(exception.response.status).isEqualTo(HttpStatusCode.NotFound)
 
         val accessGrantedForm = httpClient.get<KroniskSoeknad> {
             appUrl("$soeknadKroniskUrl/${KroniskTestData.soeknadKronisk.id}")
@@ -41,12 +45,14 @@ class KroniskSoeknadHTTPTests : SystemTestBase() {
 
     @Test
     fun `invalid enum fields gives 400 Bad request`() = suspendableTest {
-        val response = httpClient.post<HttpResponse> {
-            appUrl(soeknadKroniskUrl)
-            contentType(ContentType.Application.Json)
-            loggedInAs("123456789")
+        val exception = assertThrows<ClientRequestException>
+        {
+            httpClient.post<HttpResponse> {
+                appUrl(soeknadKroniskUrl)
+                contentType(ContentType.Application.Json)
+                loggedInAs("123456789")
 
-            body = """
+                body = """
                 {
                     "fnr": "${GravidTestData.validIdentitetsnummer}",
                     "orgnr": "${GravidTestData.fullValidSoeknadRequest.virksomhetsnummer}",
@@ -54,9 +60,10 @@ class KroniskSoeknadHTTPTests : SystemTestBase() {
                     "paakjenningstyper": ["IKKE GYLDIG"]
                 }
             """.trimIndent()
+            }
         }
 
-        Assertions.assertThat(response.status).isEqualTo(HttpStatusCode.BadRequest)
+        Assertions.assertThat(exception.response.status).isEqualTo(HttpStatusCode.BadRequest)
     }
 
     @Test
@@ -71,25 +78,27 @@ class KroniskSoeknadHTTPTests : SystemTestBase() {
         Assertions.assertThat(response.status).isEqualTo(HttpStatusCode.Created)
     }
 
-
     @Test
     fun `Skal validere feil ved ugyldig data`() = suspendableTest {
-        val response = httpClient.post<HttpResponse> {
-            appUrl(soeknadKroniskUrl)
-            contentType(ContentType.Application.Json)
-            loggedInAs("123456789")
-            body = KroniskSoknadRequest(virksomhetsnummer = "lkajsbdfv",
-                identitetsnummer = "lkdf",
-                paakjenningBeskrivelse = "sdfsfd",
-                arbeidstyper = setOf(ArbeidsType.KREVENDE),
-                paakjenningstyper = setOf(PaakjenningsType.ALLERGENER),
-                fravaer = setOf(FravaerData("2001-01",12)),
-                bekreftet = true,
-                dokumentasjon = null
-            )
+        val exception = assertThrows<ClientRequestException>
+        {
+            httpClient.post<HttpResponse> {
+                appUrl(soeknadKroniskUrl)
+                contentType(ContentType.Application.Json)
+                loggedInAs("123456789")
+                body = KroniskSoknadRequest(virksomhetsnummer = "lkajsbdfv",
+                    identitetsnummer = "lkdf",
+                    paakjenningBeskrivelse = "sdfsfd",
+                    arbeidstyper = setOf(ArbeidsType.KREVENDE),
+                    paakjenningstyper = setOf(PaakjenningsType.ALLERGENER),
+                    fravaer = setOf(FravaerData("2001-01",12)),
+                    bekreftet = true,
+                    dokumentasjon = null
+                )
+            }
         }
 
-        Assertions.assertThat(response.status).isEqualTo(HttpStatusCode.UnprocessableEntity)
+        Assertions.assertThat(exception.response.status).isEqualTo(HttpStatusCode.UnprocessableEntity)
     }
 
     @Test

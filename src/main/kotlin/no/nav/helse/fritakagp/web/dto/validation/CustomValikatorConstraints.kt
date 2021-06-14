@@ -35,6 +35,7 @@ fun <E> Validator<E>.Property<Iterable<Arbeidsgiverperiode>?>.datoerHarRiktigRek
             (p.fom.isEqual(p.tom) || p.fom.isBefore(p.tom))
         }
     }
+    
 class MaanedsInntektErStorreEnTiMil : CustomConstraint
 fun <E> Validator<E>.Property<Iterable<Arbeidsgiverperiode>?>.maanedsInntektErMellomNullOgTiMil() =
     this.validate(MaanedsInntektErStorreEnTiMil()) { ps ->
@@ -42,6 +43,7 @@ fun <E> Validator<E>.Property<Iterable<Arbeidsgiverperiode>?>.maanedsInntektErMe
             p.månedsinntekt > 0.0 && p.månedsinntekt <= TiMil
         }
     }
+
 class DataUrlExtensionConstraints: CustomConstraint
 fun <E> Validator<E>.Property<String?>.isGodskjentFiletyper() =
     this.validate(DataUrlExtensionConstraints()){

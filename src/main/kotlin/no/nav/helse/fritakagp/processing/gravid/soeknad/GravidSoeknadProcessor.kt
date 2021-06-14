@@ -207,12 +207,13 @@ class GravidSoeknadProcessor(
         return runBlocking {
             try {
                 val oppgaveResponse = oppgaveKlient.opprettOppgave(request, UUID.randomUUID().toString())
-                log.info("oppgavetype : ${oppgaveResponse.oppgavetype}" )
-                log.info("id : ${oppgaveResponse.id}" )
-                oppgaveResponse.id.toString()
-            } catch(ex: NoTransformationFoundException) {
-                log.error(ex.message)
-                log.error(ex.cause.toString())
+                val json = om.writeValueAsString(oppgaveResponse)
+                log.info("Json : $json")
+                json
+                //oppgaveResponse.id.toString()
+            } catch(ex: Exception) {
+                log.error(ex.stackTraceToString())
+
                 throw ex
             }
         }

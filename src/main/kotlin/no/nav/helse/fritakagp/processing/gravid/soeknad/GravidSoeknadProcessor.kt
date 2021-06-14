@@ -205,22 +205,10 @@ class GravidSoeknadProcessor(
         )
 
         return runBlocking {
-            try {
                 oppgaveKlient.opprettOppgave(request, UUID.randomUUID().toString()).id.toString()
-            } catch(ex: Throwable) {
-                log.error(ex.stackTraceToString())
-
-                throw ex
-            }
         }
     }
-    fun strex(exes : Array<Throwable>) : String{
-        var err : String  = ""
-        for (e in exes)
-            err += e.message + " ||||| "
 
-        return err
-    }
     fun opprettFordelingsOppgave(soeknad: GravidSoeknad): String {
         val aktoerId = pdlClient.fullPerson(soeknad.identitetsnummer)?.hentIdenter?.trekkUtIdent(PdlIdent.PdlIdentGruppe.AKTORID)
         requireNotNull(aktoerId) { "Fant ikke AktørID for fnr i ${soeknad.id}" }

@@ -206,32 +206,6 @@ class GravidSoeknadProcessor(
             try {
                 oppgaveKlient.opprettOppgave(request, UUID.randomUUID().toString()).id.toString()
             } catch(ex:Exception) {
-                if (ex is ClientRequestException) {
-                    var error = """Response fra opprettOppgave:
-                        | status : ${ex.response.status}
-                        | content: ${ex.response.content}
-                        | headers: ${ex.response.headers}
-                    """.trimMargin()
-                    log.error(error)
-                } else {
-                    var error = """Response fra opprettOppgave:
-                    | message : ${ex.message}                    
-                    | cause : ${ex.cause}
-                    | request : 
-                    | aktoerId = ${request.aktoerId}                                                    
-                    | journalpostId = ${request.journalpostId}
-                    | beskrivelse = ${request.beskrivelse}
-                    | tema = ${request.tema}
-                    | behandlingstype = ${request.behandlingstype}
-                    | oppgavetype = ${request.oppgavetype}
-                    | behandlingstema = ${request.behandlingstema}
-                    | aktivDato = ${request.aktivDato}
-                    | fristFerdigstillelse = ${request.fristFerdigstillelse}
-                    | prioritet = ${request.prioritet} 
-                    """
-                    log.error(error)
-                }
-
                 throw ex
             }
         }

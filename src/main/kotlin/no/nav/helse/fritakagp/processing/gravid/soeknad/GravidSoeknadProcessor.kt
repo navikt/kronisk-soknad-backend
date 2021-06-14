@@ -209,8 +209,8 @@ class GravidSoeknadProcessor(
                 val oppgaveResponse = oppgaveKlient.opprettOppgave(request, UUID.randomUUID().toString())
                 val json = om.writeValueAsString(oppgaveResponse)
                 log.info("Json : $json")
-                json
-                //oppgaveResponse.id.toString()
+
+                oppgaveResponse.id.toString()
             } catch(ex: Exception) {
                 log.error(ex.stackTraceToString())
 

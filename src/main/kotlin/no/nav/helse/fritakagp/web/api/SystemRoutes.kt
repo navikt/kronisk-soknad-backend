@@ -7,7 +7,6 @@ import io.ktor.routing.*
 import io.ktor.util.*
 import no.nav.helse.fritakagp.web.auth.hentUtløpsdatoFraLoginToken
 
-@KtorExperimentalAPI
 fun Route.systemRoutes() {
     route("/login-expiry") {
         get {

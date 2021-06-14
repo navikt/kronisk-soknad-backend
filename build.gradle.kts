@@ -1,6 +1,6 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-val ktorVersion = "1.5.3"
+val ktorVersion = "1.6.0"
 val logback_version = "1.2.1"
 val logback_contrib_version = "0.1.5"
 val jacksonVersion = "2.10.3"
@@ -29,7 +29,7 @@ val githubPassword: String by project
 
 plugins {
     application
-    kotlin("jvm") version "1.4.20"
+    kotlin("jvm") version "1.5.10"
     id("com.github.ben-manes.versions") version "0.27.0"
     id("com.autonomousapps.dependency-analysis") version "0.71.0"
     jacoco

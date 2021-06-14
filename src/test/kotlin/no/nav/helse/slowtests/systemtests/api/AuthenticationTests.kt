@@ -10,7 +10,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
-@KtorExperimentalAPI
 class AuthenticationTests : SystemTestBase() {
     private val soeknadGravidUrl = "/api/v1/gravid/soeknad"
 

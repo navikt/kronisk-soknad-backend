@@ -4,7 +4,6 @@ import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
-import io.ktor.util.KtorExperimentalAPI
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.runBlocking
 import no.nav.helse.fritakagp.FritakAgpApplication
@@ -14,7 +13,6 @@ import org.junit.jupiter.api.TestInstance
 import org.koin.test.KoinTest
 import org.koin.test.inject
 
-@KtorExperimentalAPI
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 
 /**

@@ -101,7 +101,7 @@ class KroniskKravProcessorTest {
         val joarkRequest = slot<JournalpostRequest>()
         every { joarkMock.journalførDokument(capture(joarkRequest), any(), any()) } returns JournalpostResponse(arkivReferanse, true, "M", null, emptyList())
 
-        val orginalJsonDoc = Base64.getEncoder().encodeToString(objectMapper.writeValueAsBytes(krav))
+        Base64.getEncoder().encodeToString(objectMapper.writeValueAsBytes(krav))
         prosessor.prosesser(jobb)
 
         verify(exactly = 1) { bucketStorageMock.getDocAsString(krav.id) }
@@ -111,7 +111,7 @@ class KroniskKravProcessorTest {
         val dokumentasjon = joarkRequest.captured.dokumenter.filter { it.brevkode == KroniskKravProcessor.dokumentasjonBrevkode }.first()
 
         assertThat(dokumentasjon.dokumentVarianter[0].fysiskDokument).isEqualTo(dokumentData)
-        assertThat(dokumentasjon.dokumentVarianter[0].filtype).isEqualTo(filtypeArkiv.toUpperCase())
+        assertThat(dokumentasjon.dokumentVarianter[0].filtype).isEqualTo(filtypeArkiv.uppercase())
         assertThat(dokumentasjon.dokumentVarianter[0].variantFormat).isEqualTo("ARKIV")
         assertThat(dokumentasjon.dokumentVarianter[1].filtype).isEqualTo(filtypeOrginal)
         assertThat(dokumentasjon.dokumentVarianter[1].variantFormat).isEqualTo("ORIGINAL")

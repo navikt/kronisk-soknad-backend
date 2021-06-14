@@ -21,7 +21,7 @@ fun createHikariConfig(jdbcUrl: String, username: String? = null, password: Stri
 enum class Role {
     admin, user, readonly;
 
-    override fun toString() = name.toLowerCase()
+    override fun toString() = name.lowercase()
 }
 
 fun createTestHikariConfig() =

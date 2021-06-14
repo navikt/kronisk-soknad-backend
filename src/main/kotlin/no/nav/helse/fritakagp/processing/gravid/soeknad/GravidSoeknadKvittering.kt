@@ -96,10 +96,10 @@ class GravidSoeknadAltinnKvitteringSender(
         return if (kvittering.omplassering != null)
             if (kvittering.omplassering == Omplassering.IKKE_MULIG)
                 """
-                    ${kvittering.omplassering!!.beskrivelse} fordi  ${kvittering.omplasseringAarsak?.beskrivelse}
+                    ${kvittering.omplassering.beskrivelse} fordi  ${kvittering.omplasseringAarsak?.beskrivelse}
                 """
             else
-                kvittering.omplassering!!.beskrivelse
+                kvittering.omplassering.beskrivelse
         else ""
     }
 

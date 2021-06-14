@@ -24,11 +24,11 @@ class MockBucketStorage : BucketStorage {
     }
 
     override fun getDocAsString(uuid: UUID): BucketDocument? {
-        return items.getOrDefault(uuid, default)
+        return items.getOrDefault(uuid.toString(), default)
     }
 
     override fun deleteDoc(uuid: UUID) {
-        items.remove(uuid)
+        items.remove(uuid.toString())
     }
 }
 

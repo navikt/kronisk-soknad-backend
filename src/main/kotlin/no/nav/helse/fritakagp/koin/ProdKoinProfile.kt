@@ -21,7 +21,6 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import javax.sql.DataSource
 
-@KtorExperimentalAPI
 fun prodConfig(config: ApplicationConfig) = module {
     externalSystemClients(config)
 

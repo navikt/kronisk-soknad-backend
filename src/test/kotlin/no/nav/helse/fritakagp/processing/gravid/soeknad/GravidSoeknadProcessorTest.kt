@@ -123,7 +123,7 @@ class GravidSoeknadProcessorTest {
             emptyList()
         )
 
-        val orginalJsonDoc = Base64.getEncoder().encodeToString(objectMapper.writeValueAsBytes(soeknad))
+        Base64.getEncoder().encodeToString(objectMapper.writeValueAsBytes(soeknad))
         prosessor.prosesser(jobb)
 
         verify(exactly = 1) { bucketStorageMock.getDocAsString(soeknad.id) }
@@ -135,7 +135,7 @@ class GravidSoeknadProcessorTest {
                 .first()
 
         assertThat(dokumentasjon.dokumentVarianter[0].fysiskDokument).isEqualTo(dokumentData)
-        assertThat(dokumentasjon.dokumentVarianter[0].filtype).isEqualTo(filtypeArkiv.toUpperCase())
+        assertThat(dokumentasjon.dokumentVarianter[0].filtype).isEqualTo(filtypeArkiv.uppercase())
         assertThat(dokumentasjon.dokumentVarianter[0].variantFormat).isEqualTo("ARKIV")
         assertThat(dokumentasjon.dokumentVarianter[1].filtype).isEqualTo(filtypeOrginal)
         assertThat(dokumentasjon.dokumentVarianter[1].variantFormat).isEqualTo("ORIGINAL")

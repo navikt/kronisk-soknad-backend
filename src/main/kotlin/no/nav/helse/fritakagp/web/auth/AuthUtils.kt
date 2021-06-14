@@ -12,7 +12,6 @@ import java.time.Instant
 import java.util.*
 import javax.ws.rs.ForbiddenException
 
-@KtorExperimentalAPI
 fun PipelineContext<Unit, ApplicationCall>.authorize(authorizer: AltinnAuthorizer, arbeidsgiverId: String) {
     val identitetsnummer = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
     if (!authorizer.hasAccess(identitetsnummer, arbeidsgiverId)) {
@@ -20,13 +19,11 @@ fun PipelineContext<Unit, ApplicationCall>.authorize(authorizer: AltinnAuthorize
     }
 }
 
-@KtorExperimentalAPI
 fun hentIdentitetsnummerFraLoginToken(config: ApplicationConfig, request: ApplicationRequest): String {
     val tokenString = getTokenString(config, request)
     return JwtToken(tokenString).subject
 }
 
-@KtorExperimentalAPI
 fun hentUtløpsdatoFraLoginToken(config: ApplicationConfig, request: ApplicationRequest): Date {
     val tokenString = getTokenString(config, request)
     return JwtToken(tokenString).jwtTokenClaims.expirationTime ?: Date.from(Instant.MIN)

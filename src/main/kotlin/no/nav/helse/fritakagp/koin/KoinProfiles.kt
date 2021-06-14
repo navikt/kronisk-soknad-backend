@@ -39,7 +39,6 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 
 
-@KtorExperimentalAPI
 fun selectModuleBasedOnProfile(config: ApplicationConfig): List<Module> {
     val envModule = when (config.property("koin.profile").getString()) {
         "LOCAL" -> localDevConfig(config)
@@ -79,7 +78,7 @@ val common = module {
                 configure(SerializationFeature.INDENT_OUTPUT, true)
                 configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
                 configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
-                accept(ContentType.Application.HalJson)
+                accept(ContentType.Application.Json)
             }
         }
     }
@@ -90,7 +89,6 @@ val common = module {
 
 // utils
 
-@KtorExperimentalAPI
 fun ApplicationConfig.getjdbcUrlFromProperties(): String {
     return String.format(
         "jdbc:postgresql://%s:%s/%s",

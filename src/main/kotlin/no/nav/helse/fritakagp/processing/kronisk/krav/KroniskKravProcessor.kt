@@ -170,7 +170,7 @@ class KroniskKravProcessor(
                     dokumentVarianter = listOf(
                         DokumentVariant(
                             fysiskDokument = it.base64Data,
-                            filtype = if (it.extension == "jpg") "JPEG" else it.extension.toUpperCase()
+                            filtype = if (it.extension == "jpg") "JPEG" else it.extension.uppercase()
                         ),
                         DokumentVariant(
                                 filtype = "JSON",

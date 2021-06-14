@@ -1,5 +1,8 @@
 package no.nav.helse
 
+import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OpprettOppgaveResponse
+import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.Prioritet
+import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.Status
 import no.nav.helse.fritakagp.domain.*
 import no.nav.helse.fritakagp.web.api.resreq.GravidKravRequest
 import no.nav.helse.fritakagp.web.api.resreq.GravidSoknadRequest
@@ -12,7 +15,7 @@ object GravidTestData {
     val soeknadGravid = GravidSoeknad(
         virksomhetsnummer = validOrgNr,
         identitetsnummer = validIdentitetsnummer,
-        termindato = LocalDate.now().plusDays(25)   ,
+        termindato = LocalDate.now().plusDays(25),
         tilrettelegge = true,
         tiltak = listOf(Tiltak.HJEMMEKONTOR, Tiltak.ANNET),
         tiltakBeskrivelse = "Vi prøvde både det ene og det andre og det første kanskje virka litt men muligens and the andre ikke var så på stell men akk ja sånn lorem",
@@ -104,6 +107,17 @@ object GravidTestData {
         sendtAv = validIdentitetsnummer,
         kontrollDager = null,
         antallDager = 4
+    )
+
+    val gravidOpprettOpgaveResponse = OpprettOppgaveResponse(
+        id = 1234,
+        tildeltEnhetsnr = "0100",
+        tema = "KON",
+        oppgavetype = "JFR",
+        versjon = 1,
+        aktivDato = LocalDate.now(),
+        Prioritet.NORM,
+        Status.UNDER_BEHANDLING
     )
 }
 

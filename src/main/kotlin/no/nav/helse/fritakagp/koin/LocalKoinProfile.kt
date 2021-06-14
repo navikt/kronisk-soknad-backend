@@ -23,7 +23,6 @@ import org.koin.dsl.module
 import javax.sql.DataSource
 
 
-@KtorExperimentalAPI
 fun localDevConfig(config: ApplicationConfig) = module {
 
     mockExternalDependecies()

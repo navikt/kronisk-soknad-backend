@@ -18,7 +18,6 @@ import no.nav.security.token.support.ktor.tokenValidationSupport
 import org.koin.ktor.ext.get
 
 @KtorExperimentalLocationsAPI
-@KtorExperimentalAPI
 fun Application.fritakModule(config: ApplicationConfig = environment.config) {
 
     install(Authentication) {

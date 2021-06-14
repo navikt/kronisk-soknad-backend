@@ -6,9 +6,7 @@ import no.nav.helse.arbeidsgiver.integrasjoner.altinn.AltinnOrganisasjon
 import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.DokarkivKlient
 import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.JournalpostRequest
 import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.JournalpostResponse
-import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OppgaveKlient
-import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OpprettOppgaveRequest
-import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OpprettOppgaveResponse
+import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.*
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.*
 import no.nav.helse.arbeidsgiver.utils.loadFromResources
 import no.nav.helse.arbeidsgiver.web.auth.AltinnOrganisationsRepository
@@ -22,6 +20,7 @@ import no.nav.helse.fritakagp.integration.virusscan.MockVirusScanner
 import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
 import org.koin.core.module.Module
 import org.koin.dsl.bind
+import java.time.LocalDate
 
 fun Module.mockExternalDependecies() {
     single { MockAltinnRepo(get()) } bind AltinnOrganisationsRepository::class
@@ -44,6 +43,8 @@ fun Module.mockExternalDependecies() {
             override fun fullPerson(ident: String) =
                 PdlHentFullPerson(
                     PdlHentFullPerson.PdlFullPersonliste(
+                        emptyList(),
+                        emptyList(),
                         emptyList(),
                         emptyList(),
                         emptyList(),
@@ -81,7 +82,13 @@ fun Module.mockExternalDependecies() {
             override suspend fun opprettOppgave(
                 opprettOppgaveRequest: OpprettOppgaveRequest,
                 callId: String
-            ): OpprettOppgaveResponse = OpprettOppgaveResponse(1234)
+            ): OpprettOppgaveResponse = OpprettOppgaveResponse(1234, "0100",
+                tema = "KON",
+                oppgavetype = "JFR",
+                versjon = 1,
+                aktivDato = LocalDate.now(),
+                Prioritet.NORM,
+                Status.UNDER_BEHANDLING)
         }
     } bind OppgaveKlient::class
 
@@ -95,3 +102,4 @@ class MockAltinnRepo(om: ObjectMapper) : AltinnOrganisationsRepository {
     private val mockAcl = om.readValue<Set<AltinnOrganisasjon>>(mockList)
     override fun hentOrgMedRettigheterForPerson(identitetsnummer: String): Set<AltinnOrganisasjon> = mockAcl
 }
+

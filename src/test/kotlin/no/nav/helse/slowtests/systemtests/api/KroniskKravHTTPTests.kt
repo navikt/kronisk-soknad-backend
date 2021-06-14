@@ -1,15 +1,15 @@
 package no.nav.helse.slowtests.systemtests.api
 
+import io.ktor.client.features.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import no.nav.helse.KroniskTestData
 import no.nav.helse.fritakagp.db.KroniskKravRepository
-import no.nav.helse.fritakagp.db.KroniskSoeknadRepository
 import no.nav.helse.fritakagp.domain.KroniskKrav
-import no.nav.helse.fritakagp.domain.KroniskSoeknad
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.koin.test.inject
 
 class KroniskKravHTTPTests : SystemTestBase() {
@@ -18,16 +18,17 @@ class KroniskKravHTTPTests : SystemTestBase() {
     @Test
     internal fun `Returnerer kravet når korrekt bruker er innlogget, 404 når ikke`() = suspendableTest {
         val repo by inject<KroniskKravRepository>()
-
         repo.insert(KroniskTestData.kroniskKrav)
 
-        val accessDenied = httpClient.get<HttpResponse> {
-            appUrl("$kravKroniskUrl/${KroniskTestData.kroniskKrav.id}")
-            contentType(ContentType.Application.Json)
-            loggedInAs("123456789")
+        val notFoundException = assertThrows<ClientRequestException>
+        {
+            httpClient.get<HttpResponse> {
+                appUrl("$kravKroniskUrl/${KroniskTestData.kroniskKrav.id}")
+                contentType(ContentType.Application.Json)
+                loggedInAs("123456789")
+            }
         }
-
-        Assertions.assertThat(accessDenied.status).isEqualTo(HttpStatusCode.NotFound)
+        Assertions.assertThat(notFoundException.response.status).isEqualTo(HttpStatusCode.NotFound)
 
         val accessGrantedForm = httpClient.get<KroniskKrav> {
             appUrl("$kravKroniskUrl/${KroniskTestData.kroniskKrav.id}")
@@ -40,22 +41,28 @@ class KroniskKravHTTPTests : SystemTestBase() {
 
     @Test
     fun `invalid json gives 400 Bad request`() = suspendableTest {
-        val response = httpClient.post<HttpResponse> {
-            appUrl(kravKroniskUrl)
-            contentType(ContentType.Application.Json)
-            loggedInAs("123456789")
+        val exception = assertThrows<ClientRequestException>
+        {
+            httpClient.post<HttpResponse> {
+                appUrl(kravKroniskUrl)
+                contentType(ContentType.Application.Json)
+                loggedInAs("123456789")
 
-            body = """
+                body = """
                 {
-                    "fnr": "${KroniskTestData.validIdentitetsnummer}",
-                    "orgnr": "${KroniskTestData.fullValidRequest.virksomhetsnummer}",
-                    "tilrettelegge": fele,
-                    "tiltak": ["IKKE GYLDIG"]
+                    "identitetsnummer": "${KroniskTestData.validIdentitetsnummer}",
+                    "virksomhetsnummer": "${KroniskTestData.fullValidRequest.virksomhetsnummer}",
+                    "perioder": fele,
+                    "bekreftet": ["IKKE GYLDIG"]
+                    "dokumentasjon": ["IKKE GYLDIG"]
+                    "kontrollDager": ["IKKE GYLDIG"]
                 }
             """.trimIndent()
+            }
         }
 
-        Assertions.assertThat(response.status).isEqualTo(HttpStatusCode.BadRequest)
+        Assertions.assertThat(exception.response.status).isEqualTo(HttpStatusCode.BadRequest)
+        Assertions.assertThat(exception.message).contains("400 Bad Request")
     }
 
     @Test
@@ -72,14 +79,17 @@ class KroniskKravHTTPTests : SystemTestBase() {
 
     @Test
     fun `Skal returnere forbidden hvis virksomheten ikke er i auth listen fra altinn`() = suspendableTest {
-        val response = httpClient.post<HttpResponse> {
-            appUrl(kravKroniskUrl)
-            contentType(ContentType.Application.Json)
-            loggedInAs("123456789")
-            body = KroniskTestData.kroniskKravRequestValid.copy(virksomhetsnummer = "123456785")
+        val exception = assertThrows<ClientRequestException>
+        {
+            val response = httpClient.post<HttpResponse> {
+                appUrl(kravKroniskUrl)
+                contentType(ContentType.Application.Json)
+                loggedInAs("123456789")
+                body = KroniskTestData.kroniskKravRequestValid.copy(virksomhetsnummer = "123456785")
+            }
         }
 
-        Assertions.assertThat(response.status).isEqualTo(HttpStatusCode.Forbidden)
+        Assertions.assertThat(exception.response.status).isEqualTo(HttpStatusCode.Forbidden)
     }
 
     @Test

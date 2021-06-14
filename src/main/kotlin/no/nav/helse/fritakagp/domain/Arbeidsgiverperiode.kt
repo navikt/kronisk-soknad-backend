@@ -11,7 +11,3 @@ data class Arbeidsgiverperiode(
     var dagsats : Double = 0.0
     var belop: Double = 0.0
 }
-
-
-
-

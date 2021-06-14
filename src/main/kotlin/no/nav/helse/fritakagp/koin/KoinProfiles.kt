@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.MapperFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.databind.ser.std.StringSerializer
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
@@ -14,6 +15,7 @@ import io.ktor.client.*
 import io.ktor.client.engine.apache.*
 import io.ktor.client.features.json.*
 import io.ktor.config.*
+import io.ktor.http.*
 import io.ktor.util.*
 import no.nav.helse.arbeidsgiver.integrasjoner.altinn.AltinnOrganisasjon
 import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.DokarkivKlient
@@ -37,7 +39,6 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 
 
-@KtorExperimentalAPI
 fun selectModuleBasedOnProfile(config: ApplicationConfig): List<Module> {
     val envModule = when (config.property("koin.profile").getString()) {
         "LOCAL" -> localDevConfig(config)
@@ -77,6 +78,7 @@ val common = module {
                 configure(SerializationFeature.INDENT_OUTPUT, true)
                 configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
                 configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
+                accept(ContentType.Application.Json)
             }
         }
     }
@@ -87,7 +89,6 @@ val common = module {
 
 // utils
 
-@KtorExperimentalAPI
 fun ApplicationConfig.getjdbcUrlFromProperties(): String {
     return String.format(
         "jdbc:postgresql://%s:%s/%s",

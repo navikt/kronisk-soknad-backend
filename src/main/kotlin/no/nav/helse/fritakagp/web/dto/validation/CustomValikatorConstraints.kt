@@ -45,7 +45,7 @@ fun <E> Validator<E>.Property<Iterable<Arbeidsgiverperiode>?>.maanedsInntektErMe
 class DataUrlExtensionConstraints: CustomConstraint
 fun <E> Validator<E>.Property<String?>.isGodskjentFiletyper() =
     this.validate(DataUrlExtensionConstraints()){
-        return@validate enumContains<GodkjenteFiletyper>(extractFilExtDel(it!!.toUpperCase()))
+        return@validate enumContains<GodkjenteFiletyper>(extractFilExtDel(it!!.uppercase()))
     }
 
 

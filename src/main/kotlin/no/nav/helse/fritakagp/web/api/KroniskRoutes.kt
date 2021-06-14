@@ -27,7 +27,6 @@ import no.nav.helse.fritakagp.web.auth.hentIdentitetsnummerFraLoginToken
 import java.util.*
 import javax.sql.DataSource
 
-@KtorExperimentalAPI
 fun Route.kroniskRoutes(
     datasource: DataSource,
     kroniskSoeknadRepo: KroniskSoeknadRepository,

@@ -10,7 +10,6 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.response.respondText
 import io.ktor.routing.get
 import io.ktor.routing.routing
-import io.ktor.util.KtorExperimentalAPI
 import no.nav.helse.arbeidsgiver.system.AppEnv
 import no.nav.helse.arbeidsgiver.system.getEnvironment
 import no.nav.security.mock.oauth2.MockOAuth2Server
@@ -18,7 +17,6 @@ import org.slf4j.LoggerFactory
 
 
 
-@KtorExperimentalAPI
 fun Application.localCookieDispenser(config: ApplicationConfig) {
     val oauthMockPort = 6666
     val logger = LoggerFactory.getLogger("LocalCookieDispenser")

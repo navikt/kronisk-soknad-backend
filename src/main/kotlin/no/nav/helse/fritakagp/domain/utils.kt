@@ -106,5 +106,3 @@ fun genererePeriodeTable(perioder : Set<Arbeidsgiverperiode>) : String {
         }
     }.render(StringBuilder()).toString()
 }
-
-

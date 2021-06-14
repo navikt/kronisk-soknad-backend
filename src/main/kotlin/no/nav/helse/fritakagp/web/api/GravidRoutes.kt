@@ -33,7 +33,6 @@ import org.valiktor.DefaultConstraintViolation
 import java.util.*
 import javax.sql.DataSource
 
-@KtorExperimentalAPI
 fun Route.gravidRoutes(
     datasource: DataSource,
     gravidSoeknadRepo: GravidSoeknadRepository,

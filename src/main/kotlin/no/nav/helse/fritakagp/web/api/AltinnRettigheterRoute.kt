@@ -9,7 +9,6 @@ import no.nav.helse.arbeidsgiver.integrasjoner.altinn.AltinnBrukteForLangTidExce
 import no.nav.helse.arbeidsgiver.web.auth.AltinnOrganisationsRepository
 import no.nav.helse.fritakagp.web.auth.hentIdentitetsnummerFraLoginToken
 
-@KtorExperimentalAPI
 fun Route.altinnRoutes(authRepo: AltinnOrganisationsRepository) {
      route("/arbeidsgivere") {
         get("/") {

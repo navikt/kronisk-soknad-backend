@@ -8,7 +8,6 @@ import no.nav.security.token.support.client.core.ClientProperties
 import no.nav.security.token.support.client.core.OAuth2GrantType
 import java.net.URI
 
-@KtorExperimentalAPI
 class OAuth2ClientPropertiesConfig(
     applicationConfig: ApplicationConfig,
     scope: String
@@ -39,10 +38,8 @@ class OAuth2ClientPropertiesConfig(
                 )
             }
 
-    @KtorExperimentalAPI
     internal fun ApplicationConfig.propertyToString(prop: String) = this.property(prop).getString()
 
-    @KtorExperimentalAPI
     internal fun ApplicationConfig.propertyToStringOrNull(prop: String) = this.propertyOrNull(prop)?.getString()
 
 

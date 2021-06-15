@@ -60,17 +60,18 @@ object GravidTestData {
     val gravidKravRequestValid = GravidKravRequest(
         virksomhetsnummer = validOrgNr,
         identitetsnummer = validIdentitetsnummer,
-        perioder = setOf(
-            Arbeidsgiverperiode(
-                LocalDate.of(2020, 1, 5),
-                LocalDate.of(2020, 1, 10),
-                2,
-                2590.8
-            )
-        ),
+
+        perioder = setOf(Arbeidsgiverperiode(
+            LocalDate.of(2020, 1, 5),
+            LocalDate.of(2020, 1, 10),
+            2,
+            månedsinntekt = 2590.8
+        )),
+
         bekreftet = true,
         dokumentasjon = null,
-        kontrollDager = null
+        kontrollDager = null,
+        antallDager = 4
     )
 
     val gravidKravRequestMedFil = gravidKravRequestValid.copy(
@@ -83,33 +84,34 @@ object GravidTestData {
     val gravidKravRequestValidPeriode1Dag = GravidKravRequest(
         virksomhetsnummer = validOrgNr,
         identitetsnummer = validIdentitetsnummer,
-        perioder = setOf(
-            Arbeidsgiverperiode(
-                LocalDate.of(2020, 2, 1),
-                LocalDate.of(2020, 2, 1),
-                1,
-                123.8
-            )
-        ),
+        perioder = setOf(Arbeidsgiverperiode(
+            LocalDate.of(2020, 2, 1),
+            LocalDate.of(2020, 2, 1),
+            1,
+            månedsinntekt = 123.8
+        )),
+
         bekreftet = true,
         dokumentasjon = null,
-        kontrollDager = null
+        kontrollDager = null,
+        antallDager = 4
     )
 
 
     val gravidKrav = GravidKrav(
         virksomhetsnummer = validOrgNr,
         identitetsnummer = validIdentitetsnummer,
-        perioder = setOf(
-            Arbeidsgiverperiode(
-                LocalDate.of(2020, 1, 5),
-                LocalDate.of(2020, 1, 10),
-                5,
-                2590.8
-            )
-        ),
+
+        perioder = setOf(Arbeidsgiverperiode(
+            LocalDate.of(2020, 1, 5),
+            LocalDate.of(2020, 1, 10),
+            5,
+            månedsinntekt = 2590.8
+        )),
+
         sendtAv = validIdentitetsnummer,
-        kontrollDager = null
+        kontrollDager = null,
+        antallDager = 4
     )
 
     val gravidOpprettOpgaveResponse = OpprettOppgaveResponse(
@@ -119,8 +121,9 @@ object GravidTestData {
         oppgavetype = "JFR",
         versjon = 1,
         aktivDato = LocalDate.now(),
-        Prioritet.NORM,
-        Status.UNDER_BEHANDLING
+        prioritet= Prioritet.NORM,
+        status= Status.UNDER_BEHANDLING
     )
+
 }
 

@@ -7,6 +7,7 @@ import no.altinn.services.serviceengine.correspondence._2009._10.ICorrespondence
 import no.altinn.services.serviceengine.correspondence._2009._10.ICorrespondenceAgencyExternalBasicInsertCorrespondenceBasicV2AltinnFaultFaultFaultMessage
 import no.nav.helse.fritakagp.domain.Arbeidsgiverperiode
 import no.nav.helse.fritakagp.domain.KroniskKrav
+import no.nav.helse.fritakagp.processing.gravid.krav.getPDFTimeStampFormat
 import java.time.format.DateTimeFormatter
 
 interface KroniskKravKvitteringSender {
@@ -65,7 +66,7 @@ class KroniskKravAltinnKvitteringSender(
                 <li>Fødselsnummer: ${kvittering.identitetsnummer} </li>
                 <li>Dokumentasjon vedlagt: ${if (kvittering.harVedlegg) "Ja" else "Nei"} </li>
                 <li>Mottatt:  ${kvittering.opprettet.format(dateTimeFormatterMedKl)}  </li>  
-                <li>Innrapportert av: ${kvittering.sendtAv}</li>  
+                <li>Innrapportert av: ${kvittering.sendtAv}</li>
                 <li>Perioder: </li>
                 <ul> ${lagrePerioder(kvittering.perioder)}</ul>
             </ul>
@@ -73,7 +74,6 @@ class KroniskKravAltinnKvitteringSender(
            </body>
         </html>
     """.trimIndent()
-
 
         val meldingsInnhold = ExternalContentV2()
             .withLanguageCode("1044")
@@ -100,7 +100,9 @@ fun lagrePerioder(perioder: Set<Arbeidsgiverperiode>) : String {
                 <th>Fra dato</th>
                 <th>Til dato</th>
                 <th>Dager med refusjon</th>
-                <th>Beløp</th>
+                <th>Beregnet månedsinntekt (NOK)</th>
+                <th>Dagsats (NOK)</th>
+                <th>Beløp (NOK)</th>
               </tr>"""
 
     val tail = "</table>"
@@ -118,6 +120,8 @@ fun lagePeriod(periode : Arbeidsgiverperiode) : String {
                 <td style="text-align:center">${periode.fom.format(dateFormatter)}</td>
                 <td style="text-align:center">${periode.tom.format(dateFormatter)}</td>
                 <td style="text-align:center">${periode.antallDagerMedRefusjon}</td>
-                <td style="text-align:center">${periode.beloep}</td>
+                <td style="text-align:center">${periode.månedsinntekt}</td>
+                <td style="text-align:center">${periode.dagsats}</td>
+                <td style="text-align:center">${periode.belop}</td>                
             </tr>"""
 }

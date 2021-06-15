@@ -11,6 +11,7 @@ import no.nav.helse.arbeidsgiver.web.auth.AltinnAuthorizer
 import no.nav.helse.arbeidsgiver.web.auth.DefaultAltinnAuthorizer
 import no.nav.helse.fritakagp.MetrikkVarsler
 import no.nav.helse.fritakagp.db.*
+import no.nav.helse.fritakagp.domain.BeløpBeregning
 import no.nav.helse.fritakagp.integration.altinn.message.Clients
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.gravid.krav.*
@@ -99,5 +100,6 @@ fun preprodConfig(config: ApplicationConfig) = module {
     single { BrukernotifikasjonProcessor(get(), get(), get(), get(), get(), get(), config.getString("service_user.username"), 3, "https://fritak-agp-frontend.dev.nav.no") }
 
     single { DefaultAltinnAuthorizer(get()) } bind AltinnAuthorizer::class
+    single { BeløpBeregning(get()) }
 }
 

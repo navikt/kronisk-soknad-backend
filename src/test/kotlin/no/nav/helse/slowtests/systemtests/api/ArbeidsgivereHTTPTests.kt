@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
 class ArbeidsgivereHTTPTests : SystemTestBase() {
-    private val arbeidsgivereUrl = "/api/v1/arbeidsgivere/"
+    private val arbeidsgivereUrl = "/api/v1/arbeidsgivere"
 
 
     @Test

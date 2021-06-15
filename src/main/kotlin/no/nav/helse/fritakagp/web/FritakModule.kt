@@ -20,6 +20,7 @@ import org.koin.ktor.ext.get
 @KtorExperimentalLocationsAPI
 fun Application.fritakModule(config: ApplicationConfig = environment.config) {
 
+    install(IgnoreTrailingSlash)
     install(Authentication) {
         tokenValidationSupport(config = config)
     }

@@ -18,7 +18,22 @@ object GravidTestData {
         termindato = LocalDate.now().plusDays(25),
         tilrettelegge = true,
         tiltak = listOf(Tiltak.HJEMMEKONTOR, Tiltak.ANNET),
-        tiltakBeskrivelse = "Vi prøvde både det ene og det andre og det første kanskje virka litt men muligens and the andre ikke var så på stell men akk ja sånn lorem",
+       // tiltakBeskrivelse = "Vi prøvde både det ene og det andre og det første kanskje virka litt men muligens and the andre ikke var så på stell men akk ja sånn lorem",
+        tiltakBeskrivelse = """Vi prøvde både det ene og det andre og det første kanskje virka litt men muligens and the andre ikke var så på stell men akk ja sånn lorem
+     &"´`'
+     |§. áé.  áéíñ A       
+ĄBCĆDEĘFGHIJKLŁMNŃOÓP(Q)RSŚTU(V)W()YZŹŻ
+aąbcćdeęfghijlłmnńoóprsśtuwź
+
+|The early Cyrillic alphabet
+АБВГДЕЖИІКЛМНОПРСТОУФХѠЦЧШЩЪЪІЬѢѤЮѪѬѦѨѮѰѲѴҀ  Ꙗ Ꙃ
+| 
+| Japansk: 
+|私わたしワタシ金魚きんぎょキンギョ煙草莨たばこタバコ東京とうきょうトーキョー
+|
+|的 一 是不了人我在
+        """.trimMargin(),
+        // Ꙗ Ꙃ --> feiler med de to cyrillic
         omplassering = Omplassering.IKKE_MULIG,
         omplasseringAarsak = OmplasseringAarsak.HELSETILSTANDEN,
         sendtAv = "09876543210"

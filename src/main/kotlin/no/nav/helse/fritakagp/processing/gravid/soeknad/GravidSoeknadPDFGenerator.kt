@@ -14,7 +14,7 @@ class GravidSoeknadPDFGenerator {
     private val LINE_HEIGHT = 15f
     private val MARGIN_X = 40f
     private val MARGIN_Y = 40f
-    private val FONT_NAME = "fonts/SourceSansPro-Regular.ttf"
+    private val FONT_NAME = "fonts/ARIALUNI.TTF"
     private val terminaDatoIkkeOppgitt = "Ikke oppgitt"
 
 

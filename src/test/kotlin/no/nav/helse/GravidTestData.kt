@@ -25,15 +25,13 @@ object GravidTestData {
 ĄBCĆDEĘFGHIJKLŁMNŃOÓP(Q)RSŚTU(V)W()YZŹŻ
 aąbcćdeęfghijlłmnńoóprsśtuwź
 
-|The early Cyrillic alphabet
-АБВГДЕЖИІКЛМНОПРСТОУФХѠЦЧШЩЪЪІЬѢѤЮѪѬѦѨѮѰѲѴҀ  Ꙗ Ꙃ
-| 
+|Gresk
+|Αα,Ββ,Γγ,Δδ,Εε,Ζζ,Ηη,Θθ,Ιι,Κκ,Λλ,Μμ,Νν,Ξξ,Οο,Ππ,Ρρ,Σσ/ς,Ττ,Υυ,Φφ,Χχ,Ψψ,Ωω.
 | Japansk: 
 |私わたしワタシ金魚きんぎょキンギョ煙草莨たばこタバコ東京とうきょうトーキョー
-|
+|kinesisk
 |的 一 是不了人我在
         """.trimMargin(),
-        // Ꙗ Ꙃ --> feiler med de to cyrillic
         omplassering = Omplassering.IKKE_MULIG,
         omplasseringAarsak = OmplasseringAarsak.HELSETILSTANDEN,
         sendtAv = "09876543210"
@@ -58,8 +56,8 @@ aąbcćdeęfghijlłmnńoóprsśtuwź
     )
 
     val gravidSoknadMedFil = GravidSoknadRequest(
-        virksomhetsnummer = GravidTestData.validOrgNr,
-        identitetsnummer = GravidTestData.validIdentitetsnummer,
+        virksomhetsnummer = validOrgNr,
+        identitetsnummer = validIdentitetsnummer,
         termindato = LocalDate.now().plusDays(25),
         tilrettelegge = true,
         tiltak = listOf(Tiltak.ANNET),

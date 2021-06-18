@@ -6,6 +6,7 @@ import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.Status
 import no.nav.helse.fritakagp.domain.*
 import no.nav.helse.fritakagp.web.api.resreq.GravidKravRequest
 import no.nav.helse.fritakagp.web.api.resreq.GravidSoknadRequest
+import no.nav.helse.fritakagp.web.api.resreq.erstattProsentTegnMedProsent
 import java.time.LocalDate
 
 object GravidTestData {
@@ -18,20 +19,22 @@ object GravidTestData {
         termindato = LocalDate.now().plusDays(25),
         tilrettelegge = true,
         tiltak = listOf(Tiltak.HJEMMEKONTOR, Tiltak.ANNET),
-       // tiltakBeskrivelse = "Vi prøvde både det ene og det andre og det første kanskje virka litt men muligens and the andre ikke var så på stell men akk ja sånn lorem",
-        tiltakBeskrivelse = """Vi prøvde både det ene og det andre og det første kanskje virka litt men muligens and the andre ikke var så på stell men akk ja sånn lorem
-     &"´`'
-     |§. áé.  áéíñ A       
+        tiltakBeskrivelse = erstattProsentTegnMedProsent("""Vi prøvde både det ene og det andre og det første kanskje virka litt men muligens and the andre ikke var så på stell men akk ja sånn lorem
+    \t\b\n\r\f\'\"\\
+    |44.44% 34 %   %%
+    |=><!~?:==<=>=!=&&||++--+-*/&|^%<<>>>>>+=-=*=/=&=|=^=%=<<=>>=>>>=
+        //    &"´`'
+     |§. áé.  áéíñ A
 ĄBCĆDEĘFGHIJKLŁMNŃOÓP(Q)RSŚTU(V)W()YZŹŻ
 aąbcćdeęfghijlłmnńoóprsśtuwź
 
 |Gresk
 |Αα,Ββ,Γγ,Δδ,Εε,Ζζ,Ηη,Θθ,Ιι,Κκ,Λλ,Μμ,Νν,Ξξ,Οο,Ππ,Ρρ,Σσ/ς,Ττ,Υυ,Φφ,Χχ,Ψψ,Ωω.
-| Japansk: 
+| Japansk:
 |私わたしワタシ金魚きんぎょキンギョ煙草莨たばこタバコ東京とうきょうトーキョー
 |kinesisk
 |的 一 是不了人我在
-        """.trimMargin(),
+        """.trimMargin()),
         omplassering = Omplassering.IKKE_MULIG,
         omplasseringAarsak = OmplasseringAarsak.HELSETILSTANDEN,
         sendtAv = "09876543210"

@@ -3,16 +3,13 @@ package no.nav.helse.fritakagp.web.api.resreq
 import no.nav.helse.arbeidsgiver.web.validation.isValidIdentitetsnummer
 import no.nav.helse.arbeidsgiver.web.validation.isValidOrganisasjonsnummer
 import no.nav.helse.fritakagp.domain.*
-import no.nav.helse.fritakagp.web.dto.validation.datoerHarRiktigRekkefolge
-import no.nav.helse.fritakagp.web.dto.validation.isGodskjentFiletyper
-import no.nav.helse.fritakagp.web.dto.validation.isNotStorreEnn
-import no.nav.helse.fritakagp.web.dto.validation.maanedsInntektErMellomNullOgTiMil
-import no.nav.helse.fritakagp.web.dto.validation.refujonsDagerIkkeOverstigerPeriodelengder
+import no.nav.helse.fritakagp.web.dto.validation.*
 import org.valiktor.functions.isNotEmpty
 import org.valiktor.functions.isNotNull
 import org.valiktor.functions.isTrue
 import org.valiktor.validate
 import java.time.LocalDate
+import java.util.regex.Pattern
 
 data class GravidSoknadRequest(
         val virksomhetsnummer: String,
@@ -65,7 +62,7 @@ data class GravidSoknadRequest(
             omplasseringAarsak = omplasseringAarsak,
             tilrettelegge = tilrettelegge,
             tiltak = tiltak,
-            tiltakBeskrivelse = tiltakBeskrivelse,
+            tiltakBeskrivelse = erstattProsentTegnMedProsent(tiltakBeskrivelse),
             harVedlegg = !dokumentasjon.isNullOrEmpty()
         )
 }
@@ -111,3 +108,16 @@ data class GravidKravRequest(
 
 
 const val MB = 1024 * 1024
+
+//erstatter tall% /tall % med tall procent --> 54.45% med 54.45 prosent
+fun erstattProsentTegnMedProsent(beskrivelse: String?) : String? {
+    return if (!beskrivelse.isNullOrEmpty()) {
+        var str = beskrivelse
+        val mm = Pattern.compile("\\d+(\\.\\d+)?\\s?%").matcher(str)
+        while (mm.find()) {
+            str = str!!.replace(mm.group(), mm.group().replace("%", " prosent"))
+        }
+        str!!.replace("%", "")
+    } else
+        null
+}

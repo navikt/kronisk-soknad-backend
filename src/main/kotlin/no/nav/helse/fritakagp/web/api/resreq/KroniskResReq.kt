@@ -59,7 +59,7 @@ data class KroniskSoknadRequest(
         sendtAv = sendtAv,
         arbeidstyper = arbeidstyper,
         paakjenningstyper = paakjenningstyper,
-        paakjenningBeskrivelse = paakjenningBeskrivelse,
+        paakjenningBeskrivelse = erstattProsentTegnMedProsent(paakjenningBeskrivelse),
         fravaer = fravaer,
         bekreftet = bekreftet,
         harVedlegg = !dokumentasjon.isNullOrEmpty()

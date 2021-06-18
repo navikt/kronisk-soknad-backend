@@ -1,6 +1,5 @@
 package no.nav.helse.fritakagp.web.api.resreq
 
-import io.ktor.application.*
 import no.nav.helse.arbeidsgiver.web.validation.isValidIdentitetsnummer
 import no.nav.helse.arbeidsgiver.web.validation.isValidOrganisasjonsnummer
 import no.nav.helse.fritakagp.domain.*
@@ -59,7 +58,7 @@ data class KroniskSoknadRequest(
         sendtAv = sendtAv,
         arbeidstyper = arbeidstyper,
         paakjenningstyper = paakjenningstyper,
-        paakjenningBeskrivelse = erstattProsentTegnMedProsent(paakjenningBeskrivelse),
+        paakjenningBeskrivelse = paakjenningBeskrivelse,
         fravaer = fravaer,
         bekreftet = bekreftet,
         harVedlegg = !dokumentasjon.isNullOrEmpty()

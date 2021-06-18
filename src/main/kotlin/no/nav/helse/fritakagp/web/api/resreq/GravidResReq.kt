@@ -9,62 +9,61 @@ import org.valiktor.functions.isNotNull
 import org.valiktor.functions.isTrue
 import org.valiktor.validate
 import java.time.LocalDate
-import java.util.regex.Pattern
 
 data class GravidSoknadRequest(
-        val virksomhetsnummer: String,
-        val identitetsnummer: String,
-        val tilrettelegge: Boolean,
-        val termindato: LocalDate?,
+    val virksomhetsnummer: String,
+    val identitetsnummer: String,
+    val tilrettelegge: Boolean,
+    val termindato: LocalDate?,
 
-        val tiltak: List<Tiltak>? = null,
-        val tiltakBeskrivelse: String? = null,
+    val tiltak: List<Tiltak>? = null,
+    val tiltakBeskrivelse: String? = null,
 
-        val omplassering: Omplassering? = null,
-        val omplasseringAarsak: OmplasseringAarsak? = null,
-        val bekreftet: Boolean,
+    val omplassering: Omplassering? = null,
+    val omplasseringAarsak: OmplasseringAarsak? = null,
+    val bekreftet: Boolean,
 
-        val dokumentasjon: String?
+    val dokumentasjon: String?
 ) {
-   fun validate() {
-       validate(this) {
-           validate(GravidSoknadRequest::identitetsnummer).isValidIdentitetsnummer()
-           validate(GravidSoknadRequest::bekreftet).isTrue()
-           validate(GravidSoknadRequest::virksomhetsnummer).isValidOrganisasjonsnummer()
+    fun validate() {
+        validate(this) {
+            validate(GravidSoknadRequest::identitetsnummer).isValidIdentitetsnummer()
+            validate(GravidSoknadRequest::bekreftet).isTrue()
+            validate(GravidSoknadRequest::virksomhetsnummer).isValidOrganisasjonsnummer()
 
 
-           if (this@GravidSoknadRequest.tilrettelegge) {
-               validate(GravidSoknadRequest::tiltak).isNotNull()
+            if (this@GravidSoknadRequest.tilrettelegge) {
+                validate(GravidSoknadRequest::tiltak).isNotNull()
 
-               if (this@GravidSoknadRequest.tiltak?.contains(Tiltak.ANNET) == true) {
-                   validate(GravidSoknadRequest::tiltakBeskrivelse).isNotNull()
-                   validate(GravidSoknadRequest::tiltakBeskrivelse).isNotEmpty()
-               }
+                if (this@GravidSoknadRequest.tiltak?.contains(Tiltak.ANNET) == true) {
+                    validate(GravidSoknadRequest::tiltakBeskrivelse).isNotNull()
+                    validate(GravidSoknadRequest::tiltakBeskrivelse).isNotEmpty()
+                }
 
-               if (this@GravidSoknadRequest.omplassering == Omplassering.IKKE_MULIG) {
-                   validate(GravidSoknadRequest::omplasseringAarsak).isNotNull()
-               }
-           }
+                if (this@GravidSoknadRequest.omplassering == Omplassering.IKKE_MULIG) {
+                    validate(GravidSoknadRequest::omplasseringAarsak).isNotNull()
+                }
+            }
 
-           if (!this@GravidSoknadRequest.dokumentasjon.isNullOrEmpty()) {
-               validate(GravidSoknadRequest::dokumentasjon).isGodskjentFiletyper()
-               validate(GravidSoknadRequest::dokumentasjon).isNotStorreEnn(10L * MB)
-           }
-       }
-   }
-    
+            if (!this@GravidSoknadRequest.dokumentasjon.isNullOrEmpty()) {
+                validate(GravidSoknadRequest::dokumentasjon).isGodskjentFiletyper()
+                validate(GravidSoknadRequest::dokumentasjon).isNotStorreEnn(10L * MB)
+            }
+        }
+    }
+
     fun toDomain(sendtAv: String) = GravidSoeknad(
-            virksomhetsnummer = virksomhetsnummer,
-            identitetsnummer = identitetsnummer,
-            sendtAv = sendtAv,
-            termindato = termindato,
-            omplassering = omplassering,
-            omplasseringAarsak = omplasseringAarsak,
-            tilrettelegge = tilrettelegge,
-            tiltak = tiltak,
-            tiltakBeskrivelse = erstattProsentTegnMedProsent(tiltakBeskrivelse),
-            harVedlegg = !dokumentasjon.isNullOrEmpty()
-        )
+        virksomhetsnummer = virksomhetsnummer,
+        identitetsnummer = identitetsnummer,
+        sendtAv = sendtAv,
+        termindato = termindato,
+        omplassering = omplassering,
+        omplasseringAarsak = omplasseringAarsak,
+        tilrettelegge = tilrettelegge,
+        tiltak = tiltak,
+        tiltakBeskrivelse = tiltakBeskrivelse,
+        harVedlegg = !dokumentasjon.isNullOrEmpty()
+    )
 }
 
 
@@ -93,7 +92,7 @@ data class GravidKravRequest(
             }
         }
     }
-    
+
     fun toDomain(sendtAv: String) = GravidKrav(
         identitetsnummer = identitetsnummer,
         virksomhetsnummer = virksomhetsnummer,
@@ -103,21 +102,8 @@ data class GravidKravRequest(
         kontrollDager = kontrollDager,
         antallDager = antallDager
     )
-    
+
 }
 
 
 const val MB = 1024 * 1024
-
-//erstatter tall% /tall % med tall procent --> 54.45% med 54.45 prosent
-fun erstattProsentTegnMedProsent(beskrivelse: String?) : String? {
-    return if (!beskrivelse.isNullOrEmpty()) {
-        var str = beskrivelse
-        val mm = Pattern.compile("\\d+(\\.\\d+)?\\s?%").matcher(str)
-        while (mm.find()) {
-            str = str!!.replace(mm.group(), mm.group().replace("%", " prosent"))
-        }
-        str!!.replace("%", "")
-    } else
-        null
-}

@@ -10,6 +10,7 @@ import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.koin.test.inject
+import kotlin.test.assertEquals
 
 
 internal class SoeknadsmeldingKafkaProducerTest : SystemTestBase() {
@@ -42,8 +43,8 @@ internal class SoeknadsmeldingKafkaProducerTest : SystemTestBase() {
 
         val stillSameMEssageExpected = consumer.getMessagesToProcess()
         assertThat(stillSameMEssageExpected).hasSize(1)
-        assertThat(oneMessageExpected.first()).isEqualTo(stillSameMEssageExpected.first())
 
+        assertEquals(oneMessageExpected.first(), stillSameMEssageExpected.first(), "is Equal")
         consumer.confirmProcessingDone()
 
         val zeroMessagesExpected = consumer.getMessagesToProcess()

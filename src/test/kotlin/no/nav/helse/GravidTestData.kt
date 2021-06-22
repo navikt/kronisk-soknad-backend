@@ -129,7 +129,7 @@ aąbcćdeęfghijlłmnńoóprsśtuwź
         antallDager = 4
     )
 
-    val gravidOpprettOpgaveResponse = OpprettOppgaveResponse(
+    val gravidOpprettOppgaveResponse = OpprettOppgaveResponse(
         id = 1234,
         tildeltEnhetsnr = "0100",
         tema = "KON",

@@ -87,7 +87,6 @@ class KroniskSoeknadProcessorTest {
 
         coVerify(exactly = 1) { oppgaveMock.opprettOppgave(capture(oppgaveRequest), any()) }
         assertThat(oppgaveRequest.captured.oppgavetype).isEqualTo(OPPGAVETYPE_FORDELINGSOPPGAVE)
-        assertThat(oppgaveRequest.captured.tildeltEnhetsnr).isEqualTo("4488")
     }
 
     @Test

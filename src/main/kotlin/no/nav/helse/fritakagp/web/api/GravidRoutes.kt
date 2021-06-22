@@ -151,7 +151,7 @@ fun Route.gravidRoutes(
     }
 }
 
-private fun periodValErrs(it: ConstraintViolation) : List<ValidationProblemDetail> {
+fun periodValErrs(it: ConstraintViolation) : List<ValidationProblemDetail> {
     val valErrs = mutableListOf<ValidationProblemDetail>()
     if (it.property == "perioder") {
         (it.value as Set<*>).forEach { p ->

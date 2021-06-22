@@ -31,15 +31,6 @@ import kotlin.test.assertFailsWith
 
 class GravidKravHTTPTests : SystemTestBase() {
     private val kravGravidUrl = "/api/v1/gravid/krav"
-    val objectMapper = jacksonObjectMapper()
-        .configure(SerializationFeature.INDENT_OUTPUT, true)
-        .registerModule(KotlinModule())
-        .registerModule(Jdk8Module())
-        .registerModule(JavaTimeModule())
-        .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-        .configure(SerializationFeature.INDENT_OUTPUT, true)
-        .configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
-        .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 
     @Test
     internal fun `Returnerer kravet når korrekt bruker er innlogget, 404 når ikke`() = suspendableTest {
@@ -176,10 +167,5 @@ class GravidKravHTTPTests : SystemTestBase() {
 
 
     }
-
-    private suspend fun extractResponseBody(response: HttpResponse) =
-        objectMapper.readValue(
-            response.call.response.receive<String>(),
-            object : TypeReference<PostListResponseDto>() {})
 
 }

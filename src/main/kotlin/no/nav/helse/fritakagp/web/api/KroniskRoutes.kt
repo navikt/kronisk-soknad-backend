@@ -22,8 +22,10 @@ import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadKvitterin
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadProcessor
 import no.nav.helse.fritakagp.web.api.resreq.KroniskKravRequest
 import no.nav.helse.fritakagp.web.api.resreq.KroniskSoknadRequest
+import no.nav.helse.fritakagp.web.api.resreq.PostListResponseDto
 import no.nav.helse.fritakagp.web.auth.authorize
 import no.nav.helse.fritakagp.web.auth.hentIdentitetsnummerFraLoginToken
+import org.valiktor.ConstraintViolationException
 import java.util.*
 import javax.sql.DataSource
 
@@ -89,29 +91,47 @@ fun Route.kroniskRoutes(
             }
 
             post {
-                val request = call.receive<KroniskKravRequest>()
-                request.validate()
-                authorize(authorizer, request.virksomhetsnummer)
+                var responseBody = PostListResponseDto(PostListResponseDto.Status.OK)
+                try {
+                    val request = call.receive<KroniskKravRequest>()
+                    var index = 0
+                    request.perioder.forEach { it.index = index++ }
+                    request.validate()
+                    authorize(authorizer, request.virksomhetsnummer)
 
-                val krav = request.toDomain(hentIdentitetsnummerFraLoginToken(application.environment.config, call.request))
-                belopBeregning.beregnBeløpKronisk(krav)
-                processDocumentForGCPStorage(request.dokumentasjon, virusScanner, bucket, krav.id)
+                    val krav = request.toDomain(hentIdentitetsnummerFraLoginToken(application.environment.config, call.request))
+                    belopBeregning.beregnBeløpKronisk(krav)
+                    processDocumentForGCPStorage(request.dokumentasjon, virusScanner, bucket, krav.id)
 
-                datasource.connection.use { connection ->
-                    kroniskKravRepo.insert(krav, connection)
-                    bakgunnsjobbService.opprettJobb<KroniskKravProcessor>(
-                        maksAntallForsoek = 8,
-                        data = om.writeValueAsString(KroniskKravProcessor.JobbData(krav.id)),
-                        connection = connection
+                    datasource.connection.use { connection ->
+                        kroniskKravRepo.insert(krav, connection)
+                        bakgunnsjobbService.opprettJobb<KroniskKravProcessor>(
+                            maksAntallForsoek = 8,
+                            data = om.writeValueAsString(KroniskKravProcessor.JobbData(krav.id)),
+                            connection = connection
+                        )
+                        bakgunnsjobbService.opprettJobb<KroniskKravKvitteringProcessor>(
+                            maksAntallForsoek = 10,
+                            data = om.writeValueAsString(KroniskKravKvitteringProcessor.Jobbdata(krav.id)),
+                            connection = connection
+                        )
+                    }
+                }catch (validationEx: ConstraintViolationException) {
+                    val problems = validationEx.constraintViolations.map {
+                        periodValErrs(it)
+                    }.flatten()
+                    responseBody = PostListResponseDto(
+                        status = PostListResponseDto.Status.VALIDATION_ERRORS,
+                        validationErrors = problems
                     )
-                    bakgunnsjobbService.opprettJobb<KroniskKravKvitteringProcessor>(
-                        maksAntallForsoek = 10,
-                        data = om.writeValueAsString(KroniskKravKvitteringProcessor.Jobbdata(krav.id)),
-                        connection = connection
+                } catch (genericEx: Exception) {
+                    responseBody = PostListResponseDto(
+                        status = PostListResponseDto.Status.GENERIC_ERROR,
+                        genericMessage = genericEx.message
                     )
                 }
 
-                call.respond(HttpStatusCode.Created)
+                call.respond(HttpStatusCode.OK, responseBody)
                 KroniskKravMetrics.tellMottatt()
             }
         }

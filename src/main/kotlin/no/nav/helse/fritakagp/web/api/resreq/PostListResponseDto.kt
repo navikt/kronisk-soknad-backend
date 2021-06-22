@@ -4,7 +4,7 @@ import no.nav.helse.fritakagp.domain.Arbeidsgiverperiode
 
 data class PostListResponseDto(
     var status: Status,
-    val validationErrors: List<ValidationProblemDetail>? = emptyList(),
+    val validationErrors: List<ValidationProblemDetail> = emptyList(),
     val genericMessage: String? = null,
     val referenceNumber: String? = null
 ) {

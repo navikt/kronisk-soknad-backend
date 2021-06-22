@@ -88,6 +88,39 @@ aąbcćdeęfghijlłmnńoóprsśtuwź
         kontrollDager = null,
         antallDager = 4
     )
+  val gravidKravRequestInValid = GravidKravRequest(
+        virksomhetsnummer = validOrgNr,
+        identitetsnummer = validIdentitetsnummer,
+
+        perioder = setOf(
+            Arbeidsgiverperiode(
+                LocalDate.of(2020, 1, 15),
+                LocalDate.of(2020, 1, 10),
+                2,
+                månedsinntekt = 2590.8,
+                index = 0
+            ),
+            Arbeidsgiverperiode(
+                LocalDate.of(2020, 1, 5),
+                LocalDate.of(2020, 1, 4),
+                2,
+                månedsinntekt = 3590.8,
+                index = 1
+            ),
+            Arbeidsgiverperiode(
+                LocalDate.of(2020, 1, 5),
+                LocalDate.of(2020, 1, 14),
+                12,
+                månedsinntekt = 1590.8,
+                index = 2
+            )
+        ),
+
+        bekreftet = true,
+        dokumentasjon = null,
+        kontrollDager = null,
+        antallDager = 4
+    )
 
     val gravidKravRequestMedFil = gravidKravRequestValid.copy(
         dokumentasjon = """

@@ -38,8 +38,6 @@ class ValidationProblem(
 )
 
 class ValidationProblemDetail(
-    val index: Int? = null,
-    val period: Arbeidsgiverperiode? = null,
     val validationType: String,
     val message: String,
     val propertyPath: String, // perioder[3].fom.startDates[4].timeOfDay

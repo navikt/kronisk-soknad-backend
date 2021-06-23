@@ -7,7 +7,6 @@ data class Arbeidsgiverperiode(
     val tom: LocalDate,
     val antallDagerMedRefusjon: Int,
     val månedsinntekt: Double,
-    var index: Int = 0
 ){
     var dagsats : Double = 0.0
     var belop: Double = 0.0

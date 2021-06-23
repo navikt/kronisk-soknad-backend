@@ -80,9 +80,10 @@ data class KroniskKravRequest(
             validate(KroniskKravRequest::identitetsnummer).isValidIdentitetsnummer()
             validate(KroniskKravRequest::virksomhetsnummer).isValidOrganisasjonsnummer()
             validate(KroniskKravRequest::bekreftet).isTrue()
+            //TODO: Validering For perioder
             //validate(KroniskKravRequest::perioder).datoerHarRiktigRekkefolge()
-            validate(KroniskKravRequest::perioder).refujonsDagerIkkeOverstigerPeriodelengder()
-            validate(KroniskKravRequest::perioder).maanedsInntektErMellomNullOgTiMil()
+            //validate(KroniskKravRequest::perioder).refujonsDagerIkkeOverstigerPeriodelengder()
+            //validate(KroniskKravRequest::perioder).maanedsInntektErMellomNullOgTiMil()
 
             if (!this@KroniskKravRequest.dokumentasjon.isNullOrEmpty()) {
                 validate(KroniskKravRequest::dokumentasjon).isGodskjentFiletyper()

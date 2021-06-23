@@ -16,17 +16,9 @@ interface CustomConstraint : Constraint {
 
 
 class RefusjonsdagerKanIkkeOverstigePeriodelengdenConstraint : CustomConstraint
-fun <E> Validator<E>.Property<Arbeidsgiverperiode?>.refusjonsDagerIkkeOverstigerPeriodelengde() =
-    this.validate(RefusjonsdagerKanIkkeOverstigePeriodelengdenConstraint()) { ps ->
-        return@validate ChronoUnit.DAYS.between(ps?.fom, ps?.tom?.plusDays(1)) >= ps?.antallDagerMedRefusjon!!
-    }
-
-fun <E> Validator<E>.Property<Iterable<Arbeidsgiverperiode>?>.refujonsDagerIkkeOverstigerPeriodelengder() =
-    this.validate(RefusjonsdagerKanIkkeOverstigePeriodelengdenConstraint()) { ps ->
-        return@validate ps!!.any { p ->
-            val diff = ChronoUnit.DAYS.between(p.fom, p.tom)
-            if( diff == 0L) p.antallDagerMedRefusjon == 1  else diff >= p.antallDagerMedRefusjon
-        }
+fun <E> Validator<E>.Property<Int?>.refusjonsDagerIkkeOverstigerPeriodelengde(ap: Arbeidsgiverperiode) =
+    this.validate(RefusjonsdagerKanIkkeOverstigePeriodelengdenConstraint()) {
+        return@validate ChronoUnit.DAYS.between(ap.fom, ap.tom.plusDays(1)) >= it!!
     }
 
 class FraDatoKanIkkeKommeEtterTomDato : CustomConstraint
@@ -34,11 +26,9 @@ fun <E> Validator<E>.Property<LocalDate?>.datoerHarRiktigRekkefolge(tom: LocalDa
     this.validate(FraDatoKanIkkeKommeEtterTomDato()) { fom -> fom!!.isEqual(tom) || fom!!.isBefore(tom) }
     
 class MaanedsInntektErStorreEnTiMil : CustomConstraint
-fun <E> Validator<E>.Property<Iterable<Arbeidsgiverperiode>?>.maanedsInntektErMellomNullOgTiMil() =
-    this.validate(MaanedsInntektErStorreEnTiMil()) { ps ->
-        ps!!.any { p ->
-            p.månedsinntekt > 0.0 && p.månedsinntekt <= TiMil
-        }
+fun <E> Validator<E>.Property<Double?>.maanedsInntektErMellomNullOgTiMil() =
+    this.validate(MaanedsInntektErStorreEnTiMil()) {
+        it!! > 0.0 && it!! <= TiMil
     }
 
 class DataUrlExtensionConstraints: CustomConstraint

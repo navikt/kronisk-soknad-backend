@@ -102,8 +102,6 @@ fun Route.gravidRoutes(
                 var responseBody = PostListResponseDto(PostListResponseDto.Status.OK)
                 try {
                     val request = call.receive<GravidKravRequest>()
-                    var index = 0
-                    request.perioder.forEach { it.index = index++ }
                     request.validate()
                     authorize(authorizer, request.virksomhetsnummer)
 
@@ -155,11 +153,8 @@ fun periodValErrs(it: ConstraintViolation) : List<ValidationProblemDetail> {
     val valErrs = mutableListOf<ValidationProblemDetail>()
     if (it.property == "perioder") {
         (it.value as Set<*>).forEach { p ->
-            val period = p as Arbeidsgiverperiode
             valErrs.add(
                 ValidationProblemDetail(
-                    period.index,
-                    period,
                     it.constraint.name,
                     it.getContextualMessageNO(),
                     it.property,
@@ -169,8 +164,6 @@ fun periodValErrs(it: ConstraintViolation) : List<ValidationProblemDetail> {
         }
     } else {
         valErrs.add(ValidationProblemDetail(
-            null,
-            null,
             it.constraint.name,
             it.getContextualMessageNO(),
             it.property,

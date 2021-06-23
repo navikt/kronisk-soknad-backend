@@ -83,8 +83,8 @@ data class GravidKravRequest(
 
             validate(GravidKravRequest::perioder).validateForEach {
                 validate(Arbeidsgiverperiode::fom).datoerHarRiktigRekkefolge(it.tom)
-                //validate(Arbeidsgiverperiode::antallDagerMedRefusjon).refujonsDagerIkkeOverstigerPeriodelengder()
-                //validate(Arbeidsgiverperiode::månedsinntekt).maanedsInntektErMellomNullOgTiMil()
+                validate(Arbeidsgiverperiode::antallDagerMedRefusjon).refusjonsDagerIkkeOverstigerPeriodelengde(it)
+                validate(Arbeidsgiverperiode::månedsinntekt).maanedsInntektErMellomNullOgTiMil()
             }
 
             if (!this@GravidKravRequest.dokumentasjon.isNullOrEmpty()) {

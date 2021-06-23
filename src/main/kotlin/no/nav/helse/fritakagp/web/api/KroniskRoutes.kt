@@ -94,8 +94,6 @@ fun Route.kroniskRoutes(
                 var responseBody = PostListResponseDto(PostListResponseDto.Status.OK)
                 try {
                     val request = call.receive<KroniskKravRequest>()
-                    var index = 0
-                    request.perioder.forEach { it.index = index++ }
                     request.validate()
                     authorize(authorizer, request.virksomhetsnummer)
 

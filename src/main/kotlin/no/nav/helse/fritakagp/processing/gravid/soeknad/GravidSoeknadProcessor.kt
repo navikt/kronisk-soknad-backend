@@ -193,6 +193,7 @@ class GravidSoeknadProcessor(
 
         val request = OpprettOppgaveRequest(
             aktoerId = aktoerId,
+            tildeltEnhetsnr = "8844",
             journalpostId = soeknad.journalpostId,
             beskrivelse = generereGravidSoeknadBeskrivelse(soeknad, "Søknad om fritak fra arbeidsgiverperioden ifbm. graviditet"),
             tema = "SYK",
@@ -215,6 +216,7 @@ class GravidSoeknadProcessor(
 
         val request = OpprettOppgaveRequest(
             aktoerId = aktoerId,
+            tildeltEnhetsnr = "8844",
             journalpostId = soeknad.journalpostId,
             beskrivelse = generereGravidSoeknadBeskrivelse(soeknad, "Fordelingsoppgave for søknad om fritak fra arbeidsgiverperioden grunnet gravid sykdom."),
             tema = "SYK",

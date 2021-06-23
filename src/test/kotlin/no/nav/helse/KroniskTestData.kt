@@ -78,7 +78,7 @@ object KroniskTestData {
         antallDager = 4
     )
 
-    val kroniskOpprettOpgaveResponse = OpprettOppgaveResponse(
+    val kroniskOpprettOppgaveResponse = OpprettOppgaveResponse(
         id = 1234,
         tildeltEnhetsnr = "0100",
         tema = "KON",

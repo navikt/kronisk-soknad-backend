@@ -208,6 +208,7 @@ class KroniskSoeknadProcessor(
 
         val request = OpprettOppgaveRequest(
             aktoerId = aktoerId,
+
             journalpostId = soeknad.journalpostId,
             beskrivelse = generereKroniskSoeknadBeskrivelse(soeknad, "Fordelingsoppgave for søknad om fritak fra arbeidsgiverperioden grunnet kronisk sykdom."),
             tema = "SYK",

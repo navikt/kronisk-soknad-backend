@@ -7,6 +7,7 @@ import io.ktor.http.*
 import no.nav.helse.KroniskTestData
 import no.nav.helse.fritakagp.db.KroniskKravRepository
 import no.nav.helse.fritakagp.domain.KroniskKrav
+import no.nav.helse.fritakagp.web.api.resreq.PostListResponseDto
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -41,14 +42,12 @@ class KroniskKravHTTPTests : SystemTestBase() {
 
     @Test
     fun `invalid json gives 400 Bad request`() = suspendableTest {
-        val exception = assertThrows<ClientRequestException>
-        {
-            httpClient.post<HttpResponse> {
-                appUrl(kravKroniskUrl)
-                contentType(ContentType.Application.Json)
-                loggedInAs("123456789")
+        val response = httpClient.post<HttpResponse> {
+            appUrl(kravKroniskUrl)
+            contentType(ContentType.Application.Json)
+            loggedInAs("123456789")
 
-                body = """
+            body = """
                 {
                     "identitetsnummer": "${KroniskTestData.validIdentitetsnummer}",
                     "virksomhetsnummer": "${KroniskTestData.fullValidRequest.virksomhetsnummer}",
@@ -58,11 +57,11 @@ class KroniskKravHTTPTests : SystemTestBase() {
                     "kontrollDager": ["IKKE GYLDIG"]
                 }
             """.trimIndent()
-            }
         }
 
-        Assertions.assertThat(exception.response.status).isEqualTo(HttpStatusCode.BadRequest)
-        Assertions.assertThat(exception.message).contains("400 Bad Request")
+        Assertions.assertThat(response.status).isEqualTo(HttpStatusCode.OK)
+        val res = extractResponseBody(response)
+        Assertions.assertThat(res.genericMessage).contains("Cannot construct instance of")
     }
 
     @Test
@@ -74,22 +73,20 @@ class KroniskKravHTTPTests : SystemTestBase() {
             body = KroniskTestData.kroniskKravRequestValid
         }
 
-        Assertions.assertThat(response.status).isEqualTo(HttpStatusCode.Created)
+        Assertions.assertThat(response.status).isEqualTo(HttpStatusCode.OK)
     }
 
     @Test
     fun `Skal returnere forbidden hvis virksomheten ikke er i auth listen fra altinn`() = suspendableTest {
-        val exception = assertThrows<ClientRequestException>
-        {
-            httpClient.post<HttpResponse> {
-                appUrl(kravKroniskUrl)
-                contentType(ContentType.Application.Json)
-                loggedInAs("123456789")
-                body = KroniskTestData.kroniskKravRequestValid.copy(virksomhetsnummer = "123456785")
-            }
+        val response = httpClient.post<HttpResponse> {
+            appUrl(kravKroniskUrl)
+            contentType(ContentType.Application.Json)
+            loggedInAs("123456789")
+            body = KroniskTestData.kroniskKravRequestValid.copy(virksomhetsnummer = "123456785")
         }
-
-        Assertions.assertThat(exception.response.status).isEqualTo(HttpStatusCode.Forbidden)
+        Assertions.assertThat(response.status).isEqualTo(HttpStatusCode.OK)
+        val res = extractResponseBody(response)
+        Assertions.assertThat(res.status).isEqualTo(PostListResponseDto.Status.GENERIC_ERROR)
     }
 
     @Test
@@ -101,6 +98,6 @@ class KroniskKravHTTPTests : SystemTestBase() {
             body = KroniskTestData.kroniskKravRequestMedFil
         }
 
-        Assertions.assertThat(response.status).isEqualTo(HttpStatusCode.Created)
+        Assertions.assertThat(response.status).isEqualTo(HttpStatusCode.OK)
     }
 }

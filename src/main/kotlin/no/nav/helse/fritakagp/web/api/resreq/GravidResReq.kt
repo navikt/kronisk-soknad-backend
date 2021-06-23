@@ -4,9 +4,7 @@ import no.nav.helse.arbeidsgiver.web.validation.isValidIdentitetsnummer
 import no.nav.helse.arbeidsgiver.web.validation.isValidOrganisasjonsnummer
 import no.nav.helse.fritakagp.domain.*
 import no.nav.helse.fritakagp.web.dto.validation.*
-import org.valiktor.functions.isNotEmpty
-import org.valiktor.functions.isNotNull
-import org.valiktor.functions.isTrue
+import org.valiktor.functions.*
 import org.valiktor.validate
 import java.time.LocalDate
 
@@ -82,9 +80,12 @@ data class GravidKravRequest(
             validate(GravidKravRequest::identitetsnummer).isValidIdentitetsnummer()
             validate(GravidKravRequest::virksomhetsnummer).isValidOrganisasjonsnummer()
             validate(GravidKravRequest::bekreftet).isTrue()
-            validate(GravidKravRequest::perioder).datoerHarRiktigRekkefolge()
-            validate(GravidKravRequest::perioder).refujonsDagerIkkeOverstigerPeriodelengder()
-            validate(GravidKravRequest::perioder).maanedsInntektErMellomNullOgTiMil()
+
+            validate(GravidKravRequest::perioder).validateForEach {
+                validate(Arbeidsgiverperiode::fom).datoerHarRiktigRekkefolge(it.tom)
+                //validate(Arbeidsgiverperiode::antallDagerMedRefusjon).refujonsDagerIkkeOverstigerPeriodelengder()
+                //validate(Arbeidsgiverperiode::månedsinntekt).maanedsInntektErMellomNullOgTiMil()
+            }
 
             if (!this@GravidKravRequest.dokumentasjon.isNullOrEmpty()) {
                 validate(GravidKravRequest::dokumentasjon).isGodskjentFiletyper()

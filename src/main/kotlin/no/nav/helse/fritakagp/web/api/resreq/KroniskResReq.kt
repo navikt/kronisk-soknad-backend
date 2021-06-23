@@ -80,7 +80,7 @@ data class KroniskKravRequest(
             validate(KroniskKravRequest::identitetsnummer).isValidIdentitetsnummer()
             validate(KroniskKravRequest::virksomhetsnummer).isValidOrganisasjonsnummer()
             validate(KroniskKravRequest::bekreftet).isTrue()
-            validate(KroniskKravRequest::perioder).datoerHarRiktigRekkefolge()
+            //validate(KroniskKravRequest::perioder).datoerHarRiktigRekkefolge()
             validate(KroniskKravRequest::perioder).refujonsDagerIkkeOverstigerPeriodelengder()
             validate(KroniskKravRequest::perioder).maanedsInntektErMellomNullOgTiMil()
 

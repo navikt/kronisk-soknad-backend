@@ -141,7 +141,7 @@ fun Route.gravidRoutes(
                 } catch (genericEx: Exception) {
                     responseBody = PostListResponseDto(
                         status = PostListResponseDto.Status.GENERIC_ERROR,
-                        genericMessage = genericEx.message
+                        genericMessage = "${genericEx.javaClass.name}: ${genericEx.message}"
                     )
                 }
                 call.respond(HttpStatusCode.OK, responseBody)

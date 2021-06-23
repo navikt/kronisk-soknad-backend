@@ -6,6 +6,7 @@ import no.nav.helse.fritakagp.domain.GodkjenteFiletyper
 import org.valiktor.Constraint
 import org.valiktor.Validator
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 
 interface CustomConstraint : Constraint {
@@ -29,12 +30,8 @@ fun <E> Validator<E>.Property<Iterable<Arbeidsgiverperiode>?>.refujonsDagerIkkeO
     }
 
 class FraDatoKanIkkeKommeEtterTomDato : CustomConstraint
-fun <E> Validator<E>.Property<Iterable<Arbeidsgiverperiode>?>.datoerHarRiktigRekkefolge() =
-    this.validate(FraDatoKanIkkeKommeEtterTomDato()) { ps ->
-        return@validate ps!!.any { p ->
-            (p.fom.isEqual(p.tom) || p.fom.isBefore(p.tom))
-        }
-    }
+fun <E> Validator<E>.Property<LocalDate?>.datoerHarRiktigRekkefolge(tom: LocalDate) =
+    this.validate(FraDatoKanIkkeKommeEtterTomDato()) { fom -> fom!!.isEqual(tom) || fom!!.isBefore(tom) }
     
 class MaanedsInntektErStorreEnTiMil : CustomConstraint
 fun <E> Validator<E>.Property<Iterable<Arbeidsgiverperiode>?>.maanedsInntektErMellomNullOgTiMil() =

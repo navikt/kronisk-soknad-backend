@@ -4,6 +4,7 @@ import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OpprettOppgaveResponse
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.Prioritet
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.Status
 import no.nav.helse.fritakagp.domain.*
+import no.nav.helse.fritakagp.web.api.resreq.GravidKravRequest
 import no.nav.helse.fritakagp.web.api.resreq.KroniskKravRequest
 import no.nav.helse.fritakagp.web.api.resreq.KroniskSoknadRequest
 import java.time.LocalDate
@@ -52,6 +53,37 @@ object KroniskTestData {
             2,
             månedsinntekt = 2590.8
         )),
+        bekreftet = true,
+        dokumentasjon = null,
+        kontrollDager = null,
+        antallDager = 4
+    )
+
+    val kroniskKravRequestInValid = KroniskKravRequest(
+        virksomhetsnummer = GravidTestData.validOrgNr,
+        identitetsnummer = GravidTestData.validIdentitetsnummer,
+
+        perioder = setOf(
+            Arbeidsgiverperiode(
+                LocalDate.of(2020, 1, 15),
+                LocalDate.of(2020, 1, 10),
+                2,
+                månedsinntekt = 2590.8,
+            ),
+            Arbeidsgiverperiode(
+                LocalDate.of(2020, 1, 5),
+                LocalDate.of(2020, 1, 4),
+                2,
+                månedsinntekt = 3590.8,
+            ),
+            Arbeidsgiverperiode(
+                LocalDate.of(2020, 1, 5),
+                LocalDate.of(2020, 1, 14),
+                12,
+                månedsinntekt = 1590.8,
+            )
+        ),
+
         bekreftet = true,
         dokumentasjon = null,
         kontrollDager = null,

@@ -89,6 +89,7 @@ class KroniskSoeknadHTTPTests : SystemTestBase() {
                 body = KroniskSoknadRequest(virksomhetsnummer = "lkajsbdfv",
                     identitetsnummer = "lkdf",
                     paakjenningBeskrivelse = "sdfsfd",
+                    antallPerioder = 0,
                     arbeidstyper = setOf(ArbeidsType.KREVENDE),
                     paakjenningstyper = setOf(PaakjenningsType.ALLERGENER),
                     fravaer = setOf(FravaerData("2001-01",12)),

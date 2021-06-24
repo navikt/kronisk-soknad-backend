@@ -90,7 +90,7 @@ dependencies {
     implementation("commons-codec:commons-codec:1.13") // overstyrer transiente 1.10
     implementation("io.netty:netty-codec:4.1.59.Final") // overstyrer transiente 4.1.44
     implementation("io.netty:netty-codec-http:4.1.59.Final") // overstyrer transiente 4.1.51.Final gjennom ktor-server-netty
-    implementation("org.eclipse.jetty:jetty-server:9.4.37.v20210219")
+    implementation("org.eclipse.jetty:jetty-server:9.4.41.v20210516")
     implementation("com.google.guava:guava:30.0-jre") //[Medium Severity][https://snyk.io/vuln/SNYK-JAVA-COMGOOGLEGUAVA-1015415] overstyrer versjon 29.0
     // -- end snyk fixes
 

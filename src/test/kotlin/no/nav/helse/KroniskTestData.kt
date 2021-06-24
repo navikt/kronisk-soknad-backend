@@ -13,12 +13,14 @@ import kotlin.random.Random
 object KroniskTestData {
     val validIdentitetsnummer = "20015001543"
     val validOrgNr = "917404437"
+    val antallPerioder = 3
 
     val soeknadKronisk = KroniskSoeknad(
         virksomhetsnummer = validOrgNr,
         identitetsnummer = validIdentitetsnummer,
         arbeidstyper = setOf(ArbeidsType.KREVENDE, ArbeidsType.MODERAT),
         bekreftet = true,
+        antallPerioder = antallPerioder,
         fravaer = generateFravaersdata(),
         paakjenningstyper = setOf(PaakjenningsType.ALLERGENER, PaakjenningsType.TUNGE),
         paakjenningBeskrivelse = "Beskrivelse",
@@ -33,6 +35,7 @@ object KroniskTestData {
         paakjenningstyper = setOf(PaakjenningsType.ALLERGENER, PaakjenningsType.TUNGE, PaakjenningsType.ANNET, PaakjenningsType.GAAING, PaakjenningsType.HARDE, PaakjenningsType.REGELMESSIG, PaakjenningsType.STRESSENDE, PaakjenningsType.UKOMFORTABEL),
         paakjenningBeskrivelse = "Lorem Ipsum",
         bekreftet = true,
+        antallPerioder = antallPerioder,
         dokumentasjon = null
     )
 

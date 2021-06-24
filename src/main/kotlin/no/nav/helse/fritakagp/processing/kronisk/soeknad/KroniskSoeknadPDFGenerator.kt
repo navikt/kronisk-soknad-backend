@@ -49,8 +49,8 @@ class KroniskSoeknadPDFGenerator {
         val totaltAntallDager = soeknad.fravaer.map { it.antallDagerMedFravaer }.sum()
         content.writeTextWrapped("Totalt antall fraværsdager siste 2 år: $totaltAntallDager", 2)
 
-        content.writeTextWrapped("Fraværsdager per måned siste 2 år:", 2)
-
+        content.writeTextWrapped("Fraværsdager per måned siste 2 år: ", 2)
+        content.writeTextWrapped("Antall fraværsperioder siste 2 år: ${soeknad.antallPerioder}")
         val yearlyFravaer = soeknad.fravaer.sortedByDescending { it.yearMonth }.groupBy { it.yearMonth.substring(0,4) }
 
         yearlyFravaer.forEach { yearGroup ->

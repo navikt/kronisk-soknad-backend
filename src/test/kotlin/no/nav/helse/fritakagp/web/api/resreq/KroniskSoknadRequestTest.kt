@@ -92,4 +92,14 @@ internal class KroniskSoknadRequestTest {
             ).validate()
         }
     }
+    @Test
+    fun `Antall perioder kan ikke være 0`() {
+        val invalidAntallPerioder = 0
+        validationShouldFailFor(KroniskSoknadRequest::antallPerioder) {
+            KroniskTestData.fullValidRequest.copy(
+                antallPerioder = invalidAntallPerioder
+            ).validate()
+        }
+    }
+
 }

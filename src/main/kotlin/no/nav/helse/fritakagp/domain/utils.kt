@@ -53,7 +53,7 @@ fun generereKroniskSoeknadBeskrivelse(soeknad : KroniskSoeknad, desc: String) : 
 
         val totaltAntallDager = soeknad.fravaer.map { it.antallDagerMedFravaer }.sum()
         appendLine("Totalt antall fraværsdager siste 2 år: $totaltAntallDager")
-
+        appendLine("Antall fraværsperioder siste 2 år: ${soeknad.antallPerioder}")
         appendLine("Fraværsdager per måned siste 2 år:")
 
         val yearlyFravaer = soeknad.fravaer.sortedByDescending { it.yearMonth }.groupBy { it.yearMonth.substring(0,4) }

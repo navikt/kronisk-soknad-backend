@@ -11,7 +11,7 @@ data class GravidKrav(
 
     val virksomhetsnummer: String,
     val identitetsnummer: String,
-    val perioder: Set<Arbeidsgiverperiode>,
+    val perioder: List<Arbeidsgiverperiode>,
     val harVedlegg: Boolean = false,
     val kontrollDager: Int?,
     val antallDager: Int,

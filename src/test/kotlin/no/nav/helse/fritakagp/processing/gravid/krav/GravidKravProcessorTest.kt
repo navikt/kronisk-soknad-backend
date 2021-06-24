@@ -30,8 +30,6 @@ import org.junit.jupiter.api.assertThrows
 import java.io.IOException
 import java.util.*
 
-import de.m3y.kformat.*
-
 
 class GravidKravProcessorTest {
 

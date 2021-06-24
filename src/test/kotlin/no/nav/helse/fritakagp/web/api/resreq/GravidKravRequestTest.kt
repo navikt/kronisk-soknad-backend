@@ -42,18 +42,18 @@ class GravidKravRequestTest{
 
     @Test
     internal fun `Antall refusjonsdager kan ikke overstige periodelengden`() {
-        validationShouldFailFor(GravidKravRequest::perioder) {
+        validationShouldFailFor("perioder[0].antallDagerMedRefusjon") {
             GravidTestData.gravidKravRequestValid.copy(
-                perioder = setOf(GravidTestData.gravidKravRequestValid.perioder.first().copy(antallDagerMedRefusjon = 21))
+                perioder = listOf(GravidTestData.gravidKravRequestValid.perioder.first().copy(antallDagerMedRefusjon = 21))
             ).validate()
         }
     }
 
     @Test
     internal fun `Til dato kan ikke komme før fra dato`() {
-        validationShouldFailFor(GravidKravRequest::perioder) {
+        validationShouldFailFor("perioder[0].fom") {
             GravidTestData.gravidKravRequestValid.copy(
-                perioder = setOf(GravidTestData.gravidKravRequestValid.perioder.first().copy(fom = LocalDate.of(2020, 1, 10),
+                perioder = listOf(GravidTestData.gravidKravRequestValid.perioder.first().copy(fom = LocalDate.of(2020, 1, 10),
                     tom = LocalDate.of(2020, 1, 5),
                     antallDagerMedRefusjon = -5)) //slik at validationShouldFailFor() kaster ikke to unntak
             ).validate()

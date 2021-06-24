@@ -64,13 +64,13 @@ data class KroniskSoknadRequest(
 
 
 data class KroniskKravRequest(
-        val virksomhetsnummer: String,
-        val identitetsnummer: String,
-        val perioder: Set<Arbeidsgiverperiode>,
-        val bekreftet: Boolean,
-        val dokumentasjon: String?,
-        val kontrollDager: Int?,
-        val antallDager: Int
+    val virksomhetsnummer: String,
+    val identitetsnummer: String,
+    val perioder: List<Arbeidsgiverperiode>,
+    val bekreftet: Boolean,
+    val dokumentasjon: String?,
+    val kontrollDager: Int?,
+    val antallDager: Int
 ) {
    fun validate() {
         validate(this) {

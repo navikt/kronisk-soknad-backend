@@ -13,7 +13,7 @@ class BeløpBeregning(
 
     fun beregnBeløpGravid(krav : GravidKrav) = beregnPeriodeData(krav.perioder, krav.antallDager)
 
-    private fun beregnPeriodeData(perioder: Set<Arbeidsgiverperiode>, antallDager: Int) {
+    private fun beregnPeriodeData(perioder: List<Arbeidsgiverperiode>, antallDager: Int) {
         perioder.forEach {
             val arslonn = it.månedsinntekt * 12
             it.dagsats = if (arslonn < seksG)

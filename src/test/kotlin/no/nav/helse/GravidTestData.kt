@@ -76,7 +76,7 @@ aąbcćdeęfghijlłmnńoóprsśtuwź
         virksomhetsnummer = validOrgNr,
         identitetsnummer = validIdentitetsnummer,
 
-        perioder = setOf(Arbeidsgiverperiode(
+        perioder = listOf(Arbeidsgiverperiode(
             LocalDate.of(2020, 1, 5),
             LocalDate.of(2020, 1, 10),
             2,
@@ -92,7 +92,7 @@ aąbcćdeęfghijlłmnńoóprsśtuwź
         virksomhetsnummer = validOrgNr,
         identitetsnummer = validIdentitetsnummer,
 
-        perioder = setOf(
+        perioder = listOf(
             Arbeidsgiverperiode(
                 LocalDate.of(2020, 1, 15),
                 LocalDate.of(2020, 1, 10),
@@ -129,7 +129,7 @@ aąbcćdeęfghijlłmnńoóprsśtuwź
     val gravidKravRequestValidPeriode1Dag = GravidKravRequest(
         virksomhetsnummer = validOrgNr,
         identitetsnummer = validIdentitetsnummer,
-        perioder = setOf(Arbeidsgiverperiode(
+        perioder = listOf(Arbeidsgiverperiode(
             LocalDate.of(2020, 2, 1),
             LocalDate.of(2020, 2, 1),
             1,
@@ -147,7 +147,7 @@ aąbcćdeęfghijlłmnńoóprsśtuwź
         virksomhetsnummer = validOrgNr,
         identitetsnummer = validIdentitetsnummer,
 
-        perioder = setOf(Arbeidsgiverperiode(
+        perioder = listOf(Arbeidsgiverperiode(
             LocalDate.of(2020, 1, 5),
             LocalDate.of(2020, 1, 10),
             5,

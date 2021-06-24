@@ -7,7 +7,6 @@ import no.altinn.services.serviceengine.correspondence._2009._10.ICorrespondence
 import no.altinn.services.serviceengine.correspondence._2009._10.ICorrespondenceAgencyExternalBasicInsertCorrespondenceBasicV2AltinnFaultFaultFaultMessage
 import no.nav.helse.fritakagp.domain.Arbeidsgiverperiode
 import no.nav.helse.fritakagp.domain.KroniskKrav
-import no.nav.helse.fritakagp.processing.gravid.krav.getPDFTimeStampFormat
 import java.time.format.DateTimeFormatter
 
 interface KroniskKravKvitteringSender {
@@ -92,7 +91,7 @@ class KroniskKravAltinnKvitteringSender(
     }
 }
 
-fun lagrePerioder(perioder: Set<Arbeidsgiverperiode>) : String {
+fun lagrePerioder(perioder: List<Arbeidsgiverperiode>) : String {
 
     val head =  """
             <table style="width:50%">

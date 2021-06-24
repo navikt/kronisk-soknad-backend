@@ -4,7 +4,6 @@ import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OpprettOppgaveResponse
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.Prioritet
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.Status
 import no.nav.helse.fritakagp.domain.*
-import no.nav.helse.fritakagp.web.api.resreq.GravidKravRequest
 import no.nav.helse.fritakagp.web.api.resreq.KroniskKravRequest
 import no.nav.helse.fritakagp.web.api.resreq.KroniskSoknadRequest
 import java.time.LocalDate
@@ -47,7 +46,7 @@ object KroniskTestData {
     val kroniskKravRequestValid = KroniskKravRequest(
         virksomhetsnummer = validOrgNr,
         identitetsnummer = validIdentitetsnummer,
-        perioder = setOf(Arbeidsgiverperiode(
+        perioder = listOf(Arbeidsgiverperiode(
             LocalDate.of(2020, 1, 5),
             LocalDate.of(2020, 1, 10),
             2,
@@ -63,7 +62,7 @@ object KroniskTestData {
         virksomhetsnummer = GravidTestData.validOrgNr,
         identitetsnummer = GravidTestData.validIdentitetsnummer,
 
-        perioder = setOf(
+        perioder = listOf(
             Arbeidsgiverperiode(
                 LocalDate.of(2020, 1, 15),
                 LocalDate.of(2020, 1, 10),
@@ -99,7 +98,7 @@ object KroniskTestData {
     val kroniskKrav = KroniskKrav(
         virksomhetsnummer = validOrgNr,
         identitetsnummer = validIdentitetsnummer,
-        perioder = setOf(Arbeidsgiverperiode(
+        perioder = listOf(Arbeidsgiverperiode(
             LocalDate.of(2020, 1, 5),
             LocalDate.of(2020, 1, 10),
             5,

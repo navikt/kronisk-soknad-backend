@@ -68,7 +68,7 @@ data class GravidSoknadRequest(
 data class GravidKravRequest(
     val virksomhetsnummer: String,
     val identitetsnummer: String,
-    val perioder: Set<Arbeidsgiverperiode>,
+    val perioder: List<Arbeidsgiverperiode>,
 
     val bekreftet: Boolean,
     val kontrollDager: Int?,

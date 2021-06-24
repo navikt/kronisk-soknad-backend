@@ -2,6 +2,7 @@ package no.nav.helse.fritakagp.web.dto.validation
 
 import no.nav.helse.fritakagp.domain.Arbeidsgiverperiode
 import no.nav.helse.fritakagp.domain.FravaerData
+import no.nav.helse.fritakagp.domain.KroniskSoeknad
 import no.nav.helse.fritakagp.domain.GodkjenteFiletyper
 import org.valiktor.Constraint
 import org.valiktor.Validator
@@ -42,6 +43,13 @@ fun <E> Validator<E>.Property<Iterable<Arbeidsgiverperiode>?>.maanedsInntektErMe
         ps!!.any { p ->
             p.månedsinntekt > 0.0 && p.månedsinntekt <= TiMil
         }
+    }
+
+
+class AntallPerioderErMellomNullOgTreHundre() : CustomConstraint
+fun <E> Validator<E>.Property<Iterable<KroniskSoeknad>?>.antallPerioderErMellomNullOgTreHundre() =
+    this.validate(AntallPerioderErMellomNullOgTreHundre()) { ps ->
+        ps!!.any { p -> p.antallPerioder >= 1 && p.antallPerioder < 300}
     }
 
 class DataUrlExtensionConstraints: CustomConstraint

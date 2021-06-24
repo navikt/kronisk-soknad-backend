@@ -4,10 +4,7 @@ import no.nav.helse.arbeidsgiver.web.validation.isValidIdentitetsnummer
 import no.nav.helse.arbeidsgiver.web.validation.isValidOrganisasjonsnummer
 import no.nav.helse.fritakagp.domain.*
 import no.nav.helse.fritakagp.web.dto.validation.*
-import org.valiktor.functions.hasSize
-import org.valiktor.functions.isNotEmpty
-import org.valiktor.functions.isNotNull
-import org.valiktor.functions.isTrue
+import org.valiktor.functions.*
 import org.valiktor.validate
 
 data class KroniskSoknadRequest(
@@ -18,6 +15,7 @@ data class KroniskSoknadRequest(
     val paakjenningBeskrivelse: String? = null,
     val fravaer: Set<FravaerData>,
     val bekreftet: Boolean,
+    val antallPerioder: Int,
 
     val dokumentasjon : String?
 ) {
@@ -35,7 +33,7 @@ data class KroniskSoknadRequest(
             validate(KroniskSoknadRequest::paakjenningstyper).hasSize(1, 10)
 
             validate(KroniskSoknadRequest::fravaer).isNotNull()
-
+            validate(KroniskSoknadRequest::antallPerioder).isBetween(1,300)
             validate(KroniskSoknadRequest::fravaer).ingenDataEldreEnn(2)
             validate(KroniskSoknadRequest::fravaer).ingenDataFraFremtiden()
             validate(KroniskSoknadRequest::fravaer).ikkeFlereFravaersdagerEnnDagerIMaanden()
@@ -57,6 +55,7 @@ data class KroniskSoknadRequest(
         identitetsnummer = identitetsnummer,
         sendtAv = sendtAv,
         arbeidstyper = arbeidstyper,
+        antallPerioder = antallPerioder,
         paakjenningstyper = paakjenningstyper,
         paakjenningBeskrivelse = paakjenningBeskrivelse,
         fravaer = fravaer,
@@ -83,6 +82,7 @@ data class KroniskKravRequest(
             validate(KroniskKravRequest::perioder).datoerHarRiktigRekkefolge()
             validate(KroniskKravRequest::perioder).refujonsDagerIkkeOverstigerPeriodelengder()
             validate(KroniskKravRequest::perioder).maanedsInntektErMellomNullOgTiMil()
+
 
             if (!this@KroniskKravRequest.dokumentasjon.isNullOrEmpty()) {
                 validate(KroniskKravRequest::dokumentasjon).isGodskjentFiletyper()

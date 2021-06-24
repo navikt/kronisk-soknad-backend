@@ -16,7 +16,7 @@ import io.ktor.http.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.runBlocking
 import no.nav.helse.fritakagp.FritakAgpApplication
-import no.nav.helse.fritakagp.web.api.resreq.PostListResponseDto
+import no.nav.helse.fritakagp.web.api.resreq.Problem
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.TestInstance
@@ -92,8 +92,7 @@ open class SystemTestBase : KoinTest {
             Unit
         }
     }
+
     suspend fun extractResponseBody(response: HttpResponse) =
-        objectMapper.readValue(
-            response.call.response.receive<String>(),
-            object : TypeReference<PostListResponseDto>() {})
+        response.call.response.receive<Problem>()
 }

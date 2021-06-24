@@ -46,12 +46,43 @@ object KroniskTestData {
     val kroniskKravRequestValid = KroniskKravRequest(
         virksomhetsnummer = validOrgNr,
         identitetsnummer = validIdentitetsnummer,
-        perioder = setOf(Arbeidsgiverperiode(
+        perioder = listOf(Arbeidsgiverperiode(
             LocalDate.of(2020, 1, 5),
             LocalDate.of(2020, 1, 10),
             2,
             månedsinntekt = 2590.8
         )),
+        bekreftet = true,
+        dokumentasjon = null,
+        kontrollDager = null,
+        antallDager = 4
+    )
+
+    val kroniskKravRequestInValid = KroniskKravRequest(
+        virksomhetsnummer = GravidTestData.validOrgNr,
+        identitetsnummer = GravidTestData.validIdentitetsnummer,
+
+        perioder = listOf(
+            Arbeidsgiverperiode(
+                LocalDate.of(2020, 1, 15),
+                LocalDate.of(2020, 1, 10),
+                2,
+                månedsinntekt = 2590.8,
+            ),
+            Arbeidsgiverperiode(
+                LocalDate.of(2020, 1, 5),
+                LocalDate.of(2020, 1, 4),
+                2,
+                månedsinntekt = 3590.8,
+            ),
+            Arbeidsgiverperiode(
+                LocalDate.of(2020, 1, 5),
+                LocalDate.of(2020, 1, 14),
+                12,
+                månedsinntekt = 1590.8,
+            )
+        ),
+
         bekreftet = true,
         dokumentasjon = null,
         kontrollDager = null,
@@ -67,7 +98,7 @@ object KroniskTestData {
     val kroniskKrav = KroniskKrav(
         virksomhetsnummer = validOrgNr,
         identitetsnummer = validIdentitetsnummer,
-        perioder = setOf(Arbeidsgiverperiode(
+        perioder = listOf(Arbeidsgiverperiode(
             LocalDate.of(2020, 1, 5),
             LocalDate.of(2020, 1, 10),
             5,

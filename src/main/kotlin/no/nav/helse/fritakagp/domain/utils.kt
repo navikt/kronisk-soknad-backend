@@ -88,7 +88,7 @@ fun generereGravidkKravBeskrivelse(krav: GravidKrav, desc : String) : String {
     }
 }
 
-fun genererePeriodeTable(perioder : Set<Arbeidsgiverperiode>) : String {
+fun genererePeriodeTable(perioder: List<Arbeidsgiverperiode>) : String {
     return table {
         header("FOM", "TOM", "kreves refusjon for", "Beregnet månedsinntekt (NOK)", "Refusjonskrav (NOK)", "Dagsats (NOK)", "Beløp (NOK)")
         for (p in perioder) {

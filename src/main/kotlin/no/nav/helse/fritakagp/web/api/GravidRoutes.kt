@@ -1,7 +1,6 @@
 package no.nav.helse.fritakagp.web.api
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.exc.MismatchedInputException
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.request.*
@@ -13,7 +12,6 @@ import no.nav.helse.fritakagp.GravidKravMetrics
 import no.nav.helse.fritakagp.GravidSoeknadMetrics
 import no.nav.helse.fritakagp.db.GravidKravRepository
 import no.nav.helse.fritakagp.db.GravidSoeknadRepository
-import no.nav.helse.fritakagp.domain.Arbeidsgiverperiode
 import no.nav.helse.fritakagp.domain.BeløpBeregning
 import no.nav.helse.fritakagp.domain.decodeBase64File
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
@@ -99,52 +97,34 @@ fun Route.gravidRoutes(
 
 
             post {
-                var responseBody = PostListResponseDto(PostListResponseDto.Status.OK)
-                try {
-                    val request = call.receive<GravidKravRequest>()
-                    var index = 0
-                    request.perioder.forEach { it.index = index++ }
-                    request.validate()
-                    authorize(authorizer, request.virksomhetsnummer)
 
-                    val krav = request.toDomain(
-                        hentIdentitetsnummerFraLoginToken(
-                            application.environment.config,
-                            call.request
-                        )
+                val request = call.receive<GravidKravRequest>()
+                request.validate()
+                authorize(authorizer, request.virksomhetsnummer)
+
+                val krav = request.toDomain(
+                    hentIdentitetsnummerFraLoginToken(
+                        application.environment.config,
+                        call.request
                     )
-                    belopBeregning.beregnBeløpGravid(krav)
-                    processDocumentForGCPStorage(request.dokumentasjon, virusScanner, bucket, krav.id)
+                )
+                belopBeregning.beregnBeløpGravid(krav)
+                processDocumentForGCPStorage(request.dokumentasjon, virusScanner, bucket, krav.id)
 
-                    datasource.connection.use { connection ->
-                        gravidKravRepo.insert(krav, connection)
-                        bakgunnsjobbService.opprettJobb<GravidKravProcessor>(
-                            maksAntallForsoek = 8,
-                            data = om.writeValueAsString(GravidKravProcessor.JobbData(krav.id)),
-                            connection = connection
-                        )
-                        bakgunnsjobbService.opprettJobb<GravidKravKvitteringProcessor>(
-                            maksAntallForsoek = 10,
-                            data = om.writeValueAsString(GravidKravKvitteringProcessor.Jobbdata(krav.id)),
-                            connection = connection
-                        )
-                    }
-
-                } catch (validationEx: ConstraintViolationException) {
-                    val problems = validationEx.constraintViolations.map {
-                        periodValErrs(it)
-                    }.flatten()
-                    responseBody = PostListResponseDto(
-                        status = PostListResponseDto.Status.VALIDATION_ERRORS,
-                        validationErrors = problems
+                datasource.connection.use { connection ->
+                    gravidKravRepo.insert(krav, connection)
+                    bakgunnsjobbService.opprettJobb<GravidKravProcessor>(
+                        maksAntallForsoek = 8,
+                        data = om.writeValueAsString(GravidKravProcessor.JobbData(krav.id)),
+                        connection = connection
                     )
-                } catch (genericEx: Exception) {
-                    responseBody = PostListResponseDto(
-                        status = PostListResponseDto.Status.GENERIC_ERROR,
-                        genericMessage = genericEx.message
+                    bakgunnsjobbService.opprettJobb<GravidKravKvitteringProcessor>(
+                        maksAntallForsoek = 10,
+                        data = om.writeValueAsString(GravidKravKvitteringProcessor.Jobbdata(krav.id)),
+                        connection = connection
                     )
                 }
-                call.respond(HttpStatusCode.OK, responseBody)
+                call.respond(HttpStatusCode.Created)
                 GravidKravMetrics.tellMottatt()
             }
         }
@@ -155,11 +135,8 @@ fun periodValErrs(it: ConstraintViolation) : List<ValidationProblemDetail> {
     val valErrs = mutableListOf<ValidationProblemDetail>()
     if (it.property == "perioder") {
         (it.value as Set<*>).forEach { p ->
-            val period = p as Arbeidsgiverperiode
             valErrs.add(
                 ValidationProblemDetail(
-                    period.index,
-                    period,
                     it.constraint.name,
                     it.getContextualMessageNO(),
                     it.property,
@@ -169,8 +146,6 @@ fun periodValErrs(it: ConstraintViolation) : List<ValidationProblemDetail> {
         }
     } else {
         valErrs.add(ValidationProblemDetail(
-            null,
-            null,
             it.constraint.name,
             it.getContextualMessageNO(),
             it.property,

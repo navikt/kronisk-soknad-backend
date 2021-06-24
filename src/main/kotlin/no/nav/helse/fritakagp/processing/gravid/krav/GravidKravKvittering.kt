@@ -5,7 +5,6 @@ import no.altinn.schemas.services.serviceengine.correspondence._2010._10.Externa
 import no.altinn.schemas.services.serviceengine.correspondence._2010._10.InsertCorrespondenceV2
 import no.altinn.services.serviceengine.correspondence._2009._10.ICorrespondenceAgencyExternalBasic
 import no.altinn.services.serviceengine.correspondence._2009._10.ICorrespondenceAgencyExternalBasicInsertCorrespondenceBasicV2AltinnFaultFaultFaultMessage
-import no.nav.helse.fritakagp.domain.Arbeidsgiverperiode
 import no.nav.helse.fritakagp.domain.GravidKrav
 import no.nav.helse.fritakagp.processing.kronisk.krav.lagrePerioder
 import java.time.format.DateTimeFormatter

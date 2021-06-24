@@ -6,7 +6,6 @@ import no.nav.helse.arbeidsgiver.bakgrunnsjobb.Bakgrunnsjobb
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbProsesserer
 import no.nav.helse.fritakagp.db.KroniskKravRepository
 import no.nav.helse.fritakagp.integration.kafka.KravmeldingSender
-import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravKafkaProcessor
 import org.slf4j.LoggerFactory
 import java.util.*
 

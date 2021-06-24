@@ -16,12 +16,10 @@ import no.nav.helse.fritakagp.KroniskKravMetrics
 import no.nav.helse.fritakagp.db.KroniskKravRepository
 import no.nav.helse.fritakagp.domain.KroniskKrav
 import no.nav.helse.fritakagp.domain.generereKroniskKravBeskrivelse
-import no.nav.helse.fritakagp.domain.genererePeriodeTable
 import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor.Jobbdata.SkjemaType
-import no.nav.helse.fritakagp.processing.gravid.krav.getPDFTimeStampFormat
 import org.slf4j.LoggerFactory
 import java.time.LocalDate
 import java.util.*

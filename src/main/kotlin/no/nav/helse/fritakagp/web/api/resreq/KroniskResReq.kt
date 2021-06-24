@@ -4,10 +4,7 @@ import no.nav.helse.arbeidsgiver.web.validation.isValidIdentitetsnummer
 import no.nav.helse.arbeidsgiver.web.validation.isValidOrganisasjonsnummer
 import no.nav.helse.fritakagp.domain.*
 import no.nav.helse.fritakagp.web.dto.validation.*
-import org.valiktor.functions.hasSize
-import org.valiktor.functions.isNotEmpty
-import org.valiktor.functions.isNotNull
-import org.valiktor.functions.isTrue
+import org.valiktor.functions.*
 import org.valiktor.validate
 
 data class KroniskSoknadRequest(
@@ -67,22 +64,24 @@ data class KroniskSoknadRequest(
 
 
 data class KroniskKravRequest(
-        val virksomhetsnummer: String,
-        val identitetsnummer: String,
-        val perioder: Set<Arbeidsgiverperiode>,
-        val bekreftet: Boolean,
-        val dokumentasjon: String?,
-        val kontrollDager: Int?,
-        val antallDager: Int
+    val virksomhetsnummer: String,
+    val identitetsnummer: String,
+    val perioder: List<Arbeidsgiverperiode>,
+    val bekreftet: Boolean,
+    val dokumentasjon: String?,
+    val kontrollDager: Int?,
+    val antallDager: Int
 ) {
    fun validate() {
         validate(this) {
             validate(KroniskKravRequest::identitetsnummer).isValidIdentitetsnummer()
             validate(KroniskKravRequest::virksomhetsnummer).isValidOrganisasjonsnummer()
             validate(KroniskKravRequest::bekreftet).isTrue()
-            validate(KroniskKravRequest::perioder).datoerHarRiktigRekkefolge()
-            validate(KroniskKravRequest::perioder).refujonsDagerIkkeOverstigerPeriodelengder()
-            validate(KroniskKravRequest::perioder).maanedsInntektErMellomNullOgTiMil()
+            validate(KroniskKravRequest::perioder).validateForEach {
+                validate(Arbeidsgiverperiode::fom).datoerHarRiktigRekkefolge(it.tom)
+                validate(Arbeidsgiverperiode::antallDagerMedRefusjon).refusjonsDagerIkkeOverstigerPeriodelengde(it)
+                validate(Arbeidsgiverperiode::månedsinntekt).maanedsInntektErMellomNullOgTiMil()
+            }
 
             if (!this@KroniskKravRequest.dokumentasjon.isNullOrEmpty()) {
                 validate(KroniskKravRequest::dokumentasjon).isGodskjentFiletyper()

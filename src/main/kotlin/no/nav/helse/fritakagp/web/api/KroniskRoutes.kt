@@ -7,6 +7,7 @@ import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbService
+import no.nav.helse.arbeidsgiver.integrasjoner.aareg.AaregArbeidsforholdClient
 import no.nav.helse.arbeidsgiver.web.auth.AltinnAuthorizer
 import no.nav.helse.fritakagp.KroniskKravMetrics
 import no.nav.helse.fritakagp.KroniskSoeknadMetrics
@@ -23,6 +24,7 @@ import no.nav.helse.fritakagp.web.api.resreq.KroniskKravRequest
 import no.nav.helse.fritakagp.web.api.resreq.KroniskSoknadRequest
 import no.nav.helse.fritakagp.web.auth.authorize
 import no.nav.helse.fritakagp.web.auth.hentIdentitetsnummerFraLoginToken
+import org.koin.ktor.ext.inject
 import java.util.*
 import javax.sql.DataSource
 
@@ -35,7 +37,8 @@ fun Route.kroniskRoutes(
     virusScanner: VirusScanner,
     bucket: BucketStorage,
     authorizer: AltinnAuthorizer,
-    belopBeregning: BeløpBeregning
+    belopBeregning: BeløpBeregning,
+    aaregClient: AaregArbeidsforholdClient
 ) {
     route("/kronisk") {
         route("/soeknad") {
@@ -89,9 +92,11 @@ fun Route.kroniskRoutes(
 
             post {
                 val request = call.receive<KroniskKravRequest>()
-                //TODO: Gjør kall til AAREG
-                request.validate(listOf())
                 authorize(authorizer, request.virksomhetsnummer)
+
+                request.validate(
+                    aaregClient.hentArbeidsforhold(request.identitetsnummer, UUID.randomUUID().toString())
+                )
 
                 val krav =
                     request.toDomain(hentIdentitetsnummerFraLoginToken(application.environment.config, call.request))

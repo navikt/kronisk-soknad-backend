@@ -89,7 +89,8 @@ fun Route.kroniskRoutes(
 
             post {
                 val request = call.receive<KroniskKravRequest>()
-                request.validate()
+                //TODO: Gjør kall til AAREG
+                request.validate(listOf())
                 authorize(authorizer, request.virksomhetsnummer)
 
                 val krav =

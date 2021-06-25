@@ -1,18 +1,35 @@
+package no.nav.helse.fritakagp.web.dto.validation
+
+import no.nav.helse.AaregTestData
 import no.nav.helse.GravidTestData
 import no.nav.helse.arbeidsgiver.integrasjoner.aareg.*
 import no.nav.helse.fritakagp.domain.Arbeidsgiverperiode
 import no.nav.helse.fritakagp.web.api.resreq.GravidKravRequest
-import no.nav.helse.fritakagp.web.dto.validation.måHaAktivtArbeidsforhold
+import no.nav.helse.fritakagp.web.api.resreq.validationShouldFailFor
 import org.junit.jupiter.api.Test
 import org.valiktor.functions.validateForEach
 import java.time.LocalDate
 import java.time.LocalDateTime
 import org.valiktor.validate
-//import no.nav.helse.fritakagp.web.dto.validation.*
 
-class AaregConstraintsKtTest{
+class AaregConstraintsKtTest {
+
     @Test
-    fun `HEI HER ER EN TEST`() {
+    fun `Refusjonskravet er innenfor Arbeidsforholdet`() {
+        val periode = Arbeidsgiverperiode(
+            LocalDate.of(2021, 1, 15),
+            LocalDate.of(2021, 1, 18),
+            2,
+            månedsinntekt = 2590.8,
+        )
+
+        validate(periode) {
+            validate(Arbeidsgiverperiode::fom).måHaAktivtArbeidsforhold(periode, AaregTestData.evigArbeidsForholdListe)
+        }
+    }
+
+    @Test
+    fun `Arbeidsgiver periode ovrlapper Arbeidsforhold`() {
 
         val arbeidsgiver = Arbeidsgiver("AS", "1232242423")
         val opplysningspliktig = Opplysningspliktig("AS", "1212121212")
@@ -59,14 +76,55 @@ class AaregConstraintsKtTest{
                 )
             )
         )
-        validate(gravidKravRequest){
+        validate(gravidKravRequest) {
 
             validate(GravidKravRequest::perioder).validateForEach {
-                validate(Arbeidsgiverperiode::fom).måHaAktivtArbeidsforhold(it, listOf(arbeidsForhold1,arbeidsForhold2))
+                validate(Arbeidsgiverperiode::fom).måHaAktivtArbeidsforhold(
+                    it,
+                    listOf(arbeidsForhold1, arbeidsForhold2)
+                )
             }
         }
 
+    }
+
+    @Test
+    fun `Refusjonsdato er før Arbeidsforhold har begynt`() {
+
+        val periode = Arbeidsgiverperiode(
+            LocalDate.of(2021, 1, 15),
+            LocalDate.of(2021, 1, 18),
+            2,
+            månedsinntekt = 2590.8,
+        )
+        validationShouldFailFor(Arbeidsgiverperiode::fom) {
+            validate(periode) {
+                validate(Arbeidsgiverperiode::fom).måHaAktivtArbeidsforhold(
+                    periode,
+                    AaregTestData.pågåendeArbeidsforholdListe
+                )
+            }
+        }
 
     }
 
+    @Test
+    fun `Refusjonsdato etter Arbeidsforhold er avsluttet`() {
+        val periode = Arbeidsgiverperiode(
+            LocalDate.of(2021, 1, 15),
+            LocalDate.of(2021, 1, 18),
+            2,
+            månedsinntekt = 2590.8,
+        )
+
+        validationShouldFailFor(Arbeidsgiverperiode::fom) {
+            validate(periode) {
+                validate(Arbeidsgiverperiode::fom).måHaAktivtArbeidsforhold(
+                    periode,
+                    AaregTestData.avsluttetArbeidsforholdListe
+                )
+            }
+        }
+
+    }
 }

@@ -29,7 +29,7 @@ class AaregConstraintsKtTest {
     }
 
     @Test
-    fun `Arbeidsgiver periode ovrlapper Arbeidsforhold`() {
+    fun `Sammenehengende arbeidsforhold slås sammen til en periode`() {
 
         val arbeidsgiver = Arbeidsgiver("AS", "1232242423")
         val opplysningspliktig = Opplysningspliktig("AS", "1212121212")
@@ -77,7 +77,6 @@ class AaregConstraintsKtTest {
             )
         )
         validate(gravidKravRequest) {
-
             validate(GravidKravRequest::perioder).validateForEach {
                 validate(Arbeidsgiverperiode::fom).måHaAktivtArbeidsforhold(
                     it,
@@ -92,8 +91,8 @@ class AaregConstraintsKtTest {
     fun `Refusjonsdato er før Arbeidsforhold har begynt`() {
 
         val periode = Arbeidsgiverperiode(
-            LocalDate.of(2021, 1, 15),
-            LocalDate.of(2021, 1, 18),
+            LocalDate.of(2021, 1, 1),
+            LocalDate.of(2021, 1, 5),
             2,
             månedsinntekt = 2590.8,
         )
@@ -111,8 +110,8 @@ class AaregConstraintsKtTest {
     @Test
     fun `Refusjonsdato etter Arbeidsforhold er avsluttet`() {
         val periode = Arbeidsgiverperiode(
-            LocalDate.of(2021, 1, 15),
-            LocalDate.of(2021, 1, 18),
+            LocalDate.of(2021, 5, 15),
+            LocalDate.of(2021, 5, 18),
             2,
             månedsinntekt = 2590.8,
         )

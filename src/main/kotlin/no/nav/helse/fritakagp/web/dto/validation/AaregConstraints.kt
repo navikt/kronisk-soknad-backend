@@ -23,9 +23,10 @@ fun <E> Validator<E>.Property<LocalDate?>.måHaAktivtArbeidsforhold(agp: Arbeids
                 sisteArbeidsforhold.last().ansettelsesperiode.periode.tom
             )
 
-        val kravPeriodeSubsettAvAnsPeriode = ansPeriode.tom == null ||
-                agp.tom.isBefore(ansPeriode.tom) ||
-                agp.tom == ansPeriode.tom
+        val kravPeriodeSubsettAvAnsPeriode =
+            (agp.fom.isAfter(ansPeriode.fom) || agp.fom == ansPeriode.fom)
+            &&
+            (ansPeriode.tom == null || agp.tom.isBefore(ansPeriode.tom) || agp.tom == ansPeriode.tom)
 
         return@validate kravPeriodeSubsettAvAnsPeriode
     }

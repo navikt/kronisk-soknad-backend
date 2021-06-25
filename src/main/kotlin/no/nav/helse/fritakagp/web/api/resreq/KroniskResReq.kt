@@ -81,6 +81,7 @@ data class KroniskKravRequest(
                 validate(Arbeidsgiverperiode::fom).datoerHarRiktigRekkefolge(it.tom)
                 validate(Arbeidsgiverperiode::antallDagerMedRefusjon).refusjonsDagerIkkeOverstigerPeriodelengde(it)
                 validate(Arbeidsgiverperiode::månedsinntekt).maanedsInntektErMellomNullOgTiMil()
+                //validate(Arbeidsgiverperiode::fom).måHaAktivtArbeidsforhold(it, )
             }
 
             if (!this@KroniskKravRequest.dokumentasjon.isNullOrEmpty()) {

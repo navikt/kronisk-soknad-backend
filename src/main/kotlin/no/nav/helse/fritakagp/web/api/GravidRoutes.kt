@@ -7,6 +7,7 @@ import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbService
+import no.nav.helse.arbeidsgiver.integrasjoner.aareg.AaregArbeidsforholdClient
 import no.nav.helse.arbeidsgiver.web.auth.AltinnAuthorizer
 import no.nav.helse.fritakagp.GravidKravMetrics
 import no.nav.helse.fritakagp.GravidSoeknadMetrics
@@ -41,7 +42,8 @@ fun Route.gravidRoutes(
     virusScanner: VirusScanner,
     bucket: BucketStorage,
     authorizer: AltinnAuthorizer,
-    belopBeregning: BeløpBeregning
+    belopBeregning: BeløpBeregning,
+    aaregClient: AaregArbeidsforholdClient
 ) {
     route("/gravid") {
         route("/soeknad") {
@@ -99,7 +101,11 @@ fun Route.gravidRoutes(
             post {
 
                 val request = call.receive<GravidKravRequest>()
-                request.validate()
+
+                request.validate(
+                    aaregClient.hentArbeidsforhold(request.identitetsnummer, UUID.randomUUID().toString())
+                )
+
                 authorize(authorizer, request.virksomhetsnummer)
 
                 val krav = request.toDomain(

@@ -1,5 +1,6 @@
 package no.nav.helse.fritakagp.web.api.resreq
 
+import no.nav.helse.arbeidsgiver.integrasjoner.aareg.Arbeidsforhold
 import no.nav.helse.arbeidsgiver.web.validation.isValidIdentitetsnummer
 import no.nav.helse.arbeidsgiver.web.validation.isValidOrganisasjonsnummer
 import no.nav.helse.fritakagp.domain.*
@@ -69,13 +70,12 @@ data class GravidKravRequest(
     val virksomhetsnummer: String,
     val identitetsnummer: String,
     val perioder: List<Arbeidsgiverperiode>,
-
     val bekreftet: Boolean,
     val kontrollDager: Int?,
     val antallDager: Int,
     val dokumentasjon: String?
 ) {
-    fun validate() {
+    fun validate(aktuelleArbeidsforhold: List<Arbeidsforhold>) {
         validate(this) {
             validate(GravidKravRequest::identitetsnummer).isValidIdentitetsnummer()
             validate(GravidKravRequest::virksomhetsnummer).isValidOrganisasjonsnummer()
@@ -85,6 +85,7 @@ data class GravidKravRequest(
                 validate(Arbeidsgiverperiode::fom).datoerHarRiktigRekkefolge(it.tom)
                 validate(Arbeidsgiverperiode::antallDagerMedRefusjon).refusjonsDagerIkkeOverstigerPeriodelengde(it)
                 validate(Arbeidsgiverperiode::månedsinntekt).maanedsInntektErMellomNullOgTiMil()
+                validate(Arbeidsgiverperiode::fom).måHaAktivtArbeidsforhold(it, aktuelleArbeidsforhold)
             }
 
             if (!this@GravidKravRequest.dokumentasjon.isNullOrEmpty()) {

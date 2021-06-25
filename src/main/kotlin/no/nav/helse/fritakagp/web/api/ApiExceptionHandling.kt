@@ -41,14 +41,6 @@ fun Application.configureExceptionHandling() {
                 ValidationProblemDetail(it.constraint.name, it.getContextualMessage(), it.property, it.value)
             }.toSet()
 
-            problems
-                .filter {
-                    it.propertyPath.contains("perioder")
-                }
-                .forEach {
-                    logger.warn("Invalid ${it.propertyPath}: ${it.invalidValue} (${it.message})")
-                }
-
             call.respond(HttpStatusCode.UnprocessableEntity, ValidationProblem(problems))
         }
 

@@ -15,7 +15,11 @@ fun <E> Validator<E>.Property<LocalDate?>.måHaAktivtArbeidsforhold(agp: Arbeids
             .sortedBy { it.ansettelsesperiode.periode.tom ?: LocalDate.MAX }
             .takeLast(2)
 
-        val ansPeriode = if (sisteArbeidsforhold.size <= 1 || oppholdMellomPerioderOverstigerDager(sisteArbeidsforhold, MAKS_DAGER_OPPHOLD))
+        val ansPeriode = if (sisteArbeidsforhold.size <= 1 || oppholdMellomPerioderOverstigerDager(
+                sisteArbeidsforhold,
+                MAKS_DAGER_OPPHOLD
+            )
+        )
             sisteArbeidsforhold.lastOrNull()?.ansettelsesperiode?.periode ?: AaregPeriode(LocalDate.MAX, LocalDate.MAX)
         else
             AaregPeriode(
@@ -23,12 +27,10 @@ fun <E> Validator<E>.Property<LocalDate?>.måHaAktivtArbeidsforhold(agp: Arbeids
                 sisteArbeidsforhold.last().ansettelsesperiode.periode.tom
             )
 
-        val kravPeriodeSubsettAvAnsPeriode =
-            (agp.fom.isAfter(ansPeriode.fom) || agp.fom == ansPeriode.fom)
-            &&
-            (ansPeriode.tom == null || agp.tom.isBefore(ansPeriode.tom) || agp.tom == ansPeriode.tom)
+        val validFom = (agp.fom.isAfter(ansPeriode.fom) || agp.fom == ansPeriode.fom)
+        val validTom = (ansPeriode.tom == null || agp.tom.isBefore(ansPeriode.tom) || agp.tom == ansPeriode.tom)
 
-        return@validate kravPeriodeSubsettAvAnsPeriode
+        return@validate validFom && validTom
     }
 
 fun oppholdMellomPerioderOverstigerDager(sisteArbeidsforhold: List<Arbeidsforhold>, dager: Long): Boolean {

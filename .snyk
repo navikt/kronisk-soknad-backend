@@ -1,5 +1,5 @@
 # Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
-version: v1.19.0
+version: v1.14.1
 # ignores vulnerabilities until expiry date; change duration by modifying expiry date
 ignore:
   SNYK-JAVA-NETMINIDEV-1078499:
@@ -45,6 +45,5 @@ ignore:
   SNYK-JAVA-NETMINIDEV-1298655:
     - '*':
         reason: None Given
-        expires: 2021-07-24T12:20:53.230Z
-        created: 2021-06-24T12:20:53.234Z
+        expires: 2021-07-29T12:09:48.766Z
 patch: {}

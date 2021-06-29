@@ -97,6 +97,8 @@ spec:
       value: /fritak-agp-api
     - name: RUN_BACKGROUND_WORKERS
       value: "false"
+    - name: AAREG_URL
+      value: https://helsearbeidsgiver-proxy.prod-fss-pub.nais.io/aareg-arbeidsforhold
 
   gcp:
     sqlInstances:

@@ -2,6 +2,7 @@ package no.nav.helse.fritakagp.koin
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import no.nav.helse.arbeidsgiver.integrasjoner.aareg.*
 import no.nav.helse.arbeidsgiver.integrasjoner.altinn.AltinnOrganisasjon
 import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.DokarkivKlient
 import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.JournalpostRequest
@@ -25,6 +26,28 @@ import java.time.LocalDate
 fun Module.mockExternalDependecies() {
     single { MockAltinnRepo(get()) } bind AltinnOrganisationsRepository::class
     single { MockBrukernotifikasjonBeskjedSender() } bind BrukernotifikasjonBeskjedSender::class
+
+    single {
+        object : AaregArbeidsforholdClient {
+            override suspend fun hentArbeidsforhold(ident: String, callId: String): List<Arbeidsforhold> =
+                listOf<Arbeidsforhold>(
+                    Arbeidsforhold(
+                        Arbeidsgiver("test", "810007842"), Opplysningspliktig("Juice", "810007702"), emptyList(), Ansettelsesperiode(
+                            Periode(LocalDate.MIN, null)
+                        ), LocalDate.MIN.atStartOfDay()) ,
+                    Arbeidsforhold(
+                        Arbeidsgiver("test", "910098896"), Opplysningspliktig("Juice", "910098896"), emptyList(), Ansettelsesperiode(
+                            Periode(
+                                LocalDate.MIN, null)
+                        ), LocalDate.MIN.atStartOfDay()),
+                    Arbeidsforhold(
+                        Arbeidsgiver("test", "917404437"), Opplysningspliktig("Juice", "910098896"), emptyList(), Ansettelsesperiode(
+                            Periode(
+                                LocalDate.MIN, null)
+                        ), LocalDate.MIN.atStartOfDay())
+                )
+        }
+    } bind AaregArbeidsforholdClient::class
 
     single {
         object : DokarkivKlient {

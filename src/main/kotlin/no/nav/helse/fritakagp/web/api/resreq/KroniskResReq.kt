@@ -1,5 +1,6 @@
 package no.nav.helse.fritakagp.web.api.resreq
 
+import no.nav.helse.arbeidsgiver.integrasjoner.aareg.Arbeidsforhold
 import no.nav.helse.arbeidsgiver.web.validation.isValidIdentitetsnummer
 import no.nav.helse.arbeidsgiver.web.validation.isValidOrganisasjonsnummer
 import no.nav.helse.fritakagp.domain.*
@@ -74,7 +75,7 @@ data class KroniskKravRequest(
     val kontrollDager: Int?,
     val antallDager: Int
 ) {
-   fun validate() {
+   fun validate(aktuelleArbeidsforhold: List<Arbeidsforhold>) {
         validate(this) {
             validate(KroniskKravRequest::identitetsnummer).isValidIdentitetsnummer()
             validate(KroniskKravRequest::virksomhetsnummer).isValidOrganisasjonsnummer()
@@ -83,6 +84,7 @@ data class KroniskKravRequest(
                 validate(Arbeidsgiverperiode::fom).datoerHarRiktigRekkefolge(it.tom)
                 validate(Arbeidsgiverperiode::antallDagerMedRefusjon).refusjonsDagerIkkeOverstigerPeriodelengde(it)
                 validate(Arbeidsgiverperiode::månedsinntekt).maanedsInntektErMellomNullOgTiMil()
+                validate(Arbeidsgiverperiode::fom).måHaAktivtArbeidsforhold(it, aktuelleArbeidsforhold)
             }
 
 

@@ -39,6 +39,11 @@ fun Module.mockExternalDependecies() {
                         Arbeidsgiver("test", "910098896"), Opplysningspliktig("Juice", "910098896"), emptyList(), Ansettelsesperiode(
                             Periode(
                                 LocalDate.MIN, null)
+                        ), LocalDate.MIN.atStartOfDay()),
+                    Arbeidsforhold(
+                        Arbeidsgiver("test", "917404437"), Opplysningspliktig("Juice", "910098896"), emptyList(), Ansettelsesperiode(
+                            Periode(
+                                LocalDate.MIN, null)
                         ), LocalDate.MIN.atStartOfDay())
                 )
         }

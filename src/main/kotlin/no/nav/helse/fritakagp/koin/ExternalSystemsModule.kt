@@ -36,6 +36,7 @@ import org.koin.dsl.bind
 
 fun Module.externalSystemClients(config: ApplicationConfig) {
     val accessTokenProviderError = "Fant ikke config i application.conf"
+
     single {
         CachedAuthRepo(
             AltinnRestClient(

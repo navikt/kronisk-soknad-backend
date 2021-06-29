@@ -93,10 +93,11 @@ fun Route.kroniskRoutes(
             post {
                 val request = call.receive<KroniskKravRequest>()
                 authorize(authorizer, request.virksomhetsnummer)
+                val arbeidsforhold = aaregClient
+                    .hentArbeidsforhold(request.identitetsnummer, UUID.randomUUID().toString())
+                    .filter { it.arbeidsgiver.organisasjonsnummer == request.virksomhetsnummer }
 
-                request.validate(
-                    aaregClient.hentArbeidsforhold(request.identitetsnummer, UUID.randomUUID().toString())
-                )
+                request.validate(arbeidsforhold)
 
                 val krav =
                     request.toDomain(hentIdentitetsnummerFraLoginToken(application.environment.config, call.request))

@@ -97,16 +97,14 @@ fun Route.gravidRoutes(
                 }
             }
 
-
             post {
-
                 val request = call.receive<GravidKravRequest>()
-
-                request.validate(
-                    aaregClient.hentArbeidsforhold(request.identitetsnummer, UUID.randomUUID().toString())
-                )
-
                 authorize(authorizer, request.virksomhetsnummer)
+                val arbeidsforhold = aaregClient
+                    .hentArbeidsforhold(request.identitetsnummer, UUID.randomUUID().toString())
+                    .filter { it.arbeidsgiver.organisasjonsnummer == request.virksomhetsnummer }
+
+                request.validate(arbeidsforhold)
 
                 val krav = request.toDomain(
                     hentIdentitetsnummerFraLoginToken(

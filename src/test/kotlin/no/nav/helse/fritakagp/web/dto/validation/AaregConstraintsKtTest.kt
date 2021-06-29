@@ -6,6 +6,7 @@ import no.nav.helse.arbeidsgiver.integrasjoner.aareg.*
 import no.nav.helse.fritakagp.domain.Arbeidsgiverperiode
 import no.nav.helse.fritakagp.web.api.resreq.GravidKravRequest
 import no.nav.helse.fritakagp.web.api.resreq.validationShouldFailFor
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.valiktor.functions.validateForEach
 import java.time.LocalDate
@@ -124,6 +125,35 @@ class AaregConstraintsKtTest {
                 )
             }
         }
+
+    }
+
+
+    @Test
+    fun `merge fragmented periods`() {
+        assertThat(slåSammenPerioder(listOf(
+            // skal ble merget til 1 periode fra 1.1.21 til 28.2.21
+            Periode(LocalDate.of(2021, 1, 1), LocalDate.of(2021, 1, 29)),
+            Periode(LocalDate.of(2021, 2, 1), LocalDate.of(2021, 2, 13)),
+            Periode(LocalDate.of(2021, 2, 15), LocalDate.of(2021, 2, 28)),
+
+            // skal bli merget til 1
+            Periode(LocalDate.of(2021, 3, 20), LocalDate.of(2021, 3, 31)),
+            Periode(LocalDate.of(2021, 4, 2), LocalDate.of(2021, 4, 30)),
+
+            // skal bli merget til 1
+            Periode(LocalDate.of(2021, 7, 1), LocalDate.of(2021, 8, 30)),
+            Periode(LocalDate.of(2021, 9, 1), null),
+        ))).hasSize(3)
+
+        assertThat(slåSammenPerioder(listOf(
+            Periode(LocalDate.of(2021, 1, 1), LocalDate.of(2021, 1, 29)),
+            Periode(LocalDate.of(2021, 9, 1), null),
+        ))).hasSize(2)
+
+        assertThat(slåSammenPerioder(listOf(
+            Periode(LocalDate.of(2021, 9, 1), null),
+        ))).hasSize(1)
 
     }
 }

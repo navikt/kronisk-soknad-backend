@@ -42,8 +42,4 @@ ignore:
     - '*':
         reason: None Given
         expires: 2021-07-01T12:39:32.328Z
-  SNYK-JAVA-NETMINIDEV-1298655:
-    - '*':
-        reason: None Given
-        expires: 2021-07-29T12:09:48.766Z
 patch: {}

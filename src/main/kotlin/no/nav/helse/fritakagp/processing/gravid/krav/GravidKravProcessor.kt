@@ -189,10 +189,11 @@ class GravidKravProcessor(
     fun opprettOppgave(krav: GravidKrav): String {
         val aktoerId = pdlClient.fullPerson(krav.identitetsnummer)?.hentIdenter?.trekkUtIdent(PdlIdent.PdlIdentGruppe.AKTORID)
         requireNotNull(aktoerId) { "Fant ikke AktørID for fnr i ${krav.id}" }
-
+        krav.oppgaveId
+        oppgaveKlient
         val request = OpprettOppgaveRequest(
             aktoerId = aktoerId,
-            tildeltEnhetsnr = pdlClient.fullPerson(krav.identitetsnummer)?.hentGeografiskTilknytning?.hentTilknytning(),
+            tildeltEnhetsnr = pdlClient.fullPerson(krav.identitetsnummer)?.hentGeografiskTilknytning?.gtKommune,
             journalpostId = krav.journalpostId,
             beskrivelse = generereGravidkKravBeskrivelse(krav, "Krav om refusjon av arbeidsgiverperioden ifbm. graviditet"),
             tema = "SYK",
@@ -214,7 +215,7 @@ class GravidKravProcessor(
 
         val request = OpprettOppgaveRequest(
             aktoerId = aktoerId,
-            tildeltEnhetsnr = pdlClient.fullPerson(krav.identitetsnummer)?.hentGeografiskTilknytning?.hentTilknytning(),
+            tildeltEnhetsnr = pdlClient.fullPerson(krav.identitetsnummer)?.hentGeografiskTilknytning?.gtKommune,
             journalpostId = krav.journalpostId,
             beskrivelse = generereGravidkKravBeskrivelse(krav, "Klarte ikke å opprette oppgave og/eller journalføre for dette refusjonskravet: ${krav.id}"),
             tema = "SYK",

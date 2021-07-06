@@ -191,7 +191,7 @@ class KroniskKravProcessor(
 
         val request = OpprettOppgaveRequest(
             aktoerId = aktoerId,
-            tildeltEnhetsnr = pdlClient.fullPerson(krav.identitetsnummer)?.hentGeografiskTilknytning?.hentTilknytning(),
+            tildeltEnhetsnr = pdlClient.fullPerson(krav.identitetsnummer)?.hentGeografiskTilknytning?.gtKommune,
             journalpostId = krav.journalpostId,
             beskrivelse = generereKroniskKravBeskrivelse(krav, "Krav om refusjon av arbeidsgiverperioden ifbm. kroniskitet"),
             tema = "SYK",

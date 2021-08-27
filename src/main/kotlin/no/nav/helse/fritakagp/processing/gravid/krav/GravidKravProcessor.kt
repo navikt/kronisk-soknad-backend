@@ -193,7 +193,6 @@ class GravidKravProcessor(
         oppgaveKlient
         val request = OpprettOppgaveRequest(
             aktoerId = aktoerId,
-            tildeltEnhetsnr = pdlClient.fullPerson(krav.identitetsnummer)?.hentGeografiskTilknytning?.gtKommune,
             journalpostId = krav.journalpostId,
             beskrivelse = generereGravidkKravBeskrivelse(krav, "Krav om refusjon av arbeidsgiverperioden ifbm. graviditet"),
             tema = "SYK",
@@ -215,7 +214,6 @@ class GravidKravProcessor(
 
         val request = OpprettOppgaveRequest(
             aktoerId = aktoerId,
-            tildeltEnhetsnr = pdlClient.fullPerson(krav.identitetsnummer)?.hentGeografiskTilknytning?.gtKommune,
             journalpostId = krav.journalpostId,
             beskrivelse = generereGravidkKravBeskrivelse(krav, "Klarte ikke å opprette oppgave og/eller journalføre for dette refusjonskravet: ${krav.id}"),
             tema = "SYK",

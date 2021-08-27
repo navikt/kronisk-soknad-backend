@@ -191,7 +191,6 @@ class KroniskKravProcessor(
 
         val request = OpprettOppgaveRequest(
             aktoerId = aktoerId,
-            tildeltEnhetsnr = pdlClient.fullPerson(krav.identitetsnummer)?.hentGeografiskTilknytning?.gtKommune,
             journalpostId = krav.journalpostId,
             beskrivelse = generereKroniskKravBeskrivelse(krav, "Krav om refusjon av arbeidsgiverperioden ifbm. kroniskitet"),
             tema = "SYK",
@@ -213,7 +212,6 @@ class KroniskKravProcessor(
 
         val request = OpprettOppgaveRequest(
             aktoerId = aktoerId,
-            tildeltEnhetsnr = pdlClient.fullPerson(krav.identitetsnummer)?.hentGeografiskTilknytning?.hentTilknytning(),
             journalpostId = krav.journalpostId,
             beskrivelse = generereKroniskKravBeskrivelse(krav, "Fordelingsoppgave for refusjonskrav ifbm sykdom i aprbeidsgiverperioden med fritak fra arbeidsgiverperioden grunnet kronisk sykdom."),
             tema = "SYK",

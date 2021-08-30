@@ -15,6 +15,9 @@ import no.nav.helse.fritakagp.db.KroniskSoeknadRepository
 import no.nav.helse.fritakagp.integration.kafka.BrukernotifikasjonBeskjedSender
 import java.net.URL
 import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.ZoneOffset
+import java.time.ZonedDateTime
 import java.util.*
 
 class BrukernotifikasjonProcessor(
@@ -81,6 +84,10 @@ class BrukernotifikasjonProcessor(
 
         val synligFremTil =  LocalDateTime.now().plusDays(31)
         val ukjentArbeidsgiver = "Arbeidsgiveren din"
+        val hendelsestidsPunktUtc = hendselstidspunkt
+            .atZone(ZoneId.systemDefault())
+            .withZoneSameInstant(ZoneId.of("UTC"))
+            .toLocalDateTime()
 
         val beskjed = BeskjedBuilder()
             .withGrupperingsId(id.toString())
@@ -90,7 +97,7 @@ class BrukernotifikasjonProcessor(
             .withSynligFremTil(synligFremTil)
             .withTekst("${virksomhetsNavn ?: ukjentArbeidsgiver} har søkt om utvidet støtte fra NAV angående sykepenger til deg.")
             .withEksternVarsling(false)
-            .withTidspunkt(hendselstidspunkt)
+            .withTidspunkt(hendelsestidsPunktUtc)
             .build()
 
         return beskjed

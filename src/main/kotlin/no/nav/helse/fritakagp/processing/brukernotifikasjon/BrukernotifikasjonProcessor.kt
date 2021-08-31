@@ -55,21 +55,21 @@ class BrukernotifikasjonProcessor(
         return when(jobbData.skjemaType) {
             Jobbdata.SkjemaType.KroniskKrav -> {
                 val skjema = kroniskKravRepo.getById(jobbData.skjemaId) ?: throw IllegalArgumentException("Fant ikke $jobbData")
-                buildBeskjed(skjema.id, "$frontendAppBaseUrl/notifikasjon/kronisk/krav/${skjema.id}", skjema.identitetsnummer, skjema.opprettet, skjema.virksomhetsnavn)
+                buildBeskjed(skjema.id, "$frontendAppBaseUrl/nb/notifikasjon/kronisk/krav/${skjema.id}", skjema.identitetsnummer, skjema.opprettet, skjema.virksomhetsnavn)
             }
 
             Jobbdata.SkjemaType.KroniskSøknad -> {
                 val skjema = kroniskSoeknadRepo.getById(jobbData.skjemaId) ?: throw IllegalArgumentException("Fant ikke $jobbData")
-                buildBeskjed(skjema.id, "$frontendAppBaseUrl/notifikasjon/kronisk/soknad/${skjema.id}", skjema.identitetsnummer, skjema.opprettet, skjema.virksomhetsnavn)
+                buildBeskjed(skjema.id, "$frontendAppBaseUrl/nb/notifikasjon/kronisk/soknad/${skjema.id}", skjema.identitetsnummer, skjema.opprettet, skjema.virksomhetsnavn)
             }
 
             Jobbdata.SkjemaType.GravidKrav -> {
                 val skjema = gravidKravRepo.getById(jobbData.skjemaId) ?: throw IllegalArgumentException("Fant ikke $jobbData")
-                buildBeskjed(skjema.id, "$frontendAppBaseUrl/notifikasjon/gravid/krav/${skjema.id}", skjema.identitetsnummer, skjema.opprettet, skjema.virksomhetsnavn)
+                buildBeskjed(skjema.id, "$frontendAppBaseUrl/nb/notifikasjon/gravid/krav/${skjema.id}", skjema.identitetsnummer, skjema.opprettet, skjema.virksomhetsnavn)
             }
             Jobbdata.SkjemaType.GravidSøknad -> {
                 val skjema = gravidSoeknadRepo.getById(jobbData.skjemaId) ?: throw IllegalArgumentException("Fant ikke $jobbData")
-                buildBeskjed(skjema.id, "$frontendAppBaseUrl/notifikasjon/gravid/soknad/${skjema.id}", skjema.identitetsnummer, skjema.opprettet, skjema.virksomhetsnavn)
+                buildBeskjed(skjema.id, "$frontendAppBaseUrl/nb/notifikasjon/gravid/soknad/${skjema.id}", skjema.identitetsnummer, skjema.opprettet, skjema.virksomhetsnavn)
             }
         }
     }

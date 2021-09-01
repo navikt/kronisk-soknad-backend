@@ -50,8 +50,7 @@ spec:
         - host: kafka-schema-registry.nais.adeo.no
         - host: data.brreg.no
         - host: dokarkiv.prod-fss-pub.nais.io
-        - host: oppgave-q1.dev-fss-pub.nais.io
-        - host: pdl-api.prod-fss-pub.nais.io
+        - host: oppgave.prod-fss-pub.nais.io
 
       rules:
         - application: helsearbeidsgiver-proxy
@@ -99,6 +98,15 @@ spec:
       value: "true"
     - name: AAREG_URL
       value: https://helsearbeidsgiver-proxy.prod-fss-pub.nais.io/aareg-arbeidsforhold
+
+    - name: OPPGAVE_SCOPE
+      value: api://prod-fss.oppgavehandtering.oppgave/.default
+    - name: DOKARKIV_SCOPE
+      value: api://prod-fss.teamdokumenthandtering.dokarkiv/.default
+    - name: DOKARKIV_URL
+      value: https://dokarkiv.prod-fss-pub.nais.io
+    - name: OPPGAVEBEHANDLING_URL
+      value: https://oppgave.prod-fss-pub.nais.io/api/v1/oppgaver
 
   gcp:
     sqlInstances:

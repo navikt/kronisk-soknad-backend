@@ -52,11 +52,13 @@ class KroniskKravProcessor(
      */
     override fun prosesser(jobb: Bakgrunnsjobb) {
         val krav = getOrThrow(jobb)
+        log.info("Prosesserer krav ${krav.id}")
 
         try {
             if (krav.virksomhetsnavn == null) {
                 runBlocking {
                     krav.virksomhetsnavn = brregClient.getVirksomhetsNavn(krav.virksomhetsnummer)
+                    log.info("Slo opp virksomhet")
                 }
             }
             if (krav.journalpostId == null) {
@@ -65,9 +67,11 @@ class KroniskKravProcessor(
             }
 
             bucketStorage.deleteDoc(krav.id)
+            log.info("Slettet eventuelle vedlegg")
 
             if (krav.oppgaveId == null) {
                 krav.oppgaveId = opprettOppgave(krav)
+                log.info("Oppgave opprettet med id ${krav.oppgaveId}")
                 KroniskKravMetrics.tellOppgaveOpprettet()
             }
             bakgrunnsjobbRepo.save(
@@ -135,7 +139,7 @@ class KroniskKravProcessor(
 
         )
 
-        log.debug("Journalført ${krav.id} med ref ${response.journalpostId}")
+        log.info("Journalført ${krav.id} med ref ${response.journalpostId}")
         return response.journalpostId
     }
 

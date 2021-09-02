@@ -94,7 +94,6 @@ spec:
       value: "true"
     - name: AAREG_URL
       value: https://helsearbeidsgiver-proxy.prod-fss-pub.nais.io/aareg-arbeidsforhold
-
     - name: OPPGAVE_SCOPE
       value: api://prod-fss.oppgavehandtering.oppgave/.default
     - name: DOKARKIV_SCOPE

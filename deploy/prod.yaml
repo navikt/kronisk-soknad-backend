@@ -102,7 +102,7 @@ spec:
     - name: OPPGAVE_SCOPE
       value: api://prod-fss.oppgavehandtering.oppgave/.default
     - name: DOKARKIV_SCOPE
-      value: api://prod-fss.teamdokumenthandtering.dokarkiv/.default
+      value: api://162b3255-2f72-4399-8f7a-244add9ffaac/.default
     - name: DOKARKIV_URL
       value: https://dokarkiv.prod-fss-pub.nais.io
     - name: OPPGAVEBEHANDLING_URL

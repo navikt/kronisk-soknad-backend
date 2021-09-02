@@ -101,7 +101,7 @@ spec:
     - name: DOKARKIV_URL
       value: https://helsearbeidsgiver-proxy.prod-fss-pub.nais.io/dokarkiv
     - name: OPPGAVEBEHANDLING_URL
-      value: https://oppgave.prod-fss-pub.nais.io/api/v1/oppgaver
+      value: https://helsearbeidsgiver-proxy.prod-fss-pub.nais.io/oppgave
 
   gcp:
     sqlInstances:

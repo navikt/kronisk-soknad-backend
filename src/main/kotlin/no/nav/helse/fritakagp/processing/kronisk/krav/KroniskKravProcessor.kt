@@ -192,7 +192,7 @@ class KroniskKravProcessor(
     fun opprettOppgave(krav: KroniskKrav): String {
         val aktoerId = pdlClient.fullPerson(krav.identitetsnummer)?.hentIdenter?.trekkUtIdent(PdlIdent.PdlIdentGruppe.AKTORID)
         requireNotNull(aktoerId) { "Fant ikke AktørID for fnr i ${krav.id}" }
-
+        log.info("Fant aktørid")
         val request = OpprettOppgaveRequest(
             aktoerId = aktoerId,
             journalpostId = krav.journalpostId,

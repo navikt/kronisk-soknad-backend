@@ -99,7 +99,7 @@ fun Module.externalSystemClients(config: ApplicationConfig) {
     single { AaregArbeidsforholdClientImpl(config.getString("aareg_url"), get(qualifier = named("PROXY")), get()) } bind AaregArbeidsforholdClient::class
     single { PdlClientImpl(config.getString("pdl_url"), get(qualifier = named("PROXY")), get(), get()) } bind PdlClient::class
     single { DokarkivKlientImpl(config.getString("dokarkiv.base_url"), get(), get(qualifier = named("PROXY"))) } bind DokarkivKlient::class
-    single { OppgaveKlientImpl(config.getString("oppgavebehandling.url"), get(qualifier = named("OPPGAVE")), get()) } bind OppgaveKlient::class
+    single { OppgaveKlientImpl(config.getString("oppgavebehandling.url"), get(qualifier = named("PROXY")), get()) } bind OppgaveKlient::class
     single {
         ClamavVirusScannerImp(
             get(),

@@ -100,7 +100,7 @@ spec:
     - name: DOKARKIV_SCOPE
       value: api://162b3255-2f72-4399-8f7a-244add9ffaac/.default
     - name: DOKARKIV_URL
-      value: https://dokarkiv.prod-fss-pub.nais.io
+      value: https://helsearbeidsgiver-proxy.prod-fss-pub.nais.io/dokarkiv
     - name: OPPGAVEBEHANDLING_URL
       value: https://oppgave.prod-fss-pub.nais.io/api/v1/oppgaver
 

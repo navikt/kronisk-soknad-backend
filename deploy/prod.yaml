@@ -46,7 +46,7 @@ spec:
     outbound:
       external:
         - host: helsearbeidsgiver-proxy.prod-fss-pub.nais.io
-        - host: altinn.no
+        - host: www.altinn.no
         - host: kafka-schema-registry.nais.adeo.no
         - host: data.brreg.no
         - host: dokarkiv.prod-fss-pub.nais.io
@@ -73,7 +73,7 @@ spec:
     - name: PDL_URL
       value: https://helsearbeidsgiver-proxy.dev-fss-pub.nais.io/pdl
     - name: ALTINN_ENDPOINT
-      value: https://altinn.no/ServiceEngineExternal/CorrespondenceAgencyExternalBasic.svc
+      value: https://www.altinn.no/ServiceEngineExternal/CorrespondenceAgencyExternalBasic.svc
     - name: CLAM_AV_URL
       value: http://clamav.clamav.svc.cluster.local/scan
     - name: GCP_PRJ_ID

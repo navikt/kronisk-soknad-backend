@@ -66,10 +66,6 @@ spec:
   env:
     - name: KOIN_PROFILE
       value: PROD
-    - name: DOKARKIV_URL
-      value: https://helsearbeidsgiver-proxy.dev-fss-pub.nais.io/dokarkiv
-    - name: OPPGAVEBEHANDLING_URL
-      value: https://helsearbeidsgiver-proxy.dev-fss-pub.nais.io/oppgave
     - name: PDL_URL
       value: https://helsearbeidsgiver-proxy.dev-fss-pub.nais.io/pdl
     - name: ALTINN_ENDPOINT

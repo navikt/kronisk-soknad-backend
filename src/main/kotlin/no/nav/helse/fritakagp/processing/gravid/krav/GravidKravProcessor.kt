@@ -197,7 +197,7 @@ class GravidKravProcessor(
             beskrivelse = generereGravidkKravBeskrivelse(krav, "Krav om refusjon av arbeidsgiverperioden ifbm. graviditet"),
             tema = "SYK",
             behandlingstype = digitalKravBehandingsType,
-            oppgavetype = "BEH_SAK",
+            oppgavetype = "BEH_REF",
             behandlingstema = fritakAGPBehandingsTema,
             aktivDato = LocalDate.now(),
             fristFerdigstillelse = LocalDate.now().plusDays(7),

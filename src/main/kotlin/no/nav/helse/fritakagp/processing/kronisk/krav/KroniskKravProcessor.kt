@@ -199,7 +199,7 @@ class KroniskKravProcessor(
             beskrivelse = generereKroniskKravBeskrivelse(krav, "Krav om refusjon av arbeidsgiverperioden ifbm. kroniskitet"),
             tema = "SYK",
             behandlingstype = digitalKravBehandingsType,
-            oppgavetype = "BEH_SAK",
+            oppgavetype = "BEH_REF",
             behandlingstema = fritakAGPBehandingsTema,
             aktivDato = LocalDate.now(),
             fristFerdigstillelse = LocalDate.now().plusDays(7),

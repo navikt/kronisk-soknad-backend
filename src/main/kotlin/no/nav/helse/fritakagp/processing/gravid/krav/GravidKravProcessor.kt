@@ -192,6 +192,7 @@ class GravidKravProcessor(
         krav.oppgaveId
         oppgaveKlient
         val request = OpprettOppgaveRequest(
+            tildeltEnhetsnr= "4488",
             aktoerId = aktoerId,
             journalpostId = krav.journalpostId,
             beskrivelse = generereGravidkKravBeskrivelse(krav, "Krav om refusjon av arbeidsgiverperioden ifbm. graviditet"),
@@ -213,6 +214,7 @@ class GravidKravProcessor(
         requireNotNull(aktoerId) { "Fant ikke AktørID for fnr i ${krav.id}" }
 
         val request = OpprettOppgaveRequest(
+            tildeltEnhetsnr= "4488",
             aktoerId = aktoerId,
             journalpostId = krav.journalpostId,
             beskrivelse = generereGravidkKravBeskrivelse(krav, "Klarte ikke å opprette oppgave og/eller journalføre for dette refusjonskravet: ${krav.id}"),

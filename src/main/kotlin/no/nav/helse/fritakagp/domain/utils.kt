@@ -90,7 +90,7 @@ fun generereGravidkKravBeskrivelse(krav: GravidKrav, desc : String) : String {
 
 fun genererePeriodeTable(perioder: List<Arbeidsgiverperiode>) : String {
     return table {
-        header("FOM", "TOM", "kreves refusjon for", "Beregnet månedsinntekt (NOK)", "Refusjonskrav (NOK)", "Dagsats (NOK)", "Beløp (NOK)")
+        header("FOM", "TOM", "kreves refusjon for", "Beregnet månedsinntekt (NOK)", "Dagsats (NOK)", "Beløp (NOK)")
         for (p in perioder) {
             row(p.fom.atStartOfDay(),p.tom.atStartOfDay(),p.antallDagerMedRefusjon, p.månedsinntekt, p.dagsats, p.belop)
         }
@@ -99,7 +99,6 @@ fun genererePeriodeTable(perioder: List<Arbeidsgiverperiode>) : String {
             alignment("TOM", Table.Hints.Alignment.LEFT)
             alignment("kreves refusjon for", Table.Hints.Alignment.LEFT)
             alignment("Beregnet månedsinntekt (NOK)", Table.Hints.Alignment.LEFT)
-            alignment("Refusjonskrav (NOK)", Table.Hints.Alignment.LEFT)
             alignment("Dagsats (NOK)", Table.Hints.Alignment.LEFT)
             alignment("Beløp (NOK)", Table.Hints.Alignment.LEFT)
             borderStyle = Table.BorderStyle.SINGLE_LINE

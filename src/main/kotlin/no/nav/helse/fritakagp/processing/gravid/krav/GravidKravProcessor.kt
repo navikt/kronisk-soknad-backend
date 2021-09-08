@@ -43,8 +43,8 @@ class GravidKravProcessor(
 
     override val type: String get() = JOB_TYPE
 
-    val digitalKravBehandingsType = "ae0227"
-    val fritakAGPBehandingsTema = "ab0338"
+    val digitalKravBehandingsType = "ae0121"
+    val fritakAGPBehandingsTema = "ab0200"
 
     val log = LoggerFactory.getLogger(GravidKravProcessor::class.java)
 
@@ -197,7 +197,7 @@ class GravidKravProcessor(
             beskrivelse = generereGravidkKravBeskrivelse(krav, "Krav om refusjon av arbeidsgiverperioden ifbm. graviditet"),
             tema = "SYK",
             behandlingstype = digitalKravBehandingsType,
-            oppgavetype = "BEH_SAK",
+            oppgavetype = "BEH_REF",
             behandlingstema = fritakAGPBehandingsTema,
             aktivDato = LocalDate.now(),
             fristFerdigstillelse = LocalDate.now().plusDays(7),

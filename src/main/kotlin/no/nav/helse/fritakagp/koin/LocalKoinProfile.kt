@@ -18,6 +18,7 @@ import no.nav.helse.fritakagp.processing.gravid.krav.*
 import no.nav.helse.fritakagp.processing.gravid.soeknad.*
 import no.nav.helse.fritakagp.processing.kronisk.krav.*
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.*
+import no.nav.helse.fritakagp.service.PdlService
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import javax.sql.DataSource
@@ -59,6 +60,8 @@ fun localDevConfig(config: ApplicationConfig) = module {
     single { GravidKravKafkaProcessor(get(), get(), get()) }
     single { KroniskSoeknadKafkaProcessor(get(), get(), get()) }
     single { KroniskKravKafkaProcessor(get(), get(), get()) }
+
+    single { PdlService(get()) }
 
     single { BrukernotifikasjonProcessor(get(), get(), get(), get(), get(), get(), "mock") }
 

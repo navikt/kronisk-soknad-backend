@@ -16,7 +16,7 @@ data class GravidSoeknad(
         val tiltakBeskrivelse: String? = null,
         val omplassering: Omplassering?,
         val omplasseringAarsak: OmplasseringAarsak? = null,
-        val sendtAv: String,
+        var sendtAv: String,
         val termindato: LocalDate?,
         val harVedlegg: Boolean = false,
         var virksomhetsnavn: String? = null,

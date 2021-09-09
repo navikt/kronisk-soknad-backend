@@ -16,6 +16,7 @@ import no.nav.helse.arbeidsgiver.system.getString
 import no.nav.helse.fritakagp.web.api.*
 import no.nav.security.token.support.ktor.tokenValidationSupport
 import org.koin.ktor.ext.get
+import org.koin.ktor.ext.getKoin
 
 @KtorExperimentalLocationsAPI
 fun Application.fritakModule(config: ApplicationConfig = environment.config) {
@@ -38,8 +39,8 @@ fun Application.fritakModule(config: ApplicationConfig = environment.config) {
         route("$apiBasePath/api/v1") {
             authenticate {
                 systemRoutes()
-                kroniskRoutes(get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
-                gravidRoutes(get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
+                kroniskRoutes(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
+                gravidRoutes(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
                 altinnRoutes(get())
             }
         }

@@ -14,6 +14,7 @@ import no.nav.helse.fritakagp.KroniskSoeknadMetrics
 import no.nav.helse.fritakagp.db.KroniskKravRepository
 import no.nav.helse.fritakagp.db.KroniskSoeknadRepository
 import no.nav.helse.fritakagp.domain.BeløpBeregning
+import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
 import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravKvitteringProcessor
@@ -24,11 +25,11 @@ import no.nav.helse.fritakagp.web.api.resreq.KroniskKravRequest
 import no.nav.helse.fritakagp.web.api.resreq.KroniskSoknadRequest
 import no.nav.helse.fritakagp.web.auth.authorize
 import no.nav.helse.fritakagp.web.auth.hentIdentitetsnummerFraLoginToken
-import org.koin.ktor.ext.inject
 import java.util.*
 import javax.sql.DataSource
 
 fun Route.kroniskRoutes(
+    breegClient: BrregClient,
     datasource: DataSource,
     kroniskSoeknadRepo: KroniskSoeknadRepository,
     kroniskKravRepo: KroniskKravRepository,
@@ -54,7 +55,9 @@ fun Route.kroniskRoutes(
 
             post {
                 val request = call.receive<KroniskSoknadRequest>()
-                request.validate()
+                val isVirksomhet = breegClient.erVirksomhet(request.virksomhetsnummer)
+
+                request.validate(isVirksomhet)
                 val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
 
                 val soeknad = request.toDomain(innloggetFnr)

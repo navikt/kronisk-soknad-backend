@@ -1,6 +1,7 @@
 package no.nav.helse.fritakagp.web.api.resreq
 
 import no.nav.helse.GravidTestData
+import no.nav.helse.KroniskTestData
 import no.nav.helse.fritakagp.domain.Omplassering
 import no.nav.helse.fritakagp.domain.OmplasseringAarsak
 import no.nav.helse.fritakagp.domain.Tiltak
@@ -12,14 +13,21 @@ class GravidSoknadRequestTest {
     @Test
     internal fun `Gyldig FNR er påkrevd`() {
         validationShouldFailFor(GravidSoknadRequest::identitetsnummer) {
-            GravidTestData.fullValidSoeknadRequest.copy(identitetsnummer = "01020312345").validate()
+            GravidTestData.fullValidSoeknadRequest.copy(identitetsnummer = "01020312345").validate(true)
         }
     }
 
     @Test
     internal fun `Gyldig OrgNr er påkrevd dersom det er oppgitt`() {
         validationShouldFailFor(GravidSoknadRequest::virksomhetsnummer) {
-            GravidTestData.fullValidSoeknadRequest.copy(virksomhetsnummer = "098765432").validate()
+            GravidTestData.fullValidSoeknadRequest.copy(virksomhetsnummer = "098765432").validate(true)
+        }
+    }
+
+    @Test
+    fun `Må være på virksomhetsnummer`() {
+        validationShouldFailFor(GravidSoknadRequest::virksomhetsnummer) {
+            GravidTestData.fullValidSoeknadRequest.copy().validate(false)
         }
     }
 
@@ -29,13 +37,13 @@ class GravidSoknadRequestTest {
             GravidTestData.fullValidSoeknadRequest.copy(
                 tiltak = listOf(Tiltak.ANNET),
                 tiltakBeskrivelse = "",
-            ).validate()
+            ).validate(true)
         }
 
         GravidTestData.fullValidSoeknadRequest.copy(
             tiltak = listOf(Tiltak.ANNET),
             tiltakBeskrivelse = "dette går bra",
-        ).validate()
+        ).validate(true)
     }
 
     @Test
@@ -43,13 +51,13 @@ class GravidSoknadRequestTest {
         GravidTestData.fullValidSoeknadRequest.copy(
             tiltak = listOf(Tiltak.TILPASSET_ARBEIDSTID),
             tiltakBeskrivelse = null
-        ).validate()
+        ).validate(true)
     }
 
     @Test
     internal fun `Bekreftelse av egenerklæring er påkrevd`() {
         validationShouldFailFor(GravidSoknadRequest::bekreftet) {
-            GravidTestData.fullValidSoeknadRequest.copy(bekreftet = false).validate()
+            GravidTestData.fullValidSoeknadRequest.copy(bekreftet = false).validate(true)
         }
     }
 
@@ -65,12 +73,12 @@ class GravidSoknadRequestTest {
             GravidTestData.fullValidSoeknadRequest.copy(
                 omplassering = Omplassering.IKKE_MULIG,
                 omplasseringAarsak = null
-            ).validate()
+            ).validate(true)
         }
 
         GravidTestData.fullValidSoeknadRequest.copy(
             omplassering = Omplassering.IKKE_MULIG,
             omplasseringAarsak = OmplasseringAarsak.FAAR_IKKE_KONTAKT
-        ).validate()
+        ).validate(true)
     }
 }

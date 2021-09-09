@@ -92,7 +92,7 @@ fun genererePeriodeTable(perioder: List<Arbeidsgiverperiode>) : String {
     return table {
         header("FOM", "TOM", "kreves refusjon for", "Beregnet månedsinntekt (NOK)", "Dagsats (NOK)", "Beløp (NOK)")
         for (p in perioder) {
-            row(p.fom.atStartOfDay(),p.tom.atStartOfDay(),p.antallDagerMedRefusjon, p.månedsinntekt, p.dagsats, p.belop)
+            row(p.fom.atStartOfDay(),p.tom.atStartOfDay(),p.antallDagerMedRefusjon, p.månedsinntekt.toString(), p.dagsats.toString(), p.belop.toString())
         }
         hints {
             alignment("FOM", Table.Hints.Alignment.LEFT)

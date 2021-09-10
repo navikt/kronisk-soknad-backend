@@ -73,4 +73,16 @@ class GravidKravRequestTest{
         assertThat(krav.perioder.first().dagsats).isEqualTo(7772.4)
         assertThat(krav.perioder.first().belop).isEqualTo(15544.8)
     }
+
+    @Test
+    fun `Beløp har riktig desimaltall`() {
+        val grunnbeløpClient = mockk<GrunnbeløpClient>(relaxed = true)
+        every { grunnbeløpClient.hentGrunnbeløp().grunnbeløp } returns 106399
+
+        val belopBeregning =  BeløpBeregning(grunnbeløpClient)
+        val krav = GravidTestData.gravidKravRequestWithWrongDecimal.toDomain("123")
+        belopBeregning.beregnBeløpGravid(krav)
+
+        assertThat(krav.perioder.first().belop).isEqualTo(2848.6)
+    }
 }

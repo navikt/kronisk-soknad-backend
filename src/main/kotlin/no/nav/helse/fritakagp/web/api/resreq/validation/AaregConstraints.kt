@@ -1,4 +1,4 @@
-package no.nav.helse.fritakagp.web.dto.validation
+package no.nav.helse.fritakagp.web.api.resreq.validation
 
 import no.nav.helse.arbeidsgiver.integrasjoner.aareg.Arbeidsforhold
 import no.nav.helse.fritakagp.domain.Arbeidsgiverperiode
@@ -34,7 +34,7 @@ fun slåSammenPerioder(list: List<AaregPeriode>): List<AaregPeriode> {
 
         do {
             val connectedPeriod = remainingPeriods
-                .find { !oppholdMellomPerioderOverstigerDager(currentPeriod, it, MAKS_DAGER_OPPHOLD)}
+                .find { !oppholdMellomPerioderOverstigerDager(currentPeriod, it, MAKS_DAGER_OPPHOLD) }
             if (connectedPeriod != null) {
                 currentPeriod = AaregPeriode(currentPeriod.fom, connectedPeriod.tom)
                 remainingPeriods.remove(connectedPeriod)

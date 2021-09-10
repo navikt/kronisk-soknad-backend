@@ -25,9 +25,9 @@ import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadProcessor
 import no.nav.helse.fritakagp.web.api.resreq.*
 import no.nav.helse.fritakagp.web.auth.authorize
 import no.nav.helse.fritakagp.web.auth.hentIdentitetsnummerFraLoginToken
-import no.nav.helse.fritakagp.web.dto.validation.VirusCheckConstraint
-import no.nav.helse.fritakagp.web.dto.validation.extractBase64Del
-import no.nav.helse.fritakagp.web.dto.validation.extractFilExtDel
+import no.nav.helse.fritakagp.web.api.resreq.validation.VirusCheckConstraint
+import no.nav.helse.fritakagp.web.api.resreq.validation.extractBase64Del
+import no.nav.helse.fritakagp.web.api.resreq.validation.extractFilExtDel
 import org.valiktor.ConstraintViolation
 import org.valiktor.ConstraintViolationException
 import org.valiktor.DefaultConstraintViolation

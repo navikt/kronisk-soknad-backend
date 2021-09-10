@@ -21,6 +21,7 @@ import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravKvitteringProce
 import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravProcessor
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadKvitteringProcessor
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadProcessor
+import no.nav.helse.fritakagp.service.PdlService
 import no.nav.helse.fritakagp.web.api.resreq.KroniskKravRequest
 import no.nav.helse.fritakagp.web.api.resreq.KroniskSoknadRequest
 import no.nav.helse.fritakagp.web.auth.authorize
@@ -39,7 +40,8 @@ fun Route.kroniskRoutes(
     bucket: BucketStorage,
     authorizer: AltinnAuthorizer,
     belopBeregning: BeløpBeregning,
-    aaregClient: AaregArbeidsforholdClient
+    aaregClient: AaregArbeidsforholdClient,
+    pdlService: PdlService
 ) {
     route("/kronisk") {
         route("/soeknad") {
@@ -49,6 +51,7 @@ fun Route.kroniskRoutes(
                 if (form == null || form.identitetsnummer != innloggetFnr) {
                     call.respond(HttpStatusCode.NotFound)
                 } else {
+                    form.sendtAv = pdlService.finnNavn(innloggetFnr)
                     call.respond(HttpStatusCode.OK, form)
                 }
             }
@@ -89,6 +92,7 @@ fun Route.kroniskRoutes(
                 if (form == null || form.identitetsnummer != innloggetFnr) {
                     call.respond(HttpStatusCode.NotFound)
                 } else {
+                    form.sendtAv = pdlService.finnNavn(innloggetFnr)
                     call.respond(HttpStatusCode.OK, form)
                 }
             }

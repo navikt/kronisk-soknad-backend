@@ -19,7 +19,7 @@ data class KroniskSoeknad(
     val bekreftet: Boolean,
     val harVedlegg: Boolean = false,
 
-    val sendtAv: String,
+    var sendtAv: String,
     var virksomhetsnavn: String? = null,
 
     /**

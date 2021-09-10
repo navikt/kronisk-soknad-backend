@@ -11,6 +11,7 @@ import java.time.LocalDate
 object GravidTestData {
     val validIdentitetsnummer = "20015001543"
     val validOrgNr = "917404437"
+    val validName = "Ola M Avsender"
 
     val soeknadGravid = GravidSoeknad(
         virksomhetsnummer = validOrgNr,
@@ -36,7 +37,7 @@ aąbcćdeęfghijlłmnńoóprsśtuwź
         """.trimMargin(),
         omplassering = Omplassering.IKKE_MULIG,
         omplasseringAarsak = OmplasseringAarsak.HELSETILSTANDEN,
-        sendtAv = "09876543210"
+        sendtAv = validName
     )
 
     val fullValidSoeknadRequest = GravidSoknadRequest(
@@ -172,7 +173,7 @@ aąbcćdeęfghijlłmnńoóprsśtuwź
             månedsinntekt = 2590.8
         )),
 
-        sendtAv = validIdentitetsnummer,
+        sendtAv = validName,
         kontrollDager = null,
         antallDager = 4
     )

@@ -18,6 +18,7 @@ import no.nav.helse.fritakagp.processing.gravid.krav.*
 import no.nav.helse.fritakagp.processing.gravid.soeknad.*
 import no.nav.helse.fritakagp.processing.kronisk.krav.*
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.*
+import no.nav.helse.fritakagp.service.PdlService
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import javax.sql.DataSource
@@ -99,6 +100,8 @@ fun prodConfig(config: ApplicationConfig) = module {
     single { KroniskSoeknadKafkaProcessor(get(), get(), get()) }
     single { KroniskKravKafkaProcessor(get(), get(), get()) }
     single { BrukernotifikasjonProcessor(get(), get(), get(), get(), get(), get(), config.getString("service_user.username"), 4, "https://arbeidsgiver.nav.no/fritak-agp") }
+
+    single { PdlService(get()) }
 
     single { DefaultAltinnAuthorizer(get()) } bind AltinnAuthorizer::class
     single { BeløpBeregning(get()) }

@@ -7,7 +7,7 @@ import java.util.*
 data class KroniskKrav(
     override val id: UUID = UUID.randomUUID(),
     val opprettet: LocalDateTime = LocalDateTime.now(),
-    val sendtAv: String,
+    var sendtAv: String,
 
     val virksomhetsnummer: String,
     val identitetsnummer: String,

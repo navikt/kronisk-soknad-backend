@@ -8,6 +8,7 @@ import io.ktor.response.*
 import io.ktor.routing.*
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbService
 import no.nav.helse.arbeidsgiver.integrasjoner.aareg.AaregArbeidsforholdClient
+import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlClient
 import no.nav.helse.arbeidsgiver.web.auth.AltinnAuthorizer
 import no.nav.helse.fritakagp.GravidKravMetrics
 import no.nav.helse.fritakagp.GravidSoeknadMetrics
@@ -22,6 +23,7 @@ import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravKvitteringProcess
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravProcessor
 import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadKvitteringProcessor
 import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadProcessor
+import no.nav.helse.fritakagp.service.PdlService
 import no.nav.helse.fritakagp.web.api.resreq.*
 import no.nav.helse.fritakagp.web.auth.authorize
 import no.nav.helse.fritakagp.web.auth.hentIdentitetsnummerFraLoginToken
@@ -45,7 +47,8 @@ fun Route.gravidRoutes(
     bucket: BucketStorage,
     authorizer: AltinnAuthorizer,
     belopBeregning: BeløpBeregning,
-    aaregClient: AaregArbeidsforholdClient
+    aaregClient: AaregArbeidsforholdClient,
+    pdlService: PdlService
 ) {
     route("/gravid") {
         route("/soeknad") {
@@ -56,6 +59,7 @@ fun Route.gravidRoutes(
                 if (form == null || form.identitetsnummer != innloggetFnr) {
                     call.respond(HttpStatusCode.NotFound)
                 } else {
+                    form.sendtAv = pdlService.finnNavn(innloggetFnr)
                     call.respond(HttpStatusCode.OK, form)
                 }
             }
@@ -97,6 +101,7 @@ fun Route.gravidRoutes(
                 if (form == null || form.identitetsnummer != innloggetFnr) {
                     call.respond(HttpStatusCode.NotFound)
                 } else {
+                    form.sendtAv = pdlService.finnNavn(innloggetFnr)
                     call.respond(HttpStatusCode.OK, form)
                 }
             }

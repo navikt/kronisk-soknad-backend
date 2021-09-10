@@ -83,7 +83,6 @@ class GravidKravRequestTest{
         val krav = GravidTestData.gravidKravRequestWithWrongDecimal.toDomain("123")
         belopBeregning.beregnBeløpGravid(krav)
 
-        println(krav.perioder.first().belop)
         assertThat(krav.perioder.first().belop).isEqualTo(2848.6)
     }
 }

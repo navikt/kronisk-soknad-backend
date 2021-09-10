@@ -15,6 +15,7 @@ import no.nav.helse.fritakagp.db.GravidKravRepository
 import no.nav.helse.fritakagp.db.GravidSoeknadRepository
 import no.nav.helse.fritakagp.domain.BeløpBeregning
 import no.nav.helse.fritakagp.domain.decodeBase64File
+import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravKvitteringProcessor
@@ -24,9 +25,9 @@ import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadProcessor
 import no.nav.helse.fritakagp.web.api.resreq.*
 import no.nav.helse.fritakagp.web.auth.authorize
 import no.nav.helse.fritakagp.web.auth.hentIdentitetsnummerFraLoginToken
-import no.nav.helse.fritakagp.web.dto.validation.VirusCheckConstraint
-import no.nav.helse.fritakagp.web.dto.validation.extractBase64Del
-import no.nav.helse.fritakagp.web.dto.validation.extractFilExtDel
+import no.nav.helse.fritakagp.web.api.resreq.validation.VirusCheckConstraint
+import no.nav.helse.fritakagp.web.api.resreq.validation.extractBase64Del
+import no.nav.helse.fritakagp.web.api.resreq.validation.extractFilExtDel
 import org.valiktor.ConstraintViolation
 import org.valiktor.ConstraintViolationException
 import org.valiktor.DefaultConstraintViolation
@@ -34,6 +35,7 @@ import java.util.*
 import javax.sql.DataSource
 
 fun Route.gravidRoutes(
+    breegClient: BrregClient,
     datasource: DataSource,
     gravidSoeknadRepo: GravidSoeknadRepository,
     gravidKravRepo: GravidKravRepository,
@@ -61,7 +63,9 @@ fun Route.gravidRoutes(
             post {
                 val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
                 val request = call.receive<GravidSoknadRequest>()
-                request.validate()
+
+                val isVirksomhet = breegClient.erVirksomhet(request.virksomhetsnummer)
+                request.validate(isVirksomhet)
 
                 val soeknad = request.toDomain(innloggetFnr)
 

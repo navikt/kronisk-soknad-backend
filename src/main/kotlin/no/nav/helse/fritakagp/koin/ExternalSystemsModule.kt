@@ -17,7 +17,7 @@ import no.nav.helse.arbeidsgiver.web.auth.AltinnOrganisationsRepository
 import no.nav.helse.fritakagp.integration.GrunnbeløpClient
 import no.nav.helse.fritakagp.integration.altinn.CachedAuthRepo
 import no.nav.helse.fritakagp.integration.brreg.BrregClient
-import no.nav.helse.fritakagp.integration.brreg.BrregClientImp
+import no.nav.helse.fritakagp.integration.brreg.BrregClientImpl
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.integration.gcp.BucketStorageImpl
 import no.nav.helse.fritakagp.integration.kafka.*
@@ -122,5 +122,5 @@ fun Module.externalSystemClients(config: ApplicationConfig) {
         BeskjedProducerFactory(config.getString("brukernotifikasjon.avro_schema_server_url"))
     )
     } bind BrukernotifikasjonBeskjedSender::class
-    single { BrregClientImp(get(), get(), config.getString("berreg_enhet_url")) } bind BrregClient::class
+    single { BrregClientImpl(get(), config.getString("berreg_enhet_url")) } bind BrregClient::class
 }

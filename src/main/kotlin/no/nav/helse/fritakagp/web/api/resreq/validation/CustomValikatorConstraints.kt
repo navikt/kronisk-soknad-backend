@@ -1,5 +1,7 @@
-package no.nav.helse.fritakagp.web.dto.validation
+package no.nav.helse.fritakagp.web.api.resreq.validation
 
+import no.nav.helse.arbeidsgiver.web.validation.OrganisasjonsnummerConstraint
+import no.nav.helse.arbeidsgiver.web.validation.OrganisasjonsnummerValidator
 import no.nav.helse.fritakagp.domain.Arbeidsgiverperiode
 import no.nav.helse.fritakagp.domain.FravaerData
 import no.nav.helse.fritakagp.domain.KroniskSoeknad
@@ -7,7 +9,6 @@ import no.nav.helse.fritakagp.domain.GodkjenteFiletyper
 import org.valiktor.Constraint
 import org.valiktor.Validator
 import java.time.LocalDate
-import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 
 interface CustomConstraint : Constraint {
@@ -21,6 +22,10 @@ fun <E> Validator<E>.Property<Int?>.refusjonsDagerIkkeOverstigerPeriodelengde(ap
     this.validate(RefusjonsdagerKanIkkeOverstigePeriodelengdenConstraint()) {
         return@validate ChronoUnit.DAYS.between(ap.fom, ap.tom.plusDays(1)) >= it!!
     }
+
+class MåVæreVirksomhetContraint : CustomConstraint
+fun <E> Validator<E>.Property<String?>.isVirksomhet(erVirksomhet: Boolean) =
+    this.validate(MåVæreVirksomhetContraint()) { erVirksomhet }
 
 class FraDatoKanIkkeKommeEtterTomDato : CustomConstraint
 fun <E> Validator<E>.Property<LocalDate?>.datoerHarRiktigRekkefolge(tom: LocalDate) =

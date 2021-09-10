@@ -5,6 +5,8 @@ import no.nav.helse.GravidTestData
 import no.nav.helse.arbeidsgiver.integrasjoner.aareg.*
 import no.nav.helse.fritakagp.domain.Arbeidsgiverperiode
 import no.nav.helse.fritakagp.web.api.resreq.GravidKravRequest
+import no.nav.helse.fritakagp.web.api.resreq.validation.måHaAktivtArbeidsforhold
+import no.nav.helse.fritakagp.web.api.resreq.validation.slåSammenPerioder
 import no.nav.helse.fritakagp.web.api.resreq.validationShouldFailFor
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -131,7 +133,8 @@ class AaregConstraintsKtTest {
 
     @Test
     fun `merge fragmented periods`() {
-        assertThat(slåSammenPerioder(listOf(
+        assertThat(
+            slåSammenPerioder(listOf(
             // skal ble merget til 1 periode fra 1.1.21 til 28.2.21
             Periode(LocalDate.of(2021, 1, 1), LocalDate.of(2021, 1, 29)),
             Periode(LocalDate.of(2021, 2, 1), LocalDate.of(2021, 2, 13)),
@@ -144,16 +147,21 @@ class AaregConstraintsKtTest {
             // skal bli merget til 1
             Periode(LocalDate.of(2021, 7, 1), LocalDate.of(2021, 8, 30)),
             Periode(LocalDate.of(2021, 9, 1), null),
-        ))).hasSize(3)
+        ))
+        ).hasSize(3)
 
-        assertThat(slåSammenPerioder(listOf(
+        assertThat(
+            slåSammenPerioder(listOf(
             Periode(LocalDate.of(2021, 1, 1), LocalDate.of(2021, 1, 29)),
             Periode(LocalDate.of(2021, 9, 1), null),
-        ))).hasSize(2)
+        ))
+        ).hasSize(2)
 
-        assertThat(slåSammenPerioder(listOf(
+        assertThat(
+            slåSammenPerioder(listOf(
             Periode(LocalDate.of(2021, 9, 1), null),
-        ))).hasSize(1)
+        ))
+        ).hasSize(1)
 
     }
 }

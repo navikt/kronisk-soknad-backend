@@ -13,21 +13,21 @@ internal class KroniskSoknadRequestTest {
     @Test
     fun `Gyldig FNR er påkrevd`() {
         validationShouldFailFor(KroniskSoknadRequest::identitetsnummer) {
-            KroniskTestData.fullValidRequest.copy(identitetsnummer = "01020312345").validate()
+            KroniskTestData.fullValidRequest.copy(identitetsnummer = "01020312345").validate(true)
         }
     }
 
     @Test
     fun `Gyldig OrgNr er påkrevd dersom det er oppgitt`() {
         validationShouldFailFor(KroniskSoknadRequest::virksomhetsnummer) {
-            KroniskTestData.fullValidRequest.copy(virksomhetsnummer = "098765432").validate()
+            KroniskTestData.fullValidRequest.copy(virksomhetsnummer = "098765432").validate(true)
         }
     }
 
     @Test
     fun `Bekreftelse av egenerklæring er påkrevd`() {
         validationShouldFailFor(KroniskSoknadRequest::bekreftet) {
-            KroniskTestData.fullValidRequest.copy(bekreftet = false).validate()
+            KroniskTestData.fullValidRequest.copy(bekreftet = false).validate(true)
         }
     }
 
@@ -44,14 +44,14 @@ internal class KroniskSoknadRequestTest {
             fravaer = setOf(
                 FravaerData(LocalDate.now().minusMonths(24).toYearMonthString(), 5)
             )
-        ).validate()
+        ).validate(true)
 
         validationShouldFailFor(KroniskSoknadRequest::fravaer) {
             KroniskTestData.fullValidRequest.copy(
                 fravaer = setOf(
                     FravaerData(LocalDate.now().minusMonths(25).toYearMonthString(), 5)
                 )
-            ).validate()
+            ).validate(true)
         }
     }
 
@@ -61,12 +61,20 @@ internal class KroniskSoknadRequestTest {
         KroniskTestData.fullValidRequest.copy(
             paakjenningstyper = setOf(PaakjenningsType.STRESSENDE),
             paakjenningBeskrivelse = null
-        ).validate()
+        ).validate(true)
     }
+
     @Test
     fun `Om påkjenninger inneholder "ANNET" er beskrivelse påkrevd`() {
         validationShouldFailFor(KroniskSoknadRequest::paakjenningBeskrivelse) {
-            KroniskTestData.fullValidRequest.copy(paakjenningBeskrivelse = null).validate()
+            KroniskTestData.fullValidRequest.copy(paakjenningBeskrivelse = null).validate(true)
+        }
+    }
+
+    @Test
+    fun `Må være på virksomhetsnummer`() {
+        validationShouldFailFor(KroniskSoknadRequest::virksomhetsnummer) {
+            KroniskTestData.fullValidRequest.copy().validate(false)
         }
     }
 
@@ -77,7 +85,7 @@ internal class KroniskSoknadRequestTest {
                 fravaer = setOf(
                     FravaerData(LocalDate.now().plusMonths(1).toYearMonthString(), 5)
                 )
-            ).validate()
+            ).validate(true)
         }
     }
 
@@ -89,7 +97,7 @@ internal class KroniskSoknadRequestTest {
                 fravaer = setOf(
                     FravaerData(LocalDate.now().toYearMonthString(), invalidNumberOfDays)
                 )
-            ).validate()
+            ).validate(true)
         }
     }
     @Test
@@ -98,7 +106,7 @@ internal class KroniskSoknadRequestTest {
         validationShouldFailFor(KroniskSoknadRequest::antallPerioder) {
             KroniskTestData.fullValidRequest.copy(
                 antallPerioder = invalidAntallPerioder
-            ).validate()
+            ).validate(true)
         }
     }
 

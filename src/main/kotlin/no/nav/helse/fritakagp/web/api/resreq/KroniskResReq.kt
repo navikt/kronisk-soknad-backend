@@ -4,6 +4,7 @@ import no.nav.helse.arbeidsgiver.integrasjoner.aareg.Arbeidsforhold
 import no.nav.helse.arbeidsgiver.web.validation.isValidIdentitetsnummer
 import no.nav.helse.arbeidsgiver.web.validation.isValidOrganisasjonsnummer
 import no.nav.helse.fritakagp.domain.*
+import no.nav.helse.fritakagp.web.api.resreq.validation.*
 import no.nav.helse.fritakagp.web.dto.validation.*
 import org.valiktor.functions.*
 import org.valiktor.validate
@@ -21,11 +22,12 @@ data class KroniskSoknadRequest(
     val dokumentasjon : String?
 ) {
 
-    fun validate() {
+    fun validate(isVirksomhet: Boolean) {
         validate(this) {
             validate(KroniskSoknadRequest::identitetsnummer).isValidIdentitetsnummer()
             validate(KroniskSoknadRequest::bekreftet).isTrue()
             validate(KroniskSoknadRequest::virksomhetsnummer).isValidOrganisasjonsnummer()
+            validate(KroniskSoknadRequest::virksomhetsnummer).isVirksomhet(isVirksomhet)
 
             validate(KroniskSoknadRequest::arbeidstyper).isNotNull()
             validate(KroniskSoknadRequest::arbeidstyper).hasSize(1, 10)

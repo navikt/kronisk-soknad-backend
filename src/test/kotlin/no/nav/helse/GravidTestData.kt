@@ -88,6 +88,24 @@ aąbcćdeęfghijlłmnńoóprsśtuwź
         kontrollDager = null,
         antallDager = 4
     )
+
+    val gravidKravRequestWithWrongDecimal = GravidKravRequest(
+        virksomhetsnummer = validOrgNr,
+        identitetsnummer = validIdentitetsnummer,
+
+        perioder = listOf(Arbeidsgiverperiode(
+            LocalDate.of(2021, 6, 1),
+            LocalDate.of(2020, 6, 12),
+            5,
+            månedsinntekt = 12344.0
+        )),
+
+        bekreftet = true,
+        dokumentasjon = null,
+        kontrollDager = null,
+        antallDager = 260
+    )
+
   val gravidKravRequestInValid = GravidKravRequest(
         virksomhetsnummer = validOrgNr,
         identitetsnummer = validIdentitetsnummer,

@@ -1,6 +1,7 @@
 package no.nav.helse.fritakagp.web.api.resreq
 
 import no.nav.helse.AaregTestData
+import no.nav.helse.GravidTestData
 import no.nav.helse.KroniskTestData
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
@@ -54,4 +55,20 @@ class KroniskKravRequestTest{
             ).validate(AaregTestData.evigArbeidsForholdListe)
         }
     }
+
+    @Test
+    internal fun `Sykemeldingsgrad må være gyldig`() {
+        validationShouldFailFor("perioder[0].gradering") {
+            KroniskTestData.kroniskKravRequestValid.copy(
+                perioder = listOf(KroniskTestData.kroniskKravRequestValid.perioder.first().copy(gradering = 1.1))
+            ).validate(AaregTestData.evigArbeidsForholdListe)
+        }
+
+        validationShouldFailFor("perioder[0].gradering") {
+            KroniskTestData.kroniskKravRequestValid.copy(
+                perioder = listOf(KroniskTestData.kroniskKravRequestValid.perioder.first().copy(gradering = 0.1))
+            ).validate(AaregTestData.evigArbeidsForholdListe)
+        }
+    }
+
 }

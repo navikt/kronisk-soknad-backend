@@ -20,7 +20,7 @@ class BeløpBeregning(
                 round2DigitDecimal(arslonn / antallDager)
             else
                 round2DigitDecimal(seksG / antallDager)
-            it.belop = round2DigitDecimal(it.dagsats * it.antallDagerMedRefusjon)
+            it.belop = round2DigitDecimal(it.dagsats * it.antallDagerMedRefusjon * it.gradering)
         }
     }
 

@@ -87,7 +87,7 @@ class GravidKravRequestTest{
         belopBeregning.beregnBeløpGravid(krav)
 
         assertThat(krav.perioder.first().dagsats).isEqualTo(7772.4)
-        assertThat(krav.perioder.first().belop).isEqualTo(15544.8)
+        assertThat(krav.perioder.first().belop).isEqualTo(12435.84)
     }
 
     @Test

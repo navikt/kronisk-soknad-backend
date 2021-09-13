@@ -87,6 +87,8 @@ data class KroniskKravRequest(
                 validate(Arbeidsgiverperiode::antallDagerMedRefusjon).refusjonsDagerIkkeOverstigerPeriodelengde(it)
                 validate(Arbeidsgiverperiode::månedsinntekt).maanedsInntektErMellomNullOgTiMil()
                 validate(Arbeidsgiverperiode::fom).måHaAktivtArbeidsforhold(it, aktuelleArbeidsforhold)
+                validate(Arbeidsgiverperiode::gradering).isLessThanOrEqualTo(1.0)
+                validate(Arbeidsgiverperiode::gradering).isGreaterThanOrEqualTo(0.2)
             }
 
 

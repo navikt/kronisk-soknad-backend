@@ -5,6 +5,7 @@ import io.mockk.mockk
 import no.nav.helse.AaregTestData
 import no.nav.helse.GravidTestData
 import no.nav.helse.KroniskTestData
+import no.nav.helse.fritakagp.domain.Arbeidsgiverperiode
 import no.nav.helse.fritakagp.domain.BeløpBeregning
 import no.nav.helse.fritakagp.integration.GrunnbeløpClient
 import org.assertj.core.api.Assertions.assertThat
@@ -24,6 +25,21 @@ class GravidKravRequestTest{
     internal fun `Gyldig OrgNr er påkrevd dersom det er oppgitt`() {
         validationShouldFailFor(GravidKravRequest::virksomhetsnummer) {
             GravidTestData.gravidKravRequestValid.copy(virksomhetsnummer = "098765432").validate(AaregTestData.evigArbeidsForholdListe)
+        }
+    }
+
+    @Test
+    internal fun `Sykemeldingsgrad må være gyldig`() {
+        validationShouldFailFor("perioder[0].gradering") {
+            GravidTestData.gravidKravRequestValid.copy(
+                perioder = listOf(GravidTestData.gravidKravRequestValid.perioder.first().copy(gradering = 1.1))
+            ).validate(AaregTestData.evigArbeidsForholdListe)
+        }
+
+        validationShouldFailFor("perioder[0].gradering") {
+            GravidTestData.gravidKravRequestValid.copy(
+                perioder = listOf(GravidTestData.gravidKravRequestValid.perioder.first().copy(gradering = 0.1))
+            ).validate(AaregTestData.evigArbeidsForholdListe)
         }
     }
 
@@ -71,7 +87,7 @@ class GravidKravRequestTest{
         belopBeregning.beregnBeløpGravid(krav)
 
         assertThat(krav.perioder.first().dagsats).isEqualTo(7772.4)
-        assertThat(krav.perioder.first().belop).isEqualTo(15544.8)
+        assertThat(krav.perioder.first().belop).isEqualTo(12435.84)
     }
 
     @Test

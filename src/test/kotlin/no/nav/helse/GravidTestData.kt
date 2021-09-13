@@ -81,7 +81,8 @@ aąbcćdeęfghijlłmnńoóprsśtuwź
             LocalDate.of(2020, 1, 5),
             LocalDate.of(2020, 1, 10),
             2,
-            månedsinntekt = 2590.8
+            månedsinntekt = 2590.8,
+            gradering = 0.8
         )),
 
         bekreftet = true,

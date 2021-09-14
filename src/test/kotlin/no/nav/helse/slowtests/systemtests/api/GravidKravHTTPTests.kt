@@ -11,6 +11,7 @@ import no.nav.helse.fritakagp.domain.Arbeidsgiverperiode
 import no.nav.helse.fritakagp.domain.GravidKrav
 import no.nav.helse.fritakagp.web.api.resreq.ValidationProblem
 import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.koin.test.inject
@@ -77,7 +78,10 @@ class GravidKravHTTPTests : SystemTestBase() {
             body = GravidTestData.gravidKravRequestValid
         }
 
+        val krav = response.receive<GravidKrav>()
         Assertions.assertThat(response.status).isEqualTo(HttpStatusCode.Created)
+        Assertions.assertThat(krav.identitetsnummer).isEqualTo(GravidTestData.gravidKravRequestValid.identitetsnummer)
+
     }
 
     @Test
@@ -89,7 +93,9 @@ class GravidKravHTTPTests : SystemTestBase() {
             body = GravidTestData.gravidKravRequestValidPeriode1Dag
         }
 
-        Assertions.assertThat(response.status).isEqualTo(HttpStatusCode.Created)
+        assertThat(response.status).isEqualTo(HttpStatusCode.Created)
+        val krav = response.receive<GravidKrav>()
+        Assertions.assertThat(krav.identitetsnummer).isEqualTo(GravidTestData.gravidKravRequestValidPeriode1Dag.identitetsnummer)
     }
 
     @Test

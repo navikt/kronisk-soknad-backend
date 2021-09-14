@@ -46,7 +46,6 @@ class GravidKravAltinnKvitteringSender(
 
     fun mapKvitteringTilInsertCorrespondence(kvittering: GravidKrav): InsertCorrespondenceV2 {
         val dateTimeFormatterMedKl = DateTimeFormatter.ofPattern("dd.MM.yyyy 'kl.' HH:mm")
-        val dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
         val tittel = "Kvittering for mottatt refusjonskrav fra arbeidsgiverperioden grunnet graviditet"
 
         val innhold = """

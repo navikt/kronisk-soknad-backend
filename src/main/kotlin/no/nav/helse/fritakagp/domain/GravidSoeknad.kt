@@ -16,7 +16,7 @@ data class GravidSoeknad(
     val tiltakBeskrivelse: String? = null,
     val omplassering: Omplassering?,
     val omplasseringAarsak: OmplasseringAarsak? = null,
-    var sendtAv: String,
+    val sendtAv: String,
     val termindato: LocalDate?,
     val harVedlegg: Boolean = false,
     var virksomhetsnavn: String? = null,
@@ -31,7 +31,7 @@ data class GravidSoeknad(
      */
     var oppgaveId: String? = null,
     // Må være null for tidligere verdier er lagret med null
-    val sendtAvNavn: String? = null
+    var sendtAvNavn: String? = null
 ) : SimpleJsonbEntity
 
 enum class Omplassering(val beskrivelse: String) {

@@ -58,7 +58,7 @@ fun Route.gravidRoutes(
                 if (form == null || form.identitetsnummer != innloggetFnr) {
                     call.respond(HttpStatusCode.NotFound)
                 } else {
-                    form.sendtAv = pdlService.finnNavn(innloggetFnr)
+                    form.sendtAvNavn = pdlService.finnNavn(innloggetFnr)
                     call.respond(HttpStatusCode.OK, form)
                 }
             }
@@ -101,7 +101,7 @@ fun Route.gravidRoutes(
                 if (form == null || form.identitetsnummer != innloggetFnr) {
                     call.respond(HttpStatusCode.NotFound)
                 } else {
-                    form.sendtAv = pdlService.finnNavn(innloggetFnr)
+                    form.sendtAvNavn = pdlService.finnNavn(innloggetFnr)
                     call.respond(HttpStatusCode.OK, form)
                 }
             }
@@ -144,7 +144,7 @@ fun Route.gravidRoutes(
 fun periodValErrs(it: ConstraintViolation) : List<ValidationProblemDetail> {
     val valErrs = mutableListOf<ValidationProblemDetail>()
     if (it.property == "perioder") {
-        (it.value as Set<*>).forEach { p ->
+        (it.value as Set<*>).forEach { _ ->
             valErrs.add(
                 ValidationProblemDetail(
                     it.constraint.name,

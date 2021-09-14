@@ -19,7 +19,7 @@ data class KroniskSoeknad(
     val bekreftet: Boolean,
     val harVedlegg: Boolean = false,
 
-    var sendtAv: String,
+    val sendtAv: String,
     var virksomhetsnavn: String? = null,
 
     /**
@@ -32,7 +32,7 @@ data class KroniskSoeknad(
      */
     var oppgaveId: String? = null,
     // Må være null for tidligere verdier er lagret med null
-    val sendtAvNavn: String? = null
+    var sendtAvNavn: String? = null
 ): SimpleJsonbEntity
 
 data class FravaerData (

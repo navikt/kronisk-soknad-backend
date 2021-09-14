@@ -7,7 +7,7 @@ import java.util.*
 data class GravidKrav(
     override val id: UUID = UUID.randomUUID(),
     val opprettet: LocalDateTime = LocalDateTime.now(),
-    var sendtAv: String,
+    val sendtAv: String,
 
     val virksomhetsnummer: String,
     val identitetsnummer: String,
@@ -21,5 +21,5 @@ data class GravidKrav(
     var oppgaveId: String? = null,
     var virksomhetsnavn: String? = null,
     // Må være null for tidligere verdier er lagret med null
-    val sendtAvNavn: String? = null
+    var sendtAvNavn: String? = null
 ) : SimpleJsonbEntity

@@ -36,7 +36,7 @@ aąbcćdeęfghijlłmnńoóprsśtuwź
         """.trimMargin(),
         omplassering = Omplassering.IKKE_MULIG,
         omplasseringAarsak = OmplasseringAarsak.HELSETILSTANDEN,
-        sendtAv = validName,
+        sendtAv = validIdentitetsnummer,
         termindato = LocalDate.now().plusDays(25),
         sendtAvNavn = validName
     )
@@ -165,7 +165,7 @@ aąbcćdeęfghijlłmnńoóprsśtuwź
 
 
     val gravidKrav = GravidKrav(
-        sendtAv = validName,
+        sendtAv = validIdentitetsnummer,
         virksomhetsnummer = validOrgNr,
 
         identitetsnummer = validIdentitetsnummer,

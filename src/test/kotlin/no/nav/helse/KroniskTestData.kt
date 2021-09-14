@@ -25,7 +25,7 @@ object KroniskTestData {
         fravaer = generateFravaersdata(),
         antallPerioder = antallPerioder,
         bekreftet = true,
-        sendtAv = validName,
+        sendtAv = validIdentitetsnummer,
         sendtAvNavn = validName
     )
 
@@ -101,7 +101,7 @@ object KroniskTestData {
     )
 
     val kroniskKrav = KroniskKrav(
-        sendtAv = validName,
+        sendtAv = validIdentitetsnummer,
         virksomhetsnummer = validOrgNr,
         identitetsnummer = validIdentitetsnummer,
         perioder = listOf(Arbeidsgiverperiode(

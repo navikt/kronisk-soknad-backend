@@ -51,7 +51,7 @@ fun Route.kroniskRoutes(
                 if (form == null || form.identitetsnummer != innloggetFnr) {
                     call.respond(HttpStatusCode.NotFound)
                 } else {
-                    form.sendtAv = pdlService.finnNavn(innloggetFnr)
+                    form.sendtAvNavn = form.sendtAvNavn ?: pdlService.finnNavn(innloggetFnr)
                     call.respond(HttpStatusCode.OK, form)
                 }
             }
@@ -93,7 +93,7 @@ fun Route.kroniskRoutes(
                 if (form == null || form.identitetsnummer != innloggetFnr) {
                     call.respond(HttpStatusCode.NotFound)
                 } else {
-                    form.sendtAv = pdlService.finnNavn(innloggetFnr)
+                    form.sendtAvNavn = form.sendtAvNavn ?: pdlService.finnNavn(innloggetFnr)
                     call.respond(HttpStatusCode.OK, form)
                 }
             }

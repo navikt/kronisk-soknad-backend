@@ -65,7 +65,7 @@ class KroniskKravAltinnKvitteringSender(
                 <li>Fødselsnummer: ${kvittering.identitetsnummer} </li>
                 <li>Dokumentasjon vedlagt: ${if (kvittering.harVedlegg) "Ja" else "Nei"} </li>
                 <li>Mottatt:  ${kvittering.opprettet.format(dateTimeFormatterMedKl)}  </li>  
-                <li>Innrapportert av: ${kvittering.sendtAv}</li>
+                <li>Innrapportert av: ${kvittering.sendtAvNavn}</li>
                 <li>Perioder: </li>
                 <ul> ${lagrePerioder(kvittering.perioder)}</ul>
             </ul>

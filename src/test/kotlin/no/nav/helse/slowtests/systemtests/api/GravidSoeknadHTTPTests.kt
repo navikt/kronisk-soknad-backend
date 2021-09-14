@@ -7,7 +7,6 @@ import io.ktor.http.*
 import no.nav.helse.GravidTestData
 import no.nav.helse.fritakagp.db.GravidSoeknadRepository
 import no.nav.helse.fritakagp.domain.GravidSoeknad
-import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows

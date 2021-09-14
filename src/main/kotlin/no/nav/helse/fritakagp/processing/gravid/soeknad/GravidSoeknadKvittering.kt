@@ -69,7 +69,7 @@ class GravidSoeknadAltinnKvitteringSender(
                 <li>Tiltak:${ lagreTiltak(kvittering.tiltak) } </li>
                 <li>Forsøkt omplassering: ${lagreOmplasseringStr(kvittering)}</li>               
                 <li>Mottatt: ${kvittering.opprettet.format(dateTimeFormatterMedKl)}</li>
-                <li>Innrapportert av: ${kvittering.sendtAv}</li>
+                <li>Innrapportert av: ${kvittering.sendtAvNavn}</li>
             </ul>
                </div>
            </body>

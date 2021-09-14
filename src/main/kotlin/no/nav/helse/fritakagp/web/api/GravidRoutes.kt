@@ -8,7 +8,6 @@ import io.ktor.response.*
 import io.ktor.routing.*
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbService
 import no.nav.helse.arbeidsgiver.integrasjoner.aareg.AaregArbeidsforholdClient
-import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlClient
 import no.nav.helse.arbeidsgiver.web.auth.AltinnAuthorizer
 import no.nav.helse.fritakagp.GravidKravMetrics
 import no.nav.helse.fritakagp.GravidSoeknadMetrics
@@ -71,7 +70,8 @@ fun Route.gravidRoutes(
                 val isVirksomhet = breegClient.erVirksomhet(request.virksomhetsnummer)
                 request.validate(isVirksomhet)
 
-                val soeknad = request.toDomain(innloggetFnr)
+                val sendtAvNavn = pdlService.finnNavn(innloggetFnr)
+                val soeknad = request.toDomain(innloggetFnr, sendtAvNavn)
 
                 processDocumentForGCPStorage(request.dokumentasjon, virusScanner, bucket, soeknad.id)
 
@@ -115,12 +115,9 @@ fun Route.gravidRoutes(
 
                 request.validate(arbeidsforhold)
 
-                val krav = request.toDomain(
-                    hentIdentitetsnummerFraLoginToken(
-                        application.environment.config,
-                        call.request
-                    )
-                )
+                val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
+                val sendtAvNavn = pdlService.finnNavn(innloggetFnr)
+                val krav = request.toDomain(innloggetFnr, sendtAvNavn)
                 belopBeregning.beregnBeløpGravid(krav)
                 processDocumentForGCPStorage(request.dokumentasjon, virusScanner, bucket, krav.id)
 

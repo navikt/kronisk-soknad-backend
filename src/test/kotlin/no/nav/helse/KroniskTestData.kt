@@ -20,12 +20,13 @@ object KroniskTestData {
         virksomhetsnummer = validOrgNr,
         identitetsnummer = validIdentitetsnummer,
         arbeidstyper = setOf(ArbeidsType.KREVENDE, ArbeidsType.MODERAT),
-        bekreftet = true,
-        antallPerioder = antallPerioder,
-        fravaer = generateFravaersdata(),
         paakjenningstyper = setOf(PaakjenningsType.ALLERGENER, PaakjenningsType.TUNGE),
         paakjenningBeskrivelse = "Beskrivelse",
-        sendtAv = validName
+        fravaer = generateFravaersdata(),
+        antallPerioder = antallPerioder,
+        bekreftet = true,
+        sendtAv = validName,
+        sendtAvNavn = validName
     )
 
     val fullValidRequest = KroniskSoknadRequest(
@@ -100,6 +101,7 @@ object KroniskTestData {
     )
 
     val kroniskKrav = KroniskKrav(
+        sendtAv = validName,
         virksomhetsnummer = validOrgNr,
         identitetsnummer = validIdentitetsnummer,
         perioder = listOf(Arbeidsgiverperiode(
@@ -108,9 +110,9 @@ object KroniskTestData {
             5,
             månedsinntekt = 2590.8
         )),
-        sendtAv = validName,
         kontrollDager = null,
-        antallDager = 4
+        antallDager = 4,
+        sendtAvNavn = validName
     )
 
     val kroniskOpprettOppgaveResponse = OpprettOppgaveResponse(

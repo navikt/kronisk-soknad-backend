@@ -32,8 +32,8 @@ class KroniskKravRequestTest{
 
     @Test
     internal fun `mapping til domenemodell tar med harVedleggflagg`() {
-        Assertions.assertThat(KroniskTestData.kroniskKravRequestMedFil.toDomain("123").harVedlegg).isTrue
-        Assertions.assertThat(KroniskTestData.kroniskKravRequestValid.toDomain("123").harVedlegg).isFalse
+        Assertions.assertThat(KroniskTestData.kroniskKravRequestMedFil.toDomain("123", "Ola M Avsender").harVedlegg).isTrue
+        Assertions.assertThat(KroniskTestData.kroniskKravRequestValid.toDomain("123", "Ola M Avsender").harVedlegg).isFalse
     }
 
     @Test

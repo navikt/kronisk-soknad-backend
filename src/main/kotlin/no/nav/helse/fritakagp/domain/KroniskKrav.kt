@@ -19,5 +19,7 @@ data class KroniskKrav(
     var journalpostId: String? = null,
 
     var oppgaveId: String? = null,
-    var virksomhetsnavn: String? = null
+    var virksomhetsnavn: String? = null,
+    // Må være null for tidligere verdier er lagret med null
+    val sendtAvNavn: String? = null
 ) : SimpleJsonbEntity

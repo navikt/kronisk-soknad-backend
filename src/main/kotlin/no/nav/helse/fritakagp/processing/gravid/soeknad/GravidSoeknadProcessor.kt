@@ -2,9 +2,6 @@ package no.nav.helse.fritakagp.processing.gravid.soeknad
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import io.ktor.client.call.*
-import io.ktor.client.features.*
-import io.ktor.util.*
 import kotlinx.coroutines.runBlocking
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.Bakgrunnsjobb
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbProsesserer

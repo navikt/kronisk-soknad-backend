@@ -52,8 +52,8 @@ class GravidKravRequestTest{
 
     @Test
     internal fun `mapping til domenemodell tar med harVedleggflagg`() {
-        assertThat(GravidTestData.gravidKravRequestMedFil.toDomain("123").harVedlegg).isTrue
-        assertThat(GravidTestData.gravidKravRequestValid.toDomain("123").harVedlegg).isFalse
+        assertThat(GravidTestData.gravidKravRequestMedFil.toDomain("123", "Ola M Avsender").harVedlegg).isTrue
+        assertThat(GravidTestData.gravidKravRequestValid.toDomain("123", "Ola M Avsender").harVedlegg).isFalse
 
     }
 
@@ -83,7 +83,7 @@ class GravidKravRequestTest{
         every { grunnbeløpClient.hentGrunnbeløp().grunnbeløp } returns 106399
 
         val belopBeregning =  BeløpBeregning(grunnbeløpClient)
-        val krav = GravidTestData.gravidKravRequestValid.toDomain("123")
+        val krav = GravidTestData.gravidKravRequestValid.toDomain("123", "Ola M Avsender")
         belopBeregning.beregnBeløpGravid(krav)
 
         assertThat(krav.perioder.first().dagsats).isEqualTo(7772.4)
@@ -96,7 +96,7 @@ class GravidKravRequestTest{
         every { grunnbeløpClient.hentGrunnbeløp().grunnbeløp } returns 106399
 
         val belopBeregning =  BeløpBeregning(grunnbeløpClient)
-        val krav = GravidTestData.gravidKravRequestWithWrongDecimal.toDomain("123")
+        val krav = GravidTestData.gravidKravRequestWithWrongDecimal.toDomain("123", "Ola M Avsender")
         belopBeregning.beregnBeløpGravid(krav)
 
         assertThat(krav.perioder.first().belop).isEqualTo(2848.6)

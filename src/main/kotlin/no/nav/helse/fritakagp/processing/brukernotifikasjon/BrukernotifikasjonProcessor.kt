@@ -16,8 +16,6 @@ import no.nav.helse.fritakagp.integration.kafka.BrukernotifikasjonBeskjedSender
 import java.net.URL
 import java.time.LocalDateTime
 import java.time.ZoneId
-import java.time.ZoneOffset
-import java.time.ZonedDateTime
 import java.util.*
 
 class BrukernotifikasjonProcessor(

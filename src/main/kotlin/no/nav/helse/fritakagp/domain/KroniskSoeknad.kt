@@ -15,22 +15,24 @@ data class KroniskSoeknad(
     val paakjenningstyper: Set<PaakjenningsType>,
     val paakjenningBeskrivelse: String? = null,
     val fravaer: Set<FravaerData>,
-    val antallPerioder : Int,
+    val antallPerioder: Int,
     val bekreftet: Boolean,
     val harVedlegg: Boolean = false,
 
-    var sendtAv: String,
+    val sendtAv: String,
     var virksomhetsnavn: String? = null,
 
     /**
-         * ID fra joark etter arkivering
-         */
-        var journalpostId: String? = null,
+     * ID fra joark etter arkivering
+     */
+    var journalpostId: String? = null,
 
     /**
-         * ID fra oppgave etter opprettelse av oppgave
-         */
-        var oppgaveId: String? = null
+     * ID fra oppgave etter opprettelse av oppgave
+     */
+    var oppgaveId: String? = null,
+    // Må være null for tidligere verdier er lagret med null
+    var sendtAvNavn: String? = null
 ): SimpleJsonbEntity
 
 data class FravaerData (

@@ -5,7 +5,6 @@ import no.nav.helse.arbeidsgiver.web.validation.isValidIdentitetsnummer
 import no.nav.helse.arbeidsgiver.web.validation.isValidOrganisasjonsnummer
 import no.nav.helse.fritakagp.domain.*
 import no.nav.helse.fritakagp.web.api.resreq.validation.*
-import no.nav.helse.fritakagp.web.dto.validation.*
 import org.valiktor.functions.*
 import org.valiktor.validate
 
@@ -53,10 +52,11 @@ data class KroniskSoknadRequest(
         }
     }
     
-    fun toDomain(sendtAv: String) = KroniskSoeknad(
+    fun toDomain(sendtAv: String, sendtAvNavn: String) = KroniskSoeknad(
         virksomhetsnummer = virksomhetsnummer,
         identitetsnummer = identitetsnummer,
         sendtAv = sendtAv,
+        sendtAvNavn = sendtAvNavn,
         arbeidstyper = arbeidstyper,
         antallPerioder = antallPerioder,
         paakjenningstyper = paakjenningstyper,
@@ -99,11 +99,12 @@ data class KroniskKravRequest(
         }
     }
     
-    fun toDomain(sendtAv: String) = KroniskKrav(
+    fun toDomain(sendtAv: String, sendtAvNavn: String) = KroniskKrav(
         identitetsnummer = identitetsnummer,
         virksomhetsnummer = virksomhetsnummer,
         perioder = perioder,
         sendtAv = sendtAv,
+        sendtAvNavn = sendtAvNavn,
         harVedlegg = !dokumentasjon.isNullOrEmpty(),
         kontrollDager = kontrollDager,
         antallDager = antallDager

@@ -16,7 +16,6 @@ object GravidTestData {
     val soeknadGravid = GravidSoeknad(
         virksomhetsnummer = validOrgNr,
         identitetsnummer = validIdentitetsnummer,
-        termindato = LocalDate.now().plusDays(25),
         tilrettelegge = true,
         tiltak = listOf(Tiltak.HJEMMEKONTOR, Tiltak.ANNET),
         tiltakBeskrivelse = """Vi prøvde både det ene og det andre og det første kanskje virka litt men muligens and the andre ikke var så på stell men akk ja sånn lorem
@@ -37,7 +36,9 @@ aąbcćdeęfghijlłmnńoóprsśtuwź
         """.trimMargin(),
         omplassering = Omplassering.IKKE_MULIG,
         omplasseringAarsak = OmplasseringAarsak.HELSETILSTANDEN,
-        sendtAv = validName
+        sendtAv = validIdentitetsnummer,
+        termindato = LocalDate.now().plusDays(25),
+        sendtAvNavn = validName
     )
 
     val fullValidSoeknadRequest = GravidSoknadRequest(
@@ -164,7 +165,9 @@ aąbcćdeęfghijlłmnńoóprsśtuwź
 
 
     val gravidKrav = GravidKrav(
+        sendtAv = validIdentitetsnummer,
         virksomhetsnummer = validOrgNr,
+
         identitetsnummer = validIdentitetsnummer,
 
         perioder = listOf(Arbeidsgiverperiode(
@@ -173,10 +176,9 @@ aąbcćdeęfghijlłmnńoóprsśtuwź
             5,
             månedsinntekt = 2590.8
         )),
-
-        sendtAv = validName,
         kontrollDager = null,
-        antallDager = 4
+        antallDager = 4,
+        sendtAvNavn = validName
     )
 
     val gravidOpprettOppgaveResponse = OpprettOppgaveResponse(

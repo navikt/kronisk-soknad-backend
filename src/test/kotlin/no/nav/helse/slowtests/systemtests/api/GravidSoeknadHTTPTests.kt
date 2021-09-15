@@ -1,5 +1,6 @@
 package no.nav.helse.slowtests.systemtests.api
 
+import io.ktor.client.call.*
 import io.ktor.client.features.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
@@ -7,7 +8,6 @@ import io.ktor.http.*
 import no.nav.helse.GravidTestData
 import no.nav.helse.fritakagp.db.GravidSoeknadRepository
 import no.nav.helse.fritakagp.domain.GravidSoeknad
-import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -74,7 +74,9 @@ class GravidSoeknadHTTPTests : SystemTestBase() {
             body = GravidTestData.fullValidSoeknadRequest
         }
 
+        val soeknad = response.receive<GravidSoeknad>()
         assertThat(response.status).isEqualTo(HttpStatusCode.Created)
+        assertThat(soeknad.virksomhetsnummer).isEqualTo(GravidTestData.fullValidSoeknadRequest.virksomhetsnummer)
     }
 
     @Test
@@ -86,6 +88,8 @@ class GravidSoeknadHTTPTests : SystemTestBase() {
             body = GravidTestData.gravidSoknadMedFil
         }
 
+        val soeknad = response.receive<GravidSoeknad>()
         assertThat(response.status).isEqualTo(HttpStatusCode.Created)
+        assertThat(soeknad.harVedlegg).isEqualTo(true)
     }
 }

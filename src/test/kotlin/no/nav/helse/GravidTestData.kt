@@ -11,7 +11,7 @@ import java.time.LocalDate
 object GravidTestData {
     const val validIdentitetsnummer = "20015001543"
     const val validOrgNr = "917404437"
-    private const val validName = "Ola M Avsender"
+    const val validName = "Ola M Avsender"
 
     val soeknadGravid = GravidSoeknad(
         virksomhetsnummer = validOrgNr,

@@ -9,6 +9,8 @@ import org.junit.jupiter.api.Test
 import java.time.LocalDate
 
 internal class KroniskSoknadRequestTest {
+	val sendtAv = "123"
+	val sendtAvNavn = "Ola M Avsender"
 
     @Test
     fun `Gyldig FNR er påkrevd`() {
@@ -33,8 +35,8 @@ internal class KroniskSoknadRequestTest {
 
     @Test
     internal fun `mapping til domenemodell tar med harVedleggflagg`() {
-        Assertions.assertThat(KroniskTestData.kroniskSoknadMedFil.toDomain("123", "Ola M Avsender").harVedlegg).isTrue()
-        Assertions.assertThat(KroniskTestData.fullValidRequest.toDomain("123", "Ola M Avsender").harVedlegg).isFalse()
+        Assertions.assertThat(KroniskTestData.kroniskSoknadMedFil.toDomain(sendtAv, sendtAvNavn).harVedlegg).isTrue()
+        Assertions.assertThat(KroniskTestData.fullValidRequest.toDomain(sendtAv, sendtAvNavn).harVedlegg).isFalse()
     }
 
 

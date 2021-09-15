@@ -13,6 +13,8 @@ import org.junit.jupiter.api.Test
 import java.time.LocalDate
 
 class GravidKravRequestTest{
+	val sendtAv = "123"
+	val sendtAvNavn = "Ola M Avsender"
 
     @Test
     internal fun `Gyldig FNR er påkrevd`() {
@@ -52,8 +54,8 @@ class GravidKravRequestTest{
 
     @Test
     internal fun `mapping til domenemodell tar med harVedleggflagg`() {
-        assertThat(GravidTestData.gravidKravRequestMedFil.toDomain("123", "Ola M Avsender").harVedlegg).isTrue
-        assertThat(GravidTestData.gravidKravRequestValid.toDomain("123", "Ola M Avsender").harVedlegg).isFalse
+        assertThat(GravidTestData.gravidKravRequestMedFil.toDomain(sendtAv, sendtAvNavn).harVedlegg).isTrue
+        assertThat(GravidTestData.gravidKravRequestValid.toDomain(sendtAv, sendtAvNavn).harVedlegg).isFalse
 
     }
 
@@ -83,7 +85,7 @@ class GravidKravRequestTest{
         every { grunnbeløpClient.hentGrunnbeløp().grunnbeløp } returns 106399
 
         val belopBeregning =  BeløpBeregning(grunnbeløpClient)
-        val krav = GravidTestData.gravidKravRequestValid.toDomain("123", "Ola M Avsender")
+        val krav = GravidTestData.gravidKravRequestValid.toDomain(sendtAv, sendtAvNavn)
         belopBeregning.beregnBeløpGravid(krav)
 
         assertThat(krav.perioder.first().dagsats).isEqualTo(7772.4)
@@ -96,7 +98,7 @@ class GravidKravRequestTest{
         every { grunnbeløpClient.hentGrunnbeløp().grunnbeløp } returns 106399
 
         val belopBeregning =  BeløpBeregning(grunnbeløpClient)
-        val krav = GravidTestData.gravidKravRequestWithWrongDecimal.toDomain("123", "Ola M Avsender")
+        val krav = GravidTestData.gravidKravRequestWithWrongDecimal.toDomain(sendtAv, sendtAvNavn)
         belopBeregning.beregnBeløpGravid(krav)
 
         assertThat(krav.perioder.first().belop).isEqualTo(2848.6)

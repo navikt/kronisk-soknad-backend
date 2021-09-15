@@ -89,7 +89,7 @@ fun Route.gravidRoutes(
                     )
                 }
 
-                call.respond(HttpStatusCode.Created)
+                call.respond(HttpStatusCode.Created, soeknad)
                 GravidSoeknadMetrics.tellMottatt()
             }
         }
@@ -134,7 +134,7 @@ fun Route.gravidRoutes(
                         connection = connection
                     )
                 }
-                call.respond(HttpStatusCode.Created)
+                call.respond(HttpStatusCode.Created, krav)
                 GravidKravMetrics.tellMottatt()
             }
         }

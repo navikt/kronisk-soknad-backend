@@ -8,6 +8,7 @@ import io.ktor.http.*
 import no.nav.helse.KroniskTestData
 import no.nav.helse.fritakagp.db.KroniskKravRepository
 import no.nav.helse.fritakagp.domain.Arbeidsgiverperiode
+import no.nav.helse.fritakagp.domain.GravidKrav
 import no.nav.helse.fritakagp.domain.KroniskKrav
 import no.nav.helse.fritakagp.web.api.resreq.ValidationProblem
 import org.assertj.core.api.Assertions
@@ -78,7 +79,9 @@ class KroniskKravHTTPTests : SystemTestBase() {
             body = KroniskTestData.kroniskKravRequestValid
         }
 
+        val krav = response.receive<KroniskKrav>()
         Assertions.assertThat(response.status).isEqualTo(HttpStatusCode.Created)
+        Assertions.assertThat(krav.identitetsnummer).isEqualTo(KroniskTestData.kroniskKravRequestValid.identitetsnummer)
     }
 
     @Test
@@ -104,9 +107,10 @@ class KroniskKravHTTPTests : SystemTestBase() {
             body = KroniskTestData.kroniskKravRequestMedFil
         }
 
+        val krav = response.receive<KroniskKrav>()
         Assertions.assertThat(response.status).isEqualTo(HttpStatusCode.Created)
+        Assertions.assertThat(krav.harVedlegg).isEqualTo(true)
     }
-
 
     @Test
     fun `Skal returnere full propertypath for periode`() = suspendableTest {

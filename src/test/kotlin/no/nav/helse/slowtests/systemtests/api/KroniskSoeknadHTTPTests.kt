@@ -1,5 +1,6 @@
 package no.nav.helse.slowtests.systemtests.api
 
+import io.ktor.client.call.*
 import io.ktor.client.features.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
@@ -75,7 +76,9 @@ class KroniskSoeknadHTTPTests : SystemTestBase() {
             body = KroniskTestData.fullValidRequest
         }
 
+        val soeknad = response.receive<KroniskSoeknad>()
         Assertions.assertThat(response.status).isEqualTo(HttpStatusCode.Created)
+        Assertions.assertThat(soeknad.virksomhetsnummer).isEqualTo(KroniskTestData.fullValidRequest.virksomhetsnummer)
     }
 
     @Test
@@ -111,6 +114,8 @@ class KroniskSoeknadHTTPTests : SystemTestBase() {
             body = KroniskTestData.kroniskSoknadMedFil
         }
 
+        val soeknad = response.receive<KroniskSoeknad>()
         Assertions.assertThat(response.status).isEqualTo(HttpStatusCode.Created)
+        Assertions.assertThat(soeknad.harVedlegg).isEqualTo(true)
     }
 }

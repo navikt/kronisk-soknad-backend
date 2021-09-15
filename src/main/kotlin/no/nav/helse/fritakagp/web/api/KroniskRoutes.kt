@@ -81,7 +81,7 @@ fun Route.kroniskRoutes(
                     )
                 }
 
-                call.respond(HttpStatusCode.Created)
+                call.respond(HttpStatusCode.Created, soeknad)
                 KroniskSoeknadMetrics.tellMottatt()
             }
         }
@@ -129,7 +129,7 @@ fun Route.kroniskRoutes(
                     )
                 }
 
-                call.respond(HttpStatusCode.Created)
+                call.respond(HttpStatusCode.Created, krav)
                 KroniskKravMetrics.tellMottatt()
             }
         }

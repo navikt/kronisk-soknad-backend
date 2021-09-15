@@ -75,7 +75,7 @@ class KroniskSoeknadAltinnKvitteringSender(
             .withLanguageCode("1044")
             .withMessageTitle(tittel)
             .withMessageBody(innhold)
-            .withMessageSummary("Kvittering for søknad om fritak fra arbeidsgiverperioden ifbm graviditetsrelatert fravær")
+            .withMessageSummary("Kvittering for søknad om fritak fra arbeidsgiverperioden knyttet til kronisk eller langvarig sykdom")
 
         return InsertCorrespondenceV2()
             .withAllowForwarding(false)

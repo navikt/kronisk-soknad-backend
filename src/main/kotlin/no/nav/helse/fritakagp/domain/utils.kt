@@ -90,13 +90,23 @@ fun generereGravidkKravBeskrivelse(krav: GravidKrav, desc : String) : String {
 
 fun genererePeriodeTable(perioder: List<Arbeidsgiverperiode>) : String {
     return table {
-        header("FOM", "TOM", "kreves refusjon for", "Beregnet månedsinntekt (NOK)", "Dagsats (NOK)", "Beløp (NOK)")
+        header("FOM", "TOM", "Sykmeldingsgrad", "kreves refusjon for", "Beregnet månedsinntekt (NOK)", "Dagsats (NOK)", "Beløp (NOK)")
         for (p in perioder) {
-            row(p.fom.atStartOfDay(),p.tom.atStartOfDay(),p.antallDagerMedRefusjon, p.månedsinntekt.toString(), p.dagsats.toString(), p.belop.toString())
+            val gradering = (p.gradering * 100).toString() + "%"
+            row(
+                p.fom.atStartOfDay(),
+                p.tom.atStartOfDay(),
+                gradering,
+                p.antallDagerMedRefusjon,
+                p.månedsinntekt.toString(),
+                p.dagsats.toString(),
+                p.belop.toString()
+            )
         }
         hints {
             alignment("FOM", Table.Hints.Alignment.LEFT)
             alignment("TOM", Table.Hints.Alignment.LEFT)
+            alignment("Sykmeldingsgrad", Table.Hints.Alignment.LEFT)
             alignment("kreves refusjon for", Table.Hints.Alignment.LEFT)
             alignment("Beregnet månedsinntekt (NOK)", Table.Hints.Alignment.LEFT)
             alignment("Dagsats (NOK)", Table.Hints.Alignment.LEFT)

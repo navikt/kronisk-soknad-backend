@@ -1,9 +1,8 @@
 name: Deploy til prod
 
 on:
-  push:
-    tags:
-      - prod/*
+  release:
+    types: [released]
 
 env:
   APP: fritakagp

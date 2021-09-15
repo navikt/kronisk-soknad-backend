@@ -64,7 +64,7 @@ fun Route.kroniskRoutes(
                 val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
 
                 val sendtAvNavn = pdlService.finnNavn(innloggetFnr)
-                val soeknad = request.toDomain(sendtAvNavn, innloggetFnr)
+                val soeknad = request.toDomain(innloggetFnr, sendtAvNavn)
                 processDocumentForGCPStorage(request.dokumentasjon, virusScanner, bucket, soeknad.id)
 
                 datasource.connection.use { connection ->

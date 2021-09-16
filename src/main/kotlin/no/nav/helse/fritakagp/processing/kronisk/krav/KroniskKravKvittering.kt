@@ -98,7 +98,7 @@ fun lagrePerioder(perioder: List<Arbeidsgiverperiode>) : String {
               <tr>
                 <th>Fra dato</th>
                 <th>Til dato</th>
-				<th>Sykmeldingsgrad</th>
+                <th>Sykmeldingsgrad</th>
                 <th>Dager med refusjon</th>
                 <th>Beregnet månedsinntekt (NOK)</th>
                 <th>Dagsats (NOK)</th>
@@ -115,11 +115,11 @@ fun lagrePerioder(perioder: List<Arbeidsgiverperiode>) : String {
 
 fun lagePeriod(periode : Arbeidsgiverperiode) : String {
     val dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
-	val gradering = (periode.gradering * 100).toString() + "%"
+    val gradering = (periode.gradering * 100).toString() + "%"
     return """<tr>
                 <td style="text-align:center">${periode.fom.format(dateFormatter)}</td>
                 <td style="text-align:center">${periode.tom.format(dateFormatter)}</td>
-				<td style="text-align:center">${gradering}</td>
+                <td style="text-align:center">${gradering}</td>
                 <td style="text-align:center">${periode.antallDagerMedRefusjon}</td>
                 <td style="text-align:center">${periode.månedsinntekt}</td>
                 <td style="text-align:center">${periode.dagsats}</td>

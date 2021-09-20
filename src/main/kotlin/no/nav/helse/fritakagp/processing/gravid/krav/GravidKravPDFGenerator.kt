@@ -37,12 +37,16 @@ class GravidKravPDFGenerator {
         content.writeTextWrapped("Arbeidsgiver oppgitt i krav: ${krav.virksomhetsnavn} (${krav.virksomhetsnummer})")
         content.writeTextWrapped("Arbeidsgiverperiode", 2)
         krav.perioder.forEach {
-            content.writeTextWrapped("FOM: ${it.fom}")
-            content.writeTextWrapped("TOM: ${it.tom}")
-            content.writeTextWrapped("Antall dager det kreves refusjon for: ${it.antallDagerMedRefusjon}")
-            content.writeTextWrapped("Beregnet månedsinntekt (NOK): ${it.månedsinntekt}")
-            content.writeTextWrapped("Dagsats (NOK): ${it.dagsats}")
-            content.writeTextWrapped("Beløp (NOK): ${it.belop}")
+            val gradering = (it.gradering * 100).toString()
+            with(content) {
+                writeTextWrapped("FOM: ${it.fom}")
+                writeTextWrapped("TOM: ${it.tom}")
+                writeTextWrapped("Sykmeldingsgrad: ${gradering}%")
+                writeTextWrapped("Antall dager det kreves refusjon for: ${it.antallDagerMedRefusjon}")
+                writeTextWrapped("Beregnet månedsinntekt (NOK): ${it.månedsinntekt}")
+                writeTextWrapped("Dagsats (NOK): ${it.dagsats}")
+                writeTextWrapped("Beløp (NOK): ${it.belop}")
+            }
         }
 
         content.endText()
@@ -62,4 +66,4 @@ class GravidKravPDFGenerator {
     }
 }
 
-fun getPDFTimeStampFormat() =  DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss")
+fun getPDFTimeStampFormat() = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss")

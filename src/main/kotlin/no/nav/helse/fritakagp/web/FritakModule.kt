@@ -9,14 +9,12 @@ import io.ktor.http.*
 import io.ktor.jackson.*
 import io.ktor.locations.*
 import io.ktor.routing.*
-import io.ktor.util.*
 import no.nav.helse.arbeidsgiver.system.AppEnv
 import no.nav.helse.arbeidsgiver.system.getEnvironment
 import no.nav.helse.arbeidsgiver.system.getString
 import no.nav.helse.fritakagp.web.api.*
 import no.nav.security.token.support.ktor.tokenValidationSupport
 import org.koin.ktor.ext.get
-import org.koin.ktor.ext.getKoin
 
 @KtorExperimentalLocationsAPI
 fun Application.fritakModule(config: ApplicationConfig = environment.config) {
@@ -44,6 +42,7 @@ fun Application.fritakModule(config: ApplicationConfig = environment.config) {
                 altinnRoutes(get())
             }
         }
+        swaggerRoutes("$apiBasePath")
     }
 }
 

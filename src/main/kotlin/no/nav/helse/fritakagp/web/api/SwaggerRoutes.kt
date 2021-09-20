@@ -5,17 +5,14 @@ import io.ktor.routing.*
 
 fun Route.swaggerRoutes(base: String) {
 
-    route("$base/") {
+    route("$base") {
         static("swagger") {
-            default("index.html")
+            defaultResource("swagger-ui/dist/index.html")
             resources("swagger-ui/dist")
         }
-    }
 
-    route("$base/") {
         static("docs") {
             resources("swagger-docs")
         }
     }
-
 }

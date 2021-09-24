@@ -16,6 +16,14 @@
   "host": "",
   "basePath": "/api/v1",
   "tags": [
+    {
+      "name": "Gravide",
+      "description": "Søknad og kravskjema for gravide"
+    },
+    {
+      "name": "Kronisk",
+      "description": "Søknad og kravskjema for Kronisk eller ved langvarig sykdom"
+    }
   ],
   "schemes": [
     "https"
@@ -23,7 +31,8 @@
   "paths": {
     "/gravid/soeknad": {
       "post": {
-        "summary": "Send inn søknad om at NAV dekker sykepenger i arbeidsgiverperioden",
+        "tags": ["Gravide"],
+        "summary": "Send inn søknad om at NAV dekker sykepenger i arbeidsgiverperioden for gravide",
         "description": "",
         "consumes": [
           "application/json"
@@ -50,23 +59,117 @@
           "500": { "description": "Internal server error" }
         }
       }
+    },
+    "/gravid/krav": {
+      "post": {
+        "tags": ["Gravide"],
+        "summary": "Send inn krav om refusjon av sykepenger i arbeidsgiverperioden for gravide",
+        "description": "",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Kravet",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/GravidKrav"
+            }
+          }
+        ],
+        "responses": {
+          "201": { "description": "Kravet er godkjent" },
+          "400": { "description": "Bad request" },
+          "401": { "description": "Unauthorized" },
+          "422": { "description": "Unprocessable Entity" },
+          "500": { "description": "Internal server error" }
+        }
+      }
+    },
+    "/kronisk/soeknad": {
+      "post": {
+        "tags": ["Kronisk"],
+        "summary": "Send inn søknad om at NAV dekker sykepenger i arbeidsgiverperioden for kronisk eller langvarig syke",
+        "description": "",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+              "name": "selvbetjening-idtoken",
+              "in": "header",
+              "required": false,
+              "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Søknaden",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/KroniskSoeknad"
+            }
+          }
+        ],
+        "responses": {
+          "201": { "description": "Søknaden er godkjent" },
+          "400": { "description": "Bad request" },
+          "401": { "description": "Unauthorized" },
+          "422": { "description": "Unprocessable Entity" },
+          "500": { "description": "Internal server error" }
+        }
+      }
+    },
+    "/kronisk/krav": {
+      "post": {
+        "tags": ["Kronisk"],
+        "summary": "Send inn krav om refusjon av sykepenger i arbeidsgiverperioden for kronisk eller langvarig syke",
+        "description": "",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Søknaden",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/KroniskKrav"
+            }
+          }
+        ],
+        "responses": {
+          "201": { "description": "Søknaden er godkjent" },
+          "400": { "description": "Bad request" },
+          "401": { "description": "Unauthorized" },
+          "422": { "description": "Unprocessable Entity" },
+          "500": { "description": "Internal server error" }
+        }
+      }
     }
   },
   "definitions": {
     "GravidSoeknad": {
       "type": "object",
+      "required": ["virksomhetsnummer", "identitetsnummer", "tilrettelegge", "bekreftet"],
       "properties": {
         "virksomhetsnummer": {
-          "type": "string",
-          "minLength": 9,
-          "maxLength": 9,
-          "description": "Virksomhetsnummeret (ikke organisasjonsnummer) til arbeidsgiver"
+          "$ref": "#/definitions/virksomhetsnummer"
         },
         "identitetsnummer": {
-          "type": "string",
-          "minLength": 11,
-          "maxLength": 11,
-          "description": "Den ansattes fødselsnummer (11 siffer)"
+          "$ref": "#/definitions/identitetsnummer"
         },
         "tilrettelegge": {
           "type": "boolean",
@@ -104,12 +207,177 @@
           ]
         },
         "bekreftet": {
-          "type": "boolean",
-          "description": "Må være satt til true"
+          "$ref": "#/definitions/bekreftet"
         },
         "dokumentasjon": {
+          "$ref": "#/definitions/dokumentasjon"
+        }
+      }
+    },
+    "GravidKrav": {
+      "type": "object",
+      "required": ["virksomhetsnummer", "identitetsnummer", "perioder", "kontrollDager", "antallDager", "bekreftet"],
+      "properties": {
+        "virksomhetsnummer": {
+          "$ref": "#/definitions/virksomhetsnummer"
+        },
+        "identitetsnummer": {
+          "$ref": "#/definitions/identitetsnummer"
+        },
+        "perioder": {
+          "type": "array",
+          "$ref": "#/definitions/Arbeidsgiverperiode",
+          "minItems": 1,
+          "maxItems": 100
+        },
+        "kontrollDager": {
+          "type": "integer"
+        },
+        "antallDager": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Oppgi antall dager dere utbetaler lønn for i året. 250 dager er vanlig for en ordinær 100% stilling"
+        },
+        "bekreftet": {
+          "$ref": "#/definitions/bekreftet"
+        },
+        "dokumentasjon": {
+          "$ref": "#/definitions/dokumentasjon"
+        }
+      }
+    },
+    "Arbeidsgiverperiode": {
+      "type": "object",
+      "required": ["fom", "tom", "antallDagerMedRefusjon", "månedsinntekt"],
+      "properties": {
+        "fom": {
           "type": "string",
-          "description": "Vedlegg i PDF format. Base64 encoded. Valgfritt"
+          "format": "åååå.mm.dd"
+        },
+        "tom": {
+          "type": "string",
+          "format": "åååå.mm.dd"
+        },
+        "antallDagerMedRefusjon": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "månedsinntekt": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "gradering": {
+          "type": "number",
+          "default": 1,
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Sykemeldingsgrad i prosent oppgitt som desimaltall",
+          "example": "50% grad oppgis som 0.5 og 100% grad oppgis som 1"
+        }
+      }
+      },
+    "KroniskSoeknad": {
+      "type": "object",
+      "required": [
+        "virksomhetsnummer",
+        "identitetsnummer",
+        "antallDagerMedRefusjon",
+        "månedsinntekt",
+        "arbeidstyper",
+        "paakjenningstyper",
+        "fravaer",
+        "FravaerData",
+        "antallPerioder",
+        "bekreftet"
+      ],
+      "properties": {
+        "virksomhetsnummer": {
+          "$ref": "#/definitions/virksomhetsnummer"
+        },
+        "identitetsnummer": {
+          "$ref": "#/definitions/identitetsnummer"
+        },
+        "arbeidstyper": {
+          "type": "string",
+          "description": "Hva slags arbeid utfører den ansatte?",
+          "enum": [
+            "STILLESITTENDE",
+            "MODERAT",
+            "KREVENDE"
+          ]
+        },
+        "paakjenningstyper": {
+          "type": "string",
+          "description": "Hvilke påkjenninger innebærer arbeidet?",
+          "enum": [
+            "ALLERGENER",
+            "UKOMFORTABEL",
+            "STRESSENDE",
+            "REGELMESSIG",
+            "GAAING",
+            "HARDE",
+            "TUNGE",
+            "ANNET"
+          ]
+        },
+        "paakjenningBeskrivelse": {
+          "type": "string",
+          "description": "Dersom ANNET er valgt for paakjenningstyper må det oppgis en kort beskrivelse her."
+        },
+        "fravaer": {
+          "$ref": "#/definitions/FravaerData"
+        },
+
+        "antallPerioder": {
+          "type": "string",
+          "description": "Hvor mange perioder er fraværet fordelt på siste 12 måneder?"
+        },
+        "bekreftet": {
+          "$ref": "#/definitions/bekreftet"
+        },
+        "dokumentasjon": {
+          "$ref": "#/definitions/dokumentasjon"
+        }
+      }
+    },
+    "KroniskKrav": {
+      "type": "object",
+      "required": ["virksomhetsnummer", "identitetsnummer", "perioder"],
+      "properties": {
+        "virksomhetsnummer": {
+          "$ref": "#/definitions/virksomhetsnummer"
+        },
+        "identitetsnummer": {
+          "$ref": "#/definitions/identitetsnummer"
+        },
+        "perioder": {
+          "type": "array",
+          "$ref": "#/definitions/Arbeidsgiverperiode"
+        },
+
+
+
+        "bekreftet": {
+          "$ref": "#/definitions/bekreftet"
+        },
+        "dokumentasjon": {
+          "$ref": "#/definitions/dokumentasjon"
+        }
+      }
+    },
+    "FravaerData": {
+      "type": "object",
+      "required": ["yearMonth", "antallDagerMedFravaer"],
+      "properties": {
+        "yearMonth": {
+          "type": "string",
+          "description": "Måned og årstall for fraværet",
+          "format": "åååå-mm"
+        },
+        "antallDagerMedFravaer": {
+          "type": "integer",
+          "description": "",
+          "minimum": 0
         }
       }
     },
@@ -118,10 +386,7 @@
       "properties": {
         "violations": {
           "type": "array",
-          "description": "Virksomhetsnummeret",
-          "schema": {
-            "$ref": "#/definitions/ValidationProblemDetail"
-          }
+          "$ref": "#/definitions/ValidationProblemDetail"
         }
       }
     },
@@ -129,18 +394,39 @@
       "type": "object",
       "properties": {
         "validationType": {
-          "type": "string", "description": "Virksomhetsnummeret"
+          "type": "string", "description": ""
         },
         "message": {
-          "type": "string", "description": "Virksomhetsnummeret"
+          "type": "string", "description": ""
         },
         "propertyPath": {
-          "type": "string", "description": "Virksomhetsnummeret"
+          "type": "string", "description": ""
         },
         "invalidValue": {
-          "type": "string", "description": "Virksomhetsnummeret"
+          "type": "string", "description": "Verdien som var ugyldig"
         }
       }
+    },
+    "virksomhetsnummer": {
+      "type": "string",
+      "minLength": 9,
+      "maxLength": 9,
+      "description": "Virksomhetsnummeret (ikke organisasjonsnummer) til arbeidsgiver"
+    },
+    "identitetsnummer": {
+      "type": "string",
+      "minLength": 11,
+      "maxLength": 11,
+      "description": "Fødselsnummer (11 siffer)"
+    },
+    "dokumentasjon": {
+      "type": "string",
+      "maxLength": 500000,
+      "description": "Vedlegg i PDF format. Base64 encoded."
+    },
+    "bekreftet": {
+      "type": "boolean",
+      "description": "Bekreft at opplysningene er korrekt"
     }
   }
 }

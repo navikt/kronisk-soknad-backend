@@ -10,6 +10,7 @@ import no.nav.helse.arbeidsgiver.system.getString
 import no.nav.helse.arbeidsgiver.web.auth.AltinnAuthorizer
 import no.nav.helse.arbeidsgiver.web.auth.DefaultAltinnAuthorizer
 import no.nav.helse.fritakagp.MetrikkVarsler
+import no.nav.helse.fritakagp.datapakke.DatapakkePublisherJob
 import no.nav.helse.fritakagp.db.*
 import no.nav.helse.fritakagp.domain.BeløpBeregning
 import no.nav.helse.fritakagp.integration.altinn.message.Clients
@@ -51,7 +52,7 @@ fun preprodConfig(config: ApplicationConfig) = module {
     single { KroniskKravProcessor(get(), get(), get(), get(), get(), KroniskKravPDFGenerator(), get(), get(), get()) }
 
     single { Clients.iCorrespondenceExternalBasic(config.getString("altinn_melding.altinn_endpoint")) }
-    
+
     single {
         GravidSoeknadAltinnKvitteringSender(
             config.getString("altinn_melding.service_id"),
@@ -61,8 +62,8 @@ fun preprodConfig(config: ApplicationConfig) = module {
         )
     } bind GravidSoeknadKvitteringSender::class
 
-    single { GravidSoeknadKvitteringProcessor(get(), get(), get()) }    
-    
+    single { GravidSoeknadKvitteringProcessor(get(), get(), get()) }
+
     single {
         GravidKravAltinnKvitteringSender(
             config.getString("altinn_melding.service_id"),
@@ -73,7 +74,7 @@ fun preprodConfig(config: ApplicationConfig) = module {
     } bind GravidKravKvitteringSender::class
 
     single { GravidKravKvitteringProcessor(get(), get(), get()) }
-    
+
     single {
         KroniskSoeknadAltinnKvitteringSender(
             config.getString("altinn_melding.service_id"),
@@ -83,7 +84,7 @@ fun preprodConfig(config: ApplicationConfig) = module {
         )
     } bind KroniskSoeknadKvitteringSender::class
     single { KroniskSoeknadKvitteringProcessor(get(), get(), get()) }
-    
+
     single {
         KroniskKravAltinnKvitteringSender(
             config.getString("altinn_melding.service_id"),
@@ -104,5 +105,8 @@ fun preprodConfig(config: ApplicationConfig) = module {
 
     single { DefaultAltinnAuthorizer(get()) } bind AltinnAuthorizer::class
     single { BeløpBeregning(get()) }
+
+    single { DatapakkePublisherJob(get(), config.getString("datapakke.api_url"), config.getString("datapakke.id"), get()) }
+
 }
 

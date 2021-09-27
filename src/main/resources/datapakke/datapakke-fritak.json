@@ -1,0 +1,17 @@
+{
+  "title": "Inntektsmelding sykepenger",
+  "type": "datapackage",
+  "description": "Inntektsmeldingsstatistikk - Sykepenger",
+  "name": "syfoinntektsmelding_statistikk",
+  "uri": "",
+  "url": "",
+  "team": "helsearbeidsgiver",
+  "views": [
+    {
+      "name": "Antall",
+      "description": "",
+      "specType": "markdown",
+      "spec": {"markdown": "Antall"}
+    }
+  ]
+}

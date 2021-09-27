@@ -106,7 +106,8 @@ fun preprodConfig(config: ApplicationConfig) = module {
     single { DefaultAltinnAuthorizer(get()) } bind AltinnAuthorizer::class
     single { BeløpBeregning(get()) }
 
-    single { DatapakkePublisherJob(get(), config.getString("datapakke.api_url"), config.getString("datapakke.id"), get()) }
+    single { DatapakkePublisherJob(get(), get(), config.getString("datapakke.api_url"), config.getString("datapakke.id"), get()) }
+    single { StatsRepoImpl(get())} bind IStatsRepo::class
 
 }
 

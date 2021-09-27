@@ -11,11 +11,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import no.nav.helse.arbeidsgiver.utils.RecurringJob
 import no.nav.helse.arbeidsgiver.utils.loadFromResources
+import no.nav.helse.fritakagp.db.IStatsRepo
 import java.time.DayOfWeek
 import java.time.Duration
 import java.time.LocalDateTime
 
 class DatapakkePublisherJob (
+    private val statsRepo: IStatsRepo,
     private val httpClient: HttpClient,
     private val datapakkeApiUrl: String,
     private val datapakkeId: String,

@@ -58,7 +58,9 @@ fun Route.gravidRoutes(
                 if (form == null || form.identitetsnummer != innloggetFnr) {
                     call.respond(HttpStatusCode.NotFound)
                 } else {
-                    form.sendtAvNavn = pdlService.finnNavn(innloggetFnr)
+                    form.sendtAvNavn = form.sendtAvNavn ?: pdlService.finnNavn(innloggetFnr)
+                    form.navn = form.navn ?: pdlService.finnNavn(form.identitetsnummer)
+
                     call.respond(HttpStatusCode.OK, form)
                 }
             }
@@ -71,7 +73,9 @@ fun Route.gravidRoutes(
                 request.validate(isVirksomhet)
 
                 val sendtAvNavn = pdlService.finnNavn(innloggetFnr)
-                val soeknad = request.toDomain(innloggetFnr, sendtAvNavn)
+                val navn = pdlService.finnNavn(request.identitetsnummer)
+
+                val soeknad = request.toDomain(innloggetFnr, sendtAvNavn, navn)
 
                 processDocumentForGCPStorage(request.dokumentasjon, virusScanner, bucket, soeknad.id)
 
@@ -101,7 +105,9 @@ fun Route.gravidRoutes(
                 if (form == null || form.identitetsnummer != innloggetFnr) {
                     call.respond(HttpStatusCode.NotFound)
                 } else {
-                    form.sendtAvNavn = pdlService.finnNavn(innloggetFnr)
+                    form.sendtAvNavn = form.sendtAvNavn ?: pdlService.finnNavn(innloggetFnr)
+                    form.navn = form.navn ?: pdlService.finnNavn(form.identitetsnummer)
+
                     call.respond(HttpStatusCode.OK, form)
                 }
             }
@@ -117,7 +123,9 @@ fun Route.gravidRoutes(
 
                 val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
                 val sendtAvNavn = pdlService.finnNavn(innloggetFnr)
-                val krav = request.toDomain(innloggetFnr, sendtAvNavn)
+                val navn = pdlService.finnNavn(request.identitetsnummer)
+
+                val krav = request.toDomain(innloggetFnr, sendtAvNavn, navn)
                 belopBeregning.beregnBeløpGravid(krav)
                 processDocumentForGCPStorage(request.dokumentasjon, virusScanner, bucket, krav.id)
 

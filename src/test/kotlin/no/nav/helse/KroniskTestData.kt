@@ -11,9 +11,10 @@ import java.time.format.DateTimeFormatter
 import kotlin.random.Random
 
 object KroniskTestData {
+    val validNavn = "Personliga Person"
     val validIdentitetsnummer = "20015001543"
     val validOrgNr = "917404437"
-    val validName = "Ola M Avsender"
+    val validSendtAvNavn = "Ola M Avsender"
     val antallPerioder = 3
 
     val soeknadKronisk = KroniskSoeknad(
@@ -26,7 +27,8 @@ object KroniskTestData {
         antallPerioder = antallPerioder,
         bekreftet = true,
         sendtAv = validIdentitetsnummer,
-        sendtAvNavn = validName
+        sendtAvNavn = validSendtAvNavn,
+        navn = validSendtAvNavn
     )
 
     val fullValidRequest = KroniskSoknadRequest(
@@ -112,7 +114,8 @@ object KroniskTestData {
         )),
         kontrollDager = null,
         antallDager = 4,
-        sendtAvNavn = validName
+        sendtAvNavn = validSendtAvNavn,
+        navn = validSendtAvNavn
     )
 
     val kroniskOpprettOppgaveResponse = OpprettOppgaveResponse(

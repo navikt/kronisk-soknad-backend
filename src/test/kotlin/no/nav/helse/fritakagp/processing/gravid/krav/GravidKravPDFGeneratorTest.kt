@@ -19,7 +19,7 @@ class GravidKravPDFGeneratorTest {
 
         val pdfText = extractTextFromPdf(pdf)
 
-        assertThat(pdfText).contains(krav.identitetsnummer)
+        assertThat(pdfText).contains(krav.navn)
         assertThat(pdfText).contains(krav.virksomhetsnummer)
     }
 

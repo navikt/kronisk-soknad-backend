@@ -52,6 +52,8 @@ fun Route.kroniskRoutes(
                     call.respond(HttpStatusCode.NotFound)
                 } else {
                     form.sendtAvNavn = form.sendtAvNavn ?: pdlService.finnNavn(innloggetFnr)
+                    form.navn = form.navn ?: pdlService.finnNavn(form.identitetsnummer)
+
                     call.respond(HttpStatusCode.OK, form)
                 }
             }
@@ -64,7 +66,9 @@ fun Route.kroniskRoutes(
                 val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
 
                 val sendtAvNavn = pdlService.finnNavn(innloggetFnr)
-                val soeknad = request.toDomain(innloggetFnr, sendtAvNavn)
+                val navn = pdlService.finnNavn(request.identitetsnummer)
+
+                val soeknad = request.toDomain(innloggetFnr, sendtAvNavn, navn)
                 processDocumentForGCPStorage(request.dokumentasjon, virusScanner, bucket, soeknad.id)
 
                 datasource.connection.use { connection ->
@@ -94,6 +98,8 @@ fun Route.kroniskRoutes(
                     call.respond(HttpStatusCode.NotFound)
                 } else {
                     form.sendtAvNavn = form.sendtAvNavn ?: pdlService.finnNavn(innloggetFnr)
+                    form.navn = form.navn ?: pdlService.finnNavn(form.identitetsnummer)
+
                     call.respond(HttpStatusCode.OK, form)
                 }
             }
@@ -109,8 +115,9 @@ fun Route.kroniskRoutes(
 
                 val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
                 val sendtAvNavn = pdlService.finnNavn(innloggetFnr)
+                val navn = pdlService.finnNavn(request.identitetsnummer)
 
-                val krav = request.toDomain(innloggetFnr, sendtAvNavn)
+                val krav = request.toDomain(innloggetFnr, sendtAvNavn, navn)
 
                 belopBeregning.beregnBeløpKronisk(krav)
                 processDocumentForGCPStorage(request.dokumentasjon, virusScanner, bucket, krav.id)

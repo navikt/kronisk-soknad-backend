@@ -19,7 +19,7 @@ class KroniskSoeknadPDFGeneratorTest {
 
         val pdfText = extractTextFromPdf(pdf)
 
-        assertThat(pdfText).contains(soeknad.identitetsnummer)
+        assertThat(pdfText).contains(soeknad.navn)
         assertThat(pdfText).contains(soeknad.virksomhetsnummer)
 
         soeknad.paakjenningstyper.forEach { assertThat((pdfText)?.contains(it.beskrivelse)) }

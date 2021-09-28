@@ -11,6 +11,8 @@ data class KroniskSoeknad(
 
     val virksomhetsnummer: String,
     val identitetsnummer: String,
+    // Må være null for tidligere verdier er lagret med null
+    var navn: String? = null,
     val arbeidstyper: Set<ArbeidsType>,
     val paakjenningstyper: Set<PaakjenningsType>,
     val paakjenningBeskrivelse: String? = null,

@@ -62,8 +62,8 @@ class GravidKravAltinnKvitteringSender(
              Har dere spørsmål, ring NAVs arbeidsgivertelefon 55 55 33 36.</p>
             <p>Dere har innrapportert følgende:</p>
             <ul>
-                <li>Fødselsnummer: ${kvittering.identitetsnummer}</li>
-                <li>Dokumentasjon vedlagt: ${if (kvittering.harVedlegg) "Ja" else "Nei"}</li>                      
+                <li>Navn: ${kvittering.navn}</li>
+                <li>Dokumentasjon vedlagt: ${if (kvittering.harVedlegg) "Ja" else "Nei"}</li>
                 <li>Mottatt: ${kvittering.opprettet.format(dateTimeFormatterMedKl)}</li>
                 <li>Innrapportert av: ${kvittering.sendtAvNavn}</li>
                 <li>Perioder: </li>

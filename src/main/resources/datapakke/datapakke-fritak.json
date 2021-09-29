@@ -1,17 +1,155 @@
 {
-  "title": "Inntektsmelding sykepenger",
+  "title": "Fritak AGP",
   "type": "datapackage",
-  "description": "Inntektsmeldingsstatistikk - Sykepenger",
-  "name": "syfoinntektsmelding_statistikk",
+  "description": "",
+  "name": "fritak_statistikk",
   "uri": "",
   "url": "",
   "team": "helsearbeidsgiver",
   "views": [
     {
-      "name": "Antall",
-      "description": "",
-      "specType": "markdown",
-      "spec": {"markdown": "Antall"}
+      "title": "Tidsserier - Antall",
+      "description": "Tidsserier for antall søknader og krav",
+      "specType": "echart",
+      "spec": {
+        "url": "",
+        "option": {
+          "tooltip": {
+            "trigger": "axis",
+            "axisPointer": {
+              "type": "cross",
+              "crossStyle": {
+                "color": "#999"
+              }
+            }
+          },
+          "legend": {
+            "left": "center",
+            "data": [
+              "Totalt antall",
+              "Fra LPS",
+              "Fra Altinn",
+              "Fravær",
+              "Ikke Fravær",
+              "Årsak: Endring",
+              "Årsak: Ny",
+              "Ingen refusjon",
+              "Delvis refusjon",
+              "Full refusjon"
+            ]
+          },
+          "dataset": [
+            {
+              "source": [
+                @antall_timeseries
+              ]
+            },
+            {
+              "transform": {
+                "type": "filter",
+                "config": {
+                  "dimension": "tabell", "=": "kronisk_soeknad"
+                }
+              }
+            },
+            {
+              "transform": {
+                "type": "filter",
+                "config": {
+                  "dimension": "tabell", "=": "kronisk_krav"
+                }
+              }
+            },
+            {
+              "transform": {
+                "type": "filter",
+                "config": {
+                  "dimension": "tabell", "=": "kronisk_soeknad"
+                }
+              }
+            },
+            {
+              "transform": {
+                "type": "filter",
+                "config": {
+                  "dimension": "tabell", "=": "gravid_soeknad"
+                }
+              }
+            }
+
+          ],
+          "xAxis": {
+            "type": "category",
+            "name": "Uke"
+          },
+          "yAxis": [
+            {
+              "type": "value",
+              "name": "Antall"
+            }
+          ],
+          "series": [
+            {
+              "type": "bar",
+              "datasetIndex": 1,
+              "encode": {
+                "x": 0,
+                "y": 1,
+                "tooltip": [0,1]
+              }
+            },
+            {
+              "type": "bar",
+              "datasetIndex": 2,
+              "showSymbol": false,
+              "encode": {
+                "x": 0,
+                "y": 1,
+                "tooltip": [0,1]
+              }
+            },
+            {
+              "type": "bar",
+              "datasetIndex": 3,
+              "showSymbol": false,
+              "encode": {
+                "x": 0,
+                "y": 1,
+                "tooltip": [0,1]
+              }
+            },
+            {
+              "type": "bar",
+              "datasetIndex": 4,
+              "showSymbol": false,
+              "encode": {
+                "x": 0,
+                "y": 1,
+                "tooltip": [0,1]
+              }
+            }
+
+          ],
+          "toolbox": {
+            "show": true,
+            "left": "center",
+            "top": "bottom",
+            "feature": {
+              "magicType": {
+                "type": [
+                  "line",
+                  "bar"
+                ]
+              },
+              "dataView": {
+                "show": true,
+                "readOnly": true
+              },
+              "saveAsImage": {}
+            }
+          }
+        }
+      }
     }
   ]
 }

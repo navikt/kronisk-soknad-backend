@@ -38,7 +38,7 @@ class KroniskSoeknadPDFGenerator {
         content.setFont(font, FONT_SIZE)
 
         content.writeTextWrapped("Mottatt: ${getPDFTimeStampFormat().format(soeknad.opprettet)}", 4)
-        content.writeTextWrapped("Person (FNR): ${soeknad.identitetsnummer}")
+        content.writeTextWrapped("Person navn: ${soeknad.navn}")
         content.writeTextWrapped("Arbeidsgiver oppgitt i søknad: ${soeknad.virksomhetsnavn} (${soeknad.virksomhetsnummer})")
         content.writeTextWrapped("Hva slags arbeid utfører den ansatte?", 2)
         soeknad.arbeidstyper.forEach { content.writeTextWrapped(" - ${it.beskrivelse}") }

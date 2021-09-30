@@ -9,6 +9,7 @@ import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 
 class GravidSoknadRequestTest {
+  val navn = "Personliga Person"
 	val sendtAv = "123"
 	val sendtAvNavn = "Ola M Avsender"
 
@@ -65,8 +66,8 @@ class GravidSoknadRequestTest {
 
     @Test
     internal fun `mapping til domenemodell tar med harVedleggflagg`() {
-        Assertions.assertThat(GravidTestData.gravidSoknadMedFil.toDomain(sendtAv, sendtAvNavn).harVedlegg).isTrue()
-        Assertions.assertThat(GravidTestData.fullValidSoeknadRequest.toDomain(sendtAv, sendtAvNavn).harVedlegg).isFalse()
+        Assertions.assertThat(GravidTestData.gravidSoknadMedFil.toDomain(sendtAv, sendtAvNavn, navn).harVedlegg).isTrue()
+        Assertions.assertThat(GravidTestData.fullValidSoeknadRequest.toDomain(sendtAv, sendtAvNavn, navn).harVedlegg).isFalse()
     }
 
     @Test

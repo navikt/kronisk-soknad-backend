@@ -11,6 +11,8 @@ data class GravidSoeknad(
 
     val virksomhetsnummer: String,
     val identitetsnummer: String,
+    // Må være null for tidligere verdier er lagret med null
+    var navn: String? = null,
     val tilrettelegge: Boolean,
     val tiltak: List<Tiltak>? = null,
     val tiltakBeskrivelse: String? = null,

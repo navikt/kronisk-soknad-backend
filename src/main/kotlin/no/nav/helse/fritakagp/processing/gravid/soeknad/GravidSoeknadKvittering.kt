@@ -63,11 +63,11 @@ class GravidSoeknadAltinnKvitteringSender(
              Har dere spørsmål, ring NAVs arbeidsgivertelefon 55 55 33 36.</p>
             <p>Dere har innrapportert følgende:</p>
             <ul>
-                <li>Fødselsnummer: ${kvittering.identitetsnummer}</li>
+                <li>Navn: ${kvittering.navn}</li>
                 <li>Dokumentasjon vedlagt: ${jaEllerNei(kvittering.harVedlegg)}</li>
-                <li>Forsøkt tilrettelegging: ${jaEllerNei(kvittering.tilrettelegge)}</li>                
+                <li>Forsøkt tilrettelegging: ${jaEllerNei(kvittering.tilrettelegge)}</li>
                 <li>Tiltak:${ lagreTiltak(kvittering.tiltak) } </li>
-                <li>Forsøkt omplassering: ${lagreOmplasseringStr(kvittering)}</li>               
+                <li>Forsøkt omplassering: ${lagreOmplasseringStr(kvittering)}</li>
                 <li>Mottatt: ${kvittering.opprettet.format(dateTimeFormatterMedKl)}</li>
                 <li>Innrapportert av: ${kvittering.sendtAvNavn}</li>
             </ul>

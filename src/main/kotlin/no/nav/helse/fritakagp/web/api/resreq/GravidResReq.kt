@@ -52,9 +52,10 @@ data class GravidSoknadRequest(
         }
     }
 
-    fun toDomain(sendtAv: String, sendtAvNavn: String) = GravidSoeknad(
+    fun toDomain(sendtAv: String, sendtAvNavn: String, navn: String) = GravidSoeknad(
         virksomhetsnummer = virksomhetsnummer,
         identitetsnummer = identitetsnummer,
+        navn = navn,
         sendtAv = sendtAv,
         sendtAvNavn = sendtAvNavn,
         termindato = termindato,
@@ -99,8 +100,9 @@ data class GravidKravRequest(
         }
     }
 
-    fun toDomain(sendtAv: String, sendtAvNavn: String) = GravidKrav(
+    fun toDomain(sendtAv: String, sendtAvNavn: String, navn: String) = GravidKrav(
         identitetsnummer = identitetsnummer,
+        navn = navn,
         virksomhetsnummer = virksomhetsnummer,
         perioder = perioder,
         sendtAv = sendtAv,

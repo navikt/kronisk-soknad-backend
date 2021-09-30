@@ -51,10 +51,11 @@ data class KroniskSoknadRequest(
             }
         }
     }
-    
-    fun toDomain(sendtAv: String, sendtAvNavn: String) = KroniskSoeknad(
+
+    fun toDomain(sendtAv: String, sendtAvNavn: String, navn: String) = KroniskSoeknad(
         virksomhetsnummer = virksomhetsnummer,
         identitetsnummer = identitetsnummer,
+        navn = navn,
         sendtAv = sendtAv,
         sendtAvNavn = sendtAvNavn,
         arbeidstyper = arbeidstyper,
@@ -98,9 +99,10 @@ data class KroniskKravRequest(
             }
         }
     }
-    
-    fun toDomain(sendtAv: String, sendtAvNavn: String) = KroniskKrav(
+
+    fun toDomain(sendtAv: String, sendtAvNavn: String, navn: String) = KroniskKrav(
         identitetsnummer = identitetsnummer,
+        navn = navn,
         virksomhetsnummer = virksomhetsnummer,
         perioder = perioder,
         sendtAv = sendtAv,

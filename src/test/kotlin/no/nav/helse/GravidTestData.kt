@@ -9,9 +9,10 @@ import no.nav.helse.fritakagp.web.api.resreq.GravidSoknadRequest
 import java.time.LocalDate
 
 object GravidTestData {
-    const val validIdentitetsnummer = "20015001543"
-    const val validOrgNr = "917404437"
-    const val validName = "Ola M Avsender"
+    val validNavn = "Personliga Person"
+    val validIdentitetsnummer = "20015001543"
+    val validOrgNr = "917404437"
+    val validSendtAvNavn = "Ola M Avsender"
 
     val soeknadGravid = GravidSoeknad(
         virksomhetsnummer = validOrgNr,
@@ -38,7 +39,8 @@ aąbcćdeęfghijlłmnńoóprsśtuwź
         omplasseringAarsak = OmplasseringAarsak.HELSETILSTANDEN,
         sendtAv = validIdentitetsnummer,
         termindato = LocalDate.now().plusDays(25),
-        sendtAvNavn = validName
+        sendtAvNavn = validSendtAvNavn,
+        navn = validNavn
     )
 
     val fullValidSoeknadRequest = GravidSoknadRequest(
@@ -178,7 +180,8 @@ aąbcćdeęfghijlłmnńoóprsśtuwź
         )),
         kontrollDager = null,
         antallDager = 4,
-        sendtAvNavn = validName
+        sendtAvNavn = validSendtAvNavn,
+        navn = validNavn
     )
 
     val gravidOpprettOppgaveResponse = OpprettOppgaveResponse(

@@ -34,7 +34,7 @@ class GravidSoeknadPDFGenerator {
         content.setFont(font, FONT_SIZE)
 
         content.writeTextWrapped("Mottatt: ${TIMESTAMP_FORMAT.format(soeknad.opprettet)}", 4)
-        content.writeTextWrapped("Person (FNR): ${soeknad.identitetsnummer}")
+        content.writeTextWrapped("Person navn: ${soeknad.navn}")
         content.writeTextWrapped("Termindato: ${soeknad.termindato?.format(DATE_FORMAT) ?: terminaDatoIkkeOppgitt}")
         content.writeTextWrapped("Arbeidsgiver oppgitt i søknad: ${soeknad.virksomhetsnavn} (${soeknad.virksomhetsnummer})")
         content.writeTextWrapped(

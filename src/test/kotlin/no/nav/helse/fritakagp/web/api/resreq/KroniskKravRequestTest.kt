@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test
 import java.time.LocalDate
 
 class KroniskKravRequestTest{
+  val navn = "Personliga Person"
 	val sendtAv = "123"
 	val sendtAvNavn = "Ola M Avsender"
 
@@ -34,8 +35,8 @@ class KroniskKravRequestTest{
 
     @Test
     internal fun `mapping til domenemodell tar med harVedleggflagg`() {
-        Assertions.assertThat(KroniskTestData.kroniskKravRequestMedFil.toDomain(sendtAv, sendtAvNavn).harVedlegg).isTrue
-        Assertions.assertThat(KroniskTestData.kroniskKravRequestValid.toDomain(sendtAv, sendtAvNavn).harVedlegg).isFalse
+        Assertions.assertThat(KroniskTestData.kroniskKravRequestMedFil.toDomain(sendtAv, sendtAvNavn, navn).harVedlegg).isTrue
+        Assertions.assertThat(KroniskTestData.kroniskKravRequestValid.toDomain(sendtAv, sendtAvNavn, navn).harVedlegg).isFalse
     }
 
     @Test

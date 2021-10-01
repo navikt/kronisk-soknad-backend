@@ -41,7 +41,7 @@
           "dataset": [
             {
               "source": [
-                @antall_timeseries
+                @timeseries
               ]
             },
             {

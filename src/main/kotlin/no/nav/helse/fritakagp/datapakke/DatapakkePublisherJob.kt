@@ -26,7 +26,7 @@ class DatapakkePublisherJob (
 ):
 RecurringJob(
     CoroutineScope(Dispatchers.IO),
-    Duration.ofHours(1).toMillis()
+    Duration.ofHours(3).toMillis()
 ){
     override fun doJob() {
         val now = LocalDateTime.now()
@@ -36,11 +36,17 @@ RecurringJob(
 
         val datapakkeTemplate = "datapakke/datapakke-fritak.json".loadFromResources()
 
+        val timeseries = statsRepo.getWeeklyStats()
+
+        val populatedDatapakke = datapakkeTemplate
+            .replace("@timeseries", timeseries.map { //language=JSON
+                """[${it.uke}, ${it.antall}, ${it.tabell}]"""
+            }.joinToString())
 
         runBlocking {
             val response = httpClient.put<HttpResponse>("$datapakkeApiUrl/$datapakkeId") {
                 contentType(ContentType.Application.Json)
-                body = om.readTree(datapakkeTemplate)
+                body = om.readTree(populatedDatapakke)
             }
 
             logger.info("Oppdaterte datapakke $datapakkeId med respons ${response.readText()}")

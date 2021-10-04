@@ -40,7 +40,7 @@ RecurringJob(
 
         val populatedDatapakke = datapakkeTemplate
             .replace("@timeseries", timeseries.map { //language=JSON
-                """[${it.uke}, ${it.antall}, ${it.tabell}]"""
+                """[${it.uke}, ${it.antall}, "${it.tabell}"]"""
             }.joinToString())
 
         runBlocking {

@@ -21,16 +21,16 @@ import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravKvitteringProcess
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravProcessor
 import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadKafkaProcessor
 import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadKvitteringProcessor
-import no.nav.helse.fritakagp.web.nais.nais
 import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadProcessor
 import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravKafkaProcessor
 import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravKvitteringProcessor
 import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravProcessor
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadKafkaProcessor
-import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadProcessor
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadKvitteringProcessor
+import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadProcessor
 import no.nav.helse.fritakagp.web.auth.localCookieDispenser
 import no.nav.helse.fritakagp.web.fritakModule
+import no.nav.helse.fritakagp.web.nais.nais
 import org.flywaydb.core.Flyway
 import org.koin.core.KoinComponent
 import org.koin.core.context.GlobalContext
@@ -66,21 +66,24 @@ class FritakAgpApplication(val port: Int = 8080) : KoinComponent {
     }
 
     private fun configAndStartWebserver() {
-        webserver = embeddedServer(Netty, applicationEngineEnvironment {
-            config = appConfig
-            connector {
-                port = this@FritakAgpApplication.port
-            }
-
-            module {
-                if (runtimeEnvironment != AppEnv.PROD) {
-                    localCookieDispenser(config)
+        webserver = embeddedServer(
+            Netty,
+            applicationEngineEnvironment {
+                config = appConfig
+                connector {
+                    port = this@FritakAgpApplication.port
                 }
 
-                nais()
-                fritakModule(config)
+                module {
+                    if (runtimeEnvironment != AppEnv.PROD) {
+                        localCookieDispenser(config)
+                    }
+
+                    nais()
+                    fritakModule(config)
+                }
             }
-        })
+        )
 
         webserver!!.start(wait = false)
     }
@@ -138,7 +141,6 @@ class FritakAgpApplication(val port: Int = 8080) : KoinComponent {
     }
 }
 
-
 fun main() {
     val logger = LoggerFactory.getLogger("main")
 
@@ -149,10 +151,11 @@ fun main() {
     val application = FritakAgpApplication()
     application.start()
 
-    Runtime.getRuntime().addShutdownHook(Thread {
-        logger.info("Fikk shutdown-signal, avslutter...")
-        application.shutdown()
-        logger.info("Avsluttet OK")
-    })
+    Runtime.getRuntime().addShutdownHook(
+        Thread {
+            logger.info("Fikk shutdown-signal, avslutter...")
+            application.shutdown()
+            logger.info("Avsluttet OK")
+        }
+    )
 }
-

@@ -12,6 +12,7 @@ import no.nav.helse.arbeidsgiver.kubernetes.ReadynessComponent
 import no.nav.helse.arbeidsgiver.system.AppEnv
 import no.nav.helse.arbeidsgiver.system.getEnvironment
 import no.nav.helse.arbeidsgiver.system.getString
+import no.nav.helse.fritakagp.datapakke.DatapakkePublisherJob
 import no.nav.helse.fritakagp.koin.getAllOfType
 import no.nav.helse.fritakagp.koin.selectModuleBasedOnProfile
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
@@ -86,6 +87,9 @@ class FritakAgpApplication(val port: Int = 8080) : KoinComponent {
 
     private fun configAndStartBackgroundWorker() {
         if (appConfig.getString("run_background_workers") == "true") {
+
+            get<DatapakkePublisherJob>().startAsync(true)
+
             get<BakgrunnsjobbService>().apply {
                 registrer(get<GravidSoeknadProcessor>())
                 registrer(get<GravidSoeknadKafkaProcessor>())

@@ -9,6 +9,7 @@ import no.nav.helse.arbeidsgiver.bakgrunnsjobb.PostgresBakgrunnsjobbRepository
 import no.nav.helse.arbeidsgiver.system.getString
 import no.nav.helse.arbeidsgiver.web.auth.AltinnAuthorizer
 import no.nav.helse.arbeidsgiver.web.auth.DefaultAltinnAuthorizer
+import no.nav.helse.fritakagp.datapakke.DatapakkePublisherJob
 import no.nav.helse.fritakagp.db.*
 import no.nav.helse.fritakagp.domain.BeløpBeregning
 import no.nav.helse.fritakagp.integration.GrunnbeløpClient
@@ -66,4 +67,7 @@ fun localDevConfig(config: ApplicationConfig) = module {
     single { BrukernotifikasjonProcessor(get(), get(), get(), get(), get(), get(), "mock") }
 
     single { DefaultAltinnAuthorizer(get()) } bind AltinnAuthorizer::class
+
+    single { DatapakkePublisherJob(get(), get(), config.getString("datapakke.api_url"), config.getString("datapakke.id"), get()) }
+    single { StatsRepoImpl(get())} bind IStatsRepo::class
 }

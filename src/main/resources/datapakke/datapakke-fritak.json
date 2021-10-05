@@ -26,16 +26,10 @@
           "legend": {
             "left": "center",
             "data": [
-              "Totalt antall",
-              "Fra LPS",
-              "Fra Altinn",
-              "Fravær",
-              "Ikke Fravær",
-              "Årsak: Endring",
-              "Årsak: Ny",
-              "Ingen refusjon",
-              "Delvis refusjon",
-              "Full refusjon"
+              "Kronisk Søknad",
+              "Gravid Søknad",
+              "Kronisk Krav",
+              "Gravid Krav"
             ]
           },
           "dataset": [
@@ -90,7 +84,7 @@
           ],
           "series": [
             {
-              "type": "bar",
+              "type": "line",
               "datasetIndex": 1,
               "encode": {
                 "x": 0,
@@ -99,7 +93,7 @@
               }
             },
             {
-              "type": "bar",
+              "type": "line",
               "datasetIndex": 2,
               "showSymbol": false,
               "encode": {
@@ -109,7 +103,7 @@
               }
             },
             {
-              "type": "bar",
+              "type": "line",
               "datasetIndex": 3,
               "showSymbol": false,
               "encode": {
@@ -119,7 +113,7 @@
               }
             },
             {
-              "type": "bar",
+              "type": "line",
               "datasetIndex": 4,
               "showSymbol": false,
               "encode": {

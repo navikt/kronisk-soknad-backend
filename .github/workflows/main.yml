@@ -1,4 +1,4 @@
-name: Bygg og deploy til PREPROD (dev-gcp)
+name: Deploy dev-gcp
 
 on:
   push:
@@ -57,8 +57,8 @@ jobs:
           tags: |
             ${{ env.IMAGE }}:latest
             ${{ env.IMAGE }}:${{ github.sha }}
-          # cache-from: type=registry,ref=${{ github.repository }}:latest
-          # cache-to: type=inline
+          cache-from: type=registry,ref=${{ github.repository }}:latest
+          cache-to: type=inline
 
       - name: Cleanup Gradle Cache
         # Remove some files from the Gradle cache, so they aren't cached by GitHub Actions.

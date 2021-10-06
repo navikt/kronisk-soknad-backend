@@ -57,7 +57,7 @@ jobs:
           tags: |
             ${{ env.IMAGE }}:latest
             ${{ env.IMAGE }}:${{ github.sha }}
-          cache-from: type=registry,ref=${{ github.repository }}:latest
+          cache-from: type=registry,ref=${{ env.IMAGE }}:latest
           cache-to: type=inline
 
       - name: Cleanup Gradle Cache

@@ -74,7 +74,7 @@
 
           ],
           "xAxis": {
-            "type": "category",
+            "type": "value",
             "name": "Uke"
           },
           "yAxis": [
@@ -86,6 +86,7 @@
           "series": [
             {
               "type": "line",
+              "name": "Kronisk Søknad",
               "datasetIndex": 1,
               "encode": {
                 "x": 0,
@@ -95,6 +96,7 @@
             },
             {
               "type": "line",
+              "name": "Gravid Søknad",
               "datasetIndex": 2,
               "showSymbol": false,
               "encode": {
@@ -105,6 +107,7 @@
             },
             {
               "type": "line",
+              "name": "Kronisk Krav",
               "datasetIndex": 3,
               "showSymbol": false,
               "encode": {
@@ -115,6 +118,7 @@
             },
             {
               "type": "line",
+              "name": "Gravid Krav",
               "datasetIndex": 4,
               "showSymbol": false,
               "encode": {

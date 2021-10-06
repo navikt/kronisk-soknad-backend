@@ -35,6 +35,7 @@
           "dataset": [
             {
               "source": [
+                ["Uke", "Antall", "tabell"],
                 @timeseries
               ]
             },

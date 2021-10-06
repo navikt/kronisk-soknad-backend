@@ -39,7 +39,7 @@ class StatsRepoImpl(
             UNION ALL
             select
                 extract('week' from date(data->>'opprettet')) as uke,
-                count(*) as antall1,
+                count(*) as antall,
                 'gravid_krav' as table_name
             from kravgravid
             group by uke

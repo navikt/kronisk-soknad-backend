@@ -111,6 +111,7 @@ spec:
             diskAutoresize: true
     buckets:
       - name: helse-arbeidsgiver-fritakagb-bucket
+        uniformBucketLevelAccess: true
         #retentionPeriodDays: 30
          # lifecycleCondition:
          # age: 7

@@ -193,7 +193,7 @@
     "schemas": {
       "GravidSoeknad": {
         "type": "object",
-        "required": ["virksomhetsnummer", "identitetsnummer", "tilrettelegge", "bekreftet"],
+        "required": ["virksomhetsnummer", "identitetsnummer", "tiltak", "tilrettelegge", "bekreftet"],
         "properties": {
           "virksomhetsnummer": {
             "$ref": "#/components/schemas/virksomhetsnummer"
@@ -208,10 +208,12 @@
           "termindato": {
             "type": "string",
             "format": "åååå-mm-dd",
+            "example": "2021-08-24",
             "description": "Når har den ansatte termin?"
           },
           "tiltak": {
             "type": "array",
+            "minItems": 0,
             "description": "Hvilke tiltak har dere forsøkt eller vurdert for at den ansatte kan jobbe?",
             "enum": [
               "TILPASSET_ARBEIDSTID",
@@ -531,7 +533,8 @@
     "securitySchemes": {
       "bearer-key": {
         "type": "http",
-        "scheme": "bearer",
+        "scheme": "cookie",
+        "key": "selvbetjening-idtoken",
         "bearerFormat": "JWT"
       }
     }

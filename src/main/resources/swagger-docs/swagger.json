@@ -211,7 +211,7 @@
             "description": "Når har den ansatte termin?"
           },
           "tiltak": {
-            "type": "string",
+            "type": "array",
             "description": "Hvilke tiltak har dere forsøkt eller vurdert for at den ansatte kan jobbe?",
             "enum": [
               "TILPASSET_ARBEIDSTID",
@@ -263,7 +263,8 @@
             "maxItems": 100
           },
           "kontrollDager": {
-            "type": "integer"
+            "type": "integer",
+            "example": 1
           },
           "antallDager": {
             "$ref": "#/components/schemas/AntallDager"
@@ -282,41 +283,42 @@
         "properties": {
           "fom": {
             "type": "string",
-            "format": "åååå.mm.dd"
+            "format": "åååå-mm-dd",
+            "example": "2021-07-14"
           },
           "tom": {
             "type": "string",
-            "format": "åååå.mm.dd"
+            "format": "åååå-mm-dd",
+            "example": "2021-07-15"
           },
           "antallDagerMedRefusjon": {
             "type": "integer",
-            "minimum": 0
+            "minimum": 0,
+            "example": 3
           },
           "månedsinntekt": {
             "type": "integer",
-            "minimum": 0
+            "minimum": 0,
+            "example": 10000
           },
           "gradering": {
             "type": "number",
             "default": 1,
+            "example": 1,
             "minimum": 0,
             "maximum": 1,
-            "description": "Sykemeldingsgrad i prosent oppgitt som desimaltall",
-            "example": "50% grad oppgis som 0.5 og 100% grad oppgis som 1"
+            "description": "Sykemeldingsgrad i prosent oppgitt som desimaltall. 50% grad oppgis som 0.5 og 100% grad oppgis som 1"
           }
         }
       },
       "KroniskSoeknad": {
         "type": "object",
         "required": [
-          "virksomhetsnummer",
           "identitetsnummer",
-          "antallDagerMedRefusjon",
-          "månedsinntekt",
+          "virksomhetsnummer",
           "arbeidstyper",
           "paakjenningstyper",
           "fravaer",
-          "FravaerData",
           "antallPerioder",
           "bekreftet"
         ],
@@ -328,8 +330,10 @@
             "$ref": "#/components/schemas/identitetsnummer"
           },
           "arbeidstyper": {
-            "type": "string",
+            "type": "array",
             "description": "Hva slags arbeid utfører den ansatte?",
+            "example": ["STILLESITTENDE"],
+            "minItems": 1,
             "enum": [
               "STILLESITTENDE",
               "MODERAT",
@@ -337,8 +341,10 @@
             ]
           },
           "paakjenningstyper": {
-            "type": "string",
+            "type": "array",
             "description": "Hvilke påkjenninger innebærer arbeidet?",
+            "example": ["STRESSENDE"],
+            "minItems": 1,
             "enum": [
               "ALLERGENER",
               "UKOMFORTABEL",
@@ -352,14 +358,21 @@
           },
           "paakjenningBeskrivelse": {
             "type": "string",
+            "example": "Forklaring av påkjenningen fylles ut her",
             "description": "Dersom ANNET er valgt for paakjenningstyper må det oppgis en kort beskrivelse her."
           },
-          "fravaer": {
-            "$ref": "#/components/schemas/FravaerData"
-          },
 
+          "fravaer": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FravaerPeriode"
+            },
+            "minItems": 1,
+            "maxItems": 100
+          },
           "antallPerioder": {
-            "type": "string",
+            "type": "integer",
+            "example": 1,
             "description": "Hvor mange perioder er fraværet fordelt på siste 12 måneder?"
           },
           "bekreftet": {
@@ -399,21 +412,44 @@
         }
       },
       "FravaerData": {
-        "type": "object",
-        "required": ["yearMonth", "antallDagerMedFravaer"],
+        "type": "array",
+        "minItems": 1,
         "properties": {
           "yearMonth": {
             "type": "string",
             "description": "Måned og årstall for fraværet",
-            "format": "åååå-mm"
+            "format": "åååå-mm",
+            "example": "2021-10"
           },
           "antallDagerMedFravaer": {
             "type": "integer",
             "description": "",
-            "minimum": 0
+            "minimum": 0,
+            "example": 1
           }
         }
       },
+
+      "FravaerPeriode": {
+        "type": "object",
+        "properties": {
+          "yearMonth": {
+            "type": "string",
+            "description": "Måned og årstall for fraværet",
+            "format": "åååå-mm",
+            "example": "2021-10"
+          },
+          "antallDagerMedFravaer": {
+            "type": "integer",
+            "description": "",
+            "minimum": 0,
+            "example": 1
+          }
+        }
+      },
+
+
+
       "ValidationResponse": {
         "type": "object",
         "properties": {
@@ -477,14 +513,18 @@
       "dokumentasjon": {
         "type": "string",
         "maxLength": 500000,
-        "description": "Vedlegg i PDF format. Base64 encoded."
+        "required": false,
+        "description": "Vedlegg i PDF format. Base64 encoded. Bruk null dersom dokumentasjon ikke foreligger.",
+        "example": null
       },
       "bekreftet": {
         "type": "boolean",
+        "required": true,
         "description": "Bekreft at opplysningene er korrekt"
       },
       "AntallDager": {
-        "type": "boolean",
+        "type": "integer",
+        "example": 1,
         "description": "Oppgi antall dager dere utbetaler lønn for i året. 260 dager er vanlig for en ordinær 100% stilling."
       }
     },

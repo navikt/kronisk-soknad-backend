@@ -49,8 +49,6 @@
             }
           }
         },
-
-
         "responses": {
           "201": {
             "description": "Søknaden er mottatt"
@@ -214,6 +212,8 @@
           "tiltak": {
             "type": "array",
             "minItems": 0,
+            "required": true,
+            "example": [],
             "description": "Hvilke tiltak har dere forsøkt eller vurdert for at den ansatte kan jobbe?",
             "enum": [
               "TILPASSET_ARBEIDSTID",
@@ -528,14 +528,6 @@
         "type": "integer",
         "example": 1,
         "description": "Oppgi antall dager dere utbetaler lønn for i året. 260 dager er vanlig for en ordinær 100% stilling."
-      }
-    },
-    "securitySchemes": {
-      "bearer-key": {
-        "type": "http",
-        "scheme": "cookie",
-        "key": "selvbetjening-idtoken",
-        "bearerFormat": "JWT"
       }
     }
   }

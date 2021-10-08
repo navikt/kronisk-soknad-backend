@@ -34,12 +34,30 @@
     }
   ],
   "paths": {
+    "/arbeidsgivere": {
+      "get": {
+        "tags": ["Virksomhet"],
+        "summary": "Henter liste over virksomheter",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "Liste over virksomheter",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AltinnOrganisasjon"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/gravid/soeknad": {
       "post": {
         "tags": ["Gravide"],
         "summary": "Send inn søknad om at NAV dekker sykepenger i arbeidsgiverperioden for gravide",
         "description": "",
-
         "requestBody": {
           "content": {
             "application/json": {
@@ -66,12 +84,32 @@
             }
           },
           "500": { "description": "Internal server error" }
-        },
-        "security": [
-          {
-            "bearer-key": ["selvbetjening-idtoken"]
+        }
+      }
+    },
+    "/gravid/soeknad/{id}": {
+      "get": {
+        "parameters": [{
+          "in": "path",
+          "name": "id",
+          "example": "15794e66-5e00-4c20-94c4-078bf884a24f",
+          "description": "En unik referanse til søknaden"
+        }],
+        "tags": ["Gravide"],
+        "summary": "Henter tidligere innsendt søknad",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "Søknaden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InnsendtGravidSoeknad"
+                }
+              }
+            }
           }
-        ]
+        }
       }
     },
     "/gravid/krav": {
@@ -103,12 +141,32 @@
             }
           },
           "500": { "description": "Internal server error" }
-        },
-        "security": [
-          {
-            "bearer-key": ["selvbetjening-idtoken"]
+        }
+      }
+    },
+    "/gravid/krav/{id}": {
+      "get": {
+        "parameters": [{
+          "in": "path",
+          "name": "id",
+          "example": "15794e66-5e00-4c20-94c4-078bf884a24f",
+          "description": "En unik referanse til kravet"
+        }],
+        "tags": ["Gravide"],
+        "summary": "Henter tidligere innsendt krav",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "Kravet",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InnsendtGravidKrav"
+                }
+              }
+            }
           }
-        ]
+        }
       }
     },
     "/kronisk/soeknad": {
@@ -148,6 +206,30 @@
         ]
       }
     },
+    "/kronisk/soeknad/{id}": {
+      "get": {
+        "parameters": [{
+          "in": "path",
+          "name": "id",
+          "example": "15794e66-5e00-4c20-94c4-078bf884a24f",
+          "description": "En unik referanse til søknaden"
+        }],
+        "tags": ["Kronisk"],
+        "summary": "Henter tidligere innsendt søknad",
+        "responses": {
+          "200": {
+            "description": "Søknaden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InnsendtKroniskSoeknad"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/kronisk/krav": {
       "post": {
         "tags": ["Kronisk"],
@@ -184,11 +266,71 @@
           }
         ]
       }
+    },
+    "/kronisk/krav/{id}": {
+      "get": {
+        "parameters": [{
+          "in": "path",
+          "name": "id",
+          "example": "15794e66-5e00-4c20-94c4-078bf884a24f",
+          "description": "En unik referanse til kravet"
+        }],
+        "tags": ["Kronisk"],
+        "summary": "Henter tidligere innsendt krav",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "Kravet",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InnsendtKroniskKrav"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
 
   "components": {
     "schemas": {
+      "InnsendtGravidSoeknad": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/uuid"
+          },
+          "opprettet": {
+            "$ref": "#/components/schemas/opprettet"
+          },
+          "journalpostId": {
+            "$ref": "#/components/schemas/journalpostId"
+          },
+          "oppgaveId": {
+            "$ref": "#/components/schemas/oppgaveId"
+          },
+          "sendtAv": {
+            "$ref": "#/components/schemas/sendtAv"
+          },
+          "sendtAvNavn": {
+            "$ref": "#/components/schemas/sendtAvNavn"
+          },
+          "virksomhetsnummer": {
+            "$ref": "#/components/schemas/virksomhetsnummer"
+          },
+          "virksomhetsnavn": {
+            "$ref": "#/components/schemas/virksomhetsnavn"
+          },
+          "identitetsnummer": {
+            "$ref": "#/components/schemas/identitetsnummer"
+          },
+          "harVedlegg": {
+            "$ref": "#/components/schemas/harVedlegg"
+          }
+        }
+      },
       "GravidSoeknad": {
         "type": "object",
         "required": ["virksomhetsnummer", "identitetsnummer", "tiltak", "tilrettelegge", "bekreftet"],
@@ -279,6 +421,58 @@
           }
         }
       },
+      "InnsendtGravidKrav": {
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/uuid"
+          },
+          "opprettet": {
+            "$ref": "#/components/schemas/opprettet"
+          },
+          "sendtAv": {
+            "$ref": "#/components/schemas/sendtAv"
+          },
+          "virksomhetsnummer": {
+            "$ref": "#/components/schemas/virksomhetsnummer"
+          },
+          "identitetsnummer": {
+            "$ref": "#/components/schemas/identitetsnummer"
+          },
+          "navn": {
+            "$ref": "#/components/schemas/navn"
+          },
+          "perioder": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Arbeidsgiverperiode"
+            },
+            "minItems": 1,
+            "maxItems": 100
+          },
+          "harVedlegg": {
+            "$ref": "#/components/schemas/harVedlegg"
+          },
+          "kontrollDager": {
+            "type": "integer",
+            "example": 1
+          },
+          "antallDager": {
+            "$ref": "#/components/schemas/AntallDager"
+          },
+          "journalpostId": {
+            "$ref": "#/components/schemas/journalpostId"
+          },
+          "oppgaveId": {
+            "$ref": "#/components/schemas/oppgaveId"
+          },
+          "virksomhetsnavn": {
+            "$ref": "#/components/schemas/virksomhetsnavn"
+          },
+          "sendtAvNavn": {
+            "$ref": "#/components/schemas/sendtAvNavn"
+          }
+        }
+      },
       "Arbeidsgiverperiode": {
         "type": "object",
         "required": ["fom", "tom", "antallDagerMedRefusjon", "månedsinntekt"],
@@ -314,6 +508,57 @@
         }
       },
       "KroniskSoeknad": {
+        "type": "object",
+        "required": [
+          "identitetsnummer",
+          "virksomhetsnummer",
+          "arbeidstyper",
+          "paakjenningstyper",
+          "fravaer",
+          "antallPerioder",
+          "bekreftet"
+        ],
+        "properties": {
+          "virksomhetsnummer": {
+            "$ref": "#/components/schemas/virksomhetsnummer"
+          },
+          "identitetsnummer": {
+            "$ref": "#/components/schemas/identitetsnummer"
+          },
+          "arbeidstyper": {
+            "$ref": "#/components/schemas/kroniskArbeidstyper"
+          },
+          "paakjenningstyper": {
+            "$ref": "#/components/schemas/kroniskPaakjenningstyper"
+          },
+          "paakjenningBeskrivelse": {
+            "type": "string",
+            "example": "Forklaring av påkjenningen fylles ut her",
+            "description": "Dersom ANNET er valgt for paakjenningstyper må det oppgis en kort beskrivelse her."
+          },
+
+          "fravaer": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FravaerPeriode"
+            },
+            "minItems": 1,
+            "maxItems": 100
+          },
+          "antallPerioder": {
+            "type": "integer",
+            "example": 1,
+            "description": "Hvor mange perioder er fraværet fordelt på siste 12 måneder?"
+          },
+          "bekreftet": {
+            "$ref": "#/components/schemas/bekreftet"
+          },
+          "dokumentasjon": {
+            "$ref": "#/components/schemas/dokumentasjon"
+          }
+        }
+      },
+      "KroniskKrav": {
         "type": "object",
         "required": [
           "identitetsnummer",
@@ -385,35 +630,119 @@
           }
         }
       },
-      "KroniskKrav": {
+      "InnsendtKroniskSoeknad": {
         "type": "object",
-        "description": "Skjema for krav",
-        "required": ["virksomhetsnummer", "identitetsnummer", "perioder"],
+        "description": "Skjema for søknad",
         "properties": {
+          "id": {
+            "$ref": "#/components/schemas/uuid"
+          },
+          "opprettet": {
+            "$ref": "#/components/schemas/opprettet"
+          },
+
           "virksomhetsnummer": {
             "$ref": "#/components/schemas/virksomhetsnummer"
           },
           "identitetsnummer": {
             "$ref": "#/components/schemas/identitetsnummer"
           },
-          "antallDager": {
-            "$ref": "#/components/schemas/AntallDager"
+
+          "navn": {
+            "$ref": "#/components/schemas/navn"
           },
-          "perioder": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Arbeidsgiverperiode"
-            }
+
+          "arbeidstyper": {
+            "$ref": "#/components/schemas/kroniskArbeidstyper"
+          },
+          "paakjenningstyper": {
+            "$ref": "#/components/schemas/kroniskPaakjenningstyper"
+          },
+          "paakjenningBeskrivelse": {
+            "type": "string",
+            "description": "En beskrivelse av påkjenningen"
+          },
+          "fravaer": {
+            "$ref": "#/components/schemas/FravaerPeriode"
+          },
+
+          "antallPerioder": {
+            "$ref": "#/components/schemas/antallPerioder"
           },
           "bekreftet": {
             "$ref": "#/components/schemas/bekreftet"
           },
-          "dokumentasjon": {
-            "$ref": "#/components/schemas/dokumentasjon"
+          "harVedlegg": {
+            "$ref": "#/components/schemas/harVedlegg"
+          },
+          "sendtAv": {
+            "$ref": "#/components/schemas/sendtAv"
+          },
+          "virksomhetsnavn": {
+            "$ref": "#/components/schemas/sendtAv"
+          },
+          "journalpostId": {
+            "$ref": "#/components/schemas/journalpostId"
+          },
+          "oppgaveId": {
+            "$ref": "#/components/schemas/oppgaveId"
+          },
+          "sendtAvNavn": {
+            "$ref": "#/components/schemas/sendtAvNavn"
           }
         }
       },
 
+      "InnsendtKroniskKrav": {
+        "type": "object",
+        "description": "Innsendt krav",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/uuid"
+          },
+          "opprettet": {
+            "$ref": "#/components/schemas/opprettet"
+          },
+          "sendtAv": {
+            "$ref": "#/components/schemas/sendtAv"
+          },
+
+          "virksomhetsnummer": {
+            "$ref": "#/components/schemas/virksomhetsnummer"
+          },
+          "identitetsnummer": {
+            "$ref": "#/components/schemas/identitetsnummer"
+          },
+          "navn": {
+            "$ref": "#/components/schemas/navn"
+          },
+
+          "perioder": {
+            "$ref": "#/components/schemas/Arbeidsgiverperiode"
+          },
+          "harVedlegg": {
+            "$ref": "#/components/schemas/harVedlegg"
+          },
+          "kontrollDager": {
+            "type": "integer"
+          },
+          "antallDager": {
+            "type": "integer"
+          },
+          "journalpostId": {
+            "$ref": "#/components/schemas/journalpostId"
+          },
+          "oppgaveId": {
+            "$ref": "#/components/schemas/oppgaveId"
+          },
+          "virksomhetsnavn": {
+            "$ref": "#/components/schemas/sendtAv"
+          },
+          "sendtAvNavn": {
+            "$ref": "#/components/schemas/sendtAvNavn"
+          }
+        }
+      },
 
       "FravaerPeriode": {
         "type": "object",
@@ -433,7 +762,41 @@
         }
       },
 
-
+      "AltinnOrganisasjon": {
+        "type": "object",
+        "description": "En organisasjon slik de blir returnert fra Altinn.",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "ANSTENDIG BJØRN KOMMUNE",
+            "description": "The name of the reportee"
+          },
+          "type": {
+            "type": "string",
+            "example": "Enterprise",
+            "description": "The type of reportee"
+          },
+          "parentOrganizationNumber": {
+            "type": "string",
+            "example": null
+          },
+          "organizationForm": {
+            "type": "string",
+            "example": "KOMM"
+          },
+          "organizationNumber": {
+            "type": "string"
+          },
+          "socialSecurityNumber": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["Active", "Inactive"],
+            "example": "Active"
+          }
+        }
+      },
 
       "ValidationResponse": {
         "type": "object",
@@ -489,6 +852,11 @@
         "maxLength": 9,
         "description": "Virksomhetsnummeret (ikke organisasjonsnummer) til arbeidsgiver"
       },
+      "virksomhetsnavn": {
+        "type": "string",
+        "description": "Navn på virksomhet",
+        "example": "Virksomhet AS"
+      },
       "identitetsnummer": {
         "type": "string",
         "minLength": 11,
@@ -502,6 +870,10 @@
         "description": "Vedlegg i PDF format. Base64 encoded. Bruk null dersom dokumentasjon ikke foreligger.",
         "example": null
       },
+      "harVedlegg": {
+        "type": "boolean",
+        "description": "Om det foreligger dokumentasjon"
+      },
       "bekreftet": {
         "type": "boolean",
         "required": true,
@@ -511,6 +883,65 @@
         "type": "integer",
         "example": 1,
         "description": "Oppgi antall dager dere utbetaler lønn for i året. 260 dager er vanlig for en ordinær 100% stilling."
+      },
+      "uuid": {
+        "type": "string",
+        "example": "15794e66-5e00-4c20-94c4-078bf884a24f",
+        "description": "En unik referansen til søknaden eller kravet"
+      },
+      "opprettet": {
+        "type": "string",
+        "description": "Tidspunkt for når søknaden eller kravet ble sendt inn",
+        "example": "2021-10-08T11:46:34.041781"
+      },
+      "journalpostId": {
+        "type": "string",
+        "description": "Kun internt"
+      },
+      "oppgaveId": {
+        "type": "string",
+        "description": "Kun internt"
+      },
+      "sendtAv": {
+        "type": "string",
+        "description": "Personnummer for innsender"
+      },
+      "sendtAvNavn": {
+        "type": "string",
+        "example": "Kari Normann",
+        "description": "Navn på innsender"
+      },
+      "navn": {
+        "type": "string",
+        "example": "Ola Normann",
+        "description": "Navn på ansatt"
+      },
+      "kroniskArbeidstyper": {
+        "type": "array",
+        "description": "Hva slags arbeid utfører den ansatte?",
+        "example": ["STILLESITTENDE"],
+        "minItems": 1,
+        "enum": [
+          "STILLESITTENDE",
+          "MODERAT",
+          "KREVENDE"
+        ]
+      },
+      "kroniskPaakjenningstyper": {
+        "type": "array",
+        "description": "Hvilke påkjenninger innebærer arbeidet?",
+        "example": ["STRESSENDE"],
+        "minItems": 1,
+        "enum": [
+          "ALLERGENER",
+          "UKOMFORTABEL",
+          "STRESSENDE",
+          "REGELMESSIG",
+          "GAAING",
+          "HARDE",
+          "TUNGE",
+          "ANNET"
+        ]
       }
     },
     "securitySchemes": {

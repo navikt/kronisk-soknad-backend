@@ -413,24 +413,7 @@
           }
         }
       },
-      "FravaerData": {
-        "type": "array",
-        "minItems": 1,
-        "properties": {
-          "yearMonth": {
-            "type": "string",
-            "description": "Måned og årstall for fraværet",
-            "format": "åååå-mm",
-            "example": "2021-10"
-          },
-          "antallDagerMedFravaer": {
-            "type": "integer",
-            "description": "",
-            "minimum": 0,
-            "example": 1
-          }
-        }
-      },
+
 
       "FravaerPeriode": {
         "type": "object",
@@ -528,6 +511,15 @@
         "type": "integer",
         "example": 1,
         "description": "Oppgi antall dager dere utbetaler lønn for i året. 260 dager er vanlig for en ordinær 100% stilling."
+      }
+    },
+    "securitySchemes": {
+      "bearer-key": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "selvbetjening-idtoken",
+        "scheme": "cookie",
+        "bearerFormat": "JWT"
       }
     }
   }

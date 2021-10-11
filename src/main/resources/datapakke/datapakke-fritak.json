@@ -32,6 +32,10 @@
               "Gravid Krav"
             ]
           },
+          "dataZoom": [{
+            "start": 30,
+            "end": 50
+          }],
           "dataset": [
             {
               "source": [
@@ -51,6 +55,14 @@
               "transform": {
                 "type": "filter",
                 "config": {
+                  "dimension": "tabell", "=": "gravid_soeknad"
+                }
+              }
+            },
+            {
+              "transform": {
+                "type": "filter",
+                "config": {
                   "dimension": "tabell", "=": "kronisk_krav"
                 }
               }
@@ -59,15 +71,7 @@
               "transform": {
                 "type": "filter",
                 "config": {
-                  "dimension": "tabell", "=": "kronisk_soeknad"
-                }
-              }
-            },
-            {
-              "transform": {
-                "type": "filter",
-                "config": {
-                  "dimension": "tabell", "=": "gravid_soeknad"
+                  "dimension": "tabell", "=": "gravid_krav"
                 }
               }
             }

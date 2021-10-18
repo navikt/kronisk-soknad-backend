@@ -119,7 +119,7 @@ class KroniskKravProcessor(
     }
 
     fun journalfør(krav: KroniskKrav): String {
-        val journalfoeringsTittel = "Krav om fritak fra arbeidsgiverperioden ifbm kroniskitet"
+        val journalfoeringsTittel = "Krav om fritak fra arbeidsgiverperioden - kronisk eller langvarig sykdom"
 
         val response = dokarkivKlient.journalførDokument(
             JournalpostRequest(
@@ -197,7 +197,7 @@ class KroniskKravProcessor(
             tildeltEnhetsnr= "4488",
             aktoerId = aktoerId,
             journalpostId = krav.journalpostId,
-            beskrivelse = generereKroniskKravBeskrivelse(krav, "Krav om refusjon av arbeidsgiverperioden ifbm. kroniskitet"),
+            beskrivelse = generereKroniskKravBeskrivelse(krav, "Krav om refusjon av arbeidsgiverperioden - kronisk eller langvarig sykdom"),
             tema = "SYK",
             behandlingstype = digitalKravBehandingsType,
             oppgavetype = "BEH_REF",

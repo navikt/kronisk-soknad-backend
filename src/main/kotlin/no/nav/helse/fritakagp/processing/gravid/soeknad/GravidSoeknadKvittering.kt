@@ -8,6 +8,7 @@ import no.altinn.services.serviceengine.correspondence._2009._10.ICorrespondence
 import no.nav.helse.fritakagp.domain.GravidSoeknad
 import no.nav.helse.fritakagp.domain.Omplassering
 import no.nav.helse.fritakagp.domain.Tiltak
+import no.nav.helse.fritakagp.domain.sladdFnr
 import java.time.format.DateTimeFormatter
 
 interface GravidSoeknadKvitteringSender {
@@ -47,7 +48,8 @@ class GravidSoeknadAltinnKvitteringSender(
 
     fun mapKvitteringTilInsertCorrespondence(kvittering: GravidSoeknad): InsertCorrespondenceV2 {
         val dateTimeFormatterMedKl = DateTimeFormatter.ofPattern("dd.MM.yyyy 'kl.' HH:mm")
-        val tittel = "Kvittering for mottatt søknad om fritak fra arbeidsgiverperioden grunnet graviditet"
+        val sladdetFnr = sladdFnr(kvittering.identitetsnummer)
+        val tittel = "$sladdetFnr - Kvittering for mottatt søknad om fritak fra arbeidsgiverperioden grunnet graviditet"
 
         val innhold = """
         <html>

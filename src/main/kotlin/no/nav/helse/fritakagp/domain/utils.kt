@@ -15,6 +15,10 @@ enum class GodkjenteFiletyper(val beskrivelse : String) {
 }
 val SOEKAND_BESKRIVELSE_DATE_FORMAT = DateTimeFormatter.ofPattern("dd.MM.yyyy")
 
+fun sladdFnr (fnr: String): String {
+    return fnr.take(6) + "*****"
+}
+
 fun generereGravidSoeknadBeskrivelse(soeknad : GravidSoeknad, desc : String) : String {
     val terminaDatoIkkeOppgitt = "Ikke oppgitt"
     return buildString {

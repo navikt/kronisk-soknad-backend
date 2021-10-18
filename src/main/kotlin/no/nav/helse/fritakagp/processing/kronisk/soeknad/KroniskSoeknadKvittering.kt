@@ -6,6 +6,7 @@ import no.altinn.schemas.services.serviceengine.correspondence._2010._10.InsertC
 import no.altinn.services.serviceengine.correspondence._2009._10.ICorrespondenceAgencyExternalBasic
 import no.altinn.services.serviceengine.correspondence._2009._10.ICorrespondenceAgencyExternalBasicInsertCorrespondenceBasicV2AltinnFaultFaultFaultMessage
 import no.nav.helse.fritakagp.domain.KroniskSoeknad
+import no.nav.helse.fritakagp.domain.sladdFnr
 import java.time.format.DateTimeFormatter
 
 interface KroniskSoeknadKvitteringSender {
@@ -45,7 +46,8 @@ class KroniskSoeknadAltinnKvitteringSender(
 
     fun mapKvitteringTilInsertCorrespondence(kvittering: KroniskSoeknad): InsertCorrespondenceV2 {
         val dateTimeFormatterMedKl = DateTimeFormatter.ofPattern("dd.MM.yyyy 'kl.' HH:mm")
-        val tittel = "Kvittering for mottatt søknad om fritak fra arbeidsgiverperioden grunnet kronisk sykdom"
+        val sladdetFnr = sladdFnr(kvittering.identitetsnummer)
+        val tittel = "$sladdetFnr - Kvittering for mottatt søknad om fritak fra arbeidsgiverperioden grunnet kronisk sykdom"
 
         val innhold = """
         <html>

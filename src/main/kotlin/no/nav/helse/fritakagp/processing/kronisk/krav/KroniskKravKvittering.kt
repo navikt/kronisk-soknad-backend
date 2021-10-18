@@ -7,6 +7,7 @@ import no.altinn.services.serviceengine.correspondence._2009._10.ICorrespondence
 import no.altinn.services.serviceengine.correspondence._2009._10.ICorrespondenceAgencyExternalBasicInsertCorrespondenceBasicV2AltinnFaultFaultFaultMessage
 import no.nav.helse.fritakagp.domain.Arbeidsgiverperiode
 import no.nav.helse.fritakagp.domain.KroniskKrav
+import no.nav.helse.fritakagp.domain.sladdFnr
 import java.time.format.DateTimeFormatter
 
 interface KroniskKravKvitteringSender {
@@ -46,7 +47,8 @@ class KroniskKravAltinnKvitteringSender(
 
     fun mapKvitteringTilInsertCorrespondence(kvittering: KroniskKrav): InsertCorrespondenceV2 {
         val dateTimeFormatterMedKl = DateTimeFormatter.ofPattern("dd.MM.yyyy 'kl.' HH:mm")
-        val tittel = "Kvittering for mottatt refusjonskrav fra arbeidsgiverperioden grunnet kronisk sykdom"
+        val sladdetFnr = sladdFnr(kvittering.identitetsnummer)
+        val tittel = "$sladdetFnr - Kvittering for mottatt refusjonskrav fra arbeidsgiverperioden grunnet kronisk sykdom"
 
         val innhold = """
         <html>

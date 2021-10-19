@@ -7,8 +7,15 @@ data class WeeklyStats(
     val antall: Int,
     val tabell: String
 )
+data class TiltakGravidStats(
+    val hjemmekontor: Int,
+    val tilpassede_arbeidsoppgaver: Int,
+    val tipasset_arbeidstid: Int,
+    val annet: Int,
+)
 interface IStatsRepo {
     fun getWeeklyStats(): List<WeeklyStats>
+    fun getTiltakGravidStats(): TiltakGravidStats
 }
 
 class StatsRepoImpl(
@@ -43,6 +50,7 @@ class StatsRepoImpl(
                 'gravid_krav' as table_name
             from kravgravid
             group by uke
+            where uke > extract('week' from DATE::now())) - 12
             order by uke;
         """.trimIndent()
 
@@ -62,4 +70,26 @@ class StatsRepoImpl(
             return returnValue
         }
     }
+
+    override fun getTiltakGravidStats(): TiltakGravidStats {
+        val query = """
+            select
+                   count (*) filter (where(data->'tiltak')::jsonb ? 'HJEMMEKONTOR') as hjemmekontor,
+                   count (*) filter (where(data->'tiltak')::jsonb ? 'TILPASSEDE_ARBEIDSOPPGAVER') as tilpassede_arbeidsoppgaver,
+                   count (*) filter (where(data->'tiltak')::jsonb ? 'TILPASSET_ARBEIDSTID') as tipasset_arbeidstid,
+                   count (*) filter (where(data->'tiltak')::jsonb ? 'ANNET') as annet
+            from soeknadgravid
+            where date(data->>'opprettet') > NOW()::DATE-EXTRACT(DOW FROM NOW())::INTEGER-7;
+        """.trimIndent()
+
+        ds.connection.use {
+            val res = it.prepareStatement(query).executeQuery()
+
+
+            TODO("Not yet implemented")
+        }
+    }
+
+
+
 }

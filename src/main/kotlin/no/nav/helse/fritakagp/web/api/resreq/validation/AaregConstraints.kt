@@ -12,10 +12,13 @@ val MAKS_DAGER_OPPHOLD = 3L
 fun <E> Validator<E>.Property<LocalDate?>.måHaAktivtArbeidsforhold(agp: Arbeidsgiverperiode, aaregData: List<Arbeidsforhold>) =
     this.validate(ArbeidsforholdConstraint()) {
         val ansattPerioder = slåSammenPerioder(aaregData.map { it.ansettelsesperiode.periode })
-
         return@validate ansattPerioder.any { ansPeriode ->
             (ansPeriode.tom == null || agp.tom.isBefore(ansPeriode.tom) || agp.tom == ansPeriode.tom)
                     && ansPeriode.fom!!.isBefore(agp.fom)
+        }
+            || aaregData.map { it.ansettelsesperiode.periode }.any{ ansPeriode ->
+            (ansPeriode.tom == null || agp.tom.isBefore(ansPeriode.tom) || agp.tom == ansPeriode.tom)
+                && ansPeriode.fom!!.isBefore(agp.fom)
         }
     }
 

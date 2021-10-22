@@ -18,6 +18,21 @@ import org.valiktor.validate
 class AaregConstraintsKtTest {
 
     @Test
+    fun `Ansatt slutter fram i tid`() {
+        val periode = Arbeidsgiverperiode(
+            LocalDate.of(2021, 1, 15),
+            LocalDate.of(2021, 1, 20),
+            4,
+            månedsinntekt = 2590.8,
+        )
+
+        validate(periode) {
+            validate(Arbeidsgiverperiode::fom).måHaAktivtArbeidsforhold(periode, AaregTestData.arbeidsforholdMedSluttDato)
+        }
+
+    }
+
+    @Test
     fun `Refusjonskravet er innenfor Arbeidsforholdet`() {
         val periode = Arbeidsgiverperiode(
             LocalDate.of(2021, 1, 15),

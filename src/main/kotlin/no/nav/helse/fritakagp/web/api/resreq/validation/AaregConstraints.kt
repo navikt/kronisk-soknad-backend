@@ -7,7 +7,6 @@ import java.time.LocalDate
 import no.nav.helse.arbeidsgiver.integrasjoner.aareg.Periode as AaregPeriode
 
 class ArbeidsforholdConstraint : CustomConstraint
-val MAKS_DAGER_OPPHOLD = 3L
 
 fun <E> Validator<E>.Property<LocalDate?>.måHaAktivtArbeidsforhold(agp: Arbeidsgiverperiode, aaregData: List<Arbeidsforhold>) =
     this.validate(ArbeidsforholdConstraint()) {
@@ -22,35 +21,38 @@ fun <E> Validator<E>.Property<LocalDate?>.måHaAktivtArbeidsforhold(agp: Arbeids
 fun slåSammenPerioder(list: List<AaregPeriode>): List<AaregPeriode> {
     if (list.size < 2) return list
 
-    val remainingPeriods = list
-        .sortedBy { it.fom }
-        .toMutableList()
+    val periods = list
+        .sortedWith(compareBy(AaregPeriode::fom, AaregPeriode::tom))
 
-    val merged = ArrayList<AaregPeriode>()
+    val merged = mutableListOf<AaregPeriode>()
 
-    do {
-        var currentPeriod = remainingPeriods[0]
-        remainingPeriods.removeAt(0)
+    periods.forEach{ gjeldendePeriode ->
+        // Legg til første periode
+        if (merged.size == 0) {
+            merged.add(gjeldendePeriode)
+            return@forEach
+        }
 
-        do {
-            val connectedPeriod = remainingPeriods
-                .find { !oppholdMellomPerioderOverstigerDager(currentPeriod, it, MAKS_DAGER_OPPHOLD) }
-            if (connectedPeriod != null) {
-                currentPeriod = AaregPeriode(currentPeriod.fom, connectedPeriod.tom)
-                remainingPeriods.remove(connectedPeriod)
-            }
-        } while(connectedPeriod != null)
+        val forrigePeriode = merged.last()
+        // Hvis periode overlapper, oppdater tom
+        if (overlapperPeriode(gjeldendePeriode, forrigePeriode)) {
+            merged[merged.lastIndex] = AaregPeriode(forrigePeriode.fom, gjeldendePeriode.tom)
+            return@forEach
+        }
 
-        merged.add(currentPeriod)
-    } while (remainingPeriods.isNotEmpty())
+        merged.add(gjeldendePeriode)
+    }
 
     return merged
 }
 
-fun oppholdMellomPerioderOverstigerDager(
-    a1: AaregPeriode,
-    a2: AaregPeriode,
-    dager: Long
+fun overlapperPeriode(
+    gjeldendePeriode: AaregPeriode,
+    forrigePeriode: AaregPeriode,
+    dager: Long = 3L // MAKS_DAGER_OPPHOLD
 ): Boolean {
-    return a1.tom?.plusDays(dager)?.isBefore(a2.fom) ?: true
+    return (
+        gjeldendePeriode.fom!!.isBefore(forrigePeriode.tom?.plusDays(dager))
+            || gjeldendePeriode.fom!!.isEqual(forrigePeriode.tom?.plusDays(dager))
+        )
 }

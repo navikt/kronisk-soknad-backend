@@ -14,7 +14,7 @@ fun <E> Validator<E>.Property<LocalDate?>.måHaAktivtArbeidsforhold(agp: Arbeids
 
         return@validate ansattPerioder.any { ansPeriode ->
             (ansPeriode.tom == null || agp.tom.isBefore(ansPeriode.tom) || agp.tom == ansPeriode.tom)
-                    && ansPeriode.fom!!.isBefore(agp.fom)
+                && ansPeriode.fom!!.isBefore(agp.fom)
         }
     }
 
@@ -26,7 +26,7 @@ fun slåSammenPerioder(list: List<AaregPeriode>): List<AaregPeriode> {
 
     val merged = mutableListOf<AaregPeriode>()
 
-    periods.forEach{ gjeldendePeriode ->
+    periods.forEach { gjeldendePeriode ->
         // Legg til første periode
         if (merged.size == 0) {
             merged.add(gjeldendePeriode)

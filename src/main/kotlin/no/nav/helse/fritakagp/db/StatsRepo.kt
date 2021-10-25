@@ -50,7 +50,7 @@ class StatsRepoImpl(
                 'gravid_krav' as table_name
             from kravgravid
             group by uke
-            where uke > extract('week' from DATE::now())) - 12
+            --where uke > extract('week' from DATE::now())) - 12
             order by uke;
         """.trimIndent()
 

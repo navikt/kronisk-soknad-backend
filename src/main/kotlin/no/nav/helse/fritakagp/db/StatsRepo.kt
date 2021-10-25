@@ -84,9 +84,19 @@ class StatsRepoImpl(
 
         ds.connection.use {
             val res = it.prepareStatement(query).executeQuery()
+            val returnValue = ArrayList<TiltakGravidStats>()
+            while (res.next()) {
+                returnValue.add(
+                    TiltakGravidStats(
+                        res.getInt("hjemmekontor"),
+                        res.getInt("tilpassede_arbeidsoppgaver"),
+                        res.getInt("tilpasset_arbeidstid"),
+                        res.getInt("annet"),
+                    )
+                )
+            }
 
-
-            TODO("Not yet implemented")
+            return returnValue[0]
         }
     }
 

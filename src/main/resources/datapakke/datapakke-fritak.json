@@ -155,7 +155,7 @@
       }
     },
     {
-      "title": "Gravid Krav Tiltak",
+      "title": "Gravid Søknad Tiltak",
       "description": "Fordeling av tiltak forsøkt av arbeidsgiver, siste 7 dager",
       "specType": "echart",
       "spec": {

@@ -7,7 +7,7 @@ data class WeeklyStats(
     val antall: Int,
     val tabell: String
 )
-data class TiltakGravidStats(
+data class GravidSoeknadTiltak(
     val hjemmekontor: Int,
     val tilpassede_arbeidsoppgaver: Int,
     val tipasset_arbeidstid: Int,
@@ -15,7 +15,7 @@ data class TiltakGravidStats(
 )
 interface IStatsRepo {
     fun getWeeklyStats(): List<WeeklyStats>
-    fun getTiltakGravidStats(): TiltakGravidStats
+    fun getGravidSoeknadTiltak(): GravidSoeknadTiltak
 }
 
 class StatsRepoImpl(
@@ -71,7 +71,7 @@ class StatsRepoImpl(
         }
     }
 
-    override fun getTiltakGravidStats(): TiltakGravidStats {
+    override fun getGravidSoeknadTiltak(): GravidSoeknadTiltak {
         val query = """
             select
                    count (*) filter (where(data->'tiltak')::jsonb ? 'HJEMMEKONTOR') as hjemmekontor,
@@ -84,10 +84,10 @@ class StatsRepoImpl(
 
         ds.connection.use {
             val res = it.prepareStatement(query).executeQuery()
-            val returnValue = ArrayList<TiltakGravidStats>()
+            val returnValue = ArrayList<GravidSoeknadTiltak>()
             while (res.next()) {
                 returnValue.add(
-                    TiltakGravidStats(
+                    GravidSoeknadTiltak(
                         res.getInt("hjemmekontor"),
                         res.getInt("tilpassede_arbeidsoppgaver"),
                         res.getInt("tilpasset_arbeidstid"),

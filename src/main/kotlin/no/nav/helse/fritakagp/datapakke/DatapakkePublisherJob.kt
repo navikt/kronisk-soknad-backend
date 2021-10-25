@@ -37,11 +37,18 @@ RecurringJob(
         val datapakkeTemplate = "datapakke/datapakke-fritak.json".loadFromResources()
 
         val timeseries = statsRepo.getWeeklyStats()
+        val gravidSoeknadTiltak = statsRepo.getGravidSoeknadTiltak()
 
         val populatedDatapakke = datapakkeTemplate
             .replace("@timeseries", timeseries.map { //language=JSON
                 """[${it.uke}, ${it.antall}, "${it.tabell}"]"""
             }.joinToString())
+            .replace("@GravidKravTiltak", //language=JSON
+                """{"value": ${gravidSoeknadTiltak.hjemmekontor}, "name": "Hjemmekontor"},
+                   {"value": ${gravidSoeknadTiltak.tipasset_arbeidstid}, "name": "Tilpasset Arbeidstid"},
+                   {"value": ${gravidSoeknadTiltak.tilpassede_arbeidsoppgaver}, "name": "Tilpassede Arbeidsoppgaver"},
+                   {"value": ${gravidSoeknadTiltak.annet}, "name": "Annet"}""".trimIndent()
+                )
 
         runBlocking {
             val response = httpClient.put<HttpResponse>("$datapakkeApiUrl/$datapakkeId") {

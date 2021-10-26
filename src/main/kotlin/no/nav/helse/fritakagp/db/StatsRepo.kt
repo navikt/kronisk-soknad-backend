@@ -73,13 +73,13 @@ class StatsRepoImpl(
 
     override fun getGravidSoeknadTiltak(): GravidSoeknadTiltak {
         val query = """
-            select
-                   count (*) filter (where(data->'tiltak')::jsonb ? 'HJEMMEKONTOR') as hjemmekontor,
-                   count (*) filter (where(data->'tiltak')::jsonb ? 'TILPASSEDE_ARBEIDSOPPGAVER') as tilpassede_arbeidsoppgaver,
-                   count (*) filter (where(data->'tiltak')::jsonb ? 'TILPASSET_ARBEIDSTID') as tipasset_arbeidstid,
-                   count (*) filter (where(data->'tiltak')::jsonb ? 'ANNET') as annet
-            from soeknadgravid
-            where date(data->>'opprettet') > NOW()::DATE-EXTRACT(DOW FROM NOW())::INTEGER-7;
+        select
+            count (*) filter (where(data->'tiltak')::jsonb ?? 'HJEMMEKONTOR') as hjemmekontor,
+            count (*) filter (where(data->'tiltak')::jsonb ?? 'TILPASSEDE_ARBEIDSOPPGAVER') as tilpassede_arbeidsoppgaver,
+            count (*) filter (where(data->'tiltak')::jsonb ?? 'TILPASSET_ARBEIDSTID') as tipasset_arbeidstid,
+            count (*) filter (where(data->'tiltak')::jsonb ?? 'ANNET') as annet
+        from soeknadgravid
+        where date(data->>'opprettet') > NOW()::DATE-EXTRACT(DOW FROM NOW())::INTEGER-7;
         """.trimIndent()
 
         ds.connection.use {

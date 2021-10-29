@@ -7,16 +7,19 @@ data class WeeklyStats(
     val antall: Int,
     val tabell: String
 )
+
 data class GravidSoeknadTiltak(
     val hjemmekontor: Int,
     val tilpassede_arbeidsoppgaver: Int,
     val tipasset_arbeidstid: Int,
     val annet: Int,
 )
+
 data class AntallType(
     val antall: Int,
     val type: String
 )
+
 interface IStatsRepo {
     fun getWeeklyStats(): List<WeeklyStats>
     fun getGravidSoeknadTiltak(): GravidSoeknadTiltak
@@ -72,7 +75,6 @@ class StatsRepoImpl(
                     )
                 )
             }
-
             return returnValue
         }
     }
@@ -101,7 +103,6 @@ class StatsRepoImpl(
                     )
                 )
             }
-
             return returnValue[0]
         }
     }
@@ -152,12 +153,7 @@ class StatsRepoImpl(
                     )
                 )
             }
-
             return returnValue
         }
     }
-
-
-
-
 }

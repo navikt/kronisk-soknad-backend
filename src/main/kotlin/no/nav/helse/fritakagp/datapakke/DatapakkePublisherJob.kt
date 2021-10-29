@@ -38,6 +38,8 @@ RecurringJob(
 
         val timeseries = statsRepo.getWeeklyStats()
         val gravidSoeknadTiltak = statsRepo.getGravidSoeknadTiltak()
+        val kroniskArbeidstyper = statsRepo.getKroniskSoeknadArbeidstyper()
+        val kroniskPaakjenningstyper = statsRepo.getKroniskSoeknadPaakjenningstyper()
 
         val populatedDatapakke = datapakkeTemplate
             .replace("@timeseries", timeseries.map { //language=JSON
@@ -49,6 +51,10 @@ RecurringJob(
                    {"value": ${gravidSoeknadTiltak.tilpassede_arbeidsoppgaver}, "name": "Tilpassede Arbeidsoppgaver"},
                    {"value": ${gravidSoeknadTiltak.annet}, "name": "Annet"}""".trimIndent()
                 )
+            .replace("@KroniskArbeidstyper", kroniskArbeidstyper.map { //language=JSON
+                """{"value": ${it.antall}, "name": "${it.type}"}""" }.joinToString())
+            .replace("@KroniskPaakjenningstyper", kroniskPaakjenningstyper.map { //language=JSON
+                """{"value": ${it.antall}, "name": "${it.type}"}""" }.joinToString())
 
         runBlocking {
             val response = httpClient.put<HttpResponse>("$datapakkeApiUrl/$datapakkeId") {

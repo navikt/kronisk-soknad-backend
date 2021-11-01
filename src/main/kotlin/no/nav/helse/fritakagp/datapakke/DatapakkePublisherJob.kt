@@ -52,9 +52,9 @@ RecurringJob(
                    {"value": ${gravidSoeknadTiltak.annet}, "name": "Annet"}""".trimIndent()
                 )
             .replace("@KroniskArbeidstyper", kroniskArbeidstyper.map { //language=JSON
-                """{"value": ${it.antall}, "name": "${it.type}"}""" }.joinToString())
+                """{"value": ${it.antall}, "name": "${it.type.trim()}"}""" }.joinToString())
             .replace("@KroniskPaakjenningstyper", kroniskPaakjenningstyper.map { //language=JSON
-                """{"value": ${it.antall}, "name": "${it.type}"}""" }.joinToString())
+                """{"value": ${it.antall}, "name": "${it.type.trim()}"}""" }.joinToString())
 
         runBlocking {
             val response = httpClient.put<HttpResponse>("$datapakkeApiUrl/$datapakkeId") {

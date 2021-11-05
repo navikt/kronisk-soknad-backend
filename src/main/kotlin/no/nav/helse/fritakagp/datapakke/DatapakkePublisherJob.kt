@@ -57,6 +57,8 @@ RecurringJob(
                 """{"value": ${it.antall}, "name": "${it.type.trim()}"}""" }.joinToString())
 
         runBlocking {
+            logger.info("Populerte datapakke template med data: ${populatedDatapakke}")
+
             val response = httpClient.put<HttpResponse>("$datapakkeApiUrl/$datapakkeId") {
                 contentType(ContentType.Application.Json)
                 body = om.readTree(populatedDatapakke)

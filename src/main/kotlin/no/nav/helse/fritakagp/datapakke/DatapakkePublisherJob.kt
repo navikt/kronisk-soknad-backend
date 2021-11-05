@@ -52,9 +52,9 @@ RecurringJob(
                    {"value": ${gravidSoeknadTiltak.annet}, "name": "Annet"}""".trimIndent()
                 )
             .replace("@KroniskArbeidstyper", kroniskArbeidstyper.map { //language=JSON
-                """{"value": ${it.antall}, "name": "${it.type.trim()}"}""" }.joinToString())
+                """{"value": ${it.antall}, "name": ${it.type}}""" }.joinToString())
             .replace("@KroniskPaakjenningstyper", kroniskPaakjenningstyper.map { //language=JSON
-                """{"value": ${it.antall}, "name": "${it.type.trim()}"}""" }.joinToString())
+                """{"value": ${it.antall}, "name": ${it.type}}""" }.joinToString())
 
         runBlocking {
             logger.info("Populerte datapakke template med data: ${populatedDatapakke}")

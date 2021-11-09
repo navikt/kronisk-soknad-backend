@@ -50,8 +50,6 @@ spec:
           consumers:
             - name: "NAV"
               orgno: "889640782"
-            - name: "Ekstern consumer"
-              orgno: "123456789"
   azure:
     application:
       enabled: true

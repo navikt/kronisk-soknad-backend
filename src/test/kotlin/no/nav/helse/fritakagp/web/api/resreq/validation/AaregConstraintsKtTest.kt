@@ -10,12 +10,59 @@ import no.nav.helse.fritakagp.web.api.resreq.validation.slåSammenPerioder
 import no.nav.helse.fritakagp.web.api.resreq.validationShouldFailFor
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.Disabled
 import org.valiktor.functions.validateForEach
 import java.time.LocalDate
 import java.time.LocalDateTime
 import org.valiktor.validate
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.kotlin.readValue
+import com.fasterxml.jackson.core.util.DefaultIndenter
+import com.fasterxml.jackson.core.util.DefaultPrettyPrinter
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.MapperFeature
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
+import com.fasterxml.jackson.module.kotlin.KotlinModule
+import no.nav.helse.arbeidsgiver.utils.loadFromResources
 
 class AaregConstraintsKtTest {
+    @Test
+    @Disabled
+    fun `Rådata fra aareg (Brukes for å feilsøke med respons fra AA-reg)`() {
+        val om = ObjectMapper()
+        om.registerModule(KotlinModule())
+        om.registerModule(Jdk8Module())
+        om.registerModule(JavaTimeModule())
+        om.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+        om.configure(SerializationFeature.INDENT_OUTPUT, true)
+        om.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
+        om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+
+        om.setDefaultPrettyPrinter(DefaultPrettyPrinter().apply {
+            indentArraysWith(DefaultPrettyPrinter.FixedSpaceIndenter.instance)
+            indentObjectsWith(DefaultIndenter("  ", "\n"))
+        })
+
+        // Legg aareg JSON-respons i src/test/resources/aareg.json
+        val aaregFile = "aareg.json".loadFromResources()
+        val arbeidsforhold = om.readValue<List<Arbeidsforhold>>(aaregFile)
+            // Legg inn organisasjonsnummer
+            .filter { it.arbeidsgiver.organisasjonsnummer == "XXXXXXXX"}
+
+        // Endre til perioden kravet gjelder
+        val arbeidsgiverPeriode = Arbeidsgiverperiode(
+            LocalDate.of(2021, 1, 15),
+            LocalDate.of(2021, 1, 20),
+            4,
+            månedsinntekt = 2590.8,
+        )
+
+        validate(arbeidsgiverPeriode){
+            validate(Arbeidsgiverperiode::fom).måHaAktivtArbeidsforhold(arbeidsgiverPeriode, arbeidsforhold)
+        }
+    }
 
     @Test
     fun `Ansatt slutter fram i tid`() {

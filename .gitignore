@@ -29,3 +29,5 @@ hs_err_pid*
 
 #mac files
 **/.DS_Store
+
+src/test/resources/aareg.json

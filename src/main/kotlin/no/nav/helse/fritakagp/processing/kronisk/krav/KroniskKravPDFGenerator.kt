@@ -62,7 +62,7 @@ class KroniskKravPDFGenerator {
     }
 
     private fun PDPageContentStream.writeTextWrapped(text: String, spacing: Int = 1) {
-        WordUtils.wrap(text, 120).split('\n').forEach {
+        WordUtils.wrap(text, 100).split('\n').forEach {
             this.newLineAtOffset(0F, -LINE_HEIGHT * spacing)
             this.showText(it)
         }

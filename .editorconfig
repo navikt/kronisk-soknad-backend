@@ -4,10 +4,6 @@
 
 root = true
 
-# All files
-[**]
-end_of_line = lf
-
 # Kotlin
 [**.kt]
 charset = utf-8

@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val ktorVersion = "1.6.0"
-val logback_version = "1.2.1"
+val logback_version = "1.2.7"
 val logback_contrib_version = "0.1.5"
 val jacksonVersion = "2.10.3"
 val prometheusVersion = "0.6.0"
@@ -14,7 +14,7 @@ val tokenSupportVersion = "1.3.8"
 val mockOAuth2ServerVersion = "0.3.4"
 val koinVersion = "2.0.1"
 val valiktorVersion = "0.12.0"
-val gcpStorageVersion = "1.113.6"
+val gcpStorageVersion = "1.113.14-sp.3"
 val cxfVersion = "3.4.5"
 val jaxwsVersion = "2.3.1"
 val jaxwsToolsVersion = "2.3.3"
@@ -129,7 +129,7 @@ dependencies {
     implementation("javax.ws.rs:javax.ws.rs-api:2.1.1")
     implementation("no.nav.security:mock-oauth2-server:$mockOAuth2ServerVersion")
     implementation("no.nav.helsearbeidsgiver:helse-arbeidsgiver-felles-backend:2021.06.14-14-37-29773")
-    implementation("no.nav.common:log:2.2020.10.15_11.43-b1f02e7bd6ae")
+    implementation("no.nav.common:log:2.2020.10.27_15.17-901cc4cfbbe4")
 
     implementation(kotlin("stdlib"))
 

@@ -1,4 +1,4 @@
-name: Deploy dev-gcp
+name: Preprod
 
 on:
   push:

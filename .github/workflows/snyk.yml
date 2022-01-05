@@ -4,6 +4,7 @@ on: [pull_request]
 
 jobs:
   Snyk:
+    name: "Dependencies"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -13,4 +14,4 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
           ORG_GRADLE_PROJECT_githubPassword: ${{ secrets.GITHUB_TOKEN }}
         with:
-          args: --org=helsearbeidsgiver --project-name=fritakAGP_Backend --fail-on=patchable
+          args: --org=helsearbeidsgiver --project-name=fritakAGP_Backend --fail-on=all

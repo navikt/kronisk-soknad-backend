@@ -25,6 +25,9 @@ fun Application.localCookieDispenser(config: ApplicationConfig) {
     val cookieName = config.configList("no.nav.security.jwt.issuers")[0].property("cookie_name").getString()
     val issuerName = config.configList("no.nav.security.jwt.issuers")[0].property("issuer_name").getString()
     val audience = config.configList("no.nav.security.jwt.issuers")[0].property("accepted_audience").getString()
+    val cookieNameMaskiporten = config.configList("no.nav.security.jwt.issuers")[1].property("cookie_name").getString()
+    val issuerNameMaskinporten = config.configList("no.nav.security.jwt.issuers")[1].property("issuer_name").getString()
+    val audienceMaskinporten = config.configList("no.nav.security.jwt.issuers")[1].property("accepted_audience").getString()
     val domain = if (config.getEnvironment() == AppEnv.PREPROD) "dev.nav.no" else "localhost"
 
     server.start(port = oauthMockPort)
@@ -39,6 +42,21 @@ fun Application.localCookieDispenser(config: ApplicationConfig) {
             )
 
             call.response.cookies.append(Cookie(cookieName, token.serialize(), CookieEncoding.RAW, domain = domain, path = "/"))
+
+            if (call.request.queryParameters["redirect"] != null) {
+                call.respondText("<script>window.location.href='" + call.request.queryParameters["redirect"] + "';</script>", ContentType.Text.Html, HttpStatusCode.OK)
+            } else {
+                call.respondText("Cookie Set", ContentType.Text.Plain, HttpStatusCode.OK)
+            }
+        }
+        get("/local/maskinporten-cookie-please") {
+            val token = server.issueToken(
+                subject = call.request.queryParameters["subject"].toString(),
+                issuerId = issuerNameMaskinporten,
+                audience = audienceMaskinporten
+            )
+
+            call.response.cookies.append(Cookie(cookieNameMaskiporten, token.serialize(), CookieEncoding.RAW, domain = domain, path = "/"))
 
             if (call.request.queryParameters["redirect"] != null) {
                 call.respondText("<script>window.location.href='" + call.request.queryParameters["redirect"] + "';</script>", ContentType.Text.Html, HttpStatusCode.OK)

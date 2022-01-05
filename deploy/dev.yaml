@@ -41,7 +41,7 @@ spec:
     enabled: true
     scopes:
       exposes:
-        - name: "nav:helsearbeidsgiver:fritakagp"
+        - name: "v1/fritak-agp-api/"
           enabled: true
           product: "helsearbeidsgiver"
           allowedIntegrations:
@@ -50,8 +50,8 @@ spec:
           consumers:
             - name: "NAV"
               orgno: "889640782"
-            - name: "Ekstern consumer"
-              orgno: "123456789"
+      consumes:
+        - name: "nav:helsearbeidsgiver/v1/fritak-agp-api/"
   azure:
     application:
       enabled: true

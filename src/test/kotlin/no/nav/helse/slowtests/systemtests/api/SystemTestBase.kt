@@ -17,6 +17,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.runBlocking
 import no.nav.helse.fritakagp.FritakAgpApplication
 import no.nav.helse.fritakagp.web.api.resreq.Problem
+import no.nav.security.mock.oauth2.MockOAuth2Server
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.TestInstance
@@ -44,12 +45,16 @@ open class SystemTestBase : KoinTest {
         .configure(SerializationFeature.INDENT_OUTPUT, true)
         .configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
         .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-
+    val server = MockOAuth2Server()
     companion object {
         val testServerPort = 8989
         var app: FritakAgpApplication? = null
+        const val MASKINPORTEN_ISSUER_NAME = "maskinporten"
     }
-
+    enum class MaskinportenScopes(val value: String) {
+        READ("nav:helse:fritakagp.read"),
+        WRITE("nav:helse:fritakagp.write")
+    }
     @BeforeAll
     fun before() {
         if (app == null) {
@@ -82,6 +87,36 @@ open class SystemTestBase : KoinTest {
 
         header("Authorization", "Bearer ${response.setCookie()[0].value}")
     }
+
+    suspend fun HttpRequestBuilder.loggedInAsMaskinporten(subject: String) {
+        val response = httpClient.get<HttpResponse> {
+            appUrl("/local/maskinporten-cookie-please?subject=$subject")
+            contentType(ContentType.Application.Json)
+        }
+
+        header("Authorization", "Bearer ${response.setCookie()[0].value}")
+    }
+
+//    /**
+//     * Hjelpefunksjon for å returnere gyldig Maskinporten JWT-token og legge det til som Auth header på en request
+//     */
+//    suspend fun HttpRequestBuilder.issueMaskinportenToken(
+//        orgNumber: String = "889640782",
+//        scopes: Set<MaskinportenScopes> = setOf(MaskinportenScopes.READ, MaskinportenScopes.WRITE)
+//    ) {
+//        val signedJWT = server.issueToken(
+//            issuerId = MASKINPORTEN_ISSUER_NAME,
+//            claims = mapOf(
+//                "scope" to scopes.joinToString(" ") { it.value },
+//                "consumer" to mapOf(
+//                    "authority" to "iso6523-actorid-upis",
+//                    "ID" to "0192:$orgNumber"
+//                )
+//            )
+//        )
+////        header("Authorization", "Bearer ${ response.setCookie()[0].value}")
+//        HttpRequestBuilder().header("Authorization", "Bearer ${signedJWT.signingInput.decodeToString()}")
+//    }
 
     /**
      * Hjelpefunksjon for at JUnit5 skal kunne kjenne igjen tester som kaller har "suspend"-funksjoner

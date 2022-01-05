@@ -16,12 +16,14 @@ import no.nav.helse.fritakagp.web.api.*
 import no.nav.security.token.support.ktor.tokenValidationSupport
 import org.koin.ktor.ext.get
 
+
 @KtorExperimentalLocationsAPI
 fun Application.fritakModule(config: ApplicationConfig = environment.config) {
 
     install(IgnoreTrailingSlash)
     install(Authentication) {
-        tokenValidationSupport(config = config)
+       tokenValidationSupport(config = config)
+
     }
 
     configureCORSAccess(config)
@@ -35,7 +37,7 @@ fun Application.fritakModule(config: ApplicationConfig = environment.config) {
     routing {
         val apiBasePath = config.getString("ktor.application.basepath")
         route("$apiBasePath/api/v1") {
-            authenticate {
+            authenticate() {
                 systemRoutes()
                 kroniskRoutes(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
                 gravidRoutes(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())

@@ -38,7 +38,22 @@ spec:
   leaderElection: false
   secureLogs:
     enabled: true
-  azure:
+  maskinporten:
+    enabled: true
+    scopes:
+      exposes:
+        - name: "v1/fritak-agp-api/"
+          enabled: true
+          product: "helsearbeidsgiver"
+          allowedIntegrations:
+            - maskinporten
+          atMaxAge: 680
+          consumers:
+            - name: "NAV"
+              orgno: "889640782"
+      consumes:
+        - name: "nav:helsearbeidsgiver/v1/fritak-agp-api/"
+    azure:
     application:
       enabled: true
 

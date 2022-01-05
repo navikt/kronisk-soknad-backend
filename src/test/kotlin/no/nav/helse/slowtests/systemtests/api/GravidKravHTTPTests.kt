@@ -42,7 +42,32 @@ class GravidKravHTTPTests : SystemTestBase() {
             loggedInAs(GravidTestData.gravidKrav.identitetsnummer)
         }
 
-        Assertions.assertThat(accessGrantedForm).isEqualTo(GravidTestData.gravidKrav)
+        assertThat(accessGrantedForm).isEqualTo(GravidTestData.gravidKrav)
+    }
+
+    @Test
+    internal fun `Returnerer kravet når korrekt bruker er innlogget via Maskinporten 404 når ikke`() = suspendableTest {
+        val repo by inject<GravidKravRepository>()
+
+        repo.insert(GravidTestData.gravidKrav)
+        val exception = assertThrows<ClientRequestException>
+        {
+            httpClient.get<HttpResponse> {
+                appUrl("$kravGravidUrl/${GravidTestData.gravidKrav.id}")
+                contentType(ContentType.Application.Json)
+                loggedInAsMaskinporten("123456789")
+            }
+        }
+
+        Assertions.assertThat(exception.response.status).isEqualTo(HttpStatusCode.NotFound)
+
+        val accessGrantedForm = httpClient.get<GravidKrav> {
+            appUrl("$kravGravidUrl/${GravidTestData.gravidKrav.id}")
+            contentType(ContentType.Application.Json)
+            loggedInAsMaskinporten(GravidTestData.gravidKrav.identitetsnummer)
+        }
+
+        assertThat(accessGrantedForm).isEqualTo(GravidTestData.gravidKrav)
     }
 
     @Test

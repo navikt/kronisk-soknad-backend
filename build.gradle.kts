@@ -12,7 +12,7 @@ val assertJVersion = "3.12.2"
 val mockKVersion = "1.9.3"
 val tokenSupportVersion = "1.3.8"
 val mockOAuth2ServerVersion = "0.3.4"
-val koinVersion = "2.0.1"
+val koinVersion = "3.1.3"
 val valiktorVersion = "0.12.0"
 val gcpStorageVersion = "1.113.14-sp.3"
 val cxfVersion = "3.4.5"
@@ -50,8 +50,10 @@ dependencies {
     implementation("org.valiktor:valiktor-core:$valiktorVersion")
     implementation("org.valiktor:valiktor-javatime:$valiktorVersion")
     implementation("com.sun.activation:javax.activation:1.2.0")
-    implementation("org.koin:koin-core:$koinVersion")
-    implementation("org.koin:koin-ktor:$koinVersion")
+    implementation("io.insert-koin:koin-core-jvm:$koinVersion")
+    implementation("io.insert-koin:koin-core:$koinVersion")
+    implementation("io.insert-koin:koin-ktor:$koinVersion")
+    testImplementation("io.insert-koin:koin-test:$koinVersion")
     implementation("no.nav.security:token-client-core:$tokenSupportVersion")
     implementation("no.nav.security:token-validation-ktor:$tokenSupportVersion")
     implementation("com.github.navikt:brukernotifikasjon-schemas:$brukernotifikasjonSchemasVersion")
@@ -86,7 +88,6 @@ dependencies {
     implementation("com.sun.xml.ws:jaxws-tools:$jaxwsToolsVersion") {
         exclude(group = "com.sun.xml.ws", module = "policy")
     }
-    testImplementation("org.koin:koin-test:$koinVersion")
     implementation("com.github.javafaker:javafaker:1.0.2") // flytt denne til test når generatorene ikke er nødvendige i prod-koden lenger
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.3.2")
     testImplementation("io.mockk:mockk:$mockKVersion")
@@ -121,12 +122,17 @@ repositories {
     mavenCentral()
     google()
     maven(url = "https://packages.confluent.io/maven/")
-    maven {
-        credentials {
-            username = "x-access-token"
-            password = githubPassword
+//    maven {
+//        credentials {
+//            username = "x-access-token"
+//            password = githubPassword
+//        }
+//        setUrl("https://maven.pkg.github.com/navikt/inntektsmelding-kontrakt")
+//    }
+    maven(url = "https://jitpack.io") {
+        content {
+            excludeGroup("no.nav.helsearbeidsgiver")
         }
-        setUrl("https://maven.pkg.github.com/navikt/inntektsmelding-kontrakt")
     }
     maven {
         credentials {

@@ -11,7 +11,7 @@ import no.nav.helse.fritakagp.domain.GravidSoeknad
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import org.koin.core.inject
+import org.koin.core.component.inject
 
 class GravidSoeknadHTTPTests : SystemTestBase() {
     private val soeknadGravidUrl = "/api/v1/gravid/soeknad"

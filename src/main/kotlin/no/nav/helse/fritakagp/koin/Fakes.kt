@@ -32,19 +32,30 @@ fun Module.mockExternalDependecies() {
             override suspend fun hentArbeidsforhold(ident: String, callId: String): List<Arbeidsforhold> =
                 listOf<Arbeidsforhold>(
                     Arbeidsforhold(
-                        Arbeidsgiver("test", "810007842"), Opplysningspliktig("Juice", "810007702"), emptyList(), Ansettelsesperiode(
+                        Arbeidsgiver("test", "810007842"), Opplysningspliktig("Juice", "810007702"), emptyList(),
+                        Ansettelsesperiode(
                             Periode(LocalDate.MIN, null)
-                        ), LocalDate.MIN.atStartOfDay()) ,
+                        ),
+                        LocalDate.MIN.atStartOfDay()
+                    ),
                     Arbeidsforhold(
-                        Arbeidsgiver("test", "910098896"), Opplysningspliktig("Juice", "910098896"), emptyList(), Ansettelsesperiode(
+                        Arbeidsgiver("test", "910098896"), Opplysningspliktig("Juice", "910098896"), emptyList(),
+                        Ansettelsesperiode(
                             Periode(
-                                LocalDate.MIN, null)
-                        ), LocalDate.MIN.atStartOfDay()),
+                                LocalDate.MIN, null
+                            )
+                        ),
+                        LocalDate.MIN.atStartOfDay()
+                    ),
                     Arbeidsforhold(
-                        Arbeidsgiver("test", "917404437"), Opplysningspliktig("Juice", "910098896"), emptyList(), Ansettelsesperiode(
+                        Arbeidsgiver("test", "917404437"), Opplysningspliktig("Juice", "910098896"), emptyList(),
+                        Ansettelsesperiode(
                             Periode(
-                                LocalDate.MIN, null)
-                        ), LocalDate.MIN.atStartOfDay())
+                                LocalDate.MIN, null
+                            )
+                        ),
+                        LocalDate.MIN.atStartOfDay()
+                    )
                 )
         }
     } bind AaregArbeidsforholdClient::class
@@ -97,7 +108,6 @@ fun Module.mockExternalDependecies() {
                     )
                 )
         }
-
     } bind PdlClient::class
 
     single {
@@ -105,13 +115,15 @@ fun Module.mockExternalDependecies() {
             override suspend fun opprettOppgave(
                 opprettOppgaveRequest: OpprettOppgaveRequest,
                 callId: String
-            ): OpprettOppgaveResponse = OpprettOppgaveResponse(1234, "0100",
+            ): OpprettOppgaveResponse = OpprettOppgaveResponse(
+                1234, "0100",
                 tema = "KON",
                 oppgavetype = "JFR",
                 versjon = 1,
                 aktivDato = LocalDate.now(),
                 Prioritet.NORM,
-                Status.UNDER_BEHANDLING)
+                Status.UNDER_BEHANDLING
+            )
         }
     } bind OppgaveKlient::class
 
@@ -125,4 +137,3 @@ class MockAltinnRepo(om: ObjectMapper) : AltinnOrganisationsRepository {
     private val mockAcl = om.readValue<Set<AltinnOrganisasjon>>(mockList)
     override fun hentOrgMedRettigheterForPerson(identitetsnummer: String): Set<AltinnOrganisasjon> = mockAcl
 }
-

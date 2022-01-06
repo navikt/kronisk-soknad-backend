@@ -30,7 +30,6 @@ import org.junit.jupiter.api.assertThrows
 import java.io.IOException
 import java.util.*
 
-
 class GravidKravProcessorTest {
 
     val joarkMock = mockk<DokarkivKlient>(relaxed = true)
@@ -52,22 +51,24 @@ class GravidKravProcessorTest {
     @BeforeEach
     fun setup() {
         krav = GravidTestData.gravidKrav.copy()
-        jobb = Bakgrunnsjobb( data = objectMapper.writeValueAsString(GravidKravProcessor.JobbData(krav.id)), type = "test")
+        jobb = Bakgrunnsjobb(data = objectMapper.writeValueAsString(GravidKravProcessor.JobbData(krav.id)), type = "test")
         objectMapper.registerModule(JavaTimeModule())
         every { repositoryMock.getById(krav.id) } returns krav
         every { bucketStorageMock.getDocAsString(any()) } returns null
-        every { pdlClientMock.personNavn(krav.sendtAv)} returns PdlHentPersonNavn.PdlPersonNavneliste(listOf(
-            PdlHentPersonNavn.PdlPersonNavneliste.PdlPersonNavn("Ola", "M", "Avsender", PdlPersonNavnMetadata("freg"))))
-        every { pdlClientMock.fullPerson(krav.identitetsnummer)} returns PdlHentFullPerson(
-            PdlFullPersonliste(emptyList(), emptyList(), emptyList(), emptyList(),emptyList(),emptyList(), emptyList()),
+        every { pdlClientMock.personNavn(krav.sendtAv) } returns PdlHentPersonNavn.PdlPersonNavneliste(
+            listOf(
+                PdlHentPersonNavn.PdlPersonNavneliste.PdlPersonNavn("Ola", "M", "Avsender", PdlPersonNavnMetadata("freg"))
+            )
+        )
+        every { pdlClientMock.fullPerson(krav.identitetsnummer) } returns PdlHentFullPerson(
+            PdlFullPersonliste(emptyList(), emptyList(), emptyList(), emptyList(), emptyList(), emptyList(), emptyList()),
             PdlIdentResponse(listOf(PdlIdent("aktør-id", PdlIdent.PdlIdentGruppe.AKTORID))),
             PdlHentFullPerson.PdlGeografiskTilknytning(UTLAND, null, null, "SWE")
         )
         every { joarkMock.journalførDokument(any(), any(), any()) } returns JournalpostResponse(arkivReferanse, true, "M", null, emptyList())
-        coEvery { oppgaveMock.opprettOppgave(any(), any())} returns GravidTestData.gravidOpprettOppgaveResponse.copy(id = oppgaveId)
+        coEvery { oppgaveMock.opprettOppgave(any(), any()) } returns GravidTestData.gravidOpprettOppgaveResponse.copy(id = oppgaveId)
         coEvery { berregServiceMock.getVirksomhetsNavn(krav.virksomhetsnummer) } returns "Stark Industries"
     }
-
 
     @Test
     fun `skal ikke journalføre når det allerede foreligger en journalpostId, men skal forsøke sletting fra bucket `() {
@@ -77,7 +78,6 @@ class GravidKravProcessorTest {
         verify(exactly = 0) { joarkMock.journalførDokument(any(), any(), any()) }
         verify(exactly = 1) { bucketStorageMock.deleteDoc(krav.id) }
     }
-
 
     @Test
     fun `skal opprette fordelingsoppgave når stoppet`() {
@@ -144,14 +144,13 @@ class GravidKravProcessorTest {
             bakgrunnsjobbRepomock.save(capture(opprettetJobber))
         }
 
-        val kafkajobb = opprettetJobber.find {it.type == GravidKravKafkaProcessor.JOB_TYPE }
+        val kafkajobb = opprettetJobber.find { it.type == GravidKravKafkaProcessor.JOB_TYPE }
         assertThat(kafkajobb?.data).contains(krav.id.toString())
 
-        val beskjedJobb = opprettetJobber.find {it.type == BrukernotifikasjonProcessor.JOB_TYPE }
+        val beskjedJobb = opprettetJobber.find { it.type == BrukernotifikasjonProcessor.JOB_TYPE }
         assertThat(beskjedJobb?.data).contains(BrukernotifikasjonProcessor.Jobbdata.SkjemaType.GravidKrav.name)
         assertThat(beskjedJobb?.data).contains(krav.id.toString())
     }
-
 
     @Test
     fun `Ved feil i oppgave skal joarkref lagres, og det skal det kastes exception oppover`() {

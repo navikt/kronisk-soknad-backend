@@ -73,20 +73,22 @@ aąbcćdeęfghijlłmnńoóprsśtuwź
         bekreftet = true,
         dokumentasjon = """
                 data:image/pdf;base64,TG9yZW0gaXBzdW0gZG9sb3Igc2l0IGFtZXQsIGNvbnNlY3RldHVyIGFkaXBpc2NpbmcgZWxpdC4gQWxpcXVhbSB2aXRhZSBlcm9zIGEgZmVsaXMgbGFjaW5pYSBzb2xsaWNpdHVkaW4gdXQgZWdldCB0b3J0b3IuIFBoYXNlbGx1cyB2ZWhpY3VsYSBlZ2VzdGFzIG1hdHRpcy4gTnVuYyBldSBsaWJlcm8gdWxsYW1jb3JwZXIsIHBsYWNlcmF0IHNhcGllbiBlZ2V0LCBhY2N1bXNhbiBwdXJ1cy4gTWFlY2VuYXMgbWF4aW11cywgcHVydXMgbmVjIGxhY2luaWEgcHVsdmluYXIsIGR1aSBlbmltIGlhY3VsaXMgZGlhbSwgcXVpcyB2aXZlcnJhIG1hc3NhIGxpZ3VsYSBzaXQgYW1ldCBudWxsYS4gU2VkIG1heGltdXMgZXVpc21vZCBhbnRlIGluIHBvc3VlcmUuIFN1c3BlbmRpc3NlIGxpZ3VsYSB0ZWxsdXMsIGZpbmlidXMgdmVsIHBsYWNlcmF0IGlkLCBtYXhpbXVzIHNlZCBhbnRlLiBGdXNjZSBzaXQgYW1ldCBmZXJtZW50dW0gbWFnbmEuCgpDbGFzcyBhcHRlbnQgdGFjaXRpIHNvY2lvc3F1IGFkIGxpdG9yYSB0b3JxdWVudCBwZXIgY29udWJpYSBub3N0cmEsIHBlciBpbmNlcHRvcyBoaW1lbmFlb3MuIERvbmVjIGV1IHRvcnRvciBtYWxlc3VhZGEsIHVsbGFtY29ycGVyIG5pc2wgYXQsIHZ1bHB1dGF0ZSBlc3QuIFZpdmFtdXMgaWQgbG9yZW0gZWdlc3RhcyBhcmN1IHNvZGFsZXMgc2VtcGVyIHZpdGFlIHZlc3RpYnVsdW0gZG9sb3IuIENyYXMgZGFwaWJ1cywgZXJhdCBuZWMgZmF1Y2lidXMgZGFwaWJ1cywgZHVpIHZlbGl0IG9ybmFyZSB0ZWxsdXMsIHF1aXMgdWx0cmljaWVzIGxlbyB0ZWxsdXMgdXQgZXJhdC4gTWFlY2VuYXMgcG9ydGEgdGluY2lkdW50IHBsYWNlcmF0LiBDcmFzIGRpZ25pc3NpbSBsZWN0dXMgdGVsbHVzLCBldCBpbnRlcmR1bSByaXN1cyBwZWxsZW50ZXNxdWUgYXVjdG9yLiBJbiBtYXhpbXVzIGxhY2luaWEgbGVjdHVzLCBhIHNvZGFsZXMgbnVsbGEgdmFyaXVzIGdyYXZpZGEuIEV0aWFtIGhlbmRyZXJpdCBhdWd1ZSBvZGlvLCB2ZWwgcGhhcmV0cmEgb3JjaSBtYWxlc3VhZGEgbmVjLiBQZWxsZW50ZXNxdWUgaGFiaXRhbnQgbW9yYmkgdHJpc3RpcXVlIHNlbmVjdHVzIGV0IG5ldHVzIGV0IG1hbGVzdWFkYSBmYW1lcyBhYyB0dXJwaXMgZWdlc3Rhcy4gU2VkIGV0IGNvbmRpbWVudHVtIG9yY2ksIHZlbCBtYWxlc3VhZGEgbmVxdWUu
-            """.trimIndent()
+        """.trimIndent()
     )
 
     val gravidKravRequestValid = GravidKravRequest(
         virksomhetsnummer = validOrgNr,
         identitetsnummer = validIdentitetsnummer,
 
-        perioder = listOf(Arbeidsgiverperiode(
-            LocalDate.of(2020, 1, 5),
-            LocalDate.of(2020, 1, 10),
-            2,
-            månedsinntekt = 2590.8,
-            gradering = 0.8
-        )),
+        perioder = listOf(
+            Arbeidsgiverperiode(
+                LocalDate.of(2020, 1, 5),
+                LocalDate.of(2020, 1, 10),
+                2,
+                månedsinntekt = 2590.8,
+                gradering = 0.8
+            )
+        ),
 
         bekreftet = true,
         dokumentasjon = null,
@@ -98,12 +100,14 @@ aąbcćdeęfghijlłmnńoóprsśtuwź
         virksomhetsnummer = validOrgNr,
         identitetsnummer = validIdentitetsnummer,
 
-        perioder = listOf(Arbeidsgiverperiode(
-            LocalDate.of(2021, 6, 1),
-            LocalDate.of(2020, 6, 12),
-            5,
-            månedsinntekt = 12344.0
-        )),
+        perioder = listOf(
+            Arbeidsgiverperiode(
+                LocalDate.of(2021, 6, 1),
+                LocalDate.of(2020, 6, 12),
+                5,
+                månedsinntekt = 12344.0
+            )
+        ),
 
         bekreftet = true,
         dokumentasjon = null,
@@ -111,7 +115,7 @@ aąbcćdeęfghijlłmnńoóprsśtuwź
         antallDager = 260
     )
 
-  val gravidKravRequestInValid = GravidKravRequest(
+    val gravidKravRequestInValid = GravidKravRequest(
         virksomhetsnummer = validOrgNr,
         identitetsnummer = validIdentitetsnummer,
 
@@ -145,19 +149,21 @@ aąbcćdeęfghijlłmnńoóprsśtuwź
     val gravidKravRequestMedFil = gravidKravRequestValid.copy(
         dokumentasjon = """
                 data:image/pdf;base64,TG9yZW0gaXBzdW0gZG9sb3Igc2l0IGFtZXQsIGNvbnNlY3RldHVyIGFkaXBpc2NpbmcgZWxpdC4gQWxpcXVhbSB2aXRhZSBlcm9zIGEgZmVsaXMgbGFjaW5pYSBzb2xsaWNpdHVkaW4gdXQgZWdldCB0b3J0b3IuIFBoYXNlbGx1cyB2ZWhpY3VsYSBlZ2VzdGFzIG1hdHRpcy4gTnVuYyBldSBsaWJlcm8gdWxsYW1jb3JwZXIsIHBsYWNlcmF0IHNhcGllbiBlZ2V0LCBhY2N1bXNhbiBwdXJ1cy4gTWFlY2VuYXMgbWF4aW11cywgcHVydXMgbmVjIGxhY2luaWEgcHVsdmluYXIsIGR1aSBlbmltIGlhY3VsaXMgZGlhbSwgcXVpcyB2aXZlcnJhIG1hc3NhIGxpZ3VsYSBzaXQgYW1ldCBudWxsYS4gU2VkIG1heGltdXMgZXVpc21vZCBhbnRlIGluIHBvc3VlcmUuIFN1c3BlbmRpc3NlIGxpZ3VsYSB0ZWxsdXMsIGZpbmlidXMgdmVsIHBsYWNlcmF0IGlkLCBtYXhpbXVzIHNlZCBhbnRlLiBGdXNjZSBzaXQgYW1ldCBmZXJtZW50dW0gbWFnbmEuCgpDbGFzcyBhcHRlbnQgdGFjaXRpIHNvY2lvc3F1IGFkIGxpdG9yYSB0b3JxdWVudCBwZXIgY29udWJpYSBub3N0cmEsIHBlciBpbmNlcHRvcyBoaW1lbmFlb3MuIERvbmVjIGV1IHRvcnRvciBtYWxlc3VhZGEsIHVsbGFtY29ycGVyIG5pc2wgYXQsIHZ1bHB1dGF0ZSBlc3QuIFZpdmFtdXMgaWQgbG9yZW0gZWdlc3RhcyBhcmN1IHNvZGFsZXMgc2VtcGVyIHZpdGFlIHZlc3RpYnVsdW0gZG9sb3IuIENyYXMgZGFwaWJ1cywgZXJhdCBuZWMgZmF1Y2lidXMgZGFwaWJ1cywgZHVpIHZlbGl0IG9ybmFyZSB0ZWxsdXMsIHF1aXMgdWx0cmljaWVzIGxlbyB0ZWxsdXMgdXQgZXJhdC4gTWFlY2VuYXMgcG9ydGEgdGluY2lkdW50IHBsYWNlcmF0LiBDcmFzIGRpZ25pc3NpbSBsZWN0dXMgdGVsbHVzLCBldCBpbnRlcmR1bSByaXN1cyBwZWxsZW50ZXNxdWUgYXVjdG9yLiBJbiBtYXhpbXVzIGxhY2luaWEgbGVjdHVzLCBhIHNvZGFsZXMgbnVsbGEgdmFyaXVzIGdyYXZpZGEuIEV0aWFtIGhlbmRyZXJpdCBhdWd1ZSBvZGlvLCB2ZWwgcGhhcmV0cmEgb3JjaSBtYWxlc3VhZGEgbmVjLiBQZWxsZW50ZXNxdWUgaGFiaXRhbnQgbW9yYmkgdHJpc3RpcXVlIHNlbmVjdHVzIGV0IG5ldHVzIGV0IG1hbGVzdWFkYSBmYW1lcyBhYyB0dXJwaXMgZWdlc3Rhcy4gU2VkIGV0IGNvbmRpbWVudHVtIG9yY2ksIHZlbCBtYWxlc3VhZGEgbmVxdWUu
-            """.trimIndent()
+        """.trimIndent()
     )
 
-    //Innrapportert feil POH-693 Gravid Krav - Backendvalidereing feiler når man sender inn krav for bare en dag.
+    // Innrapportert feil POH-693 Gravid Krav - Backendvalidereing feiler når man sender inn krav for bare en dag.
     val gravidKravRequestValidPeriode1Dag = GravidKravRequest(
         virksomhetsnummer = validOrgNr,
         identitetsnummer = validIdentitetsnummer,
-        perioder = listOf(Arbeidsgiverperiode(
-            LocalDate.of(2020, 2, 1),
-            LocalDate.of(2020, 2, 1),
-            1,
-            månedsinntekt = 123.8
-        )),
+        perioder = listOf(
+            Arbeidsgiverperiode(
+                LocalDate.of(2020, 2, 1),
+                LocalDate.of(2020, 2, 1),
+                1,
+                månedsinntekt = 123.8
+            )
+        ),
 
         bekreftet = true,
         dokumentasjon = null,
@@ -165,19 +171,20 @@ aąbcćdeęfghijlłmnńoóprsśtuwź
         antallDager = 4
     )
 
-
     val gravidKrav = GravidKrav(
         sendtAv = validIdentitetsnummer,
         virksomhetsnummer = validOrgNr,
 
         identitetsnummer = validIdentitetsnummer,
 
-        perioder = listOf(Arbeidsgiverperiode(
-            LocalDate.of(2020, 1, 5),
-            LocalDate.of(2020, 1, 10),
-            5,
-            månedsinntekt = 2590.8
-        )),
+        perioder = listOf(
+            Arbeidsgiverperiode(
+                LocalDate.of(2020, 1, 5),
+                LocalDate.of(2020, 1, 10),
+                5,
+                månedsinntekt = 2590.8
+            )
+        ),
         kontrollDager = null,
         antallDager = 4,
         sendtAvNavn = validSendtAvNavn,
@@ -191,9 +198,7 @@ aąbcćdeęfghijlłmnńoóprsśtuwź
         oppgavetype = "JFR",
         versjon = 1,
         aktivDato = LocalDate.now(),
-        prioritet= Prioritet.NORM,
-        status= Status.UNDER_BEHANDLING
+        prioritet = Prioritet.NORM,
+        status = Status.UNDER_BEHANDLING
     )
-
 }
-

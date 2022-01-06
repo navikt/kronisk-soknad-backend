@@ -51,7 +51,7 @@ fun Module.externalSystemClients(config: ApplicationConfig) {
 
     single { GrunnbeløpClient(get()) }
 
-    single (named("OPPGAVE")){
+    single(named("OPPGAVE")) {
         val clientConfig = OAuth2ClientPropertiesConfig(config, "oppgavescope")
         val tokenResolver = TokenResolver()
         val oauthHttpClient = DefaultOAuth2HttpClient(get())
@@ -64,9 +64,9 @@ fun Module.externalSystemClients(config: ApplicationConfig) {
 
         val azureAdConfig = clientConfig.clientConfig["azure_ad"] ?: error(accessTokenProviderError)
         OAuth2TokenProvider(accessTokenService, azureAdConfig)
-    }  bind AccessTokenProvider::class
+    } bind AccessTokenProvider::class
 
-    single (named("PROXY")){
+    single(named("PROXY")) {
         val clientConfig = OAuth2ClientPropertiesConfig(config, "proxyscope")
         val tokenResolver = TokenResolver()
         val oauthHttpClient = DefaultOAuth2HttpClient(get())
@@ -79,9 +79,9 @@ fun Module.externalSystemClients(config: ApplicationConfig) {
 
         val azureAdConfig = clientConfig.clientConfig["azure_ad"] ?: error(accessTokenProviderError)
         OAuth2TokenProvider(accessTokenService, azureAdConfig)
-    }  bind AccessTokenProvider::class
+    } bind AccessTokenProvider::class
 
-    single (named("DOKARKIV")){
+    single(named("DOKARKIV")) {
         val clientConfig = OAuth2ClientPropertiesConfig(config, "dokarkivscope")
         val tokenResolver = TokenResolver()
         val oauthHttpClient = DefaultOAuth2HttpClient(get())
@@ -94,7 +94,7 @@ fun Module.externalSystemClients(config: ApplicationConfig) {
 
         val azureAdConfig = clientConfig.clientConfig["azure_ad"] ?: error(accessTokenProviderError)
         OAuth2TokenProvider(accessTokenService, azureAdConfig)
-    }  bind AccessTokenProvider::class
+    } bind AccessTokenProvider::class
 
     single { AaregArbeidsforholdClientImpl(config.getString("aareg_url"), get(qualifier = named("PROXY")), get()) } bind AaregArbeidsforholdClient::class
     single { PdlClientImpl(config.getString("pdl_url"), get(qualifier = named("PROXY")), get(), get()) } bind PdlClient::class
@@ -116,11 +116,12 @@ fun Module.externalSystemClients(config: ApplicationConfig) {
     single { SoeknadmeldingKafkaProducer(gcpCommonKafkaProps(), config.getString("kafka_soeknad_topic_name"), get(), StringKafkaProducerFactory()) } bind SoeknadmeldingSender::class
     single { KravmeldingKafkaProducer(gcpCommonKafkaProps(), config.getString("kafka_krav_topic_name"), get(), StringKafkaProducerFactory()) } bind KravmeldingSender::class
 
-    single { BrukernotifikasjonBeskjedKafkaProducer(
-        onPremCommonKafkaProps(config),
-        config.getString("brukernotifikasjon.topic_name"),
-        BeskjedProducerFactory(config.getString("brukernotifikasjon.avro_schema_server_url"))
-    )
+    single {
+        BrukernotifikasjonBeskjedKafkaProducer(
+            onPremCommonKafkaProps(config),
+            config.getString("brukernotifikasjon.topic_name"),
+            BeskjedProducerFactory(config.getString("brukernotifikasjon.avro_schema_server_url"))
+        )
     } bind BrukernotifikasjonBeskjedSender::class
     single { BrregClientImpl(get(), config.getString("berreg_enhet_url")) } bind BrregClient::class
 }

@@ -8,7 +8,6 @@ import org.apache.pdfbox.pdmodel.PDPage
 import org.apache.pdfbox.pdmodel.PDPageContentStream
 import org.apache.pdfbox.pdmodel.font.PDType0Font
 import java.io.ByteArrayOutputStream
-import java.time.format.DateTimeFormatter
 
 class KroniskKravPDFGenerator {
     private val FONT_SIZE = 11f
@@ -43,7 +42,7 @@ class KroniskKravPDFGenerator {
             with(content) {
                 writeTextWrapped("FOM: ${it.fom}")
                 writeTextWrapped("TOM: ${it.tom}")
-                writeTextWrapped("Sykmeldingsgrad: ${gradering}%")
+                writeTextWrapped("Sykmeldingsgrad: $gradering%")
                 writeTextWrapped("Antall dager det kreves refusjon for: ${it.antallDagerMedRefusjon}")
                 writeTextWrapped("Beregnet månedsinntekt (NOK): ${it.månedsinntekt}")
                 writeTextWrapped("Dagsats (NOK): ${it.dagsats}")

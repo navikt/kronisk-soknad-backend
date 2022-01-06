@@ -97,7 +97,6 @@ class GravidSoeknadProcessorTest {
         coEvery { berregServiceMock.getVirksomhetsNavn(soeknad.virksomhetsnummer) } returns "Stark Industries"
     }
 
-
     @Test
     fun `skal ikke journalføre når det allerede foreligger en journalpostId, men skal forsøke sletting fra bucket `() {
         soeknad.journalpostId = "joark"

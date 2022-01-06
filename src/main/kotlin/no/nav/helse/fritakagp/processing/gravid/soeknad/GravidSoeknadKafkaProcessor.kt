@@ -5,9 +5,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.Bakgrunnsjobb
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbProsesserer
 import no.nav.helse.fritakagp.db.GravidSoeknadRepository
-import no.nav.helse.fritakagp.domain.GravidSoeknad
 import no.nav.helse.fritakagp.integration.kafka.SoeknadmeldingSender
-import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravKafkaProcessor
 import org.slf4j.LoggerFactory
 import java.util.*
 

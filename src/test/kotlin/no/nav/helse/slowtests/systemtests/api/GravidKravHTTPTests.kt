@@ -60,7 +60,7 @@ class GravidKravHTTPTests : SystemTestBase() {
                     "tilrettelegge": true,
                     "tiltak": ["IKKE GYLDIG"]
                 }
-            """.trimIndent()
+                """.trimIndent()
             }
         }
 
@@ -81,7 +81,6 @@ class GravidKravHTTPTests : SystemTestBase() {
         val krav = response.receive<GravidKrav>()
         Assertions.assertThat(response.status).isEqualTo(HttpStatusCode.Created)
         Assertions.assertThat(krav.identitetsnummer).isEqualTo(GravidTestData.gravidKravRequestValid.identitetsnummer)
-
     }
 
     @Test
@@ -158,7 +157,6 @@ class GravidKravHTTPTests : SystemTestBase() {
         Assertions.assertThat(responseExcepion.response.status).isEqualTo(HttpStatusCode.UnprocessableEntity)
         val res = responseExcepion.response.call.receive<ValidationProblem>()
         Assertions.assertThat(res.violations.size).isEqualTo(5)
-
     }
 
     @Test
@@ -201,10 +199,8 @@ class GravidKravHTTPTests : SystemTestBase() {
         )
         val res = responseExcepion.response.call.receive<ValidationProblem>()
         Assertions.assertThat(res.violations.size).isEqualTo(5)
-        res.violations.forEach{
+        res.violations.forEach {
             Assertions.assertThat(it.propertyPath).isIn(possiblePropertyPaths)
-
         }
     }
-
 }

@@ -14,7 +14,7 @@ interface GravidKravKvitteringSender {
     fun send(kvittering: GravidKrav)
 }
 
-class GravidKravKvitteringSenderDummy: GravidKravKvitteringSender {
+class GravidKravKvitteringSenderDummy : GravidKravKvitteringSender {
     override fun send(kvittering: GravidKrav) {
         println("Sender kvittering for krav gravid: ${kvittering.id}")
     }
@@ -24,7 +24,8 @@ class GravidKravAltinnKvitteringSender(
     private val altinnTjenesteKode: String,
     private val iCorrespondenceAgencyExternalBasic: ICorrespondenceAgencyExternalBasic,
     private val username: String,
-    private val password: String) : GravidKravKvitteringSender {
+    private val password: String
+) : GravidKravKvitteringSender {
 
     companion object {
         const val SYSTEM_USER_CODE = "NAV_HELSEARBEIDSGIVER"
@@ -33,9 +34,9 @@ class GravidKravAltinnKvitteringSender(
     override fun send(kvittering: GravidKrav) {
         try {
             val receiptExternal = iCorrespondenceAgencyExternalBasic.insertCorrespondenceBasicV2(
-                    username, password,
-                    SYSTEM_USER_CODE, kvittering.id.toString(),
-                    mapKvitteringTilInsertCorrespondence(kvittering)
+                username, password,
+                SYSTEM_USER_CODE, kvittering.id.toString(),
+                mapKvitteringTilInsertCorrespondence(kvittering)
             )
             if (receiptExternal.receiptStatusCode != ReceiptStatusEnum.OK) {
                 throw RuntimeException("Fikk uventet statuskode fra Altinn: ${receiptExternal.receiptStatusCode} ${receiptExternal.receiptText}")
@@ -74,14 +75,13 @@ class GravidKravAltinnKvitteringSender(
                </div>
            </body>
         </html>
-    """.trimIndent()
+        """.trimIndent()
 
         val meldingsInnhold = ExternalContentV2()
             .withLanguageCode("1044")
             .withMessageTitle(tittel)
             .withMessageBody(innhold)
             .withMessageSummary("Kvittering for krav om refusjon av arbeidsgiverperioden ifbm graviditetsrelatert fravær")
-
 
         return InsertCorrespondenceV2()
             .withAllowForwarding(false)
@@ -91,5 +91,4 @@ class GravidKravAltinnKvitteringSender(
             .withServiceEdition("1")
             .withContent(meldingsInnhold)
     }
-
 }

@@ -16,7 +16,6 @@ class GravidKravPDFGenerator {
     private val MARGIN_Y = 40f
     private val FONT_NAME = "fonts/ARIALUNI.TTF"
 
-
     fun lagPDF(krav: GravidKrav): ByteArray {
         val doc = PDDocument()
         val page = PDPage()
@@ -42,7 +41,7 @@ class GravidKravPDFGenerator {
             with(content) {
                 writeTextWrapped("FOM: ${it.fom}")
                 writeTextWrapped("TOM: ${it.tom}")
-                writeTextWrapped("Sykmeldingsgrad: ${gradering}%")
+                writeTextWrapped("Sykmeldingsgrad: $gradering%")
                 writeTextWrapped("Antall dager det kreves refusjon for: ${it.antallDagerMedRefusjon}")
                 writeTextWrapped("Beregnet månedsinntekt (NOK): ${it.månedsinntekt}")
                 writeTextWrapped("Dagsats (NOK): ${it.dagsats}")

@@ -10,7 +10,6 @@ import org.apache.pdfbox.pdmodel.font.PDType0Font
 import java.io.ByteArrayOutputStream
 import java.time.LocalDate
 import java.time.Month
-import java.time.format.DateTimeFormatter
 
 class KroniskSoeknadPDFGenerator {
     private val FONT_SIZE = 11f
@@ -18,7 +17,6 @@ class KroniskSoeknadPDFGenerator {
     private val MARGIN_X = 40f
     private val MARGIN_Y = 40f
     private val FONT_NAME = "fonts/ARIALUNI.TTF"
-
 
     fun lagPDF(soeknad: KroniskSoeknad): ByteArray {
         val doc = PDDocument()
@@ -52,7 +50,7 @@ class KroniskSoeknadPDFGenerator {
 
         content.writeTextWrapped("Fraværsdager per måned siste 2 år: ", 2)
         content.writeTextWrapped("Antall fraværsperioder siste 2 år: ${soeknad.antallPerioder}")
-        val yearlyFravaer = soeknad.fravaer.sortedByDescending { it.yearMonth }.groupBy { it.yearMonth.substring(0,4) }
+        val yearlyFravaer = soeknad.fravaer.sortedByDescending { it.yearMonth }.groupBy { it.yearMonth.substring(0, 4) }
 
         yearlyFravaer.forEach { yearGroup ->
             content.writeTextWrapped(yearGroup.key)
@@ -73,7 +71,7 @@ class KroniskSoeknadPDFGenerator {
     }
 
     private fun LocalDate.toName(): String {
-        return when(this.month) {
+        return when (this.month) {
             Month.JANUARY -> "Jan"
             Month.FEBRUARY -> "Feb"
             Month.MARCH -> "Mar"

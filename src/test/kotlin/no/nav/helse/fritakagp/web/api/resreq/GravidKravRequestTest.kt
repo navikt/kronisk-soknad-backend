@@ -4,18 +4,16 @@ import io.mockk.every
 import io.mockk.mockk
 import no.nav.helse.AaregTestData
 import no.nav.helse.GravidTestData
-import no.nav.helse.KroniskTestData
-import no.nav.helse.fritakagp.domain.Arbeidsgiverperiode
 import no.nav.helse.fritakagp.domain.BeløpBeregning
 import no.nav.helse.fritakagp.integration.GrunnbeløpClient
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 
-class GravidKravRequestTest{
-  val navn = "Personliga Person"
-	val sendtAv = "123"
-	val sendtAvNavn = "Ola M Avsender"
+class GravidKravRequestTest {
+    val navn = "Personliga Person"
+    val sendtAv = "123"
+    val sendtAvNavn = "Ola M Avsender"
 
     @Test
     internal fun `Gyldig FNR er påkrevd`() {
@@ -57,7 +55,6 @@ class GravidKravRequestTest{
     internal fun `mapping til domenemodell tar med harVedleggflagg`() {
         assertThat(GravidTestData.gravidKravRequestMedFil.toDomain(sendtAv, sendtAvNavn, navn).harVedlegg).isTrue
         assertThat(GravidTestData.gravidKravRequestValid.toDomain(sendtAv, sendtAvNavn, navn).harVedlegg).isFalse
-
     }
 
     @Test
@@ -73,9 +70,13 @@ class GravidKravRequestTest{
     internal fun `Til dato kan ikke komme før fra dato`() {
         validationShouldFailFor("perioder[0].fom") {
             GravidTestData.gravidKravRequestValid.copy(
-                perioder = listOf(GravidTestData.gravidKravRequestValid.perioder.first().copy(fom = LocalDate.of(2020, 1, 10),
-                    tom = LocalDate.of(2020, 1, 5),
-                    antallDagerMedRefusjon = -5)) //slik at validationShouldFailFor() kaster ikke to unntak
+                perioder = listOf(
+                    GravidTestData.gravidKravRequestValid.perioder.first().copy(
+                        fom = LocalDate.of(2020, 1, 10),
+                        tom = LocalDate.of(2020, 1, 5),
+                        antallDagerMedRefusjon = -5
+                    )
+                ) // slik at validationShouldFailFor() kaster ikke to unntak
             ).validate(AaregTestData.evigArbeidsForholdListe)
         }
     }
@@ -85,7 +86,7 @@ class GravidKravRequestTest{
         val grunnbeløpClient = mockk<GrunnbeløpClient>(relaxed = true)
         every { grunnbeløpClient.hentGrunnbeløp().grunnbeløp } returns 106399
 
-        val belopBeregning =  BeløpBeregning(grunnbeløpClient)
+        val belopBeregning = BeløpBeregning(grunnbeløpClient)
         val krav = GravidTestData.gravidKravRequestValid.toDomain(sendtAv, sendtAvNavn, navn)
         belopBeregning.beregnBeløpGravid(krav)
 
@@ -98,7 +99,7 @@ class GravidKravRequestTest{
         val grunnbeløpClient = mockk<GrunnbeløpClient>(relaxed = true)
         every { grunnbeløpClient.hentGrunnbeløp().grunnbeløp } returns 106399
 
-        val belopBeregning =  BeløpBeregning(grunnbeløpClient)
+        val belopBeregning = BeløpBeregning(grunnbeløpClient)
         val krav = GravidTestData.gravidKravRequestWithWrongDecimal.toDomain(sendtAv, sendtAvNavn, navn)
         belopBeregning.beregnBeløpGravid(krav)
 

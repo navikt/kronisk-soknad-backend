@@ -10,7 +10,6 @@ import no.nav.helse.fritakagp.integration.altinn.ManglerAltinnRettigheterExcepti
 import no.nav.security.token.support.core.jwt.JwtToken
 import java.time.Instant
 import java.util.*
-import javax.ws.rs.ForbiddenException
 
 fun PipelineContext<Unit, ApplicationCall>.authorize(authorizer: AltinnAuthorizer, arbeidsgiverId: String) {
     val identitetsnummer = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)

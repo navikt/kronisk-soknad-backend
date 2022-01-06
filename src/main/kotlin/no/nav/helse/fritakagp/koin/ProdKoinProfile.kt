@@ -42,7 +42,6 @@ fun prodConfig(config: ApplicationConfig) = module {
     single { PostgresGravidKravRepository(get(), get()) } bind GravidKravRepository::class
     single { PostgresKroniskKravRepository(get(), get()) } bind KroniskKravRepository::class
 
-
     single { PostgresBakgrunnsjobbRepository(get()) } bind BakgrunnsjobbRepository::class
     single { BakgrunnsjobbService(get(), bakgrunnsvarsler = MetrikkVarsler()) }
 
@@ -96,7 +95,7 @@ fun prodConfig(config: ApplicationConfig) = module {
     } bind KroniskKravKvitteringSender::class
     single { KroniskKravKvitteringProcessor(get(), get(), get()) }
 
-    single { GravidSoeknadKafkaProcessor(get(), get(), get() ) }
+    single { GravidSoeknadKafkaProcessor(get(), get(), get()) }
     single { GravidKravKafkaProcessor(get(), get(), get()) }
     single { KroniskSoeknadKafkaProcessor(get(), get(), get()) }
     single { KroniskKravKafkaProcessor(get(), get(), get()) }
@@ -108,6 +107,5 @@ fun prodConfig(config: ApplicationConfig) = module {
     single { BeløpBeregning(get()) }
 
     single { DatapakkePublisherJob(get(), get(), config.getString("datapakke.api_url"), config.getString("datapakke.id"), get()) }
-    single { StatsRepoImpl(get())} bind IStatsRepo::class
-
+    single { StatsRepoImpl(get()) } bind IStatsRepo::class
 }

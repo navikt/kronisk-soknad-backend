@@ -12,7 +12,7 @@ import java.util.*
 class GravidKravKafkaProcessor(
     private val gravidKravRepo: GravidKravRepository,
     private val kafkaProducer: KravmeldingSender,
-    private val om : ObjectMapper
+    private val om: ObjectMapper
 ) : BakgrunnsjobbProsesserer {
     val log = LoggerFactory.getLogger(GravidKravKafkaProcessor::class.java)
     companion object { val JOB_TYPE = "gravid-krav-send-kafka" }

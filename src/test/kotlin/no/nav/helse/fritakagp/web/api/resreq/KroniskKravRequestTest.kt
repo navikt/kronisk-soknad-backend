@@ -1,16 +1,15 @@
 package no.nav.helse.fritakagp.web.api.resreq
 
 import no.nav.helse.AaregTestData
-import no.nav.helse.GravidTestData
 import no.nav.helse.KroniskTestData
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 
-class KroniskKravRequestTest{
-  val navn = "Personliga Person"
-	val sendtAv = "123"
-	val sendtAvNavn = "Ola M Avsender"
+class KroniskKravRequestTest {
+    val navn = "Personliga Person"
+    val sendtAv = "123"
+    val sendtAvNavn = "Ola M Avsender"
 
     @Test
     internal fun `Gyldig FNR er påkrevd`() {
@@ -52,9 +51,13 @@ class KroniskKravRequestTest{
     internal fun `Til dato kan ikke komme før fra dato`() {
         validationShouldFailFor("perioder[0].fom") {
             KroniskTestData.kroniskKravRequestValid.copy(
-                perioder = listOf(KroniskTestData.kroniskKravRequestValid.perioder.first().copy(fom = LocalDate.of(2020, 1, 10),
-                    tom = LocalDate.of(2020, 1, 5),
-                antallDagerMedRefusjon = -5)) //slik at validationShouldFailFor() kaster ikke to unntak
+                perioder = listOf(
+                    KroniskTestData.kroniskKravRequestValid.perioder.first().copy(
+                        fom = LocalDate.of(2020, 1, 10),
+                        tom = LocalDate.of(2020, 1, 5),
+                        antallDagerMedRefusjon = -5
+                    )
+                ) // slik at validationShouldFailFor() kaster ikke to unntak
             ).validate(AaregTestData.evigArbeidsForholdListe)
         }
     }
@@ -73,5 +76,4 @@ class KroniskKravRequestTest{
             ).validate(AaregTestData.evigArbeidsForholdListe)
         }
     }
-
 }

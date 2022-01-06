@@ -66,7 +66,7 @@ class StatsRepoImpl(
         ds.connection.use {
             val res = it.prepareStatement(query).executeQuery()
             val returnValue = ArrayList<WeeklyStats>()
-            while (res.next()){
+            while (res.next()) {
                 returnValue.add(
                     WeeklyStats(
                         res.getInt("uke"),

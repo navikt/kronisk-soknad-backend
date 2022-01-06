@@ -12,7 +12,6 @@ import io.ktor.routing.*
 import no.nav.helse.arbeidsgiver.system.AppEnv
 import no.nav.helse.arbeidsgiver.system.getEnvironment
 import no.nav.helse.arbeidsgiver.system.getString
-import no.nav.helse.fritakagp.web.api.*
 import no.nav.security.token.support.ktor.tokenValidationSupport
 import org.koin.ktor.ext.get
 
@@ -47,8 +46,7 @@ fun Application.fritakModule(config: ApplicationConfig = environment.config) {
 }
 
 private fun Application.configureCORSAccess(config: ApplicationConfig) {
-    install(CORS)
-    {
+    install(CORS) {
         method(HttpMethod.Options)
         method(HttpMethod.Post)
         method(HttpMethod.Get)

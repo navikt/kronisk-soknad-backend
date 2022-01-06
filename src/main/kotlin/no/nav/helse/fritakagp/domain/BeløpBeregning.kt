@@ -9,9 +9,9 @@ class BeløpBeregning(
 ) {
     private val seksG = grunnbeløpClient.hentGrunnbeløp().grunnbeløp * 6.0
 
-    fun beregnBeløpKronisk(krav : KroniskKrav)  = beregnPeriodeData(krav.perioder, krav.antallDager)
+    fun beregnBeløpKronisk(krav: KroniskKrav) = beregnPeriodeData(krav.perioder, krav.antallDager)
 
-    fun beregnBeløpGravid(krav : GravidKrav) = beregnPeriodeData(krav.perioder, krav.antallDager)
+    fun beregnBeløpGravid(krav: GravidKrav) = beregnPeriodeData(krav.perioder, krav.antallDager)
 
     private fun beregnPeriodeData(perioder: List<Arbeidsgiverperiode>, antallDager: Int) {
         perioder.forEach {
@@ -24,5 +24,5 @@ class BeløpBeregning(
         }
     }
 
-    private fun round2DigitDecimal(value : Double) : Double = BigDecimal(value).setScale(2, RoundingMode.HALF_UP).toDouble()
+    private fun round2DigitDecimal(value: Double): Double = BigDecimal(value).setScale(2, RoundingMode.HALF_UP).toDouble()
 }

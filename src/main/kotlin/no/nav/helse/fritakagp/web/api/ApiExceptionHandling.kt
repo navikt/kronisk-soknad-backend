@@ -16,7 +16,6 @@ import org.valiktor.ConstraintViolationException
 import java.lang.reflect.InvocationTargetException
 import java.net.URI
 import java.util.*
-import javax.ws.rs.ForbiddenException
 
 fun Application.configureExceptionHandling() {
     install(StatusPages) {
@@ -99,7 +98,7 @@ fun Application.configureExceptionHandling() {
                     )
                 )
             )
-            logger.warn("Feil med validering av ${cause.parameter.name ?: "Ukjent"} for ${userAgent}: ${cause.message}")
+            logger.warn("Feil med validering av ${cause.parameter.name ?: "Ukjent"} for $userAgent: ${cause.message}")
         }
 
         exception<JsonMappingException> { cause ->
@@ -124,5 +123,4 @@ fun Application.configureExceptionHandling() {
             handleValidationError(call, cause)
         }
     }
-
 }

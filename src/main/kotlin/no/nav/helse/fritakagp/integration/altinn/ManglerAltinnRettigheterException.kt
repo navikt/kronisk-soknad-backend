@@ -1,3 +1,3 @@
 package no.nav.helse.fritakagp.integration.altinn
 
-class ManglerAltinnRettigheterException: Exception()
+class ManglerAltinnRettigheterException : Exception()

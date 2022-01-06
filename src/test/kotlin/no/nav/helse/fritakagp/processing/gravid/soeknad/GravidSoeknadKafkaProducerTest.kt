@@ -20,21 +20,21 @@ import java.util.concurrent.ExecutionException
 import java.util.concurrent.TimeUnit
 
 class GravidSoeknadKafkaProducerTest {
-    val omMock = ObjectMapper().registerModules(KotlinModule(),JavaTimeModule())
+    val omMock = ObjectMapper().registerModules(KotlinModule(), JavaTimeModule())
     val producerProviderMock = mockk<ProducerFactory<String, String>>()
     val unauthorizedProducerMock = mockk<KafkaProducer<String, String>>(relaxed = true)
     val authedProducerMock = mockk<KafkaProducer<String, String>>(relaxed = true)
 
     @BeforeEach
     fun setUp() {
-        every { authedProducerMock.send(any()).get(10, TimeUnit.SECONDS) } returns RecordMetadata(null,0,0,0,0,0,0)
+        every { authedProducerMock.send(any()).get(10, TimeUnit.SECONDS) } returns RecordMetadata(null, 0, 0, 0, 0, 0, 0)
         every { unauthorizedProducerMock.send(any()) } throws ExecutionException(AuthenticationException("feil bruker/passord"))
     }
 
     @Test
-    internal fun  `Failure to rotate password throws execption after trying again once`() {
+    internal fun `Failure to rotate password throws execption after trying again once`() {
         every { producerProviderMock.createProducer(any()) } returns unauthorizedProducerMock
-        val soeknadmelding = SoeknadmeldingKafkaProducer(localCommonKafkaProps() , "test", omMock, producerProviderMock)
+        val soeknadmelding = SoeknadmeldingKafkaProducer(localCommonKafkaProps(), "test", omMock, producerProviderMock)
 
         assertThrows<ExecutionException> {
             soeknadmelding.sendMessage(GravidTestData.soeknadGravid)
@@ -46,7 +46,7 @@ class GravidSoeknadKafkaProducerTest {
     }
 
     @Test
-    internal fun  `Success to rotate password returns record with no error`() {
+    internal fun `Success to rotate password returns record with no error`() {
         every { producerProviderMock.createProducer(any()) } returns unauthorizedProducerMock
         val soeknadmelding = SoeknadmeldingKafkaProducer(localCommonKafkaProps(), "test", omMock, producerProviderMock)
         every { producerProviderMock.createProducer(any()) } returns authedProducerMock

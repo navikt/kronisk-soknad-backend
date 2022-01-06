@@ -57,18 +57,20 @@ class KroniskKravProcessorTest {
         jobb = testJob(objectMapper.writeValueAsString(KroniskKravProcessor.JobbData(krav.id)))
         every { repositoryMock.getById(krav.id) } returns krav
         every { bucketStorageMock.getDocAsString(any()) } returns null
-        every { pdlClientMock.personNavn(krav.sendtAv)} returns PdlHentPersonNavn.PdlPersonNavneliste(listOf(
-            PdlHentPersonNavn.PdlPersonNavneliste.PdlPersonNavn("Ola", "M", "Avsender", PdlPersonNavnMetadata("freg"))))
-        every { pdlClientMock.fullPerson(krav.identitetsnummer)} returns PdlHentFullPerson(
+        every { pdlClientMock.personNavn(krav.sendtAv) } returns PdlHentPersonNavn.PdlPersonNavneliste(
+            listOf(
+                PdlHentPersonNavn.PdlPersonNavneliste.PdlPersonNavn("Ola", "M", "Avsender", PdlPersonNavnMetadata("freg"))
+            )
+        )
+        every { pdlClientMock.fullPerson(krav.identitetsnummer) } returns PdlHentFullPerson(
             PdlFullPersonliste(emptyList(), emptyList(), emptyList(), emptyList(), emptyList(), emptyList(), emptyList()),
             PdlIdentResponse(listOf(PdlIdent("aktør-id", PdlIdent.PdlIdentGruppe.AKTORID))),
             PdlHentFullPerson.PdlGeografiskTilknytning(UTLAND, null, null, "SWE")
         )
         every { joarkMock.journalførDokument(any(), any(), any()) } returns JournalpostResponse(arkivReferanse, true, "M", null, emptyList())
-        coEvery { oppgaveMock.opprettOppgave(any(), any())} returns KroniskTestData.kroniskOpprettOppgaveResponse.copy(id = oppgaveId)
+        coEvery { oppgaveMock.opprettOppgave(any(), any()) } returns KroniskTestData.kroniskOpprettOppgaveResponse.copy(id = oppgaveId)
         coEvery { berregServiceMock.getVirksomhetsNavn(krav.virksomhetsnummer) } returns "Stark Industries"
     }
-
 
     @Test
     fun `skal ikke journalføre når det allerede foreligger en journalpostId, men skal forsøke sletting fra bucket `() {
@@ -145,10 +147,10 @@ class KroniskKravProcessorTest {
             bakgrunnsjobbRepomock.save(capture(opprettetJobber))
         }
 
-        val kafkajobb = opprettetJobber.find {it.type == KroniskKravKafkaProcessor.JOB_TYPE }
+        val kafkajobb = opprettetJobber.find { it.type == KroniskKravKafkaProcessor.JOB_TYPE }
         assertThat(kafkajobb?.data).contains(krav.id.toString())
 
-        val beskjedJobb = opprettetJobber.find {it.type == BrukernotifikasjonProcessor.JOB_TYPE }
+        val beskjedJobb = opprettetJobber.find { it.type == BrukernotifikasjonProcessor.JOB_TYPE }
         assertThat(beskjedJobb?.data).contains(BrukernotifikasjonProcessor.Jobbdata.SkjemaType.KroniskKrav.name)
         assertThat(beskjedJobb?.data).contains(krav.id.toString())
     }

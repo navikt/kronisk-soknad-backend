@@ -41,13 +41,14 @@ internal class BrukernotifikasjonProcessorTest {
         every { kkRepo.getById(any()) } returns KroniskTestData.kroniskKrav
         every { gkRepo.getById(any()) } returns GravidTestData.gravidKrav
         every { gsRepo.getById(any()) } returns GravidTestData.soeknadGravid
-
     }
 
     @Test
     fun `skal sende kafkamelding med brukernotifikasjon for Kronisk Krav`() {
-        jobb = BakgrunnsJobbUtils.testJob(objectMapper.writeValueAsString(
-            BrukernotifikasjonProcessor.Jobbdata(UUID.randomUUID(), SkjemaType.KroniskKrav))
+        jobb = BakgrunnsJobbUtils.testJob(
+            objectMapper.writeValueAsString(
+                BrukernotifikasjonProcessor.Jobbdata(UUID.randomUUID(), SkjemaType.KroniskKrav)
+            )
         )
         prosessor.prosesser(jobb)
 
@@ -57,8 +58,10 @@ internal class BrukernotifikasjonProcessorTest {
 
     @Test
     fun `skal sende kafkamelding med brukernotifikasjon for Kronisk Søknad`() {
-        jobb = BakgrunnsJobbUtils.testJob(objectMapper.writeValueAsString(
-            BrukernotifikasjonProcessor.Jobbdata(UUID.randomUUID(), SkjemaType.KroniskSøknad))
+        jobb = BakgrunnsJobbUtils.testJob(
+            objectMapper.writeValueAsString(
+                BrukernotifikasjonProcessor.Jobbdata(UUID.randomUUID(), SkjemaType.KroniskSøknad)
+            )
         )
         prosessor.prosesser(jobb)
 
@@ -68,8 +71,10 @@ internal class BrukernotifikasjonProcessorTest {
 
     @Test
     fun `skal sende kafkamelding med brukernotifikasjon for Gravid Krav`() {
-        jobb = BakgrunnsJobbUtils.testJob(objectMapper.writeValueAsString(
-            BrukernotifikasjonProcessor.Jobbdata(UUID.randomUUID(), SkjemaType.GravidKrav))
+        jobb = BakgrunnsJobbUtils.testJob(
+            objectMapper.writeValueAsString(
+                BrukernotifikasjonProcessor.Jobbdata(UUID.randomUUID(), SkjemaType.GravidKrav)
+            )
         )
         prosessor.prosesser(jobb)
 
@@ -79,8 +84,10 @@ internal class BrukernotifikasjonProcessorTest {
 
     @Test
     fun `skal sende kafkamelding med brukernotifikasjon for Gravid Søknad`() {
-        jobb = BakgrunnsJobbUtils.testJob(objectMapper.writeValueAsString(
-            BrukernotifikasjonProcessor.Jobbdata(UUID.randomUUID(), SkjemaType.GravidSøknad))
+        jobb = BakgrunnsJobbUtils.testJob(
+            objectMapper.writeValueAsString(
+                BrukernotifikasjonProcessor.Jobbdata(UUID.randomUUID(), SkjemaType.GravidSøknad)
+            )
         )
         prosessor.prosesser(jobb)
 

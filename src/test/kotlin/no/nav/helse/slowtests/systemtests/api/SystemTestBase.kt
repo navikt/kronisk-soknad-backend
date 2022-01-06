@@ -1,6 +1,5 @@
 package no.nav.helse.slowtests.systemtests.api
 
-import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.MapperFeature
 import com.fasterxml.jackson.databind.SerializationFeature
@@ -61,7 +60,6 @@ open class SystemTestBase : KoinTest {
 
     @AfterAll
     fun after() {
-
     }
 
     /**

@@ -6,7 +6,6 @@ import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbProsesserer
 import no.nav.helse.fritakagp.GravidKravMetrics
 import no.nav.helse.fritakagp.db.GravidKravRepository
 import java.lang.IllegalArgumentException
-import java.time.LocalDateTime
 import java.util.*
 
 class GravidKravKvitteringProcessor(

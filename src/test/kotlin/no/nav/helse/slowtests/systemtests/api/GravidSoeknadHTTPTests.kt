@@ -58,7 +58,7 @@ class GravidSoeknadHTTPTests : SystemTestBase() {
                     "tilrettelegge": true,
                     "tiltak": ["IKKE GYLDIG"]
                 }
-            """.trimIndent()
+                """.trimIndent()
             }
         }
 

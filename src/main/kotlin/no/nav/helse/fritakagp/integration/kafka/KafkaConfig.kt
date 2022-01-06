@@ -30,7 +30,7 @@ fun gcpCommonKafkaProps() = mutableMapOf<String, Any>(
     ProducerConfig.ACKS_CONFIG to "all",
 
     CommonClientConfigs.SECURITY_PROTOCOL_CONFIG to SecurityProtocol.SSL.name,
-    SslConfigs.SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_CONFIG to "", //Disable server host name verification
+    SslConfigs.SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_CONFIG to "", // Disable server host name verification
     SslConfigs.SSL_TRUSTSTORE_TYPE_CONFIG to JAVA_KEYSTORE,
     SslConfigs.SSL_KEYSTORE_TYPE_CONFIG to PKCS12,
     SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG to envOrThrow("KAFKA_TRUSTSTORE_PATH"),
@@ -48,9 +48,9 @@ fun localCommonKafkaProps() = mutableMapOf<String, Any>(
 )
 
 fun consumerFakeConfig() = mutableMapOf<String, Any>(
-        ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG to LOCALHOST,
-        ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG to "30000",
-        ConsumerConfig.GROUP_ID_CONFIG to GROUP_ID_CONFIG,
-        ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG to false,
-        ConsumerConfig.AUTO_OFFSET_RESET_CONFIG to "latest"
-    )
+    ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG to LOCALHOST,
+    ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG to "30000",
+    ConsumerConfig.GROUP_ID_CONFIG to GROUP_ID_CONFIG,
+    ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG to false,
+    ConsumerConfig.AUTO_OFFSET_RESET_CONFIG to "latest"
+)

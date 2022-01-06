@@ -13,7 +13,6 @@ import org.junit.jupiter.api.assertThrows
 class ArbeidsgivereHTTPTests : SystemTestBase() {
     private val arbeidsgivereUrl = "/api/v1/arbeidsgivere"
 
-
     @Test
     fun `Skal returnere 401 når man ikke er logget inn`() = suspendableTest {
         val exception = assertThrows<ClientRequestException>

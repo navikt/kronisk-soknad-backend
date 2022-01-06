@@ -1,7 +1,6 @@
 package no.nav.helse.fritakagp.web.api.resreq
 
 import no.nav.helse.GravidTestData
-import no.nav.helse.KroniskTestData
 import no.nav.helse.fritakagp.domain.Omplassering
 import no.nav.helse.fritakagp.domain.OmplasseringAarsak
 import no.nav.helse.fritakagp.domain.Tiltak
@@ -9,9 +8,9 @@ import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 
 class GravidSoknadRequestTest {
-  val navn = "Personliga Person"
-	val sendtAv = "123"
-	val sendtAvNavn = "Ola M Avsender"
+    val navn = "Personliga Person"
+    val sendtAv = "123"
+    val sendtAvNavn = "Ola M Avsender"
 
     @Test
     internal fun `Gyldig FNR er påkrevd`() {

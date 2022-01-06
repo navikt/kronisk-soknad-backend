@@ -16,14 +16,13 @@ import no.nav.helse.fritakagp.KroniskSoeknadMetrics
 import no.nav.helse.fritakagp.db.KroniskSoeknadRepository
 import no.nav.helse.fritakagp.domain.KroniskSoeknad
 import no.nav.helse.fritakagp.domain.generereKroniskSoeknadBeskrivelse
+import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor.Jobbdata.SkjemaType
-import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import org.slf4j.LoggerFactory
 import java.time.LocalDate
 import java.util.*
-
 
 class KroniskSoeknadProcessor(
     private val kroniskSoeknadRepo: KroniskSoeknadRepository,
@@ -85,7 +84,6 @@ class KroniskSoeknadProcessor(
                     type = BrukernotifikasjonProcessor.JOB_TYPE
                 )
             )
-
         } finally {
             updateAndLogOnFailure(soeknad)
         }
@@ -133,7 +131,8 @@ class KroniskSoeknadProcessor(
                 ),
                 dokumenter = createDocuments(soeknad, journalfoeringsTittel),
                 datoMottatt = soeknad.opprettet.toLocalDate()
-            ), true, UUID.randomUUID().toString()
+            ),
+            true, UUID.randomUUID().toString()
 
         )
 

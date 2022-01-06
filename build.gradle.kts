@@ -118,6 +118,16 @@ java {
 }
 
 repositories {
+    mavenCentral()
+    google()
+    maven(url = "https://packages.confluent.io/maven/")
+    maven {
+        credentials {
+            username = "x-access-token"
+            password = githubPassword
+        }
+        setUrl("https://maven.pkg.github.com/navikt/inntektsmelding-kontrakt")
+    }
     maven {
         credentials {
             username = "x-access-token"
@@ -125,26 +135,8 @@ repositories {
         }
         setUrl("https://maven.pkg.github.com/navikt/helse-arbeidsgiver-felles-backend")
     }
-
-    jcenter {
-        content {
-            excludeGroup("no.nav.helsearbeidsgiver")
-        }
-    }
-    mavenCentral {
-        content {
-            excludeGroup("no.nav.helsearbeidsgiver")
-        }
-    }
-    maven("https://kotlin.bintray.com/ktor")
-    maven(url = "https://packages.confluent.io/maven/")
-
-    maven(url = "https://jitpack.io") {
-        content {
-            excludeGroup("no.nav.helsearbeidsgiver")
-        }
-    }
 }
+
 tasks.named<Jar>("jar") {
     archiveBaseName.set("app")
     manifest {

@@ -21,11 +21,7 @@ val jaxwsToolsVersion = "2.3.3"
 val kafkaClient = "2.7.0"
 val confluentVersion = "6.0.1"
 val brukernotifikasjonSchemasVersion = "1.2021.01.18-11.12-b9c8c40b98d1"
-
-
 val githubPassword: String by project
-
-
 
 plugins {
     application
@@ -35,10 +31,6 @@ plugins {
     jacoco
 }
 
-application {
-    mainClassName = "no.nav.helse.fritakagp.web.AppKt"
-}
-
 buildscript {
     dependencies {
         classpath("org.junit.platform:junit-platform-gradle-plugin:1.2.0")
@@ -46,64 +38,6 @@ buildscript {
 }
 
 dependencies {
-    // SNYK-fikser - Disse kan fjernes etterhver som våre avhengigheter oppdaterer sine versjoner
-    // Forsøk å fjerne en og en og kjør snyk test --configuration-matching=runtimeClasspath
-    constraints {
-        implementation("commons-collections:commons-collections") {
-            version {
-                strictly("3.2.2")
-            }
-            because("snyk control")
-        }
-        implementation("org.apache.httpcomponents:httpclient") {
-            version {
-                strictly("4.5.13")
-            }
-            because("snyk control")
-        }
-        implementation("org.yaml:snakeyaml") {
-            version {
-                strictly("1.27")
-            }
-            because("snyk control")
-        }
-        implementation("org.apache.commons:commons-compress") {
-            version {
-                strictly("1.21")
-            }
-            because("snyk control")
-        }
-        implementation("junit:junit") {
-            version {
-                strictly("4.13.1")
-            }
-            because("overstyrer transiente 4.12 gjennom koin-test")
-        }
-        implementation("org.bouncycastle:bcprov-jdk15on") {
-            version {
-                strictly("1.67")
-            }
-            because("snyk control")
-        }
-
-        implementation("org.glassfish.jersey.core:jersey-common") {
-            version {
-                strictly("2.34")
-            }
-            because("snyk control")
-        }
-        implementation("io.netty:netty-codec-http2") {
-            version {
-                strictly("4.1.68.Final")
-            }
-            because("snyk control")
-        }
-    }
-    implementation("commons-codec:commons-codec:1.13") // overstyrer transiente 1.10
-    implementation("org.eclipse.jetty:jetty-server:9.4.41.v20210516")
-    implementation("com.google.guava:guava:30.0-jre") //[Medium Severity][https://snyk.io/vuln/SNYK-JAVA-COMGOOGLEGUAVA-1015415] overstyrer versjon 29.0
-    // -- end snyk fixes
-
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
     implementation("io.ktor:ktor-jackson:$ktorVersion")
     implementation("io.ktor:ktor-client-core:$ktorVersion")
@@ -113,26 +47,19 @@ dependencies {
     implementation("io.ktor:ktor-client-json:$ktorVersion")
     implementation("io.ktor:ktor-client-jackson:$ktorVersion")
     implementation("io.ktor:ktor-locations:$ktorVersion")
-
     implementation("org.valiktor:valiktor-core:$valiktorVersion")
     implementation("org.valiktor:valiktor-javatime:$valiktorVersion")
-
     implementation("com.sun.activation:javax.activation:1.2.0")
-
     implementation("org.koin:koin-core:$koinVersion")
     implementation("org.koin:koin-ktor:$koinVersion")
     implementation("no.nav.security:token-client-core:$tokenSupportVersion")
     implementation("no.nav.security:token-validation-ktor:$tokenSupportVersion")
-
     implementation("com.github.navikt:brukernotifikasjon-schemas:$brukernotifikasjonSchemasVersion")
-
     implementation("javax.ws.rs:javax.ws.rs-api:2.1.1")
     implementation("no.nav.security:mock-oauth2-server:$mockOAuth2ServerVersion")
     implementation("no.nav.helsearbeidsgiver:helse-arbeidsgiver-felles-backend:2021.06.14-14-37-29773")
     implementation("no.nav.common:log:2.2020.10.27_15.17-901cc4cfbbe4")
-
     implementation(kotlin("stdlib"))
-
     implementation("org.slf4j:slf4j-api:1.7.30")
     implementation("ch.qos.logback:logback-classic:$logback_version")
     implementation("ch.qos.logback.contrib:logback-jackson:$logback_contrib_version")
@@ -141,21 +68,15 @@ dependencies {
     implementation("org.codehaus.janino:janino:3.0.6")
     implementation("org.flywaydb:flyway-core:7.3.0")
     implementation("org.apache.pdfbox:pdfbox:2.0.24")
-
-
     implementation("no.nav.tjenestespesifikasjoner:altinn-correspondence-agency-external-basic:1.2019.09.25-00.21-49b69f0625e0")
-
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.11+")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jacksonVersion")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
-
     implementation("com.zaxxer:HikariCP:$hikariVersion")
     implementation("com.github.tomakehurst:wiremock-standalone:2.25.1")
     implementation("org.postgresql:postgresql:42.2.16")
-
     implementation("io.prometheus:simpleclient_common:$prometheusVersion")
     implementation("io.prometheus:simpleclient_hotspot:$prometheusVersion")
-
     implementation("javax.xml.ws:jaxws-api:$jaxwsVersion")
     implementation("org.apache.cxf:cxf-rt-frontend-jaxws:$cxfVersion")
     implementation("org.apache.cxf:cxf-rt-features-logging:$cxfVersion")
@@ -174,14 +95,11 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-params:$junitJupiterVersion")
     testImplementation("org.assertj:assertj-core:$assertJVersion")
-
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitJupiterVersion")
-    implementation( "com.google.cloud:google-cloud-storage:$gcpStorageVersion")
+    implementation("com.google.cloud:google-cloud-storage:$gcpStorageVersion")
     implementation("org.apache.kafka:kafka-clients:$kafkaClient")
     implementation("io.confluent:kafka-avro-serializer:$confluentVersion")
-
     implementation("de.m3y.kformat:kformat:0.7")
-
 }
 
 tasks.named<KotlinCompile>("compileKotlin")
@@ -208,12 +126,12 @@ repositories {
         setUrl("https://maven.pkg.github.com/navikt/helse-arbeidsgiver-felles-backend")
     }
 
-    jcenter{
+    jcenter {
         content {
             excludeGroup("no.nav.helsearbeidsgiver")
         }
     }
-    mavenCentral{
+    mavenCentral {
         content {
             excludeGroup("no.nav.helsearbeidsgiver")
         }
@@ -228,15 +146,13 @@ repositories {
     }
 }
 tasks.named<Jar>("jar") {
-    baseName = ("app")
-
+    archiveBaseName.set("app")
     manifest {
         attributes["Main-Class"] = mainClass
         attributes["Class-Path"] = configurations.runtimeClasspath.get().joinToString(separator = " ") {
             it.name
         }
     }
-
     doLast {
         configurations.runtimeClasspath.get().forEach {
             val file = File("$buildDir/libs/${it.name}")
@@ -264,7 +180,6 @@ task<Test>("slowTests") {
     include("no/nav/helse/slowtests/**")
     outputs.upToDateWhen { false }
     group = "verification"
-
 }
 
 tasks.withType<Wrapper> {

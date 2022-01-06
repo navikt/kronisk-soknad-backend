@@ -4,7 +4,6 @@ import com.typesafe.config.ConfigFactory
 import io.ktor.config.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
-import io.ktor.util.*
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbService
 import no.nav.helse.arbeidsgiver.kubernetes.KubernetesProbeManager
 import no.nav.helse.arbeidsgiver.kubernetes.LivenessComponent
@@ -13,7 +12,6 @@ import no.nav.helse.arbeidsgiver.system.AppEnv
 import no.nav.helse.arbeidsgiver.system.getEnvironment
 import no.nav.helse.arbeidsgiver.system.getString
 import no.nav.helse.fritakagp.datapakke.DatapakkePublisherJob
-import no.nav.helse.fritakagp.koin.getAllOfType
 import no.nav.helse.fritakagp.koin.selectModuleBasedOnProfile
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravKafkaProcessor
@@ -32,11 +30,11 @@ import no.nav.helse.fritakagp.web.auth.localCookieDispenser
 import no.nav.helse.fritakagp.web.fritakModule
 import no.nav.helse.fritakagp.web.nais.nais
 import org.flywaydb.core.Flyway
-import org.koin.core.KoinComponent
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
 import org.koin.core.context.GlobalContext
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
-import org.koin.core.get
 import org.slf4j.LoggerFactory
 
 class FritakAgpApplication(val port: Int = 8080) : KoinComponent {
@@ -121,7 +119,7 @@ class FritakAgpApplication(val port: Int = 8080) : KoinComponent {
         logger.info("Starter databasemigrering")
 
         Flyway.configure().baselineOnMigrate(true)
-            .dataSource(GlobalContext.get().koin.get())
+            .dataSource(GlobalContext.getKoinApplicationOrNull()?.koin?.get())
             .load()
             .migrate()
 
@@ -131,10 +129,10 @@ class FritakAgpApplication(val port: Int = 8080) : KoinComponent {
     private fun autoDetectProbeableComponents() {
         val kubernetesProbeManager = get<KubernetesProbeManager>()
 
-        getKoin().getAllOfType<LivenessComponent>()
+        getKoin().getAll<LivenessComponent>()
             .forEach { kubernetesProbeManager.registerLivenessComponent(it) }
 
-        getKoin().getAllOfType<ReadynessComponent>()
+        getKoin().getAll<ReadynessComponent>()
             .forEach { kubernetesProbeManager.registerReadynessComponent(it) }
 
         logger.debug("La til probeable komponenter")

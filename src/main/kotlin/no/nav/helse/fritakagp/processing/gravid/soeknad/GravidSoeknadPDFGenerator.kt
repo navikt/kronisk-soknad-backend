@@ -17,7 +17,6 @@ class GravidSoeknadPDFGenerator {
     private val FONT_NAME = "fonts/ARIALUNI.TTF"
     private val terminaDatoIkkeOppgitt = "Ikke oppgitt"
 
-
     fun lagPDF(soeknad: GravidSoeknad): ByteArray {
         val doc = PDDocument()
         val page = PDPage()
@@ -39,23 +38,21 @@ class GravidSoeknadPDFGenerator {
         content.writeTextWrapped("Termindato: ${soeknad.termindato?.format(DATE_FORMAT) ?: terminaDatoIkkeOppgitt}")
         content.writeTextWrapped("Arbeidsgiver oppgitt i søknad: ${soeknad.virksomhetsnavn} (${soeknad.virksomhetsnummer})")
         content.writeTextWrapped(
-                "Har dere prøvd å tilrettelegge arbeidsdagen slik at den gravide kan jobbe til tross for helseplagene?", 2
+            "Har dere prøvd å tilrettelegge arbeidsdagen slik at den gravide kan jobbe til tross for helseplagene?", 2
         )
 
         if (soeknad.tilrettelegge) {
             content.writeTextWrapped("Ja")
             content.writeTextWrapped("Hvilke tiltak har dere forsøkt eller vurdert for at den ansatte kan jobbe?", 2)
-            (soeknad.tiltak?: emptyList())
-                    .forEach {
-                        content.writeTextWrapped(" - ${it.beskrivelse}")
-                    }
+            (soeknad.tiltak ?: emptyList())
+                .forEach {
+                    content.writeTextWrapped(" - ${it.beskrivelse}")
+                }
             soeknad.tiltakBeskrivelse?.let { content.writeTextWrapped(it) }
 
             content.writeTextWrapped("Har dere forsøkt omplassering til en annen jobb?", 2)
             content.writeTextWrapped(soeknad.omplassering?.beskrivelse ?: "")
             soeknad.omplasseringAarsak?.let { content.writeTextWrapped(it.beskrivelse) }
-
-
         } else {
             content.writeTextWrapped("Nei")
         }

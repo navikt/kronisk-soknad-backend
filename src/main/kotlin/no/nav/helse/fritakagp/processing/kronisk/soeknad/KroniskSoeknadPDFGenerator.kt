@@ -19,7 +19,6 @@ class KroniskSoeknadPDFGenerator {
     private val MARGIN_Y = 40f
     private val FONT_NAME = "fonts/ARIALUNI.TTF"
 
-
     fun lagPDF(soeknad: KroniskSoeknad): ByteArray {
         val doc = PDDocument()
         val font = PDType0Font.load(doc, this::class.java.classLoader.getResource(FONT_NAME).openStream())
@@ -52,7 +51,7 @@ class KroniskSoeknadPDFGenerator {
 
         content.writeTextWrapped("Fraværsdager per måned siste 2 år: ", 2)
         content.writeTextWrapped("Antall fraværsperioder siste 2 år: ${soeknad.antallPerioder}")
-        val yearlyFravaer = soeknad.fravaer.sortedByDescending { it.yearMonth }.groupBy { it.yearMonth.substring(0,4) }
+        val yearlyFravaer = soeknad.fravaer.sortedByDescending { it.yearMonth }.groupBy { it.yearMonth.substring(0, 4) }
 
         yearlyFravaer.forEach { yearGroup ->
             content.writeTextWrapped(yearGroup.key)
@@ -73,7 +72,7 @@ class KroniskSoeknadPDFGenerator {
     }
 
     private fun LocalDate.toName(): String {
-        return when(this.month) {
+        return when (this.month) {
             Month.JANUARY -> "Jan"
             Month.FEBRUARY -> "Feb"
             Month.MARCH -> "Mar"

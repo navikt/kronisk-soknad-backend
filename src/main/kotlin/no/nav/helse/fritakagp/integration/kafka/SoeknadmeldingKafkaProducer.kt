@@ -12,7 +12,6 @@ import java.util.concurrent.TimeUnit
 import org.apache.kafka.common.errors.AuthenticationException
 import java.util.concurrent.ExecutionException
 
-
 interface SoeknadmeldingSender {
     fun sendMessage(melding: KroniskSoeknad): RecordMetadata?
     fun sendMessage(melding: GravidSoeknad): RecordMetadata?
@@ -22,7 +21,7 @@ class SoeknadmeldingKafkaProducer(
     private val props: MutableMap<String, Any>,
     private val topicName: String,
     private val om: ObjectMapper,
-    private val producerFactory : ProducerFactory<String, String>
+    private val producerFactory: ProducerFactory<String, String>
 ) :
     SoeknadmeldingSender {
     private var producer = producerFactory.createProducer(props)

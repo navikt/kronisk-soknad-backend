@@ -10,7 +10,7 @@ import no.nav.helse.arbeidsgiver.web.auth.AltinnOrganisationsRepository
 import no.nav.helse.fritakagp.web.auth.hentIdentitetsnummerFraLoginToken
 
 fun Route.altinnRoutes(authRepo: AltinnOrganisationsRepository) {
-     route("/arbeidsgivere") {
+    route("/arbeidsgivere") {
         get("/") {
             val id = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
             try {

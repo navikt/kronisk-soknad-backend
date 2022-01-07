@@ -43,7 +43,6 @@ class KroniskSoeknadHTTPTests : SystemTestBase() {
         Assertions.assertThat(accessGrantedForm).isEqualTo(KroniskTestData.soeknadKronisk)
     }
 
-
     @Test
     fun `invalid enum fields gives 400 Bad request`() = suspendableTest {
         val exception = assertThrows<ClientRequestException>
@@ -60,7 +59,7 @@ class KroniskSoeknadHTTPTests : SystemTestBase() {
                     "bekreftelse": true,
                     "paakjenningstyper": ["IKKE GYLDIG"]
                 }
-            """.trimIndent()
+                """.trimIndent()
             }
         }
 
@@ -89,13 +88,14 @@ class KroniskSoeknadHTTPTests : SystemTestBase() {
                 appUrl(soeknadKroniskUrl)
                 contentType(ContentType.Application.Json)
                 loggedInAs("123456789")
-                body = KroniskSoknadRequest(virksomhetsnummer = "lkajsbdfv",
+                body = KroniskSoknadRequest(
+                    virksomhetsnummer = "lkajsbdfv",
                     identitetsnummer = "lkdf",
                     paakjenningBeskrivelse = "sdfsfd",
                     antallPerioder = 0,
                     arbeidstyper = setOf(ArbeidsType.KREVENDE),
                     paakjenningstyper = setOf(PaakjenningsType.ALLERGENER),
-                    fravaer = setOf(FravaerData("2001-01",12)),
+                    fravaer = setOf(FravaerData("2001-01", 12)),
                     bekreftet = true,
                     dokumentasjon = null
                 )

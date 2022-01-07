@@ -6,9 +6,8 @@ import io.ktor.client.request.forms.*
 import io.ktor.http.*
 import io.ktor.utils.io.core.*
 
-
 interface VirusScanner {
-    suspend fun scanDoc(vedlagt : ByteArray) : Boolean
+    suspend fun scanDoc(vedlagt: ByteArray): Boolean
 }
 
 class MockVirusScanner : VirusScanner {
@@ -17,8 +16,7 @@ class MockVirusScanner : VirusScanner {
     }
 }
 
-
-class ClamavVirusScannerImp(private val httpClient: HttpClient, private val scanUrl : String) : VirusScanner {
+class ClamavVirusScannerImp(private val httpClient: HttpClient, private val scanUrl: String) : VirusScanner {
     data class ScanResult(
         val Filename: String,
         val Result: Result
@@ -31,18 +29,20 @@ class ClamavVirusScannerImp(private val httpClient: HttpClient, private val scan
             url(scanUrl)
             method = HttpMethod.Post
             body = MultiPartFormDataContent(
-                    formData {
-                        append("file1",
-                                "vedlagt",
-                                ContentType.parse("application/octet-stream"),
-                                vedlagt.size.toLong()
-                        ) {
-                            writeFully(vedlagt)
-                        }
-                    })
+                formData {
+                    append(
+                        "file1",
+                        "vedlagt",
+                        ContentType.parse("application/octet-stream"),
+                        vedlagt.size.toLong()
+                    ) {
+                        writeFully(vedlagt)
+                    }
+                }
+            )
         }
 
-        return when(scanResult[0].Result) {
+        return when (scanResult[0].Result) {
             Result.OK -> true
             Result.FOUND, Result.ERROR -> false
         }

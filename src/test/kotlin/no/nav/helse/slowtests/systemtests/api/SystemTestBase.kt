@@ -61,7 +61,6 @@ open class SystemTestBase : KoinTest {
 
     @AfterAll
     fun after() {
-
     }
 
     /**

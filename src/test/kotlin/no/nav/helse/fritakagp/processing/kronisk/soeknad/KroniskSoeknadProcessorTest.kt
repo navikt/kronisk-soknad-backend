@@ -57,16 +57,19 @@ class KroniskSoeknadProcessorTest {
         objectMapper.registerModule(JavaTimeModule())
         every { repositoryMock.getById(soeknad.id) } returns soeknad
         every { bucketStorageMock.getDocAsString(any()) } returns null
-        every { pdlClientMock.personNavn(soeknad.sendtAv)} returns PdlHentPersonNavn.PdlPersonNavneliste(listOf(
-            PdlHentPersonNavn.PdlPersonNavneliste.PdlPersonNavn("Ola", "M", "Avsender", PdlPersonNavnMetadata("freg"))))
-        every { pdlClientMock.fullPerson(soeknad.identitetsnummer)} returns PdlHentFullPerson(
+        every { pdlClientMock.personNavn(soeknad.sendtAv) } returns PdlHentPersonNavn.PdlPersonNavneliste(
+            listOf(
+                PdlHentPersonNavn.PdlPersonNavneliste.PdlPersonNavn("Ola", "M", "Avsender", PdlPersonNavnMetadata("freg"))
+            )
+        )
+        every { pdlClientMock.fullPerson(soeknad.identitetsnummer) } returns PdlHentFullPerson(
             PdlFullPersonliste(emptyList(), emptyList(), emptyList(), emptyList(), emptyList(), emptyList(), emptyList()),
             PdlIdentResponse(listOf(PdlIdent("aktør-id", PdlIdent.PdlIdentGruppe.AKTORID))),
             PdlHentFullPerson.PdlGeografiskTilknytning(UTLAND, null, null, "SWE")
         )
 
         every { joarkMock.journalførDokument(any(), any(), any()) } returns JournalpostResponse(arkivReferanse, true, "M", null, emptyList())
-        coEvery { oppgaveMock.opprettOppgave(any(), any())} returns KroniskTestData.kroniskOpprettOppgaveResponse.copy(id = oppgaveId)
+        coEvery { oppgaveMock.opprettOppgave(any(), any()) } returns KroniskTestData.kroniskOpprettOppgaveResponse.copy(id = oppgaveId)
         coEvery { berregServiceMock.getVirksomhetsNavn(soeknad.virksomhetsnummer) } returns "Stark Industries"
     }
 
@@ -144,10 +147,10 @@ class KroniskSoeknadProcessorTest {
             bakgrunnsjobbRepomock.save(capture(opprettetJobber))
         }
 
-        val kafkajobb = opprettetJobber.find {it.type == KroniskSoeknadKafkaProcessor.JOB_TYPE }
+        val kafkajobb = opprettetJobber.find { it.type == KroniskSoeknadKafkaProcessor.JOB_TYPE }
         assertThat(kafkajobb?.data).contains(soeknad.id.toString())
 
-        val beskjedJobb = opprettetJobber.find {it.type == BrukernotifikasjonProcessor.JOB_TYPE }
+        val beskjedJobb = opprettetJobber.find { it.type == BrukernotifikasjonProcessor.JOB_TYPE }
         assertThat(beskjedJobb?.data).contains(soeknad.id.toString())
         assertThat(beskjedJobb?.data).contains(BrukernotifikasjonProcessor.Jobbdata.SkjemaType.KroniskSøknad.name)
     }
@@ -166,5 +169,4 @@ class KroniskSoeknadProcessorTest {
         coVerify(exactly = 1) { oppgaveMock.opprettOppgave(any(), any()) }
         verify(exactly = 1) { repositoryMock.update(soeknad) }
     }
-
 }

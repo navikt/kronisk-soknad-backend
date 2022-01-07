@@ -128,7 +128,7 @@ object AaregTestData {
             Ansettelsesperiode(
                 Periode(
                     LocalDate.of(2009, 3, 5),
-                    LocalDate.of(2010, 8, 30 )
+                    LocalDate.of(2010, 8, 30)
                 )
             ),
             LocalDateTime.now()
@@ -140,7 +140,7 @@ object AaregTestData {
             Ansettelsesperiode(
                 Periode(
                     LocalDate.of(2010, 11, 26),
-                    LocalDate.of(2011, 9, 4 )
+                    LocalDate.of(2011, 9, 4)
                 )
             ),
             LocalDateTime.now()
@@ -152,7 +152,7 @@ object AaregTestData {
             Ansettelsesperiode(
                 Periode(
                     LocalDate.of(2011, 9, 5),
-                    LocalDate.of(2013, 3, 30 )
+                    LocalDate.of(2013, 3, 30)
                 )
             ),
             LocalDateTime.now()
@@ -164,7 +164,7 @@ object AaregTestData {
             Ansettelsesperiode(
                 Periode(
                     LocalDate.of(2013, 3, 31),
-                    LocalDate.of(2014, 1, 1 )
+                    LocalDate.of(2014, 1, 1)
                 )
             ),
             LocalDateTime.now()
@@ -176,7 +176,7 @@ object AaregTestData {
             Ansettelsesperiode(
                 Periode(
                     LocalDate.of(2013, 3, 31),
-                    LocalDate.of(2013, 3, 31 )
+                    LocalDate.of(2013, 3, 31)
                 )
             ),
             LocalDateTime.now()
@@ -188,7 +188,7 @@ object AaregTestData {
             Ansettelsesperiode(
                 Periode(
                     LocalDate.of(2014, 2, 24),
-                    LocalDate.of(2014, 2, 24 )
+                    LocalDate.of(2014, 2, 24)
                 )
             ),
             LocalDateTime.now()
@@ -200,7 +200,7 @@ object AaregTestData {
             Ansettelsesperiode(
                 Periode(
                     LocalDate.of(2014, 3, 28),
-                    LocalDate.of(2014, 5, 31 )
+                    LocalDate.of(2014, 5, 31)
                 )
             ),
             LocalDateTime.now()
@@ -212,7 +212,7 @@ object AaregTestData {
             Ansettelsesperiode(
                 Periode(
                     LocalDate.of(2014, 6, 1),
-                    LocalDate.of(2022, 4, 30 )
+                    LocalDate.of(2022, 4, 30)
                 )
             ),
             LocalDateTime.now()
@@ -224,7 +224,7 @@ object AaregTestData {
             Ansettelsesperiode(
                 Periode(
                     LocalDate.of(2014, 6, 1),
-                    LocalDate.of(2014, 12, 31 )
+                    LocalDate.of(2014, 12, 31)
                 )
             ),
             LocalDateTime.now()
@@ -242,7 +242,6 @@ object AaregTestData {
             LocalDateTime.now()
         )
     )
-
 
     val listeMedEttArbeidsforhold = listOf(
         Arbeidsforhold(
@@ -271,9 +270,4 @@ object AaregTestData {
             LocalDateTime.now()
         )
     )
-
-
-
-
-
 }

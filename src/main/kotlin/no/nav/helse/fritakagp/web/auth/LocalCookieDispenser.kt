@@ -15,8 +15,6 @@ import no.nav.helse.arbeidsgiver.system.getEnvironment
 import no.nav.security.mock.oauth2.MockOAuth2Server
 import org.slf4j.LoggerFactory
 
-
-
 fun Application.localCookieDispenser(config: ApplicationConfig) {
     val oauthMockPort = 6666
     val logger = LoggerFactory.getLogger("LocalCookieDispenser")

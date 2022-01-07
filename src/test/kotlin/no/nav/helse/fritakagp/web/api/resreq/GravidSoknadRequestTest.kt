@@ -9,9 +9,9 @@ import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 
 class GravidSoknadRequestTest {
-  val navn = "Personliga Person"
-	val sendtAv = "123"
-	val sendtAvNavn = "Ola M Avsender"
+    val navn = "Personliga Person"
+    val sendtAv = "123"
+    val sendtAvNavn = "Ola M Avsender"
 
     @Test
     internal fun `Gyldig FNR er påkrevd`() {

@@ -24,7 +24,6 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import javax.sql.DataSource
 
-
 fun localDevConfig(config: ApplicationConfig) = module {
 
     mockExternalDependecies()
@@ -36,7 +35,7 @@ fun localDevConfig(config: ApplicationConfig) = module {
     single { PostgresKroniskSoeknadRepository(get(), get()) } bind KroniskSoeknadRepository::class
     single { PostgresKroniskKravRepository(get(), get()) } bind KroniskKravRepository::class
 
-    single { SoeknadmeldingKafkaProducer(localCommonKafkaProps(), config.getString("kafka_soeknad_topic_name"), get(), StringKafkaProducerFactory())} bind SoeknadmeldingSender::class
+    single { SoeknadmeldingKafkaProducer(localCommonKafkaProps(), config.getString("kafka_soeknad_topic_name"), get(), StringKafkaProducerFactory()) } bind SoeknadmeldingSender::class
     single { KravmeldingKafkaProducer(localCommonKafkaProps(), config.getString("kafka_krav_topic_name"), get(), StringKafkaProducerFactory()) } bind KravmeldingSender::class
 
     single { PostgresBakgrunnsjobbRepository(get()) } bind BakgrunnsjobbRepository::class
@@ -69,5 +68,5 @@ fun localDevConfig(config: ApplicationConfig) = module {
     single { DefaultAltinnAuthorizer(get()) } bind AltinnAuthorizer::class
 
     single { DatapakkePublisherJob(get(), get(), config.getString("datapakke.api_url"), config.getString("datapakke.id"), get()) }
-    single { StatsRepoImpl(get())} bind IStatsRepo::class
+    single { StatsRepoImpl(get()) } bind IStatsRepo::class
 }

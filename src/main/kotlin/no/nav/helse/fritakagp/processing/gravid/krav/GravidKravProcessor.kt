@@ -131,7 +131,8 @@ class GravidKravProcessor(
                 ),
                 dokumenter = createDocuments(krav, journalfoeringsTittel),
                 datoMottatt = krav.opprettet.toLocalDate()
-            ), true, UUID.randomUUID().toString()
+            ),
+            true, UUID.randomUUID().toString()
 
         )
 
@@ -152,11 +153,11 @@ class GravidKravProcessor(
                     DokumentVariant(
                         fysiskDokument = base64EnkodetPdf
                     ),
-                        DokumentVariant(
-                                filtype = "JSON",
-                                fysiskDokument = jsonOrginalDokument,
-                                variantFormat = "ORIGINAL"
-                        )
+                    DokumentVariant(
+                        filtype = "JSON",
+                        fysiskDokument = jsonOrginalDokument,
+                        variantFormat = "ORIGINAL"
+                    )
                 ),
                 brevkode = "krav_om_fritak_fra_agp_gravid",
                 tittel = journalfoeringsTittel,
@@ -172,9 +173,9 @@ class GravidKravProcessor(
                             filtype = if (it.extension == "jpg") "JPEG" else it.extension.uppercase()
                         ),
                         DokumentVariant(
-                                filtype = "JSON",
-                                fysiskDokument = jsonOrginalDokument,
-                                variantFormat = "ORIGINAL",
+                            filtype = "JSON",
+                            fysiskDokument = jsonOrginalDokument,
+                            variantFormat = "ORIGINAL",
                         )
                     ),
                     brevkode = dokumentasjonBrevkode,
@@ -192,7 +193,7 @@ class GravidKravProcessor(
         krav.oppgaveId
         oppgaveKlient
         val request = OpprettOppgaveRequest(
-            tildeltEnhetsnr= "4488",
+            tildeltEnhetsnr = "4488",
             aktoerId = aktoerId,
             journalpostId = krav.journalpostId,
             beskrivelse = generereGravidkKravBeskrivelse(krav, "Krav om refusjon av arbeidsgiverperioden ifbm. graviditet"),
@@ -208,13 +209,12 @@ class GravidKravProcessor(
         return runBlocking { oppgaveKlient.opprettOppgave(request, UUID.randomUUID().toString()).id.toString() }
     }
 
-
     fun opprettFordelingsOppgave(krav: GravidKrav): String {
         val aktoerId = pdlClient.fullPerson(krav.identitetsnummer)?.hentIdenter?.trekkUtIdent(PdlIdent.PdlIdentGruppe.AKTORID)
         requireNotNull(aktoerId) { "Fant ikke AktørID for fnr i ${krav.id}" }
 
         val request = OpprettOppgaveRequest(
-            tildeltEnhetsnr= "4488",
+            tildeltEnhetsnr = "4488",
             aktoerId = aktoerId,
             journalpostId = krav.journalpostId,
             beskrivelse = generereGravidkKravBeskrivelse(krav, "Klarte ikke å opprette oppgave og/eller journalføre for dette refusjonskravet: ${krav.id}"),
@@ -230,8 +230,5 @@ class GravidKravProcessor(
         return runBlocking { oppgaveKlient.opprettOppgave(request, UUID.randomUUID().toString()).id.toString() }
     }
 
-
     data class JobbData(val id: UUID)
-
 }
-

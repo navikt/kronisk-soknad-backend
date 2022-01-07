@@ -14,7 +14,7 @@ interface KroniskKravKvitteringSender {
     fun send(kvittering: KroniskKrav)
 }
 
-class KroniskKravKvitteringSenderDummy: KroniskKravKvitteringSender {
+class KroniskKravKvitteringSenderDummy : KroniskKravKvitteringSender {
     override fun send(kvittering: KroniskKrav) {
         println("Sender kvittering for krav kronisk: ${kvittering.id}")
     }
@@ -24,7 +24,8 @@ class KroniskKravAltinnKvitteringSender(
     private val altinnTjenesteKode: String,
     private val iCorrespondenceAgencyExternalBasic: ICorrespondenceAgencyExternalBasic,
     private val username: String,
-    private val password: String) : KroniskKravKvitteringSender {
+    private val password: String
+) : KroniskKravKvitteringSender {
 
     companion object {
         const val SYSTEM_USER_CODE = "NAV_HELSEARBEIDSGIVER"
@@ -33,9 +34,9 @@ class KroniskKravAltinnKvitteringSender(
     override fun send(kvittering: KroniskKrav) {
         try {
             val receiptExternal = iCorrespondenceAgencyExternalBasic.insertCorrespondenceBasicV2(
-                    username, password,
-                    SYSTEM_USER_CODE, kvittering.id.toString(),
-                    mapKvitteringTilInsertCorrespondence(kvittering)
+                username, password,
+                SYSTEM_USER_CODE, kvittering.id.toString(),
+                mapKvitteringTilInsertCorrespondence(kvittering)
             )
             if (receiptExternal.receiptStatusCode != ReceiptStatusEnum.OK) {
                 throw RuntimeException("Fikk uventet statuskode fra Altinn: ${receiptExternal.receiptStatusCode} ${receiptExternal.receiptText}")
@@ -74,14 +75,13 @@ class KroniskKravAltinnKvitteringSender(
                </div>
            </body>
         </html>
-    """.trimIndent()
+        """.trimIndent()
 
         val meldingsInnhold = ExternalContentV2()
             .withLanguageCode("1044")
             .withMessageTitle(tittel)
             .withMessageBody(innhold)
             .withMessageSummary("Kvittering for krav om refusjon av arbeidsgiverperioden ifbm kronisk sykdom")
-
 
         return InsertCorrespondenceV2()
             .withAllowForwarding(false)
@@ -93,9 +93,9 @@ class KroniskKravAltinnKvitteringSender(
     }
 }
 
-fun lagrePerioder(perioder: List<Arbeidsgiverperiode>) : String {
+fun lagrePerioder(perioder: List<Arbeidsgiverperiode>): String {
 
-    val head =  """
+    val head = """
             <table style="width:50%">
               <tr>
                 <th>Fra dato</th>
@@ -109,19 +109,19 @@ fun lagrePerioder(perioder: List<Arbeidsgiverperiode>) : String {
 
     val tail = "</table>"
     var rader = ""
-    for( p in perioder)
+    for (p in perioder)
         rader += lagePeriod(p)
 
     return head + rader + tail
 }
 
-fun lagePeriod(periode : Arbeidsgiverperiode) : String {
+fun lagePeriod(periode: Arbeidsgiverperiode): String {
     val dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
     val gradering = (periode.gradering * 100).toString() + "%"
     return """<tr>
                 <td style="text-align:center">${periode.fom.format(dateFormatter)}</td>
                 <td style="text-align:center">${periode.tom.format(dateFormatter)}</td>
-                <td style="text-align:center">${gradering}</td>
+                <td style="text-align:center">$gradering</td>
                 <td style="text-align:center">${periode.antallDagerMedRefusjon}</td>
                 <td style="text-align:center">${periode.månedsinntekt}</td>
                 <td style="text-align:center">${periode.dagsats}</td>

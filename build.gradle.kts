@@ -28,6 +28,7 @@ plugins {
     kotlin("jvm") version "1.5.10"
     id("com.github.ben-manes.versions") version "0.27.0"
     id("com.autonomousapps.dependency-analysis") version "0.71.0"
+    id("org.jlleitschuh.gradle.ktlint") version "10.2.0"
     jacoco
 }
 

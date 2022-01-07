@@ -3,12 +3,10 @@ package no.nav.helse.fritakagp.integration.kafka
 import com.fasterxml.jackson.databind.ObjectMapper
 import no.nav.helse.fritakagp.domain.GravidKrav
 import no.nav.helse.fritakagp.domain.KroniskKrav
-import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.clients.producer.RecordMetadata
 import org.apache.kafka.common.errors.AuthenticationException
 import org.apache.kafka.common.header.internals.RecordHeader
-import org.apache.kafka.common.serialization.StringSerializer
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.TimeUnit
 

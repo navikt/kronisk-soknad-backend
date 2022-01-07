@@ -16,7 +16,6 @@ import org.valiktor.ConstraintViolationException
 import java.lang.reflect.InvocationTargetException
 import java.net.URI
 import java.util.*
-import javax.ws.rs.ForbiddenException
 
 fun Application.configureExceptionHandling() {
     install(StatusPages) {

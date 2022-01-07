@@ -8,7 +8,6 @@ import org.apache.pdfbox.pdmodel.PDPage
 import org.apache.pdfbox.pdmodel.PDPageContentStream
 import org.apache.pdfbox.pdmodel.font.PDType0Font
 import java.io.ByteArrayOutputStream
-import java.time.format.DateTimeFormatter
 
 class KroniskKravPDFGenerator {
     private val FONT_SIZE = 11f

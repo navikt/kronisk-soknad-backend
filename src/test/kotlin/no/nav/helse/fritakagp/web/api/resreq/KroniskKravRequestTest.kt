@@ -1,7 +1,6 @@
 package no.nav.helse.fritakagp.web.api.resreq
 
 import no.nav.helse.AaregTestData
-import no.nav.helse.GravidTestData
 import no.nav.helse.KroniskTestData
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test

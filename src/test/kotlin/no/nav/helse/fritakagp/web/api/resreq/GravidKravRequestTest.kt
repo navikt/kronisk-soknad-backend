@@ -4,8 +4,6 @@ import io.mockk.every
 import io.mockk.mockk
 import no.nav.helse.AaregTestData
 import no.nav.helse.GravidTestData
-import no.nav.helse.KroniskTestData
-import no.nav.helse.fritakagp.domain.Arbeidsgiverperiode
 import no.nav.helse.fritakagp.domain.BeløpBeregning
 import no.nav.helse.fritakagp.integration.GrunnbeløpClient
 import org.assertj.core.api.Assertions.assertThat

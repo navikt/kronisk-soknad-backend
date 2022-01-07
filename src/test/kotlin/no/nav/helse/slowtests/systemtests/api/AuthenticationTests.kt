@@ -4,7 +4,6 @@ import io.ktor.client.features.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
-import io.ktor.util.*
 import no.nav.helse.GravidTestData
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test

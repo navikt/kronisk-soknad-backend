@@ -1,7 +1,5 @@
 package no.nav.helse.fritakagp.web.api.resreq.validation
 
-import no.nav.helse.arbeidsgiver.web.validation.OrganisasjonsnummerConstraint
-import no.nav.helse.arbeidsgiver.web.validation.OrganisasjonsnummerValidator
 import no.nav.helse.fritakagp.domain.Arbeidsgiverperiode
 import no.nav.helse.fritakagp.domain.FravaerData
 import no.nav.helse.fritakagp.domain.KroniskSoeknad
@@ -30,7 +28,7 @@ fun <E> Validator<E>.Property<String?>.isVirksomhet(erVirksomhet: Boolean) =
 class FraDatoKanIkkeKommeEtterTomDato : CustomConstraint
 fun <E> Validator<E>.Property<LocalDate?>.datoerHarRiktigRekkefolge(tom: LocalDate) =
     this.validate(FraDatoKanIkkeKommeEtterTomDato()) { fom -> fom!!.isEqual(tom) || fom!!.isBefore(tom) }
-    
+
 class MaanedsInntektErStorreEnTiMil : CustomConstraint
 fun <E> Validator<E>.Property<Double?>.maanedsInntektErMellomNullOgTiMil() =
     this.validate(MaanedsInntektErStorreEnTiMil()) {

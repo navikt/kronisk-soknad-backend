@@ -1,7 +1,6 @@
 package no.nav.helse.fritakagp.web.api.resreq
 
 import no.nav.helse.GravidTestData
-import no.nav.helse.KroniskTestData
 import no.nav.helse.fritakagp.domain.Omplassering
 import no.nav.helse.fritakagp.domain.OmplasseringAarsak
 import no.nav.helse.fritakagp.domain.Tiltak

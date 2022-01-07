@@ -4,7 +4,6 @@ import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.response.*
 import io.ktor.routing.*
-import io.ktor.util.*
 import no.nav.helse.arbeidsgiver.integrasjoner.altinn.AltinnBrukteForLangTidException
 import no.nav.helse.arbeidsgiver.web.auth.AltinnOrganisationsRepository
 import no.nav.helse.fritakagp.web.auth.hentIdentitetsnummerFraLoginToken

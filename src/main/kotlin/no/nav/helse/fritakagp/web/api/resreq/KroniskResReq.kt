@@ -18,7 +18,7 @@ data class KroniskSoknadRequest(
     val bekreftet: Boolean,
     val antallPerioder: Int,
 
-    val dokumentasjon : String?
+    val dokumentasjon: String?
 ) {
 
     fun validate(isVirksomhet: Boolean) {
@@ -35,7 +35,7 @@ data class KroniskSoknadRequest(
             validate(KroniskSoknadRequest::paakjenningstyper).hasSize(1, 10)
 
             validate(KroniskSoknadRequest::fravaer).isNotNull()
-            validate(KroniskSoknadRequest::antallPerioder).isBetween(1,300)
+            validate(KroniskSoknadRequest::antallPerioder).isBetween(1, 300)
             validate(KroniskSoknadRequest::fravaer).ingenDataEldreEnn(2)
             validate(KroniskSoknadRequest::fravaer).ingenDataFraFremtiden()
             validate(KroniskSoknadRequest::fravaer).ikkeFlereFravaersdagerEnnDagerIMaanden()
@@ -45,7 +45,7 @@ data class KroniskSoknadRequest(
                 validate(KroniskSoknadRequest::paakjenningBeskrivelse).isNotEmpty()
             }
 
-            if (!this@KroniskSoknadRequest.dokumentasjon.isNullOrEmpty()){
+            if (!this@KroniskSoknadRequest.dokumentasjon.isNullOrEmpty()) {
                 validate(KroniskSoknadRequest::dokumentasjon).isGodskjentFiletyper()
                 validate(KroniskSoknadRequest::dokumentasjon).isNotStorreEnn(10L * MB)
             }
@@ -68,7 +68,6 @@ data class KroniskSoknadRequest(
     )
 }
 
-
 data class KroniskKravRequest(
     val virksomhetsnummer: String,
     val identitetsnummer: String,
@@ -78,7 +77,7 @@ data class KroniskKravRequest(
     val kontrollDager: Int?,
     val antallDager: Int
 ) {
-   fun validate(aktuelleArbeidsforhold: List<Arbeidsforhold>) {
+    fun validate(aktuelleArbeidsforhold: List<Arbeidsforhold>) {
         validate(this) {
             validate(KroniskKravRequest::identitetsnummer).isValidIdentitetsnummer()
             validate(KroniskKravRequest::virksomhetsnummer).isValidOrganisasjonsnummer()
@@ -91,7 +90,6 @@ data class KroniskKravRequest(
                 validate(Arbeidsgiverperiode::gradering).isLessThanOrEqualTo(1.0)
                 validate(Arbeidsgiverperiode::gradering).isGreaterThanOrEqualTo(0.2)
             }
-
 
             if (!this@KroniskKravRequest.dokumentasjon.isNullOrEmpty()) {
                 validate(KroniskKravRequest::dokumentasjon).isGodskjentFiletyper()

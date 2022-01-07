@@ -10,16 +10,16 @@ fun decodeBase64File(datafile: String): ByteArray {
     return Base64.getDecoder().decode(datafile)
 }
 
-enum class GodkjenteFiletyper(val beskrivelse : String) {
+enum class GodkjenteFiletyper(val beskrivelse: String) {
     PDF("pdf")
 }
 val SOEKAND_BESKRIVELSE_DATE_FORMAT = DateTimeFormatter.ofPattern("dd.MM.yyyy")
 
-fun sladdFnr (fnr: String): String {
+fun sladdFnr(fnr: String): String {
     return fnr.take(6) + "*****"
 }
 
-fun generereGravidSoeknadBeskrivelse(soeknad : GravidSoeknad, desc : String) : String {
+fun generereGravidSoeknadBeskrivelse(soeknad: GravidSoeknad, desc: String): String {
     val terminaDatoIkkeOppgitt = "Ikke oppgitt"
     return buildString {
         appendLine(desc)
@@ -31,7 +31,7 @@ fun generereGravidSoeknadBeskrivelse(soeknad : GravidSoeknad, desc : String) : S
         if (soeknad.tilrettelegge) {
             appendLine("Ja")
             appendLine("Hvilke tiltak har dere forsøkt eller vurdert for at den ansatte kan jobbe?")
-            (soeknad.tiltak?: emptyList()).forEach {
+            (soeknad.tiltak ?: emptyList()).forEach {
                 appendLine(" - ${it.beskrivelse}")
             }
             soeknad.tiltakBeskrivelse?.let { appendLine(it) }
@@ -43,7 +43,7 @@ fun generereGravidSoeknadBeskrivelse(soeknad : GravidSoeknad, desc : String) : S
         }
     }
 }
-fun generereKroniskSoeknadBeskrivelse(soeknad : KroniskSoeknad, desc: String) : String {
+fun generereKroniskSoeknadBeskrivelse(soeknad: KroniskSoeknad, desc: String): String {
     return buildString {
         appendLine(desc)
         appendLine("Mottatt: ${getPDFTimeStampFormat().format(soeknad.opprettet)}")
@@ -60,7 +60,7 @@ fun generereKroniskSoeknadBeskrivelse(soeknad : KroniskSoeknad, desc: String) : 
         appendLine("Antall fraværsperioder siste 2 år: ${soeknad.antallPerioder}")
         appendLine("Fraværsdager per måned siste 2 år:")
 
-        val yearlyFravaer = soeknad.fravaer.sortedByDescending { it.yearMonth }.groupBy { it.yearMonth.substring(0,4) }
+        val yearlyFravaer = soeknad.fravaer.sortedByDescending { it.yearMonth }.groupBy { it.yearMonth.substring(0, 4) }
         yearlyFravaer.forEach { yearGroup ->
             appendLine(yearGroup.key)
             yearGroup.value.sortedBy { it.yearMonth }.forEach {
@@ -70,7 +70,7 @@ fun generereKroniskSoeknadBeskrivelse(soeknad : KroniskSoeknad, desc: String) : 
     }
 }
 
-fun generereKroniskKravBeskrivelse(krav: KroniskKrav, desc : String) : String {
+fun generereKroniskKravBeskrivelse(krav: KroniskKrav, desc: String): String {
     return buildString {
         appendLine(desc)
         appendLine("Mottatt: ${getPDFTimeStampFormat().format(krav.opprettet)}")
@@ -81,7 +81,7 @@ fun generereKroniskKravBeskrivelse(krav: KroniskKrav, desc : String) : String {
     }
 }
 
-fun generereGravidkKravBeskrivelse(krav: GravidKrav, desc : String) : String {
+fun generereGravidkKravBeskrivelse(krav: GravidKrav, desc: String): String {
     return buildString {
         appendLine(desc)
         appendLine("Mottatt: ${getPDFTimeStampFormat().format(krav.opprettet)}")
@@ -92,7 +92,7 @@ fun generereGravidkKravBeskrivelse(krav: GravidKrav, desc : String) : String {
     }
 }
 
-fun genererePeriodeTable(perioder: List<Arbeidsgiverperiode>) : String {
+fun genererePeriodeTable(perioder: List<Arbeidsgiverperiode>): String {
     return table {
         header("FOM", "TOM", "Sykmeldingsgrad", "kreves refusjon for", "Beregnet månedsinntekt (NOK)", "Dagsats (NOK)", "Beløp (NOK)")
         for (p in perioder) {

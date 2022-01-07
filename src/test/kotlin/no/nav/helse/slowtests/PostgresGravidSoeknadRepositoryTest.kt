@@ -23,12 +23,11 @@ class PostgresGravidSoeknadRepositoryTest : SystemTestBase() {
 
         repo = PostgresGravidSoeknadRepository(ds, get())
         repo.insert(testSoeknad)
-
     }
 
     @AfterEach
     internal fun tearDown() {
-       repo.delete(testSoeknad.id)
+        repo.delete(testSoeknad.id)
     }
 
     @Test
@@ -50,5 +49,4 @@ class PostgresGravidSoeknadRepositoryTest : SystemTestBase() {
         val afterUpdate = repo.getById(soeknadGravidResult.id)
         assertThat(afterUpdate).isEqualTo(soeknadGravidResult)
     }
-
 }

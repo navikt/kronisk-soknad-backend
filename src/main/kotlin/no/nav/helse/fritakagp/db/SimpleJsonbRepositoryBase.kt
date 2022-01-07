@@ -9,7 +9,7 @@ interface SimpleJsonbEntity {
     val id: UUID
 }
 
-interface SimpleJsonbRepository<T: SimpleJsonbEntity> {
+interface SimpleJsonbRepository<T : SimpleJsonbEntity> {
     fun getById(id: UUID): T?
 
     fun insert(soeknad: T): T

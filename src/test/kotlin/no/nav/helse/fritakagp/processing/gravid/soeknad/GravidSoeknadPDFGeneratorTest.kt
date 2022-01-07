@@ -2,7 +2,6 @@ package no.nav.helse.fritakagp.processing.gravid.soeknad
 
 import no.nav.helse.GravidTestData
 import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadPDFGenerator.Companion.DATE_FORMAT
-import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadPDFGenerator.Companion.TIMESTAMP_FORMAT
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.text.PDFTextStripper
 import org.assertj.core.api.Assertions.assertThat

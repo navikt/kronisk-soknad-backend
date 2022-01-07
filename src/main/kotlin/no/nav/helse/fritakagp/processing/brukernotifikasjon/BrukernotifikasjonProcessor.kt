@@ -50,7 +50,7 @@ class BrukernotifikasjonProcessor(
     }
 
     private fun map(jobbData: Jobbdata): Beskjed {
-        return when(jobbData.skjemaType) {
+        return when (jobbData.skjemaType) {
             Jobbdata.SkjemaType.KroniskKrav -> {
                 val skjema = kroniskKravRepo.getById(jobbData.skjemaId) ?: throw IllegalArgumentException("Fant ikke $jobbData")
                 buildBeskjed(skjema.id, "$frontendAppBaseUrl/nb/notifikasjon/kronisk/krav/${skjema.id}", skjema.identitetsnummer, skjema.opprettet, skjema.virksomhetsnavn)
@@ -78,9 +78,9 @@ class BrukernotifikasjonProcessor(
         identitetsnummer: String,
         hendselstidspunkt: LocalDateTime,
         virksomhetsNavn: String?
-        ): Beskjed {
+    ): Beskjed {
 
-        val synligFremTil =  LocalDateTime.now().plusDays(31)
+        val synligFremTil = LocalDateTime.now().plusDays(31)
         val ukjentArbeidsgiver = "Arbeidsgiveren din"
         val hendelsestidsPunktUtc = hendselstidspunkt
             .atZone(ZoneId.systemDefault())
@@ -100,7 +100,6 @@ class BrukernotifikasjonProcessor(
 
         return beskjed
     }
-
 
     data class Jobbdata(
         val skjemaId: UUID,

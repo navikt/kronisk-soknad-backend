@@ -16,21 +16,21 @@ import java.time.DayOfWeek
 import java.time.Duration
 import java.time.LocalDateTime
 
-class DatapakkePublisherJob (
+class DatapakkePublisherJob(
     private val statsRepo: IStatsRepo,
     private val httpClient: HttpClient,
     private val datapakkeApiUrl: String,
     private val datapakkeId: String,
     private val om: ObjectMapper,
     private val applyWeeklyOnly: Boolean = false
-):
-RecurringJob(
-    CoroutineScope(Dispatchers.IO),
-    Duration.ofHours(3).toMillis()
-){
+) :
+    RecurringJob(
+        CoroutineScope(Dispatchers.IO),
+        Duration.ofHours(3).toMillis()
+    ) {
     override fun doJob() {
         val now = LocalDateTime.now()
-        if(applyWeeklyOnly && now.dayOfWeek != DayOfWeek.MONDAY && now.hour != 0) {
+        if (applyWeeklyOnly && now.dayOfWeek != DayOfWeek.MONDAY && now.hour != 0) {
             return // Ikke kjør jobben med mindre det er natt til mandag
         }
 
@@ -42,22 +42,35 @@ RecurringJob(
         val kroniskPaakjenningstyper = statsRepo.getKroniskSoeknadPaakjenningstyper()
 
         val populatedDatapakke = datapakkeTemplate
-            .replace("@timeseries", timeseries.map { //language=JSON
-                """[${it.uke}, ${it.antall}, "${it.tabell}"]"""
-            }.joinToString())
-            .replace("@GravidKravTiltak", //language=JSON
+            .replace(
+                "@timeseries",
+                timeseries.map { //language=JSON
+                    """[${it.uke}, ${it.antall}, "${it.tabell}"]"""
+                }.joinToString()
+            )
+            .replace(
+                "@GravidKravTiltak", //language=JSON
                 """{"value": ${gravidSoeknadTiltak.hjemmekontor}, "name": "Hjemmekontor"},
                    {"value": ${gravidSoeknadTiltak.tipasset_arbeidstid}, "name": "Tilpasset Arbeidstid"},
                    {"value": ${gravidSoeknadTiltak.tilpassede_arbeidsoppgaver}, "name": "Tilpassede Arbeidsoppgaver"},
-                   {"value": ${gravidSoeknadTiltak.annet}, "name": "Annet"}""".trimIndent()
-                )
-            .replace("@KroniskArbeidstyper", kroniskArbeidstyper.map { //language=JSON
-                """{"value": ${it.antall}, "name": ${it.type}}""" }.joinToString())
-            .replace("@KroniskPaakjenningstyper", kroniskPaakjenningstyper.map { //language=JSON
-                """{"value": ${it.antall}, "name": ${it.type}}""" }.joinToString())
+                   {"value": ${gravidSoeknadTiltak.annet}, "name": "Annet"}
+                """.trimIndent()
+            )
+            .replace(
+                "@KroniskArbeidstyper",
+                kroniskArbeidstyper.map { //language=JSON
+                    """{"value": ${it.antall}, "name": ${it.type}}"""
+                }.joinToString()
+            )
+            .replace(
+                "@KroniskPaakjenningstyper",
+                kroniskPaakjenningstyper.map { //language=JSON
+                    """{"value": ${it.antall}, "name": ${it.type}}"""
+                }.joinToString()
+            )
 
         runBlocking {
-            logger.info("Populerte datapakke template med data: ${populatedDatapakke}")
+            logger.info("Populerte datapakke template med data: $populatedDatapakke")
 
             val response = httpClient.put<HttpResponse>("$datapakkeApiUrl/$datapakkeId") {
                 contentType(ContentType.Application.Json)

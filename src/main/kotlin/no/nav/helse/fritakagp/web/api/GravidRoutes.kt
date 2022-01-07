@@ -24,11 +24,11 @@ import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadKvitteringP
 import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadProcessor
 import no.nav.helse.fritakagp.service.PdlService
 import no.nav.helse.fritakagp.web.api.resreq.*
-import no.nav.helse.fritakagp.web.auth.authorize
-import no.nav.helse.fritakagp.web.auth.hentIdentitetsnummerFraLoginToken
 import no.nav.helse.fritakagp.web.api.resreq.validation.VirusCheckConstraint
 import no.nav.helse.fritakagp.web.api.resreq.validation.extractBase64Del
 import no.nav.helse.fritakagp.web.api.resreq.validation.extractFilExtDel
+import no.nav.helse.fritakagp.web.auth.authorize
+import no.nav.helse.fritakagp.web.auth.hentIdentitetsnummerFraLoginToken
 import org.valiktor.ConstraintViolation
 import org.valiktor.ConstraintViolationException
 import org.valiktor.DefaultConstraintViolation
@@ -69,7 +69,7 @@ fun Route.gravidRoutes(
                 val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
                 val request = call.receive<GravidSoknadRequest>()
 
-                val isVirksomhet = if(application.environment.config.property("koin.profile").getString() == "PREPROD") true else breegClient.erVirksomhet(request.virksomhetsnummer)
+                val isVirksomhet = if (application.environment.config.property("koin.profile").getString() == "PREPROD") true else breegClient.erVirksomhet(request.virksomhetsnummer)
                 request.validate(isVirksomhet)
 
                 val sendtAvNavn = pdlService.finnNavn(innloggetFnr)
@@ -149,7 +149,7 @@ fun Route.gravidRoutes(
     }
 }
 
-fun periodValErrs(it: ConstraintViolation) : List<ValidationProblemDetail> {
+fun periodValErrs(it: ConstraintViolation): List<ValidationProblemDetail> {
     val valErrs = mutableListOf<ValidationProblemDetail>()
     if (it.property == "perioder") {
         (it.value as Set<*>).forEach { _ ->
@@ -163,12 +163,14 @@ fun periodValErrs(it: ConstraintViolation) : List<ValidationProblemDetail> {
             )
         }
     } else {
-        valErrs.add(ValidationProblemDetail(
-            it.constraint.name,
-            it.getContextualMessageNO(),
-            it.property,
-            it.value
-        ))
+        valErrs.add(
+            ValidationProblemDetail(
+                it.constraint.name,
+                it.getContextualMessageNO(),
+                it.property,
+                it.value
+            )
+        )
     }
 
     return valErrs
@@ -191,4 +193,3 @@ suspend fun processDocumentForGCPStorage(doc: String?, virusScanner: VirusScanne
         bucket.uploadDoc(id, fileContent, fileExt)
     }
 }
-

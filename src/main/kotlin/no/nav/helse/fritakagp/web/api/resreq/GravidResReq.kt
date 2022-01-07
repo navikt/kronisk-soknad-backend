@@ -31,7 +31,6 @@ data class GravidSoknadRequest(
             validate(GravidSoknadRequest::virksomhetsnummer).isValidOrganisasjonsnummer()
             validate(GravidSoknadRequest::virksomhetsnummer).isVirksomhet(isVirksomhet)
 
-
             if (this@GravidSoknadRequest.tilrettelegge) {
                 validate(GravidSoknadRequest::tiltak).isNotNull()
 
@@ -67,7 +66,6 @@ data class GravidSoknadRequest(
         harVedlegg = !dokumentasjon.isNullOrEmpty()
     )
 }
-
 
 data class GravidKravRequest(
     val virksomhetsnummer: String,
@@ -111,8 +109,6 @@ data class GravidKravRequest(
         kontrollDager = kontrollDager,
         antallDager = antallDager
     )
-
 }
-
 
 const val MB = 1024 * 1024

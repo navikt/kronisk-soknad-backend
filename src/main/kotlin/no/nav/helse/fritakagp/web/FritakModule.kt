@@ -47,8 +47,7 @@ fun Application.fritakModule(config: ApplicationConfig = environment.config) {
 }
 
 private fun Application.configureCORSAccess(config: ApplicationConfig) {
-    install(CORS)
-    {
+    install(CORS) {
         method(HttpMethod.Options)
         method(HttpMethod.Post)
         method(HttpMethod.Get)

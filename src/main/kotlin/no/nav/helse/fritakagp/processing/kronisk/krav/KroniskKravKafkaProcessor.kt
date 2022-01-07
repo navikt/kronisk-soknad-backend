@@ -12,7 +12,7 @@ import java.util.*
 class KroniskKravKafkaProcessor(
     private val kroniskKravRepo: KroniskKravRepository,
     private val kafkaProducer: KravmeldingSender,
-    private val om : ObjectMapper
+    private val om: ObjectMapper
 ) : BakgrunnsjobbProsesserer {
     companion object {
         val JOB_TYPE = "kronisk-krav-send-kafka"

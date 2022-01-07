@@ -87,7 +87,6 @@ class GravidSoeknadProcessor(
                     type = BrukernotifikasjonProcessor.JOB_TYPE
                 )
             )
-
         } finally {
             updateAndLogOnFailure(soeknad)
         }
@@ -118,7 +117,8 @@ class GravidSoeknadProcessor(
                 ),
                 dokumenter = createDocuments(soeknad, journalfoeringsTittel),
                 datoMottatt = soeknad.opprettet.toLocalDate()
-            ), true, UUID.randomUUID().toString()
+            ),
+            true, UUID.randomUUID().toString()
 
         )
 
@@ -141,7 +141,6 @@ class GravidSoeknadProcessor(
         requireNotNull(soeknad, { "Jobben indikerte en søknad med id ${jobb.data} men den kunne ikke finnes" })
         return soeknad
     }
-
 
     private fun createDocuments(
         soeknad: GravidSoeknad,
@@ -169,11 +168,11 @@ class GravidSoeknadProcessor(
                             fysiskDokument = it.base64Data,
                             filtype = if (it.extension == "jpg") "JPEG" else it.extension.uppercase()
                         ),
-                            DokumentVariant(
-                                    variantFormat = "ORIGINAL",
-                                    fysiskDokument = jsonOrginalDokument,
-                                    filtype = "JSON"
-                            )
+                        DokumentVariant(
+                            variantFormat = "ORIGINAL",
+                            fysiskDokument = jsonOrginalDokument,
+                            filtype = "JSON"
+                        )
                     ),
                     brevkode = dokumentasjonBrevkode,
                     tittel = "Helsedokumentasjon",
@@ -203,7 +202,7 @@ class GravidSoeknadProcessor(
         )
 
         return runBlocking {
-                oppgaveKlient.opprettOppgave(request, UUID.randomUUID().toString()).id.toString()
+            oppgaveKlient.opprettOppgave(request, UUID.randomUUID().toString()).id.toString()
         }
     }
 
@@ -228,7 +227,5 @@ class GravidSoeknadProcessor(
         return runBlocking { oppgaveKlient.opprettOppgave(request, UUID.randomUUID().toString()).id.toString() }
     }
 
-
     data class JobbData(val id: UUID)
-
 }

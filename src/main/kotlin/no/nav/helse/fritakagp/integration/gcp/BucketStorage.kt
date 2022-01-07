@@ -1,10 +1,10 @@
 package no.nav.helse.fritakagp.integration.gcp
 
+import com.google.cloud.storage.BlobId
+import com.google.cloud.storage.BlobInfo
 import com.google.cloud.storage.Bucket
 import com.google.cloud.storage.Storage
 import com.google.cloud.storage.StorageOptions
-import com.google.cloud.storage.BlobInfo
-import com.google.cloud.storage.BlobId
 import java.nio.file.Paths
 import java.util.*
 

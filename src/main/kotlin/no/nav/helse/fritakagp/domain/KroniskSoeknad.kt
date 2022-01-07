@@ -35,22 +35,22 @@ data class KroniskSoeknad(
     var oppgaveId: String? = null,
     // Må være null for tidligere verdier er lagret med null
     var sendtAvNavn: String? = null
-): SimpleJsonbEntity
+) : SimpleJsonbEntity
 
-data class FravaerData (
+data class FravaerData(
     val yearMonth: String,
     val antallDagerMedFravaer: Int
 ) {
     fun toLocalDate() = LocalDate.parse("$yearMonth-01")
 }
 
-enum class ArbeidsType(val beskrivelse : String) {
+enum class ArbeidsType(val beskrivelse: String) {
     STILLESITTENDE("Stillesittende arbeid"),
     MODERAT("Moderat fysisk arbeid"),
     KREVENDE("Fysisk krevende arbeid")
 }
 
-enum class PaakjenningsType(val beskrivelse : String) {
+enum class PaakjenningsType(val beskrivelse: String) {
     ALLERGENER("Allergener eller giftstoffer"),
     UKOMFORTABEL("Ukomfortabel temperatur eller luftfuktighet"),
     STRESSENDE("Stressende omgivelser"),

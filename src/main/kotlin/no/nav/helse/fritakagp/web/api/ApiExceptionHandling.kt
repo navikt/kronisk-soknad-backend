@@ -99,7 +99,7 @@ fun Application.configureExceptionHandling() {
                     )
                 )
             )
-            logger.warn("Feil med validering av ${cause.parameter.name ?: "Ukjent"} for ${userAgent}: ${cause.message}")
+            logger.warn("Feil med validering av ${cause.parameter.name ?: "Ukjent"} for $userAgent: ${cause.message}")
         }
 
         exception<JsonMappingException> { cause ->
@@ -124,5 +124,4 @@ fun Application.configureExceptionHandling() {
             handleValidationError(call, cause)
         }
     }
-
 }

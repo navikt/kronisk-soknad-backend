@@ -40,16 +40,18 @@ class AaregConstraintsKtTest {
         om.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
         om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 
-        om.setDefaultPrettyPrinter(DefaultPrettyPrinter().apply {
-            indentArraysWith(DefaultPrettyPrinter.FixedSpaceIndenter.instance)
-            indentObjectsWith(DefaultIndenter("  ", "\n"))
-        })
+        om.setDefaultPrettyPrinter(
+            DefaultPrettyPrinter().apply {
+                indentArraysWith(DefaultPrettyPrinter.FixedSpaceIndenter.instance)
+                indentObjectsWith(DefaultIndenter("  ", "\n"))
+            }
+        )
 
         // Legg aareg JSON-respons i src/test/resources/aareg.json
         val aaregFile = "aareg.json".loadFromResources()
         val arbeidsforhold = om.readValue<List<Arbeidsforhold>>(aaregFile)
             // Legg inn organisasjonsnummer
-            .filter { it.arbeidsgiver.organisasjonsnummer == "XXXXXXXX"}
+            .filter { it.arbeidsgiver.organisasjonsnummer == "XXXXXXXX" }
 
         // Endre til perioden kravet gjelder
         val arbeidsgiverPeriode = Arbeidsgiverperiode(
@@ -59,7 +61,7 @@ class AaregConstraintsKtTest {
             månedsinntekt = 2590.8,
         )
 
-        validate(arbeidsgiverPeriode){
+        validate(arbeidsgiverPeriode) {
             validate(Arbeidsgiverperiode::fom).måHaAktivtArbeidsforhold(arbeidsgiverPeriode, arbeidsforhold)
         }
     }
@@ -76,7 +78,6 @@ class AaregConstraintsKtTest {
         validate(periode) {
             validate(Arbeidsgiverperiode::fom).måHaAktivtArbeidsforhold(periode, AaregTestData.arbeidsforholdMedSluttDato)
         }
-
     }
 
     @Test
@@ -124,7 +125,6 @@ class AaregConstraintsKtTest {
             LocalDateTime.now()
         )
 
-
         val gravidKravRequest = GravidTestData.gravidKravRequestInValid.copy(
             perioder = listOf(
                 Arbeidsgiverperiode(
@@ -149,7 +149,6 @@ class AaregConstraintsKtTest {
                 )
             }
         }
-
     }
 
     @Test
@@ -169,7 +168,6 @@ class AaregConstraintsKtTest {
                 )
             }
         }
-
     }
 
     @Test
@@ -189,41 +187,44 @@ class AaregConstraintsKtTest {
                 )
             }
         }
-
     }
-
 
     @Test
     fun `merge fragmented periods`() {
         assertThat(
-            slåSammenPerioder(listOf(
-            // skal ble merget til 1 periode fra 1.1.21 til 28.2.21
-            Periode(LocalDate.of(2021, 1, 1), LocalDate.of(2021, 1, 29)),
-            Periode(LocalDate.of(2021, 2, 1), LocalDate.of(2021, 2, 13)),
-            Periode(LocalDate.of(2021, 2, 15), LocalDate.of(2021, 2, 28)),
+            slåSammenPerioder(
+                listOf(
+                    // skal ble merget til 1 periode fra 1.1.21 til 28.2.21
+                    Periode(LocalDate.of(2021, 1, 1), LocalDate.of(2021, 1, 29)),
+                    Periode(LocalDate.of(2021, 2, 1), LocalDate.of(2021, 2, 13)),
+                    Periode(LocalDate.of(2021, 2, 15), LocalDate.of(2021, 2, 28)),
 
-            // skal bli merget til 1
-            Periode(LocalDate.of(2021, 3, 20), LocalDate.of(2021, 3, 31)),
-            Periode(LocalDate.of(2021, 4, 2), LocalDate.of(2021, 4, 30)),
+                    // skal bli merget til 1
+                    Periode(LocalDate.of(2021, 3, 20), LocalDate.of(2021, 3, 31)),
+                    Periode(LocalDate.of(2021, 4, 2), LocalDate.of(2021, 4, 30)),
 
-            // skal bli merget til 1
-            Periode(LocalDate.of(2021, 7, 1), LocalDate.of(2021, 8, 30)),
-            Periode(LocalDate.of(2021, 9, 1), null),
-        ))
+                    // skal bli merget til 1
+                    Periode(LocalDate.of(2021, 7, 1), LocalDate.of(2021, 8, 30)),
+                    Periode(LocalDate.of(2021, 9, 1), null),
+                )
+            )
         ).hasSize(3)
 
         assertThat(
-            slåSammenPerioder(listOf(
-            Periode(LocalDate.of(2021, 1, 1), LocalDate.of(2021, 1, 29)),
-            Periode(LocalDate.of(2021, 9, 1), null),
-        ))
+            slåSammenPerioder(
+                listOf(
+                    Periode(LocalDate.of(2021, 1, 1), LocalDate.of(2021, 1, 29)),
+                    Periode(LocalDate.of(2021, 9, 1), null),
+                )
+            )
         ).hasSize(2)
 
         assertThat(
-            slåSammenPerioder(listOf(
-            Periode(LocalDate.of(2021, 9, 1), null),
-        ))
+            slåSammenPerioder(
+                listOf(
+                    Periode(LocalDate.of(2021, 9, 1), null),
+                )
+            )
         ).hasSize(1)
-
     }
 }

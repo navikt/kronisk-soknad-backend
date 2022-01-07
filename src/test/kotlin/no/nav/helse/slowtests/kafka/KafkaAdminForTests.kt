@@ -22,10 +22,10 @@ class KafkaAdminForTests {
     fun createTopicIfNotExists() {
         try {
             adminClient
-                    .createTopics(mutableListOf(NewTopic(topicName, 1, 1)))
-                    .all()
-                    .get(30, TimeUnit.SECONDS)
-        } catch(createException: java.util.concurrent.ExecutionException) {
+                .createTopics(mutableListOf(NewTopic(topicName, 1, 1)))
+                .all()
+                .get(30, TimeUnit.SECONDS)
+        } catch (createException: java.util.concurrent.ExecutionException) {
             if (createException.cause is TopicExistsException) {
                 println("topic exists")
             } else {
@@ -37,9 +37,9 @@ class KafkaAdminForTests {
     fun deleteTopicAndCloseConnection() {
         try {
             adminClient
-                    .deleteTopics(mutableListOf(topicName))
-                    .all()
-                    .get(30, TimeUnit.SECONDS)
+                .deleteTopics(mutableListOf(topicName))
+                .all()
+                .get(30, TimeUnit.SECONDS)
         } catch (ex: Exception) {
             println("can't delete topic")
         }
@@ -47,24 +47,25 @@ class KafkaAdminForTests {
     }
 }
 
-
 class SoeknadsmeldingKafkaConsumer(props: MutableMap<String, Any>, private val topicName: String) {
     private var currentBatch: List<String> = emptyList()
     private var lastThrown: Exception? = null
     private val consumer: KafkaConsumer<String, String> =
         KafkaConsumer(props, StringDeserializer(), StringDeserializer())
-    private val  topicPartition = TopicPartition(topicName, 0)
+    private val topicPartition = TopicPartition(topicName, 0)
 
     private val log = LoggerFactory.getLogger(this::class.java)
 
     init {
         consumer.assign(Collections.singletonList(topicPartition))
 
-        Runtime.getRuntime().addShutdownHook(Thread {
-            log.debug("Got shutdown message, closing Kafka connection...")
-            consumer.close()
-            log.debug("Kafka connection closed")
-        })
+        Runtime.getRuntime().addShutdownHook(
+            Thread {
+                log.debug("Got shutdown message, closing Kafka connection...")
+                consumer.close()
+                log.debug("Kafka connection closed")
+            }
+        )
     }
 
     fun stop() = consumer.close()
@@ -76,7 +77,7 @@ class SoeknadsmeldingKafkaConsumer(props: MutableMap<String, Any>, private val t
 
         try {
             val kafkaMessages = consumer.poll(Duration.ofSeconds(10))
-            val payloads = kafkaMessages.map {it.value() }
+            val payloads = kafkaMessages.map { it.value() }
             lastThrown = null
             currentBatch = payloads
 
@@ -93,4 +94,3 @@ class SoeknadsmeldingKafkaConsumer(props: MutableMap<String, Any>, private val t
         currentBatch = emptyList()
     }
 }
-

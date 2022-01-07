@@ -43,7 +43,7 @@ class KroniskKravPDFGenerator {
             with(content) {
                 writeTextWrapped("FOM: ${it.fom}")
                 writeTextWrapped("TOM: ${it.tom}")
-                writeTextWrapped("Sykmeldingsgrad: ${gradering}%")
+                writeTextWrapped("Sykmeldingsgrad: $gradering%")
                 writeTextWrapped("Antall dager det kreves refusjon for: ${it.antallDagerMedRefusjon}")
                 writeTextWrapped("Beregnet månedsinntekt (NOK): ${it.månedsinntekt}")
                 writeTextWrapped("Dagsats (NOK): ${it.dagsats}")

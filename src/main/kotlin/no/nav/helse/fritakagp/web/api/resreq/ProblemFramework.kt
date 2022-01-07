@@ -6,7 +6,6 @@ import org.valiktor.i18n.toMessage
 import java.net.URI
 import java.util.*
 
-
 /**
  * Tilbakemeldings-standard basert på
  *

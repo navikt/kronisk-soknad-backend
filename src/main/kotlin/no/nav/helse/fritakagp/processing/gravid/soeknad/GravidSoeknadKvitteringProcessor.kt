@@ -18,7 +18,6 @@ class GravidSoeknadKvitteringProcessor(
     }
     override val type: String get() = JOB_TYPE
 
-
     override fun prosesser(jobb: Bakgrunnsjobb) {
         val kvitteringJobbData = om.readValue(jobb.data, Jobbdata::class.java)
         val soeknad = db.getById(kvitteringJobbData.soeknadId)

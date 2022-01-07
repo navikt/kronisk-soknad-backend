@@ -156,7 +156,6 @@ class KroniskKravHTTPTests : SystemTestBase() {
         Assertions.assertThat(res.violations.size).isEqualTo(7)
         res.violations.forEach {
             Assertions.assertThat(it.propertyPath).isIn(possiblePropertyPaths)
-
         }
     }
 }

@@ -23,12 +23,11 @@ class PostgresKroniskSoeknadRepositoryTest : SystemTestBase() {
 
         repo = PostgresKroniskSoeknadRepository(ds, get())
         repo.insert(testSoeknad)
-
     }
 
     @AfterEach
     internal fun tearDown() {
-       repo.delete(testSoeknad.id)
+        repo.delete(testSoeknad.id)
     }
 
     @Test
@@ -50,5 +49,4 @@ class PostgresKroniskSoeknadRepositoryTest : SystemTestBase() {
         val afterUpdate = repo.getById(soeknadKroniskResult.id)
         assertThat(afterUpdate).isEqualTo(soeknadKroniskResult)
     }
-
 }

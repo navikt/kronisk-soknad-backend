@@ -13,7 +13,7 @@ interface KroniskSoeknadKvitteringSender {
     fun send(kvittering: KroniskSoeknad)
 }
 
-class KroniskSoeknadKvitteringSenderDummy: KroniskSoeknadKvitteringSender {
+class KroniskSoeknadKvitteringSenderDummy : KroniskSoeknadKvitteringSender {
     override fun send(kvittering: KroniskSoeknad) {
         println("Sender kvittering for søknad gravid: ${kvittering.id}")
     }
@@ -23,7 +23,8 @@ class KroniskSoeknadAltinnKvitteringSender(
     private val altinnTjenesteKode: String,
     private val iCorrespondenceAgencyExternalBasic: ICorrespondenceAgencyExternalBasic,
     private val username: String,
-    private val password: String) : KroniskSoeknadKvitteringSender {
+    private val password: String
+) : KroniskSoeknadKvitteringSender {
 
     companion object {
         const val SYSTEM_USER_CODE = "NAV_HELSEARBEIDSGIVER"
@@ -32,9 +33,9 @@ class KroniskSoeknadAltinnKvitteringSender(
     override fun send(kvittering: KroniskSoeknad) {
         try {
             val receiptExternal = iCorrespondenceAgencyExternalBasic.insertCorrespondenceBasicV2(
-                    username, password,
-                    SYSTEM_USER_CODE, kvittering.id.toString(),
-                    mapKvitteringTilInsertCorrespondence(kvittering)
+                username, password,
+                SYSTEM_USER_CODE, kvittering.id.toString(),
+                mapKvitteringTilInsertCorrespondence(kvittering)
             )
             if (receiptExternal.receiptStatusCode != ReceiptStatusEnum.OK) {
                 throw RuntimeException("Fikk uventet statuskode fra Altinn: ${receiptExternal.receiptStatusCode} ${receiptExternal.receiptText}")
@@ -71,7 +72,7 @@ class KroniskSoeknadAltinnKvitteringSender(
                </div>
            </body>
         </html>
-    """.trimIndent()
+        """.trimIndent()
 
         val meldingsInnhold = ExternalContentV2()
             .withLanguageCode("1044")

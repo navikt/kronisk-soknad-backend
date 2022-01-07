@@ -24,7 +24,6 @@ import org.slf4j.LoggerFactory
 import java.time.LocalDate
 import java.util.*
 
-
 class KroniskSoeknadProcessor(
     private val kroniskSoeknadRepo: KroniskSoeknadRepository,
     private val dokarkivKlient: DokarkivKlient,
@@ -85,7 +84,6 @@ class KroniskSoeknadProcessor(
                     type = BrukernotifikasjonProcessor.JOB_TYPE
                 )
             )
-
         } finally {
             updateAndLogOnFailure(soeknad)
         }
@@ -133,7 +131,8 @@ class KroniskSoeknadProcessor(
                 ),
                 dokumenter = createDocuments(soeknad, journalfoeringsTittel),
                 datoMottatt = soeknad.opprettet.toLocalDate()
-            ), true, UUID.randomUUID().toString()
+            ),
+            true, UUID.randomUUID().toString()
 
         )
 

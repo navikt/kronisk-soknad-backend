@@ -5,8 +5,8 @@ import no.nav.helse.slowtests.systemtests.api.SystemTestBase
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 
-class BrregClientImpTest  : SystemTestBase() {
-    private val enhetsUrl ="https://data.brreg.no/enhetsregisteret/api/underenheter"
+class BrregClientImpTest : SystemTestBase() {
+    private val enhetsUrl = "https://data.brreg.no/enhetsregisteret/api/underenheter"
 
     private val nesoddenKommuneVirksomhet = "996727750"
     private val nesoddenKommuneOrgLedd = "974637685"
@@ -45,8 +45,4 @@ class BrregClientImpTest  : SystemTestBase() {
         val navn = client.getVirksomhetsNavn("123456789")
         Assertions.assertThat(navn).isEqualTo("Ukjent arbeidsgiver")
     }
-
-
-
 }
-

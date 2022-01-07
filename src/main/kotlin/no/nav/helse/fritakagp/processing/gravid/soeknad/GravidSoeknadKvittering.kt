@@ -15,7 +15,7 @@ interface GravidSoeknadKvitteringSender {
     fun send(kvittering: GravidSoeknad)
 }
 
-class GravidSoeknadKvitteringSenderDummy: GravidSoeknadKvitteringSender {
+class GravidSoeknadKvitteringSenderDummy : GravidSoeknadKvitteringSender {
     override fun send(kvittering: GravidSoeknad) {
         println("Sender kvittering for søknad gravid: ${kvittering.id}")
     }
@@ -25,7 +25,8 @@ class GravidSoeknadAltinnKvitteringSender(
     private val altinnTjenesteKode: String,
     private val iCorrespondenceAgencyExternalBasic: ICorrespondenceAgencyExternalBasic,
     private val username: String,
-    private val password: String) : GravidSoeknadKvitteringSender {
+    private val password: String
+) : GravidSoeknadKvitteringSender {
 
     companion object {
         const val SYSTEM_USER_CODE = "NAV_HELSEARBEIDSGIVER"
@@ -34,9 +35,9 @@ class GravidSoeknadAltinnKvitteringSender(
     override fun send(kvittering: GravidSoeknad) {
         try {
             val receiptExternal = iCorrespondenceAgencyExternalBasic.insertCorrespondenceBasicV2(
-                    username, password,
-                    SYSTEM_USER_CODE, kvittering.id.toString(),
-                    mapKvitteringTilInsertCorrespondence(kvittering)
+                username, password,
+                SYSTEM_USER_CODE, kvittering.id.toString(),
+                mapKvitteringTilInsertCorrespondence(kvittering)
             )
             if (receiptExternal.receiptStatusCode != ReceiptStatusEnum.OK) {
                 throw RuntimeException("Fikk uventet statuskode fra Altinn: ${receiptExternal.receiptStatusCode} ${receiptExternal.receiptText}")
@@ -76,14 +77,13 @@ class GravidSoeknadAltinnKvitteringSender(
                </div>
            </body>
         </html>
-    """.trimIndent()
+        """.trimIndent()
 
         val meldingsInnhold = ExternalContentV2()
             .withLanguageCode("1044")
             .withMessageTitle(tittel)
             .withMessageBody(innhold)
             .withMessageSummary("Kvittering for søknad om fritak fra arbeidsgiverperioden ifbm graviditetsrelatert fravær")
-
 
         return InsertCorrespondenceV2()
             .withAllowForwarding(false)
@@ -93,8 +93,8 @@ class GravidSoeknadAltinnKvitteringSender(
             .withServiceEdition("1")
             .withContent(meldingsInnhold)
     }
-    fun jaEllerNei(verdi : Boolean) = if (verdi) "Ja" else "Nei"
-    fun lagreOmplasseringStr(kvittering: GravidSoeknad) : String {
+    fun jaEllerNei(verdi: Boolean) = if (verdi) "Ja" else "Nei"
+    fun lagreOmplasseringStr(kvittering: GravidSoeknad): String {
         return if (kvittering.omplassering != null)
             if (kvittering.omplassering == Omplassering.IKKE_MULIG)
                 """
@@ -105,7 +105,7 @@ class GravidSoeknadAltinnKvitteringSender(
         else ""
     }
 
-    fun lagreTiltak(tiltak: List<Tiltak>?) : String {
+    fun lagreTiltak(tiltak: List<Tiltak>?): String {
         var ret = ""
         if (tiltak != null) {
             ret += "<ul>"

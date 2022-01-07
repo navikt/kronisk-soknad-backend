@@ -8,7 +8,6 @@ import org.apache.kafka.common.errors.AuthenticationException
 import org.slf4j.LoggerFactory
 import java.util.concurrent.ExecutionException
 
-
 interface BrukernotifikasjonBeskjedSender {
     fun sendMessage(nokkel: Nokkel, beskjed: Beskjed): RecordMetadata?
 }
@@ -23,7 +22,7 @@ class MockBrukernotifikasjonBeskjedSender : BrukernotifikasjonBeskjedSender {
 class BrukernotifikasjonBeskjedKafkaProducer(
     private val props: Map<String, Any>,
     private val topicName: String,
-    private val producerFactory : ProducerFactory<Nokkel, Beskjed>
+    private val producerFactory: ProducerFactory<Nokkel, Beskjed>
 ) :
     BrukernotifikasjonBeskjedSender {
     private var producer = producerFactory.createProducer(props)
@@ -44,11 +43,9 @@ class BrukernotifikasjonBeskjedKafkaProducer(
                 return sendMelding(nokkel, beskjed)
             } else throw ex
         }
-
     }
 
     override fun sendMessage(nokkel: Nokkel, beskjed: Beskjed): RecordMetadata? {
         return sendKafkaMessage(nokkel, beskjed)
     }
 }
-

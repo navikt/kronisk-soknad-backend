@@ -15,14 +15,13 @@ import java.util.concurrent.TimeUnit
 interface KravmeldingSender {
     fun sendMessage(melding: KroniskKrav): RecordMetadata?
     fun sendMessage(melding: GravidKrav): RecordMetadata?
-
 }
 
 class KravmeldingKafkaProducer(
     private val props: Map<String, Any>,
     private val topicName: String,
     private val om: ObjectMapper,
-    private val producerFactory : ProducerFactory<String, String>
+    private val producerFactory: ProducerFactory<String, String>
 ) :
     KravmeldingSender {
     private var producer = producerFactory.createProducer(props)
@@ -52,7 +51,5 @@ class KravmeldingKafkaProducer(
                 return sendMelding(melding, type)
             } else throw ex
         }
-
     }
 }
-

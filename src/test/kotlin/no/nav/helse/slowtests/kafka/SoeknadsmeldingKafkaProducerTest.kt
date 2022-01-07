@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Test
 import org.koin.test.inject
 import kotlin.test.assertEquals
 
-
 internal class SoeknadsmeldingKafkaProducerTest : SystemTestBase() {
 
     private val om by inject<ObjectMapper>()

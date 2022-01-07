@@ -40,7 +40,6 @@ internal class KroniskSoknadRequestTest {
         Assertions.assertThat(KroniskTestData.fullValidRequest.toDomain(sendtAv, sendtAvNavn, navn).harVedlegg).isFalse()
     }
 
-
     @Test
     fun `Kan ikke ha eldre fraværsdata enn 2 år`() {
         KroniskTestData.fullValidRequest.copy(
@@ -57,7 +56,6 @@ internal class KroniskSoknadRequestTest {
             ).validate(true)
         }
     }
-
 
     @Test
     fun `Om påkjenninger ikke inneholder "ANNET" er beskrivelse ikke påkrevd`() {
@@ -112,5 +110,4 @@ internal class KroniskSoknadRequestTest {
             ).validate(true)
         }
     }
-
 }

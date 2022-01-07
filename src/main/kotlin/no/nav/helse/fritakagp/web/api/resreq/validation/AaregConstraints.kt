@@ -13,13 +13,13 @@ fun <E> Validator<E>.Property<LocalDate?>.måHaAktivtArbeidsforhold(agp: Arbeids
     this.validate(ArbeidsforholdConstraint()) {
         val ansattPerioder = slåSammenPerioder(aaregData.map { it.ansettelsesperiode.periode })
         return@validate ansattPerioder.any { ansPeriode ->
-            (ansPeriode.tom == null || agp.tom.isBefore(ansPeriode.tom) || agp.tom == ansPeriode.tom)
-                    && ansPeriode.fom!!.isBefore(agp.fom)
-        }
-            || aaregData.map { it.ansettelsesperiode.periode }.any{ ansPeriode ->
-            (ansPeriode.tom == null || agp.tom.isBefore(ansPeriode.tom) || agp.tom == ansPeriode.tom)
-                && ansPeriode.fom!!.isBefore(agp.fom)
-        }
+            (ansPeriode.tom == null || agp.tom.isBefore(ansPeriode.tom) || agp.tom == ansPeriode.tom) &&
+                ansPeriode.fom!!.isBefore(agp.fom)
+        } ||
+            aaregData.map { it.ansettelsesperiode.periode }.any { ansPeriode ->
+                (ansPeriode.tom == null || agp.tom.isBefore(ansPeriode.tom) || agp.tom == ansPeriode.tom) &&
+                    ansPeriode.fom!!.isBefore(agp.fom)
+            }
     }
 
 fun slåSammenPerioder(list: List<AaregPeriode>): List<AaregPeriode> {
@@ -42,7 +42,7 @@ fun slåSammenPerioder(list: List<AaregPeriode>): List<AaregPeriode> {
                 currentPeriod = AaregPeriode(currentPeriod.fom, connectedPeriod.tom)
                 remainingPeriods.remove(connectedPeriod)
             }
-        } while(connectedPeriod != null)
+        } while (connectedPeriod != null)
 
         merged.add(currentPeriod)
     } while (remainingPeriods.isNotEmpty())

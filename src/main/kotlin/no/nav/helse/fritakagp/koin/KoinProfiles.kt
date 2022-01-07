@@ -38,7 +38,6 @@ import org.koin.core.module.Module
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
-
 fun selectModuleBasedOnProfile(config: ApplicationConfig): List<Module> {
     val envModule = when (config.property("koin.profile").getString()) {
         "LOCAL" -> localDevConfig(config)
@@ -59,10 +58,12 @@ val common = module {
     om.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
     om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 
-    om.setDefaultPrettyPrinter(DefaultPrettyPrinter().apply {
-        indentArraysWith(DefaultPrettyPrinter.FixedSpaceIndenter.instance)
-        indentObjectsWith(DefaultIndenter("  ", "\n"))
-    })
+    om.setDefaultPrettyPrinter(
+        DefaultPrettyPrinter().apply {
+            indentArraysWith(DefaultPrettyPrinter.FixedSpaceIndenter.instance)
+            indentObjectsWith(DefaultIndenter("  ", "\n"))
+        }
+    )
 
     single { om }
 
@@ -84,7 +85,6 @@ val common = module {
     }
 
     single { httpClient }
-
 }
 
 // utils

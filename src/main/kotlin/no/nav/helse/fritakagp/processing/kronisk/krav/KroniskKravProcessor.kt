@@ -29,7 +29,7 @@ class KroniskKravProcessor(
     private val dokarkivKlient: DokarkivKlient,
     private val oppgaveKlient: OppgaveKlient,
     private val pdlClient: PdlClient,
-    private val bakgrunnsjobbRepo : BakgrunnsjobbRepository,
+    private val bakgrunnsjobbRepo: BakgrunnsjobbRepository,
     private val pdfGenerator: KroniskKravPDFGenerator,
     private val om: ObjectMapper,
     private val bucketStorage: BucketStorage,
@@ -88,7 +88,6 @@ class KroniskKravProcessor(
                     type = BrukernotifikasjonProcessor.JOB_TYPE
                 )
             )
-
         } finally {
             updateAndLogOnFailure(krav)
         }
@@ -135,7 +134,8 @@ class KroniskKravProcessor(
                 ),
                 dokumenter = createDocuments(krav, journalfoeringsTittel),
                 datoMottatt = krav.opprettet.toLocalDate()
-            ), true, UUID.randomUUID().toString()
+            ),
+            true, UUID.randomUUID().toString()
 
         )
 
@@ -156,9 +156,9 @@ class KroniskKravProcessor(
                         fysiskDokument = base64EnkodetPdf,
                     ),
                     DokumentVariant(
-                            filtype = "JSON",
-                            fysiskDokument = jsonOrginalDokument,
-                            variantFormat = "ORIGINAL"
+                        filtype = "JSON",
+                        fysiskDokument = jsonOrginalDokument,
+                        variantFormat = "ORIGINAL"
                     )
                 ),
                 brevkode = "krav_om_fritak_fra_agp_kronisk",
@@ -175,9 +175,9 @@ class KroniskKravProcessor(
                             filtype = if (it.extension == "jpg") "JPEG" else it.extension.uppercase()
                         ),
                         DokumentVariant(
-                                filtype = "JSON",
-                                fysiskDokument = jsonOrginalDokument,
-                                variantFormat = "ORIGINAL"
+                            filtype = "JSON",
+                            fysiskDokument = jsonOrginalDokument,
+                            variantFormat = "ORIGINAL"
                         )
                     ),
                     brevkode = dokumentasjonBrevkode,
@@ -194,7 +194,7 @@ class KroniskKravProcessor(
         requireNotNull(aktoerId) { "Fant ikke AktørID for fnr i ${krav.id}" }
         log.info("Fant aktørid")
         val request = OpprettOppgaveRequest(
-            tildeltEnhetsnr= "4488",
+            tildeltEnhetsnr = "4488",
             aktoerId = aktoerId,
             journalpostId = krav.journalpostId,
             beskrivelse = generereKroniskKravBeskrivelse(krav, "Krav om refusjon av arbeidsgiverperioden - kronisk eller langvarig sykdom"),
@@ -210,13 +210,12 @@ class KroniskKravProcessor(
         return runBlocking { oppgaveKlient.opprettOppgave(request, UUID.randomUUID().toString()).id.toString() }
     }
 
-
     fun opprettFordelingsOppgave(krav: KroniskKrav): String {
         val aktoerId = pdlClient.fullPerson(krav.identitetsnummer)?.hentIdenter?.trekkUtIdent(PdlIdent.PdlIdentGruppe.AKTORID)
         requireNotNull(aktoerId) { "Fant ikke AktørID for fnr i ${krav.id}" }
 
         val request = OpprettOppgaveRequest(
-            tildeltEnhetsnr= "4488",
+            tildeltEnhetsnr = "4488",
             aktoerId = aktoerId,
             journalpostId = krav.journalpostId,
             beskrivelse = generereKroniskKravBeskrivelse(krav, "Fordelingsoppgave for refusjonskrav ifbm sykdom i aprbeidsgiverperioden med fritak fra arbeidsgiverperioden grunnet kronisk sykdom."),
@@ -232,7 +231,5 @@ class KroniskKravProcessor(
         return runBlocking { oppgaveKlient.opprettOppgave(request, UUID.randomUUID().toString()).id.toString() }
     }
 
-
     data class JobbData(val id: UUID)
-
 }

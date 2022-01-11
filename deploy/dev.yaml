@@ -37,19 +37,6 @@ spec:
   leaderElection: false
   secureLogs:
     enabled: true
-  maskinporten:
-    enabled: true
-    scopes:
-      exposes:
-        - name: "nav:helsearbeidsgiver:fritakagp"
-          enabled: true
-          product: "helsearbeidsgiver"
-          allowedIntegrations:
-            - maskinporten
-          atMaxAge: 680
-          consumers:
-            - name: "NAV"
-              orgno: "889640782"
   azure:
     application:
       enabled: true

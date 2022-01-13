@@ -20,7 +20,7 @@ val jaxwsVersion = "2.3.1"
 val jaxwsToolsVersion = "2.3.3"
 val kafkaClient = "2.7.0"
 val confluentVersion = "6.0.1"
-val brukernotifikasjonSchemasVersion = "1.2021.01.18-11.12-b9c8c40b98d1"
+val brukernotifikasjonSchemasVersion = "2.4.1"
 val githubPassword: String by project
 
 plugins {

@@ -20,11 +20,18 @@ data class AntallType(
     val type: String
 )
 
+data class SykeGradAntall(
+    val antall: Int,
+    val bucket: Int,
+    val uke: Int
+)
+
 interface IStatsRepo {
     fun getWeeklyStats(): List<WeeklyStats>
     fun getGravidSoeknadTiltak(): GravidSoeknadTiltak
     fun getKroniskSoeknadArbeidstyper(): List<AntallType>
     fun getKroniskSoeknadPaakjenningstyper(): List<AntallType>
+    fun getSykeGradAntall(): List<SykeGradAntall>
 }
 
 class StatsRepoImpl(
@@ -150,6 +157,33 @@ class StatsRepoImpl(
                     AntallType(
                         res.getInt("antall"),
                         res.getString("paakjenning")
+                    )
+                )
+            }
+            return returnValue
+        }
+    }
+
+    override fun getSykeGradAntall(): List<SykeGradAntall> {
+        val query = """
+            SELECT count(bucket) as antall, bucket, uke
+            FROM (
+                SELECT width_bucket((json_array_elements((data#>'{perioder}')::json)->>'gradering')::float, 0.0, 1.0, 5) as bucket,
+                    extract('week' from date(data->>'opprettet')) as uke
+                FROM kravgravid
+                WHERE (data->>'opprettet')::DATE >  NOW()::DATE - INTERVAL '90 DAYS'
+                ) AS temp GROUP BY bucket, uke;
+        """.trimIndent()
+
+        ds.connection.use {
+            val res = it.prepareStatement(query).executeQuery()
+            val returnValue = ArrayList<SykeGradAntall>()
+            while (res.next()) {
+                returnValue.add(
+                    SykeGradAntall(
+                        res.getInt("antall"),
+                        res.getInt("bucket"),
+                        res.getInt("uke")
                     )
                 )
             }

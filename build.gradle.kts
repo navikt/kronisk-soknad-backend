@@ -4,7 +4,7 @@ val ktorVersion = "1.6.0"
 val logback_version = "1.2.7"
 val logback_contrib_version = "0.1.5"
 val jacksonVersion = "2.10.3"
-val prometheusVersion = "0.6.0"
+val prometheusVersion = "0.14.1"
 val hikariVersion = "3.3.1"
 val mainClass = "no.nav.helse.fritakagp.AppKt"
 val junitJupiterVersion = "5.7.0"
@@ -27,7 +27,7 @@ plugins {
     application
     kotlin("jvm") version "1.5.10"
     id("com.github.ben-manes.versions") version "0.27.0"
-    id("com.autonomousapps.dependency-analysis") version "0.71.0"
+    id("com.autonomousapps.dependency-analysis") version "0.79.0"
     jacoco
 }
 

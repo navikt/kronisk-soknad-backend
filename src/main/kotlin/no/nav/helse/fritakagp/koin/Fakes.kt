@@ -22,6 +22,7 @@ import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
 import org.koin.core.module.Module
 import org.koin.dsl.bind
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 fun Module.mockExternalDependecies() {
     single { MockAltinnRepo(get()) } bind AltinnOrganisationsRepository::class
@@ -112,6 +113,10 @@ fun Module.mockExternalDependecies() {
 
     single {
         object : OppgaveKlient {
+            override suspend fun hentOppgave(oppgaveId: Int, callId: String): OppgaveResponse {
+                return OppgaveResponse(oppgaveId, 1, oppgavetype = "JFR", aktivDato = LocalDateTime.now().minusDays(3).toLocalDate(), prioritet = Prioritet.NORM.toString())
+            }
+
             override suspend fun opprettOppgave(
                 opprettOppgaveRequest: OpprettOppgaveRequest,
                 callId: String

@@ -1,7 +1,6 @@
 package no.nav.helse.fritakagp.web.api.resreq
 
 import no.nav.helse.AaregTestData
-import no.nav.helse.GravidTestData
 import no.nav.helse.KroniskTestData
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
@@ -11,6 +10,13 @@ class KroniskKravRequestTest {
     val navn = "Personliga Person"
     val sendtAv = "123"
     val sendtAvNavn = "Ola M Avsender"
+
+    @Test
+    internal fun `Antall dager er påkrevd`() {
+        validationShouldFailFor(KroniskKravRequest::antallDager) {
+            KroniskTestData.kroniskKravRequestValid.copy(antallDager = 0).validate(AaregTestData.evigArbeidsForholdListe)
+        }
+    }
 
     @Test
     internal fun `Gyldig FNR er påkrevd`() {

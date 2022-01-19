@@ -18,6 +18,13 @@ class GravidKravRequestTest {
     val sendtAvNavn = "Ola M Avsender"
 
     @Test
+    internal fun `Antall dager er påkrevd`() {
+        validationShouldFailFor(GravidKravRequest::antallDager) {
+            GravidTestData.gravidKravRequestValid.copy(antallDager = 0).validate(AaregTestData.evigArbeidsForholdListe)
+        }
+    }
+
+    @Test
     internal fun `Gyldig FNR er påkrevd`() {
         validationShouldFailFor(GravidKravRequest::identitetsnummer) {
             GravidTestData.gravidKravRequestValid.copy(identitetsnummer = "01020312345").validate(AaregTestData.evigArbeidsForholdListe)

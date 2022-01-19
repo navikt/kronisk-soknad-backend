@@ -79,6 +79,7 @@ data class KroniskKravRequest(
 ) {
     fun validate(aktuelleArbeidsforhold: List<Arbeidsforhold>) {
         validate(this) {
+            validate(KroniskKravRequest::antallDager).isGreaterThan(0)
             validate(KroniskKravRequest::identitetsnummer).isValidIdentitetsnummer()
             validate(KroniskKravRequest::virksomhetsnummer).isValidOrganisasjonsnummer()
             validate(KroniskKravRequest::bekreftet).isTrue()

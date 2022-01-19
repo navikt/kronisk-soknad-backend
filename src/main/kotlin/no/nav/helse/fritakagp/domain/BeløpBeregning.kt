@@ -14,15 +14,19 @@ class BeløpBeregning(
     fun beregnBeløpGravid(krav: GravidKrav) = beregnPeriodeData(krav.perioder, krav.antallDager)
 
     private fun beregnPeriodeData(perioder: List<Arbeidsgiverperiode>, antallDager: Int) {
-        perioder.forEach {
-            val arslonn = it.månedsinntekt * 12
-            it.dagsats = if (arslonn < seksG)
-                round2DigitDecimal(arslonn / antallDager)
-            else
-                round2DigitDecimal(seksG / antallDager)
-            it.belop = round2DigitDecimal(it.dagsats * it.antallDagerMedRefusjon * it.gradering)
-        }
+        return beregnPeriodeDataSeksG(perioder, antallDager, seksG)
     }
-
-    private fun round2DigitDecimal(value: Double): Double = BigDecimal(value).setScale(2, RoundingMode.HALF_UP).toDouble()
 }
+
+fun beregnPeriodeDataSeksG(perioder: List<Arbeidsgiverperiode>, antallDager: Int, seksG: Double) {
+    perioder.forEach {
+        val arslonn = it.månedsinntekt * 12
+        it.dagsats = if (arslonn < seksG)
+            round2DigitDecimal(if (antallDager == 0) 0.0 else (arslonn / antallDager))
+        else
+            round2DigitDecimal(if (antallDager == 0) 0.0 else (seksG / antallDager))
+        it.belop = round2DigitDecimal(it.dagsats * it.antallDagerMedRefusjon * it.gradering)
+    }
+}
+
+fun round2DigitDecimal(value: Double): Double = BigDecimal(value).setScale(2, RoundingMode.HALF_UP).toDouble()

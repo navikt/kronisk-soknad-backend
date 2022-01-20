@@ -18,6 +18,30 @@ class GravidKravRequestTest {
     val sendtAvNavn = "Ola M Avsender"
 
     @Test
+    internal fun `Antall dager kan ikke være mer enn dager i året`() {
+        validationShouldFailFor(GravidKravRequest::antallDager) {
+            GravidTestData.gravidKravRequestValid.copy(antallDager = 367).validate(AaregTestData.evigArbeidsForholdListe)
+        }
+    }
+
+    @Test
+    internal fun `Antall dager kan ikke være negativt`() {
+        validationShouldFailFor(GravidKravRequest::antallDager) {
+            GravidTestData.gravidKravRequestValid.copy(antallDager = -1).validate(AaregTestData.evigArbeidsForholdListe)
+        }
+    }
+
+    @Test
+    internal fun `Antall dager må være 1-366`() {
+        validationShouldFailFor(GravidKravRequest::antallDager) {
+            GravidTestData.gravidKravRequestValid.copy(antallDager = 0).validate(AaregTestData.evigArbeidsForholdListe)
+        }
+        validationShouldFailFor(GravidKravRequest::antallDager) {
+            GravidTestData.gravidKravRequestValid.copy(antallDager = 367).validate(AaregTestData.evigArbeidsForholdListe)
+        }
+    }
+
+    @Test
     internal fun `Gyldig FNR er påkrevd`() {
         validationShouldFailFor(GravidKravRequest::identitetsnummer) {
             GravidTestData.gravidKravRequestValid.copy(identitetsnummer = "01020312345").validate(AaregTestData.evigArbeidsForholdListe)

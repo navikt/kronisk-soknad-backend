@@ -1,7 +1,6 @@
 package no.nav.helse.fritakagp.web.api.resreq
 
 import no.nav.helse.AaregTestData
-import no.nav.helse.GravidTestData
 import no.nav.helse.KroniskTestData
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
@@ -11,6 +10,30 @@ class KroniskKravRequestTest {
     val navn = "Personliga Person"
     val sendtAv = "123"
     val sendtAvNavn = "Ola M Avsender"
+
+    @Test
+    internal fun `Antall dager kan ikke være mer enn dager i året`() {
+        validationShouldFailFor(KroniskKravRequest::antallDager) {
+            KroniskTestData.kroniskKravRequestValid.copy(antallDager = 367).validate(AaregTestData.evigArbeidsForholdListe)
+        }
+    }
+
+    @Test
+    internal fun `Antall dager kan ikke være negativt`() {
+        validationShouldFailFor(KroniskKravRequest::antallDager) {
+            KroniskTestData.kroniskKravRequestValid.copy(antallDager = -1).validate(AaregTestData.evigArbeidsForholdListe)
+        }
+    }
+
+    @Test
+    internal fun `Antall dager må være 1-366`() {
+        validationShouldFailFor(KroniskKravRequest::antallDager) {
+            KroniskTestData.kroniskKravRequestValid.copy(antallDager = 0).validate(AaregTestData.evigArbeidsForholdListe)
+        }
+        validationShouldFailFor(KroniskKravRequest::antallDager) {
+            KroniskTestData.kroniskKravRequestValid.copy(antallDager = 367).validate(AaregTestData.evigArbeidsForholdListe)
+        }
+    }
 
     @Test
     internal fun `Gyldig FNR er påkrevd`() {

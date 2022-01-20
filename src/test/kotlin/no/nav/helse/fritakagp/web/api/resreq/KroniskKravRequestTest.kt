@@ -12,9 +12,26 @@ class KroniskKravRequestTest {
     val sendtAvNavn = "Ola M Avsender"
 
     @Test
-    internal fun `Antall dager er påkrevd`() {
+    internal fun `Antall dager kan ikke være mer enn dager i året`() {
+        validationShouldFailFor(KroniskKravRequest::antallDager) {
+            KroniskTestData.kroniskKravRequestValid.copy(antallDager = 367).validate(AaregTestData.evigArbeidsForholdListe)
+        }
+    }
+
+    @Test
+    internal fun `Antall dager kan ikke være negativt`() {
+        validationShouldFailFor(KroniskKravRequest::antallDager) {
+            KroniskTestData.kroniskKravRequestValid.copy(antallDager = -1).validate(AaregTestData.evigArbeidsForholdListe)
+        }
+    }
+
+    @Test
+    internal fun `Antall dager må være 1-366`() {
         validationShouldFailFor(KroniskKravRequest::antallDager) {
             KroniskTestData.kroniskKravRequestValid.copy(antallDager = 0).validate(AaregTestData.evigArbeidsForholdListe)
+        }
+        validationShouldFailFor(KroniskKravRequest::antallDager) {
+            KroniskTestData.kroniskKravRequestValid.copy(antallDager = 367).validate(AaregTestData.evigArbeidsForholdListe)
         }
     }
 

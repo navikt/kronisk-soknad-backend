@@ -79,6 +79,7 @@ data class GravidKravRequest(
     fun validate(aktuelleArbeidsforhold: List<Arbeidsforhold>) {
         validate(this) {
             validate(GravidKravRequest::antallDager).isGreaterThan(0)
+            validate(GravidKravRequest::antallDager).isLessThanOrEqualTo(366)
             validate(GravidKravRequest::identitetsnummer).isValidIdentitetsnummer()
             validate(GravidKravRequest::virksomhetsnummer).isValidOrganisasjonsnummer()
             validate(GravidKravRequest::bekreftet).isTrue()

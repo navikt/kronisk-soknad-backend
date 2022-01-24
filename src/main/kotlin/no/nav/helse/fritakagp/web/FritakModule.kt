@@ -40,6 +40,7 @@ fun Application.fritakModule(config: ApplicationConfig = environment.config) {
                 kroniskRoutes(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
                 gravidRoutes(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
                 altinnRoutes(get())
+                virksomhetsRoutes(get(), get(), get())
             }
         }
         swaggerRoutes("$apiBasePath")

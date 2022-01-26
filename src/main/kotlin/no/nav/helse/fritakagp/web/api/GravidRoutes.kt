@@ -154,14 +154,14 @@ fun Route.gravidRoutes(
                 var form = gravidKravRepo.getById(kravId)
                 if (form == null || form.identitetsnummer != innloggetFnr) {
                     call.respond(HttpStatusCode.NotFound)
-                }
-                else{
+                } else {
                     form.status = KravStatus.SLETTET
                     form.endretDato = LocalDateTime.now()
                     gravidKravRepo.update(form)
                     call.respond(HttpStatusCode.OK)
                 }
             }
+        }
     }
 }
 

@@ -40,34 +40,37 @@ class StatsRepoImpl(
     override fun getWeeklyStats(): List<WeeklyStats> {
         val query = """
             select
-                extract('week' from date(data->>'opprettet')) as uke,
+                extract('week' from date_trunc('week', date(data->>'opprettet'))) as uke,
+                extract('year' from date_trunc('week', date(data->>'opprettet'))) as year,
                 count(*) as antall,
                 'gravid_soeknad' as table_name
             from soeknadgravid
-            group by uke
+            group by year, uke
             UNION ALL
             select
-                extract('week' from date(data->>'opprettet')) as uke,
+                extract('week' from date_trunc('week', date(data->>'opprettet'))) as uke,
+                extract('year' from date_trunc('week', date(data->>'opprettet'))) as year,
                 count(*) as antall,
                 'kronisk_soeknad' as table_name
             from soeknadkronisk
-            group by uke
+            group by year, uke
             UNION ALL
             select
-                extract('week' from date(data->>'opprettet')) as uke,
+                extract('week' from date_trunc('week', date(data->>'opprettet'))) as uke,
+                extract('year' from date_trunc('week', date(data->>'opprettet'))) as year,
                 count(*) as antall,
                 'kronisk_krav' as table_name
             from krav_kronisk
-            group by uke
+            group by year, uke
             UNION ALL
             select
-                extract('week' from date(data->>'opprettet')) as uke,
+                extract('week' from date_trunc('week', date(data->>'opprettet'))) as uke,
+                extract('year' from date_trunc('week', date(data->>'opprettet'))) as year,
                 count(*) as antall,
                 'gravid_krav' as table_name
             from kravgravid
-            group by uke
-            --where uke > extract('week' from DATE::now())) - 12
-            order by uke;
+            group by year, uke
+            order by year, uke;
         """.trimIndent()
 
         ds.connection.use {

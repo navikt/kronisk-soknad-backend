@@ -78,7 +78,7 @@
 
           ],
           "xAxis": {
-            "type": "value",
+            "type": "category",
             "name": "Uke"
           },
           "yAxis": [

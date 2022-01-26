@@ -173,7 +173,7 @@ class StatsRepoImpl(
             FROM (
                 SELECT width_bucket((json_array_elements((data#>'{perioder}')::json)->>'gradering')::float, 0.0, 1.0, 5) as bucket,
                     extract('week' from date(data->>'opprettet')) as uke
-                FROM kravgravid
+                FROM krav_kronisk
                 WHERE (data->>'opprettet')::DATE >  NOW()::DATE - INTERVAL '90 DAYS'
                 ) AS temp GROUP BY bucket, uke;
         """.trimIndent()

@@ -110,7 +110,7 @@ spec:
         databases:
           - name: fritakagp-db
             diskAutoresize: true
-            users:
+            - users:
               name: fritakagpekstern
     buckets:
       - name: helse-arbeidsgiver-fritakagb-bucket

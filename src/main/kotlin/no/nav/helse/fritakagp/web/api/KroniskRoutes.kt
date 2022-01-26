@@ -146,9 +146,10 @@ fun Route.kroniskRoutes(
                 val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
                 val kravId = UUID.fromString(call.parameters["id"])
                 var form = kroniskKravRepo.getById(kravId)
-                if (form == null || form.identitetsnummer != innloggetFnr) {
+                if (form == null) {
                     call.respond(HttpStatusCode.NotFound)
                 } else {
+                    authorize(authorizer, form.virksomhetsnummer)
                     form.status = KravStatus.SLETTET
                     form.endretDato = LocalDateTime.now()
                     kroniskKravRepo.update(form)

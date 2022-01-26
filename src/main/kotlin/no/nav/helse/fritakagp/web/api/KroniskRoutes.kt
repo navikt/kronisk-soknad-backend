@@ -148,8 +148,7 @@ fun Route.kroniskRoutes(
                 var form = kroniskKravRepo.getById(kravId)
                 if (form == null || form.identitetsnummer != innloggetFnr) {
                     call.respond(HttpStatusCode.NotFound)
-                }
-                else{
+                } else {
                     form.status = KravStatus.SLETTET
                     form.endretDato = LocalDateTime.now()
                     kroniskKravRepo.update(form)

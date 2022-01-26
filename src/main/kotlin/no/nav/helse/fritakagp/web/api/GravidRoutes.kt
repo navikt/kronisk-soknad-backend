@@ -14,6 +14,7 @@ import no.nav.helse.fritakagp.GravidSoeknadMetrics
 import no.nav.helse.fritakagp.db.GravidKravRepository
 import no.nav.helse.fritakagp.db.GravidSoeknadRepository
 import no.nav.helse.fritakagp.domain.BeløpBeregning
+import no.nav.helse.fritakagp.domain.KravStatus
 import no.nav.helse.fritakagp.domain.decodeBase64File
 import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
@@ -32,6 +33,7 @@ import no.nav.helse.fritakagp.web.api.resreq.validation.extractFilExtDel
 import org.valiktor.ConstraintViolation
 import org.valiktor.ConstraintViolationException
 import org.valiktor.DefaultConstraintViolation
+import java.time.LocalDateTime
 import java.util.*
 import javax.sql.DataSource
 
@@ -145,7 +147,21 @@ fun Route.gravidRoutes(
                 call.respond(HttpStatusCode.Created, krav)
                 GravidKravMetrics.tellMottatt()
             }
-        }
+
+            delete("/{id}") {
+                val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
+                val kravId = UUID.fromString(call.parameters["id"])
+                var form = gravidKravRepo.getById(kravId)
+                if (form == null || form.identitetsnummer != innloggetFnr) {
+                    call.respond(HttpStatusCode.NotFound)
+                }
+                else{
+                    form.status = KravStatus.SLETTET
+                    form.endretDato = LocalDateTime.now()
+                    gravidKravRepo.update(form)
+                    call.respond(HttpStatusCode.OK)
+                }
+            }
     }
 }
 

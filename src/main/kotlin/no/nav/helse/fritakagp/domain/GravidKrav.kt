@@ -23,5 +23,15 @@ data class GravidKrav(
     var oppgaveId: String? = null,
     var virksomhetsnavn: String? = null,
     // Må være null for tidligere verdier er lagret med null
-    var sendtAvNavn: String? = null
+    var sendtAvNavn: String? = null,
+
+    var status: KravStatus = KravStatus.OPPRETTET,
+    var aarsakEndring: String? = null,
+    var endretDato: LocalDateTime? = null
 ) : SimpleJsonbEntity
+
+enum class KravStatus {
+    OPPRETTET,
+    ENDRET,
+    SLETTET
+}

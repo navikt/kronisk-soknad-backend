@@ -14,6 +14,7 @@ import no.nav.helse.fritakagp.KroniskSoeknadMetrics
 import no.nav.helse.fritakagp.db.KroniskKravRepository
 import no.nav.helse.fritakagp.db.KroniskSoeknadRepository
 import no.nav.helse.fritakagp.domain.BeløpBeregning
+import no.nav.helse.fritakagp.domain.KravStatus
 import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
@@ -26,6 +27,7 @@ import no.nav.helse.fritakagp.web.api.resreq.KroniskKravRequest
 import no.nav.helse.fritakagp.web.api.resreq.KroniskSoknadRequest
 import no.nav.helse.fritakagp.web.auth.authorize
 import no.nav.helse.fritakagp.web.auth.hentIdentitetsnummerFraLoginToken
+import java.time.LocalDateTime
 import java.util.*
 import javax.sql.DataSource
 
@@ -138,6 +140,21 @@ fun Route.kroniskRoutes(
 
                 call.respond(HttpStatusCode.Created, krav)
                 KroniskKravMetrics.tellMottatt()
+            }
+
+            delete("/{id}") {
+                val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
+                val kravId = UUID.fromString(call.parameters["id"])
+                var form = kroniskKravRepo.getById(kravId)
+                if (form == null || form.identitetsnummer != innloggetFnr) {
+                    call.respond(HttpStatusCode.NotFound)
+                }
+                else{
+                    form.status = KravStatus.SLETTET
+                    form.endretDato = LocalDateTime.now()
+                    kroniskKravRepo.update(form)
+                    call.respond(HttpStatusCode.OK)
+                }
             }
         }
     }

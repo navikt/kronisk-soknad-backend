@@ -41,7 +41,6 @@ spec:
     application:
       enabled: true
 
-
   accessPolicy:
     outbound:
       external:
@@ -110,8 +109,6 @@ spec:
         databases:
           - name: fritakagp-db
             diskAutoresize: true
-            users:
-            - name: fritakagpekstern
     buckets:
       - name: helse-arbeidsgiver-fritakagb-bucket
         uniformBucketLevelAccess: true

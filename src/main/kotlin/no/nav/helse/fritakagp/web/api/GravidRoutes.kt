@@ -84,7 +84,7 @@ fun Route.gravidRoutes(
                 datasource.connection.use { connection ->
                     gravidSoeknadRepo.insert(soeknad, connection)
                     bakgunnsjobbService.opprettJobb<GravidSoeknadProcessor>(
-                        maksAntallForsoek = 8,
+                        maksAntallForsoek = 10,
                         data = om.writeValueAsString(GravidSoeknadProcessor.JobbData(soeknad.id)),
                         connection = connection
                     )
@@ -134,7 +134,7 @@ fun Route.gravidRoutes(
                 datasource.connection.use { connection ->
                     gravidKravRepo.insert(krav, connection)
                     bakgunnsjobbService.opprettJobb<GravidKravProcessor>(
-                        maksAntallForsoek = 8,
+                        maksAntallForsoek = 10,
                         data = om.writeValueAsString(GravidKravProcessor.JobbData(krav.id)),
                         connection = connection
                     )

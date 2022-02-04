@@ -19,6 +19,7 @@ import no.nav.helse.fritakagp.processing.gravid.krav.*
 import no.nav.helse.fritakagp.processing.gravid.soeknad.*
 import no.nav.helse.fritakagp.processing.kronisk.krav.*
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.*
+import no.nav.helse.fritakagp.service.BehandlendeEnhetService
 import no.nav.helse.fritakagp.service.PdlService
 import org.koin.dsl.bind
 import org.koin.dsl.module

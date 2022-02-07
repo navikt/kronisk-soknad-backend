@@ -41,7 +41,7 @@ class BehandlendeEnhetService(
                 tidspunkt
             )
 
-            log.info("Fant geografiskTilknytning ${geografiskTilknytning.geografiskTilknytning} med behandlendeEnhet $behandlendeEnhet for inntektsmelding $uuid")
+            log.info("Fant geografiskTilknytning ${geografiskTilknytning.geografiskTilknytning} med behandlendeEnhet $behandlendeEnhet for krav $uuid")
             return behandlendeEnhet
         } catch (e: RuntimeException) {
             log.error("Klarte ikke å hente behandlende enhet!", e)

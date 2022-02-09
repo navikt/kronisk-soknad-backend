@@ -20,7 +20,6 @@ import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor.Jobbdata.SkjemaType
-import no.nav.helse.fritakagp.service.BehandlendeEnhetService
 import org.slf4j.LoggerFactory
 import java.time.LocalDate
 import java.util.*
@@ -34,8 +33,7 @@ class GravidKravProcessor(
     private val pdfGenerator: GravidKravPDFGenerator,
     private val om: ObjectMapper,
     private val bucketStorage: BucketStorage,
-    private val brregClient: BrregClient,
-    private val behandlendeEnhetService: BehandlendeEnhetService
+    private val brregClient: BrregClient
 
 ) : BakgrunnsjobbProsesserer {
     companion object {
@@ -191,12 +189,11 @@ class GravidKravProcessor(
 
     fun opprettOppgave(krav: GravidKrav): String {
         val aktoerId = pdlClient.fullPerson(krav.identitetsnummer)?.hentIdenter?.trekkUtIdent(PdlIdent.PdlIdentGruppe.AKTORID)
-        val enhetsNr = behandlendeEnhetService.hentBehandlendeEnhet(krav.identitetsnummer, krav.id.toString())
         requireNotNull(aktoerId) { "Fant ikke AktørID for fnr i ${krav.id}" }
         krav.oppgaveId
         oppgaveKlient
         val request = OpprettOppgaveRequest(
-            tildeltEnhetsnr = enhetsNr,
+            tildeltEnhetsnr = "4488",
             aktoerId = aktoerId,
             journalpostId = krav.journalpostId,
             beskrivelse = generereGravidkKravBeskrivelse(krav, "Krav om refusjon av arbeidsgiverperioden ifbm. graviditet"),
@@ -214,11 +211,10 @@ class GravidKravProcessor(
 
     fun opprettFordelingsOppgave(krav: GravidKrav): String {
         val aktoerId = pdlClient.fullPerson(krav.identitetsnummer)?.hentIdenter?.trekkUtIdent(PdlIdent.PdlIdentGruppe.AKTORID)
-        val enhetsNr = behandlendeEnhetService.hentBehandlendeEnhet(krav.identitetsnummer, krav.id.toString())
         requireNotNull(aktoerId) { "Fant ikke AktørID for fnr i ${krav.id}" }
 
         val request = OpprettOppgaveRequest(
-            tildeltEnhetsnr = enhetsNr,
+            tildeltEnhetsnr = "4488",
             aktoerId = aktoerId,
             journalpostId = krav.journalpostId,
             beskrivelse = generereGravidkKravBeskrivelse(krav, "Klarte ikke å opprette oppgave og/eller journalføre for dette refusjonskravet: ${krav.id}"),

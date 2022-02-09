@@ -23,7 +23,6 @@ import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketDocument
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
-import no.nav.helse.fritakagp.service.BehandlendeEnhetService
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -42,8 +41,7 @@ class GravidKravProcessorTest {
     val bucketStorageMock = mockk<BucketStorage>(relaxed = true)
     val bakgrunnsjobbRepomock = mockk<BakgrunnsjobbRepository>(relaxed = true)
     val berregServiceMock = mockk<BrregClient>(relaxed = true)
-    val behandlendeEnhetService = mockk<BehandlendeEnhetService>(relaxed = true)
-    val prosessor = GravidKravProcessor(repositoryMock, joarkMock, oppgaveMock, pdlClientMock, bakgrunnsjobbRepomock, pdfGeneratorMock, objectMapper, bucketStorageMock, berregServiceMock, behandlendeEnhetService)
+    val prosessor = GravidKravProcessor(repositoryMock, joarkMock, oppgaveMock, pdlClientMock, bakgrunnsjobbRepomock, pdfGeneratorMock, objectMapper, bucketStorageMock, berregServiceMock)
     lateinit var krav: GravidKrav
 
     private val oppgaveId = 9999

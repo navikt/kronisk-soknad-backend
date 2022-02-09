@@ -20,7 +20,6 @@ import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor.Jobbdata.SkjemaType
-import no.nav.helse.fritakagp.service.BehandlendeEnhetService
 import org.slf4j.LoggerFactory
 import java.time.LocalDate
 import java.util.*
@@ -34,8 +33,7 @@ class KroniskKravProcessor(
     private val pdfGenerator: KroniskKravPDFGenerator,
     private val om: ObjectMapper,
     private val bucketStorage: BucketStorage,
-    private val brregClient: BrregClient,
-    private val behandlendeEnhetService: BehandlendeEnhetService,
+    private val brregClient: BrregClient
 ) : BakgrunnsjobbProsesserer {
     companion object {
         val JOB_TYPE = "kronisk-krav-formidling"
@@ -193,11 +191,10 @@ class KroniskKravProcessor(
 
     fun opprettOppgave(krav: KroniskKrav): String {
         val aktoerId = pdlClient.fullPerson(krav.identitetsnummer)?.hentIdenter?.trekkUtIdent(PdlIdent.PdlIdentGruppe.AKTORID)
-        val enhetsNr = behandlendeEnhetService.hentBehandlendeEnhet(krav.identitetsnummer, krav.id.toString())
         requireNotNull(aktoerId) { "Fant ikke AktørID for fnr i ${krav.id}" }
         log.info("Fant aktørid")
         val request = OpprettOppgaveRequest(
-            tildeltEnhetsnr = enhetsNr,
+            tildeltEnhetsnr = "4488",
             aktoerId = aktoerId,
             journalpostId = krav.journalpostId,
             beskrivelse = generereKroniskKravBeskrivelse(krav, "Krav om refusjon av arbeidsgiverperioden - kronisk eller langvarig sykdom"),
@@ -215,11 +212,10 @@ class KroniskKravProcessor(
 
     fun opprettFordelingsOppgave(krav: KroniskKrav): String {
         val aktoerId = pdlClient.fullPerson(krav.identitetsnummer)?.hentIdenter?.trekkUtIdent(PdlIdent.PdlIdentGruppe.AKTORID)
-        val enhetsNr = behandlendeEnhetService.hentBehandlendeEnhet(krav.identitetsnummer, krav.id.toString())
         requireNotNull(aktoerId) { "Fant ikke AktørID for fnr i ${krav.id}" }
 
         val request = OpprettOppgaveRequest(
-            tildeltEnhetsnr = enhetsNr,
+            tildeltEnhetsnr = "4488",
             aktoerId = aktoerId,
             journalpostId = krav.journalpostId,
             beskrivelse = generereKroniskKravBeskrivelse(krav, "Fordelingsoppgave for refusjonskrav ifbm sykdom i aprbeidsgiverperioden med fritak fra arbeidsgiverperioden grunnet kronisk sykdom."),

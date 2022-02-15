@@ -102,6 +102,8 @@ spec:
       value: "a4570c9e9521df726e1050ebcd917b9a"
     - name: DATAPAKKE_API_URL
       value: "https://datakatalog-api.dev.intern.nav.no/v1/datapackage"
+    - name: NORG2_URL
+      value: https://helsearbeidsgiver-proxy.dev-fss-pub.nais.io/norg
 
   gcp:
     sqlInstances:
@@ -112,11 +114,11 @@ spec:
     buckets:
       - name: helse-arbeidsgiver-fritakagb-bucket
         uniformBucketLevelAccess: true
-        #retentionPeriodDays: 30
-         # lifecycleCondition:
-         # age: 7
-         # createdBefore: 2020-01-01
-         # numNewerVersions: 2
+          #retentionPeriodDays: 30
+          # lifecycleCondition:
+          # age: 7
+          # createdBefore: 2020-01-01
+        # numNewerVersions: 2
         #  withState: ANY
 
   kafka:

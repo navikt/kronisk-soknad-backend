@@ -76,6 +76,7 @@ fun generereKroniskKravBeskrivelse(krav: KroniskKrav, desc: String): String {
         appendLine("Mottatt: ${getPDFTimeStampFormat().format(krav.opprettet)}")
         appendLine("Person (FNR): ${krav.identitetsnummer}")
         appendLine("Arbeidsgiver oppgitt i krav: ${krav.virksomhetsnavn} (${krav.virksomhetsnummer})")
+        appendLine("Antall lønnsdager: ${krav.antallDager}")
         appendLine("Periode:")
         appendLine(genererePeriodeTable(krav.perioder))
     }
@@ -87,6 +88,7 @@ fun generereGravidkKravBeskrivelse(krav: GravidKrav, desc: String): String {
         appendLine("Mottatt: ${getPDFTimeStampFormat().format(krav.opprettet)}")
         appendLine("Person (FNR): ${krav.identitetsnummer}")
         appendLine("Arbeidsgiver oppgitt i krav: ${krav.virksomhetsnavn} (${krav.virksomhetsnummer})")
+        appendLine("Antall lønnsdager: ${krav.antallDager}")
         appendLine("Periode:")
         appendLine(genererePeriodeTable(krav.perioder))
     }

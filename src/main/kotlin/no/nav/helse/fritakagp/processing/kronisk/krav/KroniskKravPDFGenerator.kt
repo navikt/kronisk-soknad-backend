@@ -36,6 +36,7 @@ class KroniskKravPDFGenerator {
         content.writeTextWrapped("Sendt av: ${krav.sendtAvNavn}")
         content.writeTextWrapped("Person navn: ${krav.navn}")
         content.writeTextWrapped("Arbeidsgiver oppgitt i krav: ${krav.virksomhetsnavn} (${krav.virksomhetsnummer})")
+        content.writeTextWrapped("Antall lønnsdager: ${krav.antallDager}")
         content.writeTextWrapped("Perioder", 2)
 
         krav.perioder.forEach {

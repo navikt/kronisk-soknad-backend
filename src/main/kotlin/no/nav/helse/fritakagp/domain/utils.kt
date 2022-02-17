@@ -3,6 +3,7 @@ package no.nav.helse.fritakagp.domain
 import de.m3y.kformat.Table
 import de.m3y.kformat.table
 import no.nav.helse.fritakagp.processing.gravid.krav.getPDFTimeStampFormat
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 
@@ -81,9 +82,34 @@ fun generereKroniskKravBeskrivelse(krav: KroniskKrav, desc: String): String {
     }
 }
 
+fun generereSlettKroniskKravBeskrivelse(krav: KroniskKrav, desc: String): String {
+    return buildString {
+        appendLine(desc)
+        appendLine("Annulerings tidspunkt: ${getPDFTimeStampFormat().format(krav.endretDato ?: LocalDateTime.now())}")
+        appendLine("Mottatt: ${getPDFTimeStampFormat().format(krav.opprettet)}")
+        appendLine("JournalpostId: ${krav.journalpostId}")
+        appendLine("Person (FNR): ${krav.identitetsnummer}")
+        appendLine("Arbeidsgiver oppgitt i krav: ${krav.virksomhetsnavn} (${krav.virksomhetsnummer})")
+        appendLine("Periode:")
+        appendLine(genererePeriodeTable(krav.perioder))
+    }
+}
+
 fun generereGravidkKravBeskrivelse(krav: GravidKrav, desc: String): String {
     return buildString {
         appendLine(desc)
+        appendLine("Mottatt: ${getPDFTimeStampFormat().format(krav.opprettet)}")
+        appendLine("Person (FNR): ${krav.identitetsnummer}")
+        appendLine("Arbeidsgiver oppgitt i krav: ${krav.virksomhetsnavn} (${krav.virksomhetsnummer})")
+        appendLine("Periode:")
+        appendLine(genererePeriodeTable(krav.perioder))
+    }
+}
+
+fun generereSlettGravidKravBeskrivelse(krav: GravidKrav, desc: String): String {
+    return buildString {
+        appendLine(desc)
+        appendLine("Slette tidspunkt: ${getPDFTimeStampFormat().format(krav.endretDato ?: LocalDateTime.now())}")
         appendLine("Mottatt: ${getPDFTimeStampFormat().format(krav.opprettet)}")
         appendLine("Person (FNR): ${krav.identitetsnummer}")
         appendLine("Arbeidsgiver oppgitt i krav: ${krav.virksomhetsnavn} (${krav.virksomhetsnummer})")

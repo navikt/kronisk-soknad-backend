@@ -21,6 +21,7 @@ import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravKvitteringProcessor
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravProcessor
+import no.nav.helse.fritakagp.processing.gravid.krav.SlettGravidKravProcessor
 import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadKvitteringProcessor
 import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadProcessor
 import no.nav.helse.fritakagp.service.PdlService
@@ -158,7 +159,14 @@ fun Route.gravidRoutes(
                     authorize(authorizer, form.virksomhetsnummer)
                     form.status = KravStatus.SLETTET
                     form.endretDato = LocalDateTime.now()
-                    gravidKravRepo.update(form)
+                    datasource.connection.use { connection ->
+                        gravidKravRepo.update(form, connection)
+                        bakgunnsjobbService.opprettJobb<SlettGravidKravProcessor>(
+                            maksAntallForsoek = 10,
+                            data = om.writeValueAsString(GravidKravProcessor.JobbData(form.id)),
+                            connection = connection
+                        )
+                    }
                     call.respond(HttpStatusCode.OK)
                 }
             }

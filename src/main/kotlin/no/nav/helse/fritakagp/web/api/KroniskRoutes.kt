@@ -18,8 +18,11 @@ import no.nav.helse.fritakagp.domain.KravStatus
 import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
+import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravProcessor
+import no.nav.helse.fritakagp.processing.gravid.krav.SlettGravidKravProcessor
 import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravKvitteringProcessor
 import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravProcessor
+import no.nav.helse.fritakagp.processing.kronisk.krav.SlettKroniskKravProcessor
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadKvitteringProcessor
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadProcessor
 import no.nav.helse.fritakagp.service.PdlService
@@ -152,7 +155,14 @@ fun Route.kroniskRoutes(
                     authorize(authorizer, form.virksomhetsnummer)
                     form.status = KravStatus.SLETTET
                     form.endretDato = LocalDateTime.now()
-                    kroniskKravRepo.update(form)
+                    datasource.connection.use { connection ->
+                        kroniskKravRepo.update(form, connection)
+                        bakgunnsjobbService.opprettJobb<SlettKroniskKravProcessor>(
+                            maksAntallForsoek = 10,
+                            data = om.writeValueAsString(KroniskKravProcessor.JobbData(form.id)),
+                            connection = connection
+                        )
+                    }
                     call.respond(HttpStatusCode.OK)
                 }
             }

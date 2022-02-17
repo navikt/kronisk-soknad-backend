@@ -23,17 +23,25 @@ class DatapakkePublisherJobTest : SystemTestBase() {
     @BeforeAll
     internal fun setUp() {
         val weeks = (7..52) + (1..6)
-        every { repo.getWeeklyStats() } returns weeks
-            .map {
-                WeeklyStats(it, Random.nextInt(30), "gravid_soeknad")
-            }.toList()
+        val gravidSoeknad = weeks.map { WeeklyStats(it, Random.nextInt(30), "gravid_soeknad") }
+        val kroniskSoeknad = weeks.map { WeeklyStats(it, Random.nextInt(30), "kronisk_soeknad") }
+        val gravidKrav = weeks.map { WeeklyStats(it, Random.nextInt(30), "gravid_krav") }
+        val kroniskKrav = weeks.map { WeeklyStats(it, Random.nextInt(30), "kronisk_krav") }
+        val weeklyStats = gravidSoeknad + kroniskSoeknad + gravidKrav + kroniskKrav
+
+        every { repo.getWeeklyStats() } returns weeklyStats.toList()
 
         every { repo.getGravidSoeknadTiltak() } returns GravidSoeknadTiltak(Random.nextInt(30), Random.nextInt(30), Random.nextInt(30), Random.nextInt(30))
 
         val list = ArrayList<SykeGradAntall>()
-        (1..10).map { uke ->
+        weeks.map { uke ->
             (1..6).map { bucket ->
-                list.add(SykeGradAntall(Random.nextInt(100), bucket, uke))
+                if (bucket > 1) {
+                    list.add(SykeGradAntall(Random.nextInt(100), bucket, uke))
+                }
+                if (bucket == 1 && uke < 52) {
+                    list.add(SykeGradAntall(Random.nextInt(100), bucket, uke))
+                }
             }
         }
 

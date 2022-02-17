@@ -38,8 +38,6 @@ class DatapakkePublisherJob(
 
         val timeseries = statsRepo.getWeeklyStats()
         val gravidSoeknadTiltak = statsRepo.getGravidSoeknadTiltak()
-        val kroniskArbeidstyper = statsRepo.getKroniskSoeknadArbeidstyper()
-        val kroniskPaakjenningstyper = statsRepo.getKroniskSoeknadPaakjenningstyper()
         val sykegrad = statsRepo.getSykeGradAntall()
 
         val populatedDatapakke = datapakkeTemplate
@@ -56,18 +54,6 @@ class DatapakkePublisherJob(
                    {"value": ${gravidSoeknadTiltak.tilpassede_arbeidsoppgaver}, "name": "Tilpassede Arbeidsoppgaver"},
                    {"value": ${gravidSoeknadTiltak.annet}, "name": "Annet"}
                 """.trimIndent()
-            )
-            .replace(
-                "@KroniskArbeidstyper",
-                kroniskArbeidstyper.map { //language=JSON
-                    """{"value": ${it.antall}, "name": ${it.type}}"""
-                }.joinToString()
-            )
-            .replace(
-                "@KroniskPaakjenningstyper",
-                kroniskPaakjenningstyper.map { //language=JSON
-                    """{"value": ${it.antall}, "name": ${it.type}}"""
-                }.joinToString()
             )
             .replace(
                 "@sykegrad_uker",

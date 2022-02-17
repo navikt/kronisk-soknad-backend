@@ -117,6 +117,7 @@ class StatsRepoImpl(
         }
     }
 
+    // Depricated
     override fun getKroniskSoeknadArbeidstyper(): List<AntallType> {
         val query = """
         SELECT
@@ -142,6 +143,7 @@ class StatsRepoImpl(
             return returnValue
         }
     }
+    // Depricated
     override fun getKroniskSoeknadPaakjenningstyper(): List<AntallType> {
         val query = """
         SELECT

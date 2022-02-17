@@ -25,6 +25,11 @@ data class GravidKrav(
     // Må være null for tidligere verdier er lagret med null
     var sendtAvNavn: String? = null,
 
+    var sletteJournalpostId: String? = null,
+    var sletteOppgaveId: String? = null,
+    var slettetAv: String? = null,
+    var slettetAvNavn: String? = null,
+
     var status: KravStatus = KravStatus.OPPRETTET,
     var aarsakEndring: String? = null,
     var endretDato: LocalDateTime? = null

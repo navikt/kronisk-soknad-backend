@@ -43,7 +43,7 @@ class SlettKroniskKravProcessor(
 ) : BakgrunnsjobbProsesserer {
     companion object {
         val JOB_TYPE = "slett-kronisk-krav"
-        val dokumentasjonBrevkode = "annuler_krav_om_fritak_fra_agp_dokumentasjon"
+        val dokumentasjonBrevkode = "annuller_krav_om_fritak_fra_agp_dokumentasjon"
     }
     override val type: String get() = JOB_TYPE
 
@@ -60,8 +60,8 @@ class SlettKroniskKravProcessor(
         val krav = getOrThrow(jobb)
         log.info("Sletter krav ${krav.id}")
         try {
-            journalførSletting(krav)
-            krav.oppgaveId = opprettOppgave(krav)
+            krav.sletteJournalpostId = journalførSletting(krav)
+            krav.sletteOppgaveId = opprettOppgave(krav)
         } finally {
             updateAndLogOnFailure(krav)
         }
@@ -131,7 +131,7 @@ class SlettKroniskKravProcessor(
                         variantFormat = "ORIGINAL"
                     )
                 ),
-                brevkode = "annuller_krav_om_fritak_fra_agp_kronisk",
+                brevkode = dokumentasjonBrevkode,
                 tittel = journalfoeringsTittel,
             )
         )
@@ -160,7 +160,6 @@ class SlettKroniskKravProcessor(
     }
 
     fun opprettOppgave(krav: KroniskKrav): String {
-
         val aktoerId = pdlClient.fullPerson(krav.identitetsnummer)?.hentIdenter?.trekkUtIdent(PdlIdent.PdlIdentGruppe.AKTORID)
         val enhetsNr = behandlendeEnhetService.hentBehandlendeEnhet(krav.identitetsnummer, krav.id.toString())
         requireNotNull(aktoerId) { "Fant ikke AktørID for fnr i ${krav.id}" }
@@ -169,7 +168,7 @@ class SlettKroniskKravProcessor(
             tildeltEnhetsnr = enhetsNr,
             aktoerId = aktoerId,
             journalpostId = krav.journalpostId,
-            beskrivelse = generereSlettKroniskKravBeskrivelse(krav, "Annulering av refusjonskrav ifbm sykdom i aprbeidsgiverperioden med fritak fra arbeidsgiverperioden grunnet kronisk sykdom."),
+            beskrivelse = generereSlettKroniskKravBeskrivelse(krav, "Annullering av refusjonskrav ifbm sykdom i arbeidsgiverperioden med fritak fra arbeidsgiverperioden grunnet kronisk sykdom."),
             tema = "SYK",
             behandlingstype = digitalKravBehandingsType,
             oppgavetype = "BEH_REF",
@@ -191,7 +190,7 @@ class SlettKroniskKravProcessor(
             tildeltEnhetsnr = enhetsNr,
             aktoerId = aktoerId,
             journalpostId = krav.journalpostId,
-            beskrivelse = generereSlettKroniskKravBeskrivelse(krav, "Fordelingsoppgave for annulering av refusjonskrav ifbm sykdom i aprbeidsgiverperioden med fritak fra arbeidsgiverperioden grunnet kronisk sykdom."),
+            beskrivelse = generereSlettKroniskKravBeskrivelse(krav, "Fordelingsoppgave for annullering av refusjonskrav ifbm sykdom i aprbeidsgiverperioden med fritak fra arbeidsgiverperioden grunnet kronisk sykdom."),
             tema = "SYK",
             behandlingstype = digitalKravBehandingsType,
             oppgavetype = OPPGAVETYPE_FORDELINGSOPPGAVE,

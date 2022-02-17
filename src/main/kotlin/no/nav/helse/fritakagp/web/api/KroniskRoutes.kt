@@ -147,6 +147,7 @@ fun Route.kroniskRoutes(
 
             delete("/{id}") {
                 val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
+                val slettetAv = pdlService.finnNavn(innloggetFnr)
                 val kravId = UUID.fromString(call.parameters["id"])
                 var form = kroniskKravRepo.getById(kravId)
                 if (form == null) {
@@ -154,6 +155,8 @@ fun Route.kroniskRoutes(
                 } else {
                     authorize(authorizer, form.virksomhetsnummer)
                     form.status = KravStatus.SLETTET
+                    form.slettetAv = innloggetFnr
+                    form.slettetAvNavn = slettetAv
                     form.endretDato = LocalDateTime.now()
                     datasource.connection.use { connection ->
                         kroniskKravRepo.update(form, connection)

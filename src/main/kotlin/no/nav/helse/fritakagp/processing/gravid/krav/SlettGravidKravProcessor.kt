@@ -46,7 +46,7 @@ class SlettGravidKravProcessor(
 ) : BakgrunnsjobbProsesserer {
     companion object {
         val JOB_TYPE = "slett-gravid-krav"
-        val dokumentasjonBrevkode = "slett_krav_om_fritak_fra_agp_dokumentasjon"
+        val dokumentasjonBrevkode = "annuler_krav_om_fritak_fra_agp_dokumentasjon"
     }
     override val type: String get() = JOB_TYPE
 
@@ -134,7 +134,7 @@ class SlettGravidKravProcessor(
                         variantFormat = "ORIGINAL"
                     )
                 ),
-                brevkode = "annuller_krav_om_fritak_fra_agp_gravid",
+                brevkode = dokumentasjonBrevkode,
                 tittel = journalfoeringsTittel,
             )
         )
@@ -172,7 +172,7 @@ class SlettGravidKravProcessor(
             tildeltEnhetsnr = enhetsNr,
             aktoerId = aktoerId,
             journalpostId = krav.journalpostId,
-            beskrivelse = generereSlettGravidKravBeskrivelse(krav, "Annulering av refusjonskrav ifbm sykdom i aprbeidsgiverperioden med fritak fra arbeidsgiverperioden grunnet kronisk sykdom."),
+            beskrivelse = generereSlettGravidKravBeskrivelse(krav, "Annullering av refusjonskrav ifbm sykdom i aprbeidsgiverperioden med fritak fra arbeidsgiverperioden grunnet kronisk sykdom."),
             tema = "SYK",
             behandlingstype = digitalKravBehandingsType,
             oppgavetype = "BEH_REF",
@@ -194,7 +194,7 @@ class SlettGravidKravProcessor(
             tildeltEnhetsnr = enhetsNr,
             aktoerId = aktoerId,
             journalpostId = krav.journalpostId,
-            beskrivelse = generereSlettGravidKravBeskrivelse(krav, "Fordelingsoppgave for annulering av refusjonskrav ifbm sykdom i aprbeidsgiverperioden med fritak fra arbeidsgiverperioden grunnet kronisk sykdom."),
+            beskrivelse = generereSlettGravidKravBeskrivelse(krav, "Fordelingsoppgave for annullering av refusjonskrav ifbm sykdom i aprbeidsgiverperioden med fritak fra arbeidsgiverperioden grunnet kronisk sykdom."),
             tema = "SYK",
             behandlingstype = digitalKravBehandingsType,
             oppgavetype = OPPGAVETYPE_FORDELINGSOPPGAVE,

@@ -117,7 +117,7 @@ class SlettKroniskKravProcessor(
         krav: KroniskKrav,
         journalfoeringsTittel: String
     ): List<Dokument> {
-        val base64EnkodetPdf = Base64.getEncoder().encodeToString(pdfGenerator.lagPDF(krav))
+        val base64EnkodetPdf = Base64.getEncoder().encodeToString(pdfGenerator.lagSlettingPDF(krav))
         val jsonOrginalDokument = Base64.getEncoder().encodeToString(om.writeValueAsBytes(krav))
         val dokumentListe = mutableListOf(
             Dokument(

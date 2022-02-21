@@ -1,6 +1,8 @@
 package no.nav.helse.fritakagp.processing.gravid.krav
 
 import no.nav.helse.GravidTestData
+import no.nav.helse.KroniskTestData
+import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravPDFGenerator
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.text.PDFTextStripper
 import org.assertj.core.api.Assertions.assertThat
@@ -8,6 +10,7 @@ import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import java.awt.Desktop
 import java.nio.file.Files
+import java.time.LocalDateTime
 
 class GravidKravPDFGeneratorTest {
 
@@ -21,6 +24,20 @@ class GravidKravPDFGeneratorTest {
 
         assertThat(pdfText).contains(krav.navn)
         assertThat(pdfText).contains(krav.virksomhetsnummer)
+    }
+    @Test
+    fun testLagSlettingPDF() {
+        val krav = GravidTestData.gravidKrav
+        krav.journalpostId = "1234"
+        krav.endretDato = LocalDateTime.now()
+        val pdf = GravidKravPDFGenerator().lagSlettingPDF(krav)
+        assertThat(pdf).isNotNull
+
+        val pdfText = extractTextFromPdf(pdf)
+
+        assertThat(pdfText).contains(krav.navn)
+        assertThat(pdfText).contains(krav.virksomhetsnummer)
+        assertThat(pdfText).contains(krav.journalpostId)
     }
 
     @Test

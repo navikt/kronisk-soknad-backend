@@ -36,6 +36,7 @@ class GravidKravPDFGenerator {
         content.writeTextWrapped("Sendt av: ${krav.sendtAvNavn}")
         content.writeTextWrapped("Person navn: ${krav.navn}")
         content.writeTextWrapped("Arbeidsgiver oppgitt i krav: ${krav.virksomhetsnavn} (${krav.virksomhetsnummer})")
+        content.writeTextWrapped("Antall lønnsdager: ${krav.antallDager}")
         content.writeTextWrapped("Arbeidsgiverperiode", 2)
         krav.perioder.forEach {
             val gradering = (it.gradering * 100).toString()

@@ -2,7 +2,6 @@ package no.nav.helse.fritakagp.web.api.resreq
 
 import no.nav.helse.KroniskTestData
 import no.nav.helse.fritakagp.domain.FravaerData
-import no.nav.helse.fritakagp.domain.PaakjenningsType
 import no.nav.helse.toYearMonthString
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
@@ -54,21 +53,6 @@ internal class KroniskSoknadRequestTest {
                     FravaerData(LocalDate.now().minusMonths(25).toYearMonthString(), 5)
                 )
             ).validate(true)
-        }
-    }
-
-    @Test
-    fun `Om påkjenninger ikke inneholder "ANNET" er beskrivelse ikke påkrevd`() {
-        KroniskTestData.fullValidRequest.copy(
-            paakjenningstyper = setOf(PaakjenningsType.STRESSENDE),
-            paakjenningBeskrivelse = null
-        ).validate(true)
-    }
-
-    @Test
-    fun `Om påkjenninger inneholder "ANNET" er beskrivelse påkrevd`() {
-        validationShouldFailFor(KroniskSoknadRequest::paakjenningBeskrivelse) {
-            KroniskTestData.fullValidRequest.copy(paakjenningBeskrivelse = null).validate(true)
         }
     }
 

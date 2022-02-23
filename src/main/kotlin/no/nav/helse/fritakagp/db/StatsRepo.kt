@@ -23,8 +23,6 @@ data class AntallType(
 interface IStatsRepo {
     fun getWeeklyStats(): List<WeeklyStats>
     fun getGravidSoeknadTiltak(): GravidSoeknadTiltak
-    fun getKroniskSoeknadArbeidstyper(): List<AntallType>
-    fun getKroniskSoeknadPaakjenningstyper(): List<AntallType>
 }
 
 class StatsRepoImpl(
@@ -104,56 +102,6 @@ class StatsRepoImpl(
                 )
             }
             return returnValue[0]
-        }
-    }
-
-    override fun getKroniskSoeknadArbeidstyper(): List<AntallType> {
-        val query = """
-        SELECT
-            count(*) as antall,
-            jsonb_array_elements(k.data->'arbeidstyper') as arbeidstype
-        FROM soeknadkronisk as k
-        WHERE date(data->>'opprettet') > NOW()::DATE-EXTRACT(DOW FROM NOW())::INTEGER-7
-        GROUP BY arbeidstype;
-        """.trimIndent()
-
-        ds.connection.use {
-            val res = it.prepareStatement(query).executeQuery()
-            val returnValue = ArrayList<AntallType>()
-            while (res.next()) {
-                returnValue.add(
-                    AntallType(
-                        res.getInt("antall"),
-                        res.getString("arbeidstype")
-                    )
-                )
-            }
-
-            return returnValue
-        }
-    }
-    override fun getKroniskSoeknadPaakjenningstyper(): List<AntallType> {
-        val query = """
-        SELECT
-            count(*) as antall,
-            jsonb_array_elements(k.data->'paakjenningstyper') as paakjenning
-        FROM soeknadkronisk as k
-        WHERE date(data->>'opprettet') > NOW()::DATE-EXTRACT(DOW FROM NOW())::INTEGER-7
-        GROUP BY paakjenning;
-        """.trimIndent()
-
-        ds.connection.use {
-            val res = it.prepareStatement(query).executeQuery()
-            val returnValue = ArrayList<AntallType>()
-            while (res.next()) {
-                returnValue.add(
-                    AntallType(
-                        res.getInt("antall"),
-                        res.getString("paakjenning")
-                    )
-                )
-            }
-            return returnValue
         }
     }
 }

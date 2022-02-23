@@ -176,7 +176,6 @@ tasks.named<Test>("test") {
 
 task<Test>("slowTests") {
     include("no/nav/helse/slowtests/**")
-    exclude("no/nav/helse/slowtests/systemtests/**")
     outputs.upToDateWhen { false }
     group = "verification"
 }

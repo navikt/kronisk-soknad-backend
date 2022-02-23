@@ -40,7 +40,6 @@ class KroniskSoeknadPDFGenerator {
         content.writeTextWrapped("Sendt av: ${soeknad.sendtAvNavn}")
         content.writeTextWrapped("Person navn: ${soeknad.navn}")
         content.writeTextWrapped("Arbeidsgiver oppgitt i søknad: ${soeknad.virksomhetsnavn} (${soeknad.virksomhetsnummer})")
-        content.writeTextWrapped("Hvilke påkjenninger innebærer arbeidet?", 2)
 
         val totaltAntallDager = soeknad.fravaer.map { it.antallDagerMedFravaer }.sum()
         content.writeTextWrapped("Totalt antall fraværsdager siste 2 år: $totaltAntallDager", 2)

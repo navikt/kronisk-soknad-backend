@@ -525,18 +525,6 @@
           "identitetsnummer": {
             "$ref": "#/components/schemas/identitetsnummer"
           },
-          "arbeidstyper": {
-            "$ref": "#/components/schemas/kroniskArbeidstyper"
-          },
-          "paakjenningstyper": {
-            "$ref": "#/components/schemas/kroniskPaakjenningstyper"
-          },
-          "paakjenningBeskrivelse": {
-            "type": "string",
-            "example": "Forklaring av påkjenningen fylles ut her",
-            "description": "Dersom ANNET er valgt for paakjenningstyper må det oppgis en kort beskrivelse her."
-          },
-
           "fravaer": {
             "type": "array",
             "items": {
@@ -603,11 +591,6 @@
               "ANNET"
             ]
           },
-          "paakjenningBeskrivelse": {
-            "type": "string",
-            "example": "Forklaring av påkjenningen fylles ut her",
-            "description": "Dersom ANNET er valgt for paakjenningstyper må det oppgis en kort beskrivelse her."
-          },
 
           "fravaer": {
             "type": "array",
@@ -650,17 +633,6 @@
 
           "navn": {
             "$ref": "#/components/schemas/navn"
-          },
-
-          "arbeidstyper": {
-            "$ref": "#/components/schemas/kroniskArbeidstyper"
-          },
-          "paakjenningstyper": {
-            "$ref": "#/components/schemas/kroniskPaakjenningstyper"
-          },
-          "paakjenningBeskrivelse": {
-            "type": "string",
-            "description": "En beskrivelse av påkjenningen"
           },
           "fravaer": {
             "$ref": "#/components/schemas/FravaerPeriode"
@@ -915,33 +887,6 @@
         "type": "string",
         "example": "Ola Normann",
         "description": "Navn på ansatt"
-      },
-      "kroniskArbeidstyper": {
-        "type": "array",
-        "description": "Hva slags arbeid utfører den ansatte?",
-        "example": ["STILLESITTENDE"],
-        "minItems": 1,
-        "enum": [
-          "STILLESITTENDE",
-          "MODERAT",
-          "KREVENDE"
-        ]
-      },
-      "kroniskPaakjenningstyper": {
-        "type": "array",
-        "description": "Hvilke påkjenninger innebærer arbeidet?",
-        "example": ["STRESSENDE"],
-        "minItems": 1,
-        "enum": [
-          "ALLERGENER",
-          "UKOMFORTABEL",
-          "STRESSENDE",
-          "REGELMESSIG",
-          "GAAING",
-          "HARDE",
-          "TUNGE",
-          "ANNET"
-        ]
       }
     },
     "securitySchemes": {

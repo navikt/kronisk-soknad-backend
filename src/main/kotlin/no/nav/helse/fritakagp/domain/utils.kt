@@ -49,12 +49,6 @@ fun generereKroniskSoeknadBeskrivelse(soeknad: KroniskSoeknad, desc: String): St
         appendLine("Mottatt: ${getPDFTimeStampFormat().format(soeknad.opprettet)}")
         appendLine("Person (FNR): ${soeknad.identitetsnummer}")
         appendLine("Arbeidsgiver oppgitt i søknad: ${soeknad.virksomhetsnavn} (${soeknad.virksomhetsnummer})")
-        appendLine("Hva slags arbeid utfører den ansatte?")
-        soeknad.arbeidstyper.forEach { appendLine(" - ${it.beskrivelse}") }
-        appendLine("Hvilke påkjenninger innebærer arbeidet?")
-        soeknad.paakjenningstyper.forEach { appendLine(" - ${it.beskrivelse}") }
-        soeknad.paakjenningBeskrivelse?.let { appendLine(it) }
-
         val totaltAntallDager = soeknad.fravaer.map { it.antallDagerMedFravaer }.sum()
         appendLine("Totalt antall fraværsdager siste 2 år: $totaltAntallDager")
         appendLine("Antall fraværsperioder siste 2 år: ${soeknad.antallPerioder}")

@@ -512,8 +512,6 @@
         "required": [
           "identitetsnummer",
           "virksomhetsnummer",
-          "arbeidstyper",
-          "paakjenningstyper",
           "fravaer",
           "antallPerioder",
           "bekreftet"
@@ -551,8 +549,6 @@
         "required": [
           "identitetsnummer",
           "virksomhetsnummer",
-          "arbeidstyper",
-          "paakjenningstyper",
           "fravaer",
           "antallPerioder",
           "bekreftet"
@@ -564,34 +560,6 @@
           "identitetsnummer": {
             "$ref": "#/components/schemas/identitetsnummer"
           },
-          "arbeidstyper": {
-            "type": "array",
-            "description": "Hva slags arbeid utfører den ansatte?",
-            "example": ["STILLESITTENDE"],
-            "minItems": 1,
-            "enum": [
-              "STILLESITTENDE",
-              "MODERAT",
-              "KREVENDE"
-            ]
-          },
-          "paakjenningstyper": {
-            "type": "array",
-            "description": "Hvilke påkjenninger innebærer arbeidet?",
-            "example": ["STRESSENDE"],
-            "minItems": 1,
-            "enum": [
-              "ALLERGENER",
-              "UKOMFORTABEL",
-              "STRESSENDE",
-              "REGELMESSIG",
-              "GAAING",
-              "HARDE",
-              "TUNGE",
-              "ANNET"
-            ]
-          },
-
           "fravaer": {
             "type": "array",
             "items": {

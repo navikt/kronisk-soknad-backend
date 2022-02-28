@@ -29,9 +29,11 @@ data class SykeGradAntall(
 interface IStatsRepo {
     fun getWeeklyStats(): List<WeeklyStats>
     fun getGravidSoeknadTiltak(): GravidSoeknadTiltak
+
     fun getKroniskSoeknadArbeidstyper(): List<AntallType>
     fun getKroniskSoeknadPaakjenningstyper(): List<AntallType>
     fun getSykeGradAntall(): List<SykeGradAntall>
+
 }
 
 class StatsRepoImpl(
@@ -116,7 +118,7 @@ class StatsRepoImpl(
             return returnValue[0]
         }
     }
-
+    
     // Depricated
     override fun getKroniskSoeknadArbeidstyper(): List<AntallType> {
         val query = """

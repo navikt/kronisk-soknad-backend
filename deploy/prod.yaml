@@ -106,6 +106,8 @@ spec:
       value: "a4570c9e9521df726e1050ebcd917b9a"
     - name: DATAPAKKE_API_URL
       value: "https://datakatalog-api.intern.nav.no/v1/datapackage"
+    - name: NORG2_URL
+      value: https://helsearbeidsgiver-proxy.prod-fss-pub.nais.io/norg
 
   gcp:
     sqlInstances:

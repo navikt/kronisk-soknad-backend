@@ -13,9 +13,6 @@ data class KroniskSoeknad(
     val identitetsnummer: String,
     // Må være null for tidligere verdier er lagret med null
     var navn: String? = null,
-    val arbeidstyper: Set<ArbeidsType>,
-    val paakjenningstyper: Set<PaakjenningsType>,
-    val paakjenningBeskrivelse: String? = null,
     val fravaer: Set<FravaerData>,
     val antallPerioder: Int,
     val bekreftet: Boolean,
@@ -42,21 +39,4 @@ data class FravaerData(
     val antallDagerMedFravaer: Int
 ) {
     fun toLocalDate() = LocalDate.parse("$yearMonth-01")
-}
-
-enum class ArbeidsType(val beskrivelse: String) {
-    STILLESITTENDE("Stillesittende arbeid"),
-    MODERAT("Moderat fysisk arbeid"),
-    KREVENDE("Fysisk krevende arbeid")
-}
-
-enum class PaakjenningsType(val beskrivelse: String) {
-    ALLERGENER("Allergener eller giftstoffer"),
-    UKOMFORTABEL("Ukomfortabel temperatur eller luftfuktighet"),
-    STRESSENDE("Stressende omgivelser"),
-    REGELMESSIG("Regelmessige kveldsskift eller nattskift"),
-    GAAING("Mye gåing/ståing"),
-    HARDE("Harde gulv"),
-    TUNGE("Tunge løft"),
-    ANNET("Annet")
 }

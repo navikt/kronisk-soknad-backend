@@ -59,7 +59,7 @@ class DatapakkePublisherJob(
                 "@sykegrad_uker",
                 sykegrad.map { it.uke }.distinct().joinToString()
             )
-            .replace(
+            /*.replace(
                 "@bucket1",
                 sykegrad.filter { it.bucket == 1 }.map { it.antall }.joinToString()
             )
@@ -78,7 +78,7 @@ class DatapakkePublisherJob(
             .replace(
                 "@bucket5",
                 sykegrad.filter { it.bucket == 5 }.map { it.antall }.joinToString()
-            )
+            )*/
 
         runBlocking {
             logger.info("Populerte datapakke template med data: $populatedDatapakke")

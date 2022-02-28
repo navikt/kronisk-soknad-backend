@@ -38,6 +38,7 @@ class DatapakkePublisherJob(
 
         val timeseries = statsRepo.getWeeklyStats()
         val gravidSoeknadTiltak = statsRepo.getGravidSoeknadTiltak()
+        val sykegrad = statsRepo.getSykeGradAntall()
 
         val populatedDatapakke = datapakkeTemplate
             .replace(
@@ -54,6 +55,31 @@ class DatapakkePublisherJob(
                    {"value": ${gravidSoeknadTiltak.annet}, "name": "Annet"}
                 """.trimIndent()
             )
+
+            /*.replace(
+                "@sykegrad_uker",
+                sykegrad.map { it.uke }.distinct().joinToString()
+            )
+            .replace(
+                "@bucket1",
+                sykegrad.filter { it.bucket == 1 }.map { it.antall }.joinToString()
+            )
+            .replace(
+                "@bucket2",
+                sykegrad.filter { it.bucket == 2 }.map { it.antall }.joinToString()
+            )
+            .replace(
+                "@bucket3",
+                sykegrad.filter { it.bucket == 3 }.map { it.antall }.joinToString()
+            )
+            .replace(
+                "@bucket4",
+                sykegrad.filter { it.bucket == 4 }.map { it.antall }.joinToString()
+            )
+            .replace(
+                "@bucket5",
+                sykegrad.filter { it.bucket == 5 }.map { it.antall }.joinToString()
+            )*/
 
         runBlocking {
             logger.info("Populerte datapakke template med data: $populatedDatapakke")

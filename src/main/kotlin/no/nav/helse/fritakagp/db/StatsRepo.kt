@@ -33,7 +33,6 @@ interface IStatsRepo {
     fun getKroniskSoeknadArbeidstyper(): List<AntallType>
     fun getKroniskSoeknadPaakjenningstyper(): List<AntallType>
     fun getSykeGradAntall(): List<SykeGradAntall>
-
 }
 
 class StatsRepoImpl(
@@ -118,8 +117,8 @@ class StatsRepoImpl(
             return returnValue[0]
         }
     }
-    
-    // Depricated
+
+// Depricated
     override fun getKroniskSoeknadArbeidstyper(): List<AntallType> {
         val query = """
         SELECT

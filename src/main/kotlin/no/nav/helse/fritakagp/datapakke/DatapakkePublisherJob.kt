@@ -81,7 +81,6 @@ class DatapakkePublisherJob(
                 sykegrad.filter { it.bucket == 5 }.map { it.antall }.joinToString()
             )*/
 
-
         runBlocking {
             logger.info("Populerte datapakke template med data: $populatedDatapakke")
 

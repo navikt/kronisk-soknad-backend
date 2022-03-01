@@ -5,13 +5,13 @@ import io.ktor.client.features.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
+import no.nav.helse.GravidTestData
 import no.nav.helse.KroniskTestData
 import no.nav.helse.fritakagp.db.KroniskKravRepository
 import no.nav.helse.fritakagp.domain.Arbeidsgiverperiode
-import no.nav.helse.fritakagp.domain.GravidKrav
 import no.nav.helse.fritakagp.domain.KroniskKrav
 import no.nav.helse.fritakagp.web.api.resreq.ValidationProblem
-import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.koin.test.inject
@@ -33,7 +33,7 @@ class KroniskKravHTTPTests : SystemTestBase() {
                 loggedInAs("123456789")
             }
         }
-        Assertions.assertThat(notFoundException.response.status).isEqualTo(HttpStatusCode.NotFound)
+        assertThat(notFoundException.response.status).isEqualTo(HttpStatusCode.NotFound)
 
         val accessGrantedForm = httpClient.get<KroniskKrav> {
             appUrl("$kravKroniskUrl/${KroniskTestData.kroniskKrav.id}")
@@ -41,7 +41,7 @@ class KroniskKravHTTPTests : SystemTestBase() {
             loggedInAs(KroniskTestData.kroniskKrav.identitetsnummer)
         }
 
-        Assertions.assertThat(accessGrantedForm).isEqualTo(KroniskTestData.kroniskKrav)
+        assertThat(accessGrantedForm).isEqualTo(KroniskTestData.kroniskKrav)
     }
 
     @Test
@@ -65,9 +65,9 @@ class KroniskKravHTTPTests : SystemTestBase() {
             }
         }
 
-        Assertions.assertThat(responseExcepion.response.status).isEqualTo(HttpStatusCode.BadRequest)
+        assertThat(responseExcepion.response.status).isEqualTo(HttpStatusCode.BadRequest)
         val res = extractResponseBody(responseExcepion.response)
-        Assertions.assertThat(res.title).contains("Feil ved prosessering av JSON-dataene som ble oppgitt")
+        assertThat(res.title).contains("Feil ved prosessering av JSON-dataene som ble oppgitt")
     }
 
     @Test
@@ -80,8 +80,8 @@ class KroniskKravHTTPTests : SystemTestBase() {
         }
 
         val krav = response.receive<KroniskKrav>()
-        Assertions.assertThat(response.status).isEqualTo(HttpStatusCode.Created)
-        Assertions.assertThat(krav.identitetsnummer).isEqualTo(KroniskTestData.kroniskKravRequestValid.identitetsnummer)
+        assertThat(response.status).isEqualTo(HttpStatusCode.Created)
+        assertThat(krav.identitetsnummer).isEqualTo(KroniskTestData.kroniskKravRequestValid.identitetsnummer)
     }
 
     @Test
@@ -95,7 +95,7 @@ class KroniskKravHTTPTests : SystemTestBase() {
             }
         }
 
-        Assertions.assertThat(responseExcepion.response.status).isEqualTo(HttpStatusCode.Forbidden)
+        assertThat(responseExcepion.response.status).isEqualTo(HttpStatusCode.Forbidden)
     }
 
     @Test
@@ -108,8 +108,8 @@ class KroniskKravHTTPTests : SystemTestBase() {
         }
 
         val krav = response.receive<KroniskKrav>()
-        Assertions.assertThat(response.status).isEqualTo(HttpStatusCode.Created)
-        Assertions.assertThat(krav.harVedlegg).isEqualTo(true)
+        assertThat(response.status).isEqualTo(HttpStatusCode.Created)
+        assertThat(krav.harVedlegg).isEqualTo(true)
     }
 
     @Test
@@ -153,9 +153,35 @@ class KroniskKravHTTPTests : SystemTestBase() {
             "perioder[2].antallDagerMedRefusjon",
         )
         val res = responseExcepion.response.call.receive<ValidationProblem>()
-        Assertions.assertThat(res.violations.size).isEqualTo(7)
+        assertThat(res.violations.size).isEqualTo(7)
         res.violations.forEach {
-            Assertions.assertThat(it.propertyPath).isIn(possiblePropertyPaths)
+            assertThat(it.propertyPath).isIn(possiblePropertyPaths)
         }
+    }
+
+    @Test
+    fun `Virksomhetsrute returnerer liste over krav når korrekt bruker er innlogget`() = suspendableTest {
+        val repo by inject<KroniskKravRepository>()
+        repo.insert(KroniskTestData.kroniskKrav)
+
+        val kroniskKravListe = httpClient.get<List<KroniskKrav>> {
+            appUrl("$kravKroniskUrl/virksomhet/${GravidTestData.validOrgNr}")
+            contentType(ContentType.Application.Json)
+            loggedInAs(KroniskTestData.kroniskKrav.identitetsnummer)
+        }
+
+        assertThat(kroniskKravListe.find { it.id == KroniskTestData.kroniskKrav.id }).isEqualTo(KroniskTestData.kroniskKrav)
+    }
+
+    @Test
+    fun `Virksomhetsrute skal returnere forbidden hvis virksomheten ikke er i auth listen fra altinn`() = suspendableTest {
+        val responseException = assertThrows<ClientRequestException> {
+            httpClient.get<HttpResponse> {
+                appUrl("$kravKroniskUrl/virksomhet/123456785")
+                contentType(ContentType.Application.Json)
+                loggedInAs("123456789")
+            }
+        }
+        assertThat(responseException.response.status).isEqualTo(HttpStatusCode.Forbidden)
     }
 }

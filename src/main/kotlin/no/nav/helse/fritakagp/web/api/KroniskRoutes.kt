@@ -92,11 +92,8 @@ fun Route.kroniskRoutes(
         }
 
         route("/krav") {
-            get("/virksomhet/{virsomhetsnummer}") {
+            get("/virksomhet/{virksomhetsnummer}") {
                 val virksomhetsnummer = requireNotNull(call.parameters["virksomhetsnummer"])
-                if (!OrganisasjonsnummerValidator.isValid(virksomhetsnummer)) {
-                    call.respond(HttpStatusCode.NotAcceptable, "Ikke gyldig virksomhetsnummer")
-                }
                 authorize(authorizer, virksomhetsnummer)
 
                 val kroniskKrav = kroniskKravRepo.getAllForVirksomhet(virksomhetsnummer)

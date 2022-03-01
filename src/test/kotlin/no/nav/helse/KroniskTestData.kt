@@ -20,9 +20,6 @@ object KroniskTestData {
     val soeknadKronisk = KroniskSoeknad(
         virksomhetsnummer = validOrgNr,
         identitetsnummer = validIdentitetsnummer,
-        arbeidstyper = setOf(ArbeidsType.KREVENDE, ArbeidsType.MODERAT),
-        paakjenningstyper = setOf(PaakjenningsType.ALLERGENER, PaakjenningsType.TUNGE),
-        paakjenningBeskrivelse = "Beskrivelse",
         fravaer = generateFravaersdata(),
         antallPerioder = antallPerioder,
         bekreftet = true,
@@ -34,10 +31,7 @@ object KroniskTestData {
     val fullValidRequest = KroniskSoknadRequest(
         virksomhetsnummer = validOrgNr,
         identitetsnummer = validIdentitetsnummer,
-        arbeidstyper = setOf(ArbeidsType.KREVENDE, ArbeidsType.MODERAT, ArbeidsType.STILLESITTENDE),
         fravaer = generateFravaersdata(),
-        paakjenningstyper = setOf(PaakjenningsType.ALLERGENER, PaakjenningsType.TUNGE, PaakjenningsType.ANNET, PaakjenningsType.GAAING, PaakjenningsType.HARDE, PaakjenningsType.REGELMESSIG, PaakjenningsType.STRESSENDE, PaakjenningsType.UKOMFORTABEL),
-        paakjenningBeskrivelse = "Lorem Ipsum",
         bekreftet = true,
         antallPerioder = antallPerioder,
         dokumentasjon = null

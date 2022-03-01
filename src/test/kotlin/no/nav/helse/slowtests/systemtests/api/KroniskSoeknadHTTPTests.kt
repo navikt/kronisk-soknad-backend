@@ -57,7 +57,6 @@ class KroniskSoeknadHTTPTests : SystemTestBase() {
                     "fnr": "${GravidTestData.validIdentitetsnummer}",
                     "orgnr": "${GravidTestData.fullValidSoeknadRequest.virksomhetsnummer}",
                     "bekreftelse": true,
-                    "paakjenningstyper": ["IKKE GYLDIG"]
                 }
                 """.trimIndent()
             }
@@ -91,10 +90,7 @@ class KroniskSoeknadHTTPTests : SystemTestBase() {
                 body = KroniskSoknadRequest(
                     virksomhetsnummer = "lkajsbdfv",
                     identitetsnummer = "lkdf",
-                    paakjenningBeskrivelse = "sdfsfd",
                     antallPerioder = 0,
-                    arbeidstyper = setOf(ArbeidsType.KREVENDE),
-                    paakjenningstyper = setOf(PaakjenningsType.ALLERGENER),
                     fravaer = setOf(FravaerData("2001-01", 12)),
                     bekreftet = true,
                     dokumentasjon = null

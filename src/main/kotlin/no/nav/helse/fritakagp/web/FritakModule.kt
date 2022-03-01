@@ -53,11 +53,12 @@ private fun Application.configureCORSAccess(config: ApplicationConfig) {
         method(HttpMethod.Get)
 
         when (config.getEnvironment()) {
-            AppEnv.PROD -> host("arbeidsgiver.nav.no", schemes = listOf("https"))
+            AppEnv.PROD -> {
+                host("arbeidsgiver.nav.no", schemes = listOf("https"))
+                allowCredentials = true
+            }
             else -> anyHost()
         }
-
-        allowCredentials = true
         allowNonSimpleContentTypes = true
     }
 }

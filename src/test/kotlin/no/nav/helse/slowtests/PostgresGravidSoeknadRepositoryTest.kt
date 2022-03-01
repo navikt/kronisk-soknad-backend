@@ -41,7 +41,7 @@ class PostgresGravidSoeknadRepositoryTest : SystemTestBase() {
         val soeknadGravidResult = repo.getById(testSoeknad.id)
         assertNotNull(soeknadGravidResult, "Må finnes")
 
-        soeknadGravidResult.journalpostId = "1234"
+        soeknadGravidResult.journalpostId = "12345"
         soeknadGravidResult.oppgaveId = "78990"
 
         repo.update(soeknadGravidResult)

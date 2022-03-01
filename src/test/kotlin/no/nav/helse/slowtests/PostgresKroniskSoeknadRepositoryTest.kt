@@ -41,7 +41,7 @@ class PostgresKroniskSoeknadRepositoryTest : SystemTestBase() {
         val soeknadKroniskResult = repo.getById(testSoeknad.id)
         assertNotNull(soeknadKroniskResult, "Må finnes")
 
-        soeknadKroniskResult.journalpostId = "1234"
+        soeknadKroniskResult.journalpostId = "12345"
         soeknadKroniskResult.oppgaveId = "78990"
 
         repo.update(soeknadKroniskResult)

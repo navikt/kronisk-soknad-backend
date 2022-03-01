@@ -28,7 +28,7 @@ class GravidKravPDFGeneratorTest {
     @Test
     fun testLagSlettingPDF() {
         val krav = GravidTestData.gravidKrav
-        krav.journalpostId = "1234"
+        krav.journalpostId = "12345"
         krav.endretDato = LocalDateTime.now()
         val pdf = GravidKravPDFGenerator().lagSlettingPDF(krav)
         assertThat(pdf).isNotNull

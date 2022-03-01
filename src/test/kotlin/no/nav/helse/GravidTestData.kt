@@ -192,7 +192,7 @@ aąbcćdeęfghijlłmnńoóprsśtuwź
     )
 
     val gravidOpprettOppgaveResponse = OpprettOppgaveResponse(
-        id = 1234,
+        id = 12345,
         tildeltEnhetsnr = "0100",
         tema = "KON",
         oppgavetype = "JFR",

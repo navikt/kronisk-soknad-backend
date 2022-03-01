@@ -126,7 +126,7 @@ fun Module.mockExternalDependecies() {
                 opprettOppgaveRequest: OpprettOppgaveRequest,
                 callId: String
             ): OpprettOppgaveResponse = OpprettOppgaveResponse(
-                1234, "0100",
+                12345, "0100",
                 tema = "KON",
                 oppgavetype = "JFR",
                 versjon = 1,
@@ -159,7 +159,7 @@ fun Module.mockExternalDependecies() {
                     aktiveringsdato = LocalDate.of(2020, 11, 31),
                     antallRessurser = 0,
                     enhetId = 123456789,
-                    enhetNr = "1234",
+                    enhetNr = "12345",
                     kanalstrategi = null,
                     navn = "NAV Område",
                     nedleggelsesdato = null,

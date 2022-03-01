@@ -22,10 +22,7 @@ class KroniskSoeknadPDFGeneratorTest {
         assertThat(pdfText).contains(soeknad.navn)
         assertThat(pdfText).contains(soeknad.virksomhetsnummer)
 
-        soeknad.paakjenningstyper.forEach { assertThat((pdfText)?.contains(it.beskrivelse)) }
-        assertThat(pdfText).contains(soeknad.paakjenningBeskrivelse)
         assertThat(pdfText).contains(soeknad.antallPerioder.toString())
-        soeknad.arbeidstyper.forEach { assertThat((pdfText)?.contains(it.beskrivelse)) }
 
         soeknad.fravaer.forEach {
             assertThat(pdfText).contains(it.antallDagerMedFravaer.toString())

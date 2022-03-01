@@ -11,9 +11,6 @@ import org.valiktor.validate
 data class KroniskSoknadRequest(
     val virksomhetsnummer: String,
     val identitetsnummer: String,
-    val arbeidstyper: Set<ArbeidsType>,
-    val paakjenningstyper: Set<PaakjenningsType>,
-    val paakjenningBeskrivelse: String? = null,
     val fravaer: Set<FravaerData>,
     val bekreftet: Boolean,
     val antallPerioder: Int,
@@ -28,22 +25,11 @@ data class KroniskSoknadRequest(
             validate(KroniskSoknadRequest::virksomhetsnummer).isValidOrganisasjonsnummer()
             validate(KroniskSoknadRequest::virksomhetsnummer).isVirksomhet(isVirksomhet)
 
-            validate(KroniskSoknadRequest::arbeidstyper).isNotNull()
-            validate(KroniskSoknadRequest::arbeidstyper).hasSize(1, 10)
-
-            validate(KroniskSoknadRequest::paakjenningstyper).isNotNull()
-            validate(KroniskSoknadRequest::paakjenningstyper).hasSize(1, 10)
-
             validate(KroniskSoknadRequest::fravaer).isNotNull()
             validate(KroniskSoknadRequest::antallPerioder).isBetween(1, 300)
             validate(KroniskSoknadRequest::fravaer).ingenDataEldreEnn(2)
             validate(KroniskSoknadRequest::fravaer).ingenDataFraFremtiden()
             validate(KroniskSoknadRequest::fravaer).ikkeFlereFravaersdagerEnnDagerIMaanden()
-
-            if (this@KroniskSoknadRequest.paakjenningstyper.contains(PaakjenningsType.ANNET)) {
-                validate(KroniskSoknadRequest::paakjenningBeskrivelse).isNotNull()
-                validate(KroniskSoknadRequest::paakjenningBeskrivelse).isNotEmpty()
-            }
 
             if (!this@KroniskSoknadRequest.dokumentasjon.isNullOrEmpty()) {
                 validate(KroniskSoknadRequest::dokumentasjon).isGodskjentFiletyper()
@@ -58,10 +44,7 @@ data class KroniskSoknadRequest(
         navn = navn,
         sendtAv = sendtAv,
         sendtAvNavn = sendtAvNavn,
-        arbeidstyper = arbeidstyper,
         antallPerioder = antallPerioder,
-        paakjenningstyper = paakjenningstyper,
-        paakjenningBeskrivelse = paakjenningBeskrivelse,
         fravaer = fravaer,
         bekreftet = bekreftet,
         harVedlegg = !dokumentasjon.isNullOrEmpty()

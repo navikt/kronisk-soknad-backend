@@ -75,7 +75,7 @@ fun Route.kroniskRoutes(
                 datasource.connection.use { connection ->
                     kroniskSoeknadRepo.insert(soeknad, connection)
                     bakgunnsjobbService.opprettJobb<KroniskSoeknadProcessor>(
-                        maksAntallForsoek = 8,
+                        maksAntallForsoek = 10,
                         data = om.writeValueAsString(KroniskSoeknadProcessor.JobbData(soeknad.id)),
                         connection = connection
                     )
@@ -135,7 +135,7 @@ fun Route.kroniskRoutes(
                 datasource.connection.use { connection ->
                     kroniskKravRepo.insert(krav, connection)
                     bakgunnsjobbService.opprettJobb<KroniskKravProcessor>(
-                        maksAntallForsoek = 8,
+                        maksAntallForsoek = 10,
                         data = om.writeValueAsString(KroniskKravProcessor.JobbData(krav.id)),
                         connection = connection
                     )

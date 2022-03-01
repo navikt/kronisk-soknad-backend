@@ -2,6 +2,7 @@ package no.nav.helse.fritakagp.koin
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import no.nav.helse.arbeidsgiver.integrasjoner.AccessTokenProvider
 import no.nav.helse.arbeidsgiver.integrasjoner.aareg.*
 import no.nav.helse.arbeidsgiver.integrasjoner.altinn.AltinnOrganisasjon
 import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.DokarkivKlient
@@ -17,8 +18,12 @@ import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.integration.gcp.MockBucketStorage
 import no.nav.helse.fritakagp.integration.kafka.BrukernotifikasjonBeskjedSender
 import no.nav.helse.fritakagp.integration.kafka.MockBrukernotifikasjonBeskjedSender
+import no.nav.helse.fritakagp.integration.norg.ArbeidsfordelingRequest
+import no.nav.helse.fritakagp.integration.norg.ArbeidsfordelingResponse
+import no.nav.helse.fritakagp.integration.norg.Norg2Client
 import no.nav.helse.fritakagp.integration.virusscan.MockVirusScanner
 import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
+import no.nav.helse.fritakagp.service.BehandlendeEnhetService
 import org.koin.core.module.Module
 import org.koin.dsl.bind
 import java.time.LocalDate
@@ -135,6 +140,45 @@ fun Module.mockExternalDependecies() {
     single { MockVirusScanner() } bind VirusScanner::class
     single { MockBucketStorage() } bind BucketStorage::class
     single { MockBrregClient() } bind BrregClient::class
+
+    single {
+        object : Norg2Client(
+            "",
+            object : AccessTokenProvider {
+                override fun getToken(): String {
+                    return "token"
+                }
+            },
+            get()
+        ) {
+            override suspend fun hentAlleArbeidsfordelinger(
+                request: ArbeidsfordelingRequest,
+                callId: String?
+            ): List<ArbeidsfordelingResponse> = listOf(
+                ArbeidsfordelingResponse(
+                    aktiveringsdato = LocalDate.of(2020, 11, 31),
+                    antallRessurser = 0,
+                    enhetId = 123456789,
+                    enhetNr = "1234",
+                    kanalstrategi = null,
+                    navn = "NAV Område",
+                    nedleggelsesdato = null,
+                    oppgavebehandler = false,
+                    orgNivaa = "SPESEN",
+                    orgNrTilKommunaltNavKontor = "",
+                    organisasjonsnummer = null,
+                    sosialeTjenester = "",
+                    status = "Aktiv",
+                    type = "KO",
+                    underAvviklingDato = null,
+                    underEtableringDato = LocalDate.of(2020, 11, 30),
+                    versjon = 1
+                )
+            )
+        }
+    } bind Norg2Client::class
+
+    single { BehandlendeEnhetService(get(), get()) }
 }
 
 class MockAltinnRepo(om: ObjectMapper) : AltinnOrganisationsRepository {

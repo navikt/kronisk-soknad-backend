@@ -21,17 +21,20 @@ import no.nav.helse.fritakagp.integration.brreg.BrregClientImpl
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.integration.gcp.BucketStorageImpl
 import no.nav.helse.fritakagp.integration.kafka.*
+import no.nav.helse.fritakagp.integration.norg.Norg2Client
 import no.nav.helse.fritakagp.integration.oauth2.DefaultOAuth2HttpClient
 import no.nav.helse.fritakagp.integration.oauth2.OAuth2ClientPropertiesConfig
 import no.nav.helse.fritakagp.integration.oauth2.TokenResolver
 import no.nav.helse.fritakagp.integration.virusscan.ClamavVirusScannerImp
 import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
+import no.nav.helse.fritakagp.service.BehandlendeEnhetService
 import no.nav.security.token.support.client.core.oauth2.ClientCredentialsTokenClient
 import no.nav.security.token.support.client.core.oauth2.OAuth2AccessTokenService
 import no.nav.security.token.support.client.core.oauth2.OnBehalfOfTokenClient
 import no.nav.security.token.support.client.core.oauth2.TokenExchangeClient
 import org.koin.core.module.Module
 import org.koin.core.qualifier.named
+import org.koin.core.qualifier.qualifier
 import org.koin.dsl.bind
 
 fun Module.externalSystemClients(config: ApplicationConfig) {
@@ -124,4 +127,7 @@ fun Module.externalSystemClients(config: ApplicationConfig) {
         )
     } bind BrukernotifikasjonBeskjedSender::class
     single { BrregClientImpl(get(), config.getString("berreg_enhet_url")) } bind BrregClient::class
+
+    single { Norg2Client(config.getString("norg2_url"), get(qualifier = named("PROXY")), get()) }
+    single { BehandlendeEnhetService(get(), get()) }
 }

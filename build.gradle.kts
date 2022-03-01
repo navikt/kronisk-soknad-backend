@@ -1,6 +1,6 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-val ktorVersion = "1.6.0"
+val ktorVersion = "1.6.7"
 val logback_version = "1.2.7"
 val logback_contrib_version = "0.1.5"
 val jacksonVersion = "2.10.3"
@@ -19,7 +19,7 @@ val cxfVersion = "3.4.5"
 val jaxwsVersion = "2.3.1"
 val jaxwsToolsVersion = "2.3.3"
 val kafkaClient = "7.0.1-ce"
-val confluentVersion = "6.0.1"
+val confluentVersion = "7.0.1"
 val brukernotifikasjonSchemasVersion = "1.2021.01.18-11.12-b9c8c40b98d1"
 val githubPassword: String by project
 

@@ -9,6 +9,7 @@ import io.ktor.routing.*
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbService
 import no.nav.helse.arbeidsgiver.integrasjoner.aareg.AaregArbeidsforholdClient
 import no.nav.helse.arbeidsgiver.web.auth.AltinnAuthorizer
+import no.nav.helse.arbeidsgiver.web.validation.OrganisasjonsnummerValidator
 import no.nav.helse.fritakagp.KroniskKravMetrics
 import no.nav.helse.fritakagp.KroniskSoeknadMetrics
 import no.nav.helse.fritakagp.db.KroniskKravRepository
@@ -91,6 +92,18 @@ fun Route.kroniskRoutes(
         }
 
         route("/krav") {
+            get("/virksomhet/{virsomhetsnummer}") {
+                val virksomhetsnummer = requireNotNull(call.parameters["virksomhetsnummer"])
+                if (!OrganisasjonsnummerValidator.isValid(virksomhetsnummer)) {
+                    call.respond(HttpStatusCode.NotAcceptable, "Ikke gyldig virksomhetsnummer")
+                }
+                authorize(authorizer, virksomhetsnummer)
+
+                val kroniskKrav = kroniskKravRepo.getAllForVirksomhet(virksomhetsnummer)
+
+                call.respond(HttpStatusCode.OK, kroniskKrav)
+            }
+
             get("/{id}") {
                 val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
                 val form = kroniskKravRepo.getById(UUID.fromString(call.parameters["id"]))

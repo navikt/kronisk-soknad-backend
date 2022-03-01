@@ -10,7 +10,6 @@ import no.nav.helse.fritakagp.db.GravidKravRepository
 import no.nav.helse.fritakagp.domain.Arbeidsgiverperiode
 import no.nav.helse.fritakagp.domain.GravidKrav
 import no.nav.helse.fritakagp.web.api.resreq.ValidationProblem
-import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -34,7 +33,7 @@ class GravidKravHTTPTests : SystemTestBase() {
             }
         }
 
-        Assertions.assertThat(exception.response.status).isEqualTo(HttpStatusCode.NotFound)
+        assertThat(exception.response.status).isEqualTo(HttpStatusCode.NotFound)
 
         val accessGrantedForm = httpClient.get<GravidKrav> {
             appUrl("$kravGravidUrl/${GravidTestData.gravidKrav.id}")
@@ -42,13 +41,13 @@ class GravidKravHTTPTests : SystemTestBase() {
             loggedInAs(GravidTestData.gravidKrav.identitetsnummer)
         }
 
-        Assertions.assertThat(accessGrantedForm).isEqualTo(GravidTestData.gravidKrav)
+        assertThat(accessGrantedForm).isEqualTo(GravidTestData.gravidKrav)
     }
 
     @Test
     fun `invalid json gives 400 Bad request`() = suspendableTest {
         val responseExcepion = assertThrows<ClientRequestException> {
-            val response = httpClient.post<HttpResponse> {
+            httpClient.post<HttpResponse> {
                 appUrl(kravGravidUrl)
                 contentType(ContentType.Application.Json)
                 loggedInAs("123456789")
@@ -64,9 +63,9 @@ class GravidKravHTTPTests : SystemTestBase() {
             }
         }
 
-        Assertions.assertThat(responseExcepion.response.status).isEqualTo(HttpStatusCode.BadRequest)
+        assertThat(responseExcepion.response.status).isEqualTo(HttpStatusCode.BadRequest)
         val res = extractResponseBody(responseExcepion.response)
-        Assertions.assertThat(res.title).contains("Feil ved prosessering av JSON-dataene som ble oppgitt")
+        assertThat(res.title).contains("Feil ved prosessering av JSON-dataene som ble oppgitt")
     }
 
     @Test
@@ -79,8 +78,8 @@ class GravidKravHTTPTests : SystemTestBase() {
         }
 
         val krav = response.receive<GravidKrav>()
-        Assertions.assertThat(response.status).isEqualTo(HttpStatusCode.Created)
-        Assertions.assertThat(krav.identitetsnummer).isEqualTo(GravidTestData.gravidKravRequestValid.identitetsnummer)
+        assertThat(response.status).isEqualTo(HttpStatusCode.Created)
+        assertThat(krav.identitetsnummer).isEqualTo(GravidTestData.gravidKravRequestValid.identitetsnummer)
     }
 
     @Test
@@ -94,7 +93,7 @@ class GravidKravHTTPTests : SystemTestBase() {
 
         assertThat(response.status).isEqualTo(HttpStatusCode.Created)
         val krav = response.receive<GravidKrav>()
-        Assertions.assertThat(krav.identitetsnummer).isEqualTo(GravidTestData.gravidKravRequestValidPeriode1Dag.identitetsnummer)
+        assertThat(krav.identitetsnummer).isEqualTo(GravidTestData.gravidKravRequestValidPeriode1Dag.identitetsnummer)
     }
 
     @Test
@@ -107,7 +106,7 @@ class GravidKravHTTPTests : SystemTestBase() {
                 body = GravidTestData.gravidKravRequestValid.copy(virksomhetsnummer = "123456785")
             }
         }
-        Assertions.assertThat(responseExcepion.response.status).isEqualTo(HttpStatusCode.Forbidden)
+        assertThat(responseExcepion.response.status).isEqualTo(HttpStatusCode.Forbidden)
     }
 
     @Test
@@ -119,7 +118,7 @@ class GravidKravHTTPTests : SystemTestBase() {
             body = GravidTestData.gravidKravRequestMedFil
         }
 
-        Assertions.assertThat(response.status).isEqualTo(HttpStatusCode.Created)
+        assertThat(response.status).isEqualTo(HttpStatusCode.Created)
     }
 
     @Test
@@ -154,9 +153,9 @@ class GravidKravHTTPTests : SystemTestBase() {
             }
         }
 
-        Assertions.assertThat(responseExcepion.response.status).isEqualTo(HttpStatusCode.UnprocessableEntity)
+        assertThat(responseExcepion.response.status).isEqualTo(HttpStatusCode.UnprocessableEntity)
         val res = responseExcepion.response.call.receive<ValidationProblem>()
-        Assertions.assertThat(res.violations.size).isEqualTo(5)
+        assertThat(res.violations.size).isEqualTo(5)
     }
 
     @Test
@@ -198,9 +197,36 @@ class GravidKravHTTPTests : SystemTestBase() {
             "perioder[2].antallDagerMedRefusjon",
         )
         val res = responseExcepion.response.call.receive<ValidationProblem>()
-        Assertions.assertThat(res.violations.size).isEqualTo(5)
+        assertThat(res.violations.size).isEqualTo(5)
         res.violations.forEach {
-            Assertions.assertThat(it.propertyPath).isIn(possiblePropertyPaths)
+            assertThat(it.propertyPath).isIn(possiblePropertyPaths)
         }
+    }
+
+    @Test
+    fun `Virksomhetsrute returnerer liste over krav når korrekt bruker er innlogget`() = suspendableTest {
+        val repo by inject<GravidKravRepository>()
+
+        repo.insert(GravidTestData.gravidKrav)
+
+        val gravidKravListe = httpClient.get<List<GravidKrav>> {
+            appUrl("$kravGravidUrl/virksomhet/${GravidTestData.validOrgNr}")
+            contentType(ContentType.Application.Json)
+            loggedInAs(GravidTestData.gravidKrav.identitetsnummer)
+        }
+
+        assertThat(gravidKravListe.find { it.id == GravidTestData.gravidKrav.id }).isEqualTo(GravidTestData.gravidKrav)
+    }
+
+    @Test
+    fun `Virksomhetsrute skal returnere forbidden hvis virksomheten ikke er i auth listen fra altinn`() = suspendableTest {
+        val responseException = assertThrows<ClientRequestException> {
+            httpClient.get<HttpResponse> {
+                appUrl("$kravGravidUrl/virksomhet/123456785")
+                contentType(ContentType.Application.Json)
+                loggedInAs("123456789")
+            }
+        }
+        assertThat(responseException.response.status).isEqualTo(HttpStatusCode.Forbidden)
     }
 }

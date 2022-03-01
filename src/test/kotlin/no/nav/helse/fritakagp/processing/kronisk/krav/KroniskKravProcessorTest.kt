@@ -49,7 +49,7 @@ class KroniskKravProcessorTest {
     lateinit var krav: KroniskKrav
 
     private val oppgaveId = 9999
-    private val arkivReferanse = "1234"
+    private val arkivReferanse = "12345"
     private var jobb = emptyJob()
 
     @BeforeEach

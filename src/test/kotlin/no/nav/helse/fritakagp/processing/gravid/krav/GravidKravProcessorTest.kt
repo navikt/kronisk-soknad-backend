@@ -47,7 +47,7 @@ class GravidKravProcessorTest {
     lateinit var krav: GravidKrav
 
     private val oppgaveId = 9999
-    private val arkivReferanse = "1234"
+    private val arkivReferanse = "12345"
     private var jobb = Bakgrunnsjobb(data = "", type = "test")
 
     @BeforeEach

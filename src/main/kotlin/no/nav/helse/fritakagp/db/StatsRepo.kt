@@ -20,9 +20,19 @@ data class AntallType(
     val type: String
 )
 
+data class SykeGradAntall(
+    val antall: Int,
+    val bucket: Int,
+    val uke: Int
+)
+
 interface IStatsRepo {
     fun getWeeklyStats(): List<WeeklyStats>
     fun getGravidSoeknadTiltak(): GravidSoeknadTiltak
+
+    fun getKroniskSoeknadArbeidstyper(): List<AntallType>
+    fun getKroniskSoeknadPaakjenningstyper(): List<AntallType>
+    fun getSykeGradAntall(): List<SykeGradAntall>
 }
 
 class StatsRepoImpl(
@@ -31,34 +41,37 @@ class StatsRepoImpl(
     override fun getWeeklyStats(): List<WeeklyStats> {
         val query = """
             select
-                extract('week' from date(data->>'opprettet')) as uke,
+                extract('week' from date_trunc('week', date(data->>'opprettet'))) as uke,
+                extract('year' from date_trunc('week', date(data->>'opprettet'))) as year,
                 count(*) as antall,
                 'gravid_soeknad' as table_name
             from soeknadgravid
-            group by uke
+            group by year, uke
             UNION ALL
             select
-                extract('week' from date(data->>'opprettet')) as uke,
+                extract('week' from date_trunc('week', date(data->>'opprettet'))) as uke,
+                extract('year' from date_trunc('week', date(data->>'opprettet'))) as year,
                 count(*) as antall,
                 'kronisk_soeknad' as table_name
             from soeknadkronisk
-            group by uke
+            group by year, uke
             UNION ALL
             select
-                extract('week' from date(data->>'opprettet')) as uke,
+                extract('week' from date_trunc('week', date(data->>'opprettet'))) as uke,
+                extract('year' from date_trunc('week', date(data->>'opprettet'))) as year,
                 count(*) as antall,
                 'kronisk_krav' as table_name
             from krav_kronisk
-            group by uke
+            group by year, uke
             UNION ALL
             select
-                extract('week' from date(data->>'opprettet')) as uke,
+                extract('week' from date_trunc('week', date(data->>'opprettet'))) as uke,
+                extract('year' from date_trunc('week', date(data->>'opprettet'))) as year,
                 count(*) as antall,
                 'gravid_krav' as table_name
             from kravgravid
-            group by uke
-            --where uke > extract('week' from DATE::now())) - 12
-            order by uke;
+            group by year, uke
+            order by year, uke;
         """.trimIndent()
 
         ds.connection.use {
@@ -102,6 +115,85 @@ class StatsRepoImpl(
                 )
             }
             return returnValue[0]
+        }
+    }
+
+// Depricated
+    override fun getKroniskSoeknadArbeidstyper(): List<AntallType> {
+        val query = """
+        SELECT
+            count(*) as antall,
+            jsonb_array_elements(k.data->'arbeidstyper') as arbeidstype
+        FROM soeknadkronisk as k
+        WHERE date(data->>'opprettet') > NOW()::DATE-EXTRACT(DOW FROM NOW())::INTEGER-7
+        GROUP BY arbeidstype;
+        """.trimIndent()
+
+        ds.connection.use {
+            val res = it.prepareStatement(query).executeQuery()
+            val returnValue = ArrayList<AntallType>()
+            while (res.next()) {
+                returnValue.add(
+                    AntallType(
+                        res.getInt("antall"),
+                        res.getString("arbeidstype")
+                    )
+                )
+            }
+
+            return returnValue
+        }
+    }
+    // Depricated
+    override fun getKroniskSoeknadPaakjenningstyper(): List<AntallType> {
+        val query = """
+        SELECT
+            count(*) as antall,
+            jsonb_array_elements(k.data->'paakjenningstyper') as paakjenning
+        FROM soeknadkronisk as k
+        WHERE date(data->>'opprettet') > NOW()::DATE-EXTRACT(DOW FROM NOW())::INTEGER-7
+        GROUP BY paakjenning;
+        """.trimIndent()
+
+        ds.connection.use {
+            val res = it.prepareStatement(query).executeQuery()
+            val returnValue = ArrayList<AntallType>()
+            while (res.next()) {
+                returnValue.add(
+                    AntallType(
+                        res.getInt("antall"),
+                        res.getString("paakjenning")
+                    )
+                )
+            }
+            return returnValue
+        }
+    }
+
+    override fun getSykeGradAntall(): List<SykeGradAntall> {
+        val query = """
+            SELECT count(bucket) as antall, bucket, uke
+            FROM (
+                SELECT width_bucket((json_array_elements((data#>'{perioder}')::json)->>'gradering')::float, 0.0, 1.0, 5) as bucket,
+                    extract('week' from date(data->>'opprettet')) as uke
+                FROM krav_kronisk
+                WHERE (data->>'opprettet')::DATE >  NOW()::DATE - INTERVAL '90 DAYS'
+                ) AS temp GROUP BY bucket, uke;
+        """.trimIndent()
+
+        ds.connection.use {
+            val res = it.prepareStatement(query).executeQuery()
+            val returnValue = ArrayList<SykeGradAntall>()
+            while (res.next()) {
+                returnValue.add(
+                    SykeGradAntall(
+                        res.getInt("antall"),
+                        res.getInt("bucket"),
+                        res.getInt("uke")
+                    )
+                )
+            }
+            return returnValue
         }
     }
 }

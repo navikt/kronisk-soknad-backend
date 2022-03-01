@@ -18,14 +18,14 @@ val gcpStorageVersion = "1.113.14-sp.3"
 val cxfVersion = "3.4.5"
 val jaxwsVersion = "2.3.1"
 val jaxwsToolsVersion = "2.3.3"
-val kafkaClient = "2.7.0"
+val kafkaClient = "7.0.1-ce"
 val confluentVersion = "7.0.1"
 val brukernotifikasjonSchemasVersion = "1.2021.01.18-11.12-b9c8c40b98d1"
 val githubPassword: String by project
 
 plugins {
     application
-    kotlin("jvm") version "1.5.10"
+    kotlin("jvm") version "1.6.10"
     id("com.github.ben-manes.versions") version "0.27.0"
     id("com.autonomousapps.dependency-analysis") version "0.79.0"
     jacoco

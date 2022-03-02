@@ -31,6 +31,10 @@ plugins {
     jacoco
 }
 
+application {
+    mainClass.set("no.nav.helse.fritakagp.AppKt")
+}
+
 buildscript {
     dependencies {
         classpath("org.junit.platform:junit-platform-gradle-plugin:1.2.0")

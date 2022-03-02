@@ -9,6 +9,7 @@ import io.ktor.routing.*
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbService
 import no.nav.helse.arbeidsgiver.integrasjoner.aareg.AaregArbeidsforholdClient
 import no.nav.helse.arbeidsgiver.web.auth.AltinnAuthorizer
+import no.nav.helse.arbeidsgiver.web.validation.OrganisasjonsnummerValidator
 import no.nav.helse.fritakagp.GravidKravMetrics
 import no.nav.helse.fritakagp.GravidSoeknadMetrics
 import no.nav.helse.fritakagp.db.GravidKravRepository
@@ -99,6 +100,15 @@ fun Route.gravidRoutes(
         }
 
         route("/krav") {
+            get("/virksomhet/{virksomhetsnummer}") {
+                val virksomhetsnummer = requireNotNull(call.parameters["virksomhetsnummer"])
+                authorize(authorizer, virksomhetsnummer)
+
+                val gravidKrav = gravidKravRepo.getAllForVirksomhet(virksomhetsnummer)
+
+                call.respond(HttpStatusCode.OK, gravidKrav)
+            }
+
             get("/{id}") {
                 val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
                 val form = gravidKravRepo.getById(UUID.fromString(call.parameters["id"]))

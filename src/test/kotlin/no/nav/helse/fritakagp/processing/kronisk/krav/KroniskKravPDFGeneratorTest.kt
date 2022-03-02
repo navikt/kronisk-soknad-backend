@@ -26,9 +26,7 @@ class KroniskKravPDFGeneratorTest {
 
     @Test
     fun testLagSlettingPDF() {
-        val krav = KroniskTestData.kroniskKrav
-        krav.journalpostId = "12345"
-        krav.endretDato = LocalDateTime.now()
+        val krav = KroniskTestData.kroniskKrav.copy(journalpostId = "12345", endretDato = LocalDateTime.now())
         val pdf = KroniskKravPDFGenerator().lagSlettingPDF(krav)
         assertThat(pdf).isNotNull
 

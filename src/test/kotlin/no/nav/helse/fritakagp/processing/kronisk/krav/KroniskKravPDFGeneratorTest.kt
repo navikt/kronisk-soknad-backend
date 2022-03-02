@@ -25,7 +25,6 @@ class KroniskKravPDFGeneratorTest {
     }
 
     @Test
-    @Disabled
     fun testLagSlettingPDF() {
         val krav = KroniskTestData.kroniskKrav
         krav.journalpostId = "12345"

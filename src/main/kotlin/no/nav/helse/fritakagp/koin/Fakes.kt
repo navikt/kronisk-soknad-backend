@@ -156,7 +156,7 @@ fun Module.mockExternalDependecies() {
                 callId: String?
             ): List<ArbeidsfordelingResponse> = listOf(
                 ArbeidsfordelingResponse(
-                    aktiveringsdato = LocalDate.of(2020, 11, 31),
+                    aktiveringsdato = LocalDate.of(2020, 11, 30),
                     antallRessurser = 0,
                     enhetId = 123456789,
                     enhetNr = "1234",

@@ -10,6 +10,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.koin.test.inject
+import java.util.*
 
 class SlettKroniskKravHTTPTests : SystemTestBase() {
     private val kravKroniskUrl = "/api/v1/kronisk/krav"
@@ -33,10 +34,12 @@ class SlettKroniskKravHTTPTests : SystemTestBase() {
     fun `Skal returnere forbidden hvis virksomheten ikke er i auth listen fra altinn`() = suspendableTest {
         val repo by inject<KroniskKravRepository>()
 
-        repo.insert(KroniskTestData.kroniskKrav.copy(virksomhetsnummer = "123456785"))
+        val id = UUID.randomUUID()
+
+        repo.insert(KroniskTestData.kroniskKrav.copy(virksomhetsnummer = "123456785", id = id))
         val responseExcepion = assertThrows<ClientRequestException> {
             httpClient.delete<HttpResponse> {
-                appUrl("$kravKroniskUrl/${KroniskTestData.kroniskKrav.id}")
+                appUrl("$kravKroniskUrl/$id")
                 contentType(ContentType.Application.Json)
                 loggedInAs("123456789")
             }

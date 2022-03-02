@@ -25,7 +25,6 @@ class GravidKravPDFGeneratorTest {
     }
 
     @Test
-    @Disabled
     fun testLagSlettingPDF() {
         val krav = GravidTestData.gravidKrav
         krav.journalpostId = "12345"

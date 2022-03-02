@@ -15,11 +15,13 @@ import no.nav.helse.fritakagp.KroniskSoeknadMetrics
 import no.nav.helse.fritakagp.db.KroniskKravRepository
 import no.nav.helse.fritakagp.db.KroniskSoeknadRepository
 import no.nav.helse.fritakagp.domain.BeløpBeregning
+import no.nav.helse.fritakagp.domain.KravStatus
 import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
 import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravKvitteringProcessor
 import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravProcessor
+import no.nav.helse.fritakagp.processing.kronisk.krav.SlettKroniskKravProcessor
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadKvitteringProcessor
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadProcessor
 import no.nav.helse.fritakagp.service.PdlService
@@ -27,6 +29,7 @@ import no.nav.helse.fritakagp.web.api.resreq.KroniskKravRequest
 import no.nav.helse.fritakagp.web.api.resreq.KroniskSoknadRequest
 import no.nav.helse.fritakagp.web.auth.authorize
 import no.nav.helse.fritakagp.web.auth.hentIdentitetsnummerFraLoginToken
+import java.time.LocalDateTime
 import java.util.*
 import javax.sql.DataSource
 
@@ -148,6 +151,31 @@ fun Route.kroniskRoutes(
 
                 call.respond(HttpStatusCode.Created, krav)
                 KroniskKravMetrics.tellMottatt()
+            }
+
+            delete("/{id}") {
+                val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
+                val slettetAv = pdlService.finnNavn(innloggetFnr)
+                val kravId = UUID.fromString(call.parameters["id"])
+                var form = kroniskKravRepo.getById(kravId)
+                if (form == null) {
+                    call.respond(HttpStatusCode.NotFound)
+                } else {
+                    authorize(authorizer, form.virksomhetsnummer)
+                    form.status = KravStatus.SLETTET
+                    form.slettetAv = innloggetFnr
+                    form.slettetAvNavn = slettetAv
+                    form.endretDato = LocalDateTime.now()
+                    datasource.connection.use { connection ->
+                        kroniskKravRepo.update(form, connection)
+                        bakgunnsjobbService.opprettJobb<SlettKroniskKravProcessor>(
+                            maksAntallForsoek = 10,
+                            data = om.writeValueAsString(KroniskKravProcessor.JobbData(form.id)),
+                            connection = connection
+                        )
+                    }
+                    call.respond(HttpStatusCode.OK)
+                }
             }
         }
     }

@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import java.awt.Desktop
 import java.nio.file.Files
+import java.time.LocalDateTime
 
 class KroniskKravPDFGeneratorTest {
 
@@ -21,6 +22,22 @@ class KroniskKravPDFGeneratorTest {
 
         assertThat(pdfText).contains(krav.navn)
         assertThat(pdfText).contains(krav.virksomhetsnummer)
+    }
+
+    @Test
+    @Disabled
+    fun testLagSlettingPDF() {
+        val krav = KroniskTestData.kroniskKrav
+        krav.journalpostId = "12345"
+        krav.endretDato = LocalDateTime.now()
+        val pdf = KroniskKravPDFGenerator().lagSlettingPDF(krav)
+        assertThat(pdf).isNotNull
+
+        val pdfText = extractTextFromPdf(pdf)
+
+        assertThat(pdfText).contains(krav.navn)
+        assertThat(pdfText).contains(krav.virksomhetsnummer)
+        assertThat(pdfText).contains(krav.journalpostId)
     }
 
     @Test

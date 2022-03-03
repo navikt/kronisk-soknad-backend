@@ -9,6 +9,7 @@ import no.nav.helse.fritakagp.db.KroniskKravRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.koin.java.KoinJavaComponent.inject
 import org.koin.test.inject
 import java.util.*
 
@@ -28,6 +29,23 @@ class SlettKroniskKravHTTPTests : SystemTestBase() {
         }
 
         assertThat(response.status).isEqualTo(HttpStatusCode.OK)
+    }
+
+    @Test
+    internal fun `Skal returnere 404 når kravet ikke finnes`() = suspendableTest {
+        val repo by inject<KroniskKravRepository>()
+
+        repo.insert(KroniskTestData.kroniskKrav)
+
+        val responseExcepion = assertThrows<ClientRequestException> {
+            httpClient.delete<HttpResponse> {
+                appUrl("$kravKroniskUrl/${UUID.randomUUID()}")
+                contentType(ContentType.Application.Json)
+                loggedInAs(KroniskTestData.kroniskKrav.identitetsnummer)
+            }
+        }
+
+        assertThat(responseExcepion.response.status).isEqualTo(HttpStatusCode.NotFound)
     }
 
     @Test

@@ -2,7 +2,6 @@ package no.nav.helse.fritakagp.koin
 
 import com.zaxxer.hikari.HikariDataSource
 import io.ktor.config.*
-import io.ktor.util.*
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbRepository
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbService
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.PostgresBakgrunnsjobbRepository
@@ -43,8 +42,10 @@ fun localDevConfig(config: ApplicationConfig) = module {
 
     single { GravidSoeknadProcessor(get(), get(), get(), get(), get(), GravidSoeknadPDFGenerator(), get(), get(), get()) }
     single { GravidKravProcessor(get(), get(), get(), get(), get(), GravidKravPDFGenerator(), get(), get(), get(), get()) }
+    single { SlettGravidKravProcessor(get(), get(), get(), get(), get(), GravidKravPDFGenerator(), get(), get(), get(), get()) }
     single { KroniskSoeknadProcessor(get(), get(), get(), get(), get(), KroniskSoeknadPDFGenerator(), get(), get(), get()) }
     single { KroniskKravProcessor(get(), get(), get(), get(), get(), KroniskKravPDFGenerator(), get(), get(), get(), get()) }
+    single { SlettKroniskKravProcessor(get(), get(), get(), get(), get(), KroniskKravPDFGenerator(), get(), get(), get(), get()) }
 
     single { GravidSoeknadKvitteringSenderDummy() } bind GravidSoeknadKvitteringSender::class
     single { GravidSoeknadKvitteringProcessor(get(), get(), get()) }

@@ -15,12 +15,14 @@ import no.nav.helse.fritakagp.GravidSoeknadMetrics
 import no.nav.helse.fritakagp.db.GravidKravRepository
 import no.nav.helse.fritakagp.db.GravidSoeknadRepository
 import no.nav.helse.fritakagp.domain.BeløpBeregning
+import no.nav.helse.fritakagp.domain.KravStatus
 import no.nav.helse.fritakagp.domain.decodeBase64File
 import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravKvitteringProcessor
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravProcessor
+import no.nav.helse.fritakagp.processing.gravid.krav.SlettGravidKravProcessor
 import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadKvitteringProcessor
 import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadProcessor
 import no.nav.helse.fritakagp.service.PdlService
@@ -33,6 +35,7 @@ import no.nav.helse.fritakagp.web.api.resreq.validation.extractFilExtDel
 import org.valiktor.ConstraintViolation
 import org.valiktor.ConstraintViolationException
 import org.valiktor.DefaultConstraintViolation
+import java.time.LocalDateTime
 import java.util.*
 import javax.sql.DataSource
 
@@ -154,6 +157,31 @@ fun Route.gravidRoutes(
                 }
                 call.respond(HttpStatusCode.Created, krav)
                 GravidKravMetrics.tellMottatt()
+            }
+
+            delete("/{id}") {
+                val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
+                val slettetAv = pdlService.finnNavn(innloggetFnr)
+                val kravId = UUID.fromString(call.parameters["id"])
+                var form = gravidKravRepo.getById(kravId)
+                if (form == null) {
+                    call.respond(HttpStatusCode.NotFound)
+                } else {
+                    authorize(authorizer, form.virksomhetsnummer)
+                    form.status = KravStatus.SLETTET
+                    form.slettetAv = innloggetFnr
+                    form.slettetAvNavn = slettetAv
+                    form.endretDato = LocalDateTime.now()
+                    datasource.connection.use { connection ->
+                        gravidKravRepo.update(form, connection)
+                        bakgunnsjobbService.opprettJobb<SlettGravidKravProcessor>(
+                            maksAntallForsoek = 10,
+                            data = om.writeValueAsString(GravidKravProcessor.JobbData(form.id)),
+                            connection = connection
+                        )
+                    }
+                    call.respond(HttpStatusCode.OK)
+                }
             }
         }
     }

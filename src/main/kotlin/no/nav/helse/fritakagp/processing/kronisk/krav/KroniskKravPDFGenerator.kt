@@ -8,7 +8,6 @@ import org.apache.pdfbox.pdmodel.PDPage
 import org.apache.pdfbox.pdmodel.PDPageContentStream
 import org.apache.pdfbox.pdmodel.font.PDType0Font
 import java.io.ByteArrayOutputStream
-import java.time.format.DateTimeFormatter
 
 class KroniskKravPDFGenerator {
     private val FONT_SIZE = 11f
@@ -37,6 +36,51 @@ class KroniskKravPDFGenerator {
         content.writeTextWrapped("Person navn: ${krav.navn}")
         content.writeTextWrapped("Arbeidsgiver oppgitt i krav: ${krav.virksomhetsnavn} (${krav.virksomhetsnummer})")
         content.writeTextWrapped("Antall lønnsdager: ${krav.antallDager}")
+        content.writeTextWrapped("Perioder", 2)
+
+        krav.perioder.forEach {
+            val gradering = (it.gradering * 100).toString()
+            with(content) {
+                writeTextWrapped("FOM: ${it.fom}")
+                writeTextWrapped("TOM: ${it.tom}")
+                writeTextWrapped("Sykmeldingsgrad: $gradering%")
+                writeTextWrapped("Antall dager det kreves refusjon for: ${it.antallDagerMedRefusjon}")
+                writeTextWrapped("Beregnet månedsinntekt (NOK): ${it.månedsinntekt}")
+                writeTextWrapped("Dagsats (NOK): ${it.dagsats}")
+                writeTextWrapped("Beløp (NOK): ${it.belop}")
+                writeTextWrapped("")
+            }
+        }
+
+        content.endText()
+        content.close()
+        val out = ByteArrayOutputStream()
+        doc.save(out)
+        val ba = out.toByteArray()
+        doc.close()
+        return ba
+    }
+
+    fun lagSlettingPDF(krav: KroniskKrav): ByteArray {
+        val doc = PDDocument()
+        val page = PDPage()
+        val font = PDType0Font.load(doc, this::class.java.classLoader.getResource(FONT_NAME).openStream())
+        doc.addPage(page)
+        val content = PDPageContentStream(doc, page)
+        content.beginText()
+        val mediaBox = page.mediaBox
+        val startX = mediaBox.lowerLeftX + MARGIN_X
+        val startY = mediaBox.upperRightY - MARGIN_Y
+        content.newLineAtOffset(startX, startY)
+        content.setFont(font, FONT_SIZE + 4)
+        content.showText("Annuller krav om refusjon av sykepenger i arbeidsgiverperioden")
+        content.setFont(font, FONT_SIZE)
+
+        content.writeTextWrapped("Annullering Mottatt: ${getPDFTimeStampFormat().format(krav.endretDato)}", 4)
+        content.writeTextWrapped("Tidligere krav med JournalpostID: ${krav.journalpostId}")
+        content.writeTextWrapped("Sendt av: ${krav.sendtAvNavn}")
+        content.writeTextWrapped("Person navn: ${krav.navn}")
+        content.writeTextWrapped("Arbeidsgiver oppgitt i krav: ${krav.virksomhetsnavn} (${krav.virksomhetsnummer})")
         content.writeTextWrapped("Perioder", 2)
 
         krav.perioder.forEach {

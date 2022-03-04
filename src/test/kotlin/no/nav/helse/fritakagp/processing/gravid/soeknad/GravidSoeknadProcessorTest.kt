@@ -25,6 +25,7 @@ import no.nav.helse.fritakagp.integration.gcp.BucketDocument
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor.Jobbdata.SkjemaType
+import no.nav.helse.fritakagp.service.BehandlendeEnhetService
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -43,6 +44,7 @@ class GravidSoeknadProcessorTest {
     val bucketStorageMock = mockk<BucketStorage>(relaxed = true)
     val bakgrunnsjobbRepomock = mockk<BakgrunnsjobbRepository>(relaxed = true)
     val berregServiceMock = mockk<BrregClient>(relaxed = true)
+    val behandlendeEnhetService = mockk<BehandlendeEnhetService>(relaxed = true)
     val prosessor = GravidSoeknadProcessor(
         repositoryMock,
         joarkMock,
@@ -52,7 +54,8 @@ class GravidSoeknadProcessorTest {
         pdfGeneratorMock,
         objectMapper,
         bucketStorageMock,
-        berregServiceMock
+        berregServiceMock,
+        behandlendeEnhetService
     )
 
     lateinit var soeknad: GravidSoeknad

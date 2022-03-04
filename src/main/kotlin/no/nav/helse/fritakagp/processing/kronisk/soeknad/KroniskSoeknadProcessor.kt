@@ -20,6 +20,7 @@ import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor.Jobbdata.SkjemaType
 import no.nav.helse.fritakagp.integration.brreg.BrregClient
+import no.nav.helse.fritakagp.service.BehandlendeEnhetService
 import org.slf4j.LoggerFactory
 import java.time.LocalDate
 import java.util.*
@@ -33,7 +34,8 @@ class KroniskSoeknadProcessor(
     private val pdfGenerator: KroniskSoeknadPDFGenerator,
     private val om: ObjectMapper,
     private val bucketStorage: BucketStorage,
-    private val brregClient: BrregClient
+    private val brregClient: BrregClient,
+    private val behandlendeEnhetService: BehandlendeEnhetService,
 ) : BakgrunnsjobbProsesserer {
     companion object {
         val dokumentasjonBrevkode = "soeknad_om_fritak_fra_agp_dokumentasjon"
@@ -183,10 +185,12 @@ class KroniskSoeknadProcessor(
 
     fun opprettOppgave(soeknad: KroniskSoeknad): String {
         val aktoerId = pdlClient.fullPerson(soeknad.identitetsnummer)?.hentIdenter?.trekkUtIdent(PdlIdent.PdlIdentGruppe.AKTORID)
+        val enhetsNr = behandlendeEnhetService.hentBehandlendeEnhet(soeknad.identitetsnummer, soeknad.id.toString())
         requireNotNull(aktoerId) { "Fant ikke AktørID for fnr i ${soeknad.id}" }
 
         val request = OpprettOppgaveRequest(
             aktoerId = aktoerId,
+            tildeltEnhetsnr = enhetsNr,
             journalpostId = soeknad.journalpostId,
             beskrivelse = generereKroniskSoeknadBeskrivelse(soeknad, "Søknad om fritak fra arbeidsgiverperioden ifbm kronisk lidelse"),
             tema = "SYK",
@@ -203,11 +207,12 @@ class KroniskSoeknadProcessor(
 
     fun opprettFordelingsOppgave(soeknad: KroniskSoeknad): String {
         val aktoerId = pdlClient.fullPerson(soeknad.identitetsnummer)?.hentIdenter?.trekkUtIdent(PdlIdent.PdlIdentGruppe.AKTORID)
+        val enhetsNr = behandlendeEnhetService.hentBehandlendeEnhet(soeknad.identitetsnummer, soeknad.id.toString())
         requireNotNull(aktoerId) { "Fant ikke AktørID for fnr i ${soeknad.id}" }
 
         val request = OpprettOppgaveRequest(
             aktoerId = aktoerId,
-
+            tildeltEnhetsnr = enhetsNr,
             journalpostId = soeknad.journalpostId,
             beskrivelse = generereKroniskSoeknadBeskrivelse(soeknad, "Fordelingsoppgave for søknad om fritak fra arbeidsgiverperioden grunnet kronisk sykdom."),
             tema = "SYK",

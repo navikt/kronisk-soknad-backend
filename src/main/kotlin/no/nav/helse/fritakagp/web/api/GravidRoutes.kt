@@ -9,7 +9,6 @@ import io.ktor.routing.*
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbService
 import no.nav.helse.arbeidsgiver.integrasjoner.aareg.AaregArbeidsforholdClient
 import no.nav.helse.arbeidsgiver.web.auth.AltinnAuthorizer
-import no.nav.helse.arbeidsgiver.web.validation.OrganisasjonsnummerValidator
 import no.nav.helse.fritakagp.GravidKravMetrics
 import no.nav.helse.fritakagp.GravidSoeknadMetrics
 import no.nav.helse.fritakagp.db.GravidKravRepository
@@ -159,29 +158,81 @@ fun Route.gravidRoutes(
                 GravidKravMetrics.tellMottatt()
             }
 
+            patch("/{id}") {
+                val request = call.receive<GravidKravRequest>()
+                authorize(authorizer, request.virksomhetsnummer)
+
+                val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
+                val sendtAvNavn = pdlService.finnNavn(innloggetFnr)
+                val navn = pdlService.finnNavn(request.identitetsnummer)
+
+                val arbeidsforhold = aaregClient
+                    .hentArbeidsforhold(request.identitetsnummer, UUID.randomUUID().toString())
+                    .filter { it.arbeidsgiver.organisasjonsnummer == request.virksomhetsnummer }
+
+                request.validate(arbeidsforhold)
+
+                val kravId = UUID.fromString(call.parameters["id"])
+                var kravTilSletting = gravidKravRepo.getById(kravId)
+                    ?: return@patch call.respond(HttpStatusCode.NotFound)
+
+                val kravTilOppdatering = request.toDomain(innloggetFnr, sendtAvNavn, navn)
+                belopBeregning.beregnBeløpGravid(kravTilOppdatering)
+
+                kravTilSletting.status = KravStatus.ENDRET
+                kravTilSletting.slettetAv = innloggetFnr
+                kravTilSletting.slettetAvNavn = sendtAvNavn
+                kravTilSletting.endretDato = LocalDateTime.now()
+
+                // Sletter gammelt krav
+                datasource.connection.use { connection ->
+                    gravidKravRepo.update(kravTilSletting, connection)
+                    bakgunnsjobbService.opprettJobb<SlettGravidKravProcessor>(
+                        maksAntallForsoek = 10,
+                        data = om.writeValueAsString(GravidKravProcessor.JobbData(kravTilSletting.id)),
+                        connection = connection
+                    )
+                }
+
+                // Oppretter nytt krav
+                datasource.connection.use { connection ->
+                    gravidKravRepo.insert(kravTilOppdatering, connection)
+                    bakgunnsjobbService.opprettJobb<GravidKravProcessor>(
+                        maksAntallForsoek = 10,
+                        data = om.writeValueAsString(GravidKravProcessor.JobbData(kravTilOppdatering.id)),
+                        connection = connection
+                    )
+                    bakgunnsjobbService.opprettJobb<GravidKravKvitteringProcessor>(
+                        maksAntallForsoek = 10,
+                        data = om.writeValueAsString(GravidKravKvitteringProcessor.Jobbdata(kravTilOppdatering.id)),
+                        connection = connection
+                    )
+                }
+
+                call.respond(HttpStatusCode.OK, kravTilOppdatering)
+            }
+
             delete("/{id}") {
                 val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
                 val slettetAv = pdlService.finnNavn(innloggetFnr)
                 val kravId = UUID.fromString(call.parameters["id"])
                 var form = gravidKravRepo.getById(kravId)
-                if (form == null) {
-                    call.respond(HttpStatusCode.NotFound)
-                } else {
-                    authorize(authorizer, form.virksomhetsnummer)
-                    form.status = KravStatus.SLETTET
-                    form.slettetAv = innloggetFnr
-                    form.slettetAvNavn = slettetAv
-                    form.endretDato = LocalDateTime.now()
-                    datasource.connection.use { connection ->
-                        gravidKravRepo.update(form, connection)
-                        bakgunnsjobbService.opprettJobb<SlettGravidKravProcessor>(
-                            maksAntallForsoek = 10,
-                            data = om.writeValueAsString(GravidKravProcessor.JobbData(form.id)),
-                            connection = connection
-                        )
-                    }
-                    call.respond(HttpStatusCode.OK)
+                    ?: return@delete call.respond(HttpStatusCode.NotFound)
+
+                authorize(authorizer, form.virksomhetsnummer)
+                form.status = KravStatus.SLETTET
+                form.slettetAv = innloggetFnr
+                form.slettetAvNavn = slettetAv
+                form.endretDato = LocalDateTime.now()
+                datasource.connection.use { connection ->
+                    gravidKravRepo.update(form, connection)
+                    bakgunnsjobbService.opprettJobb<SlettGravidKravProcessor>(
+                        maksAntallForsoek = 10,
+                        data = om.writeValueAsString(GravidKravProcessor.JobbData(form.id)),
+                        connection = connection
+                    )
                 }
+                call.respond(HttpStatusCode.OK)
             }
         }
     }

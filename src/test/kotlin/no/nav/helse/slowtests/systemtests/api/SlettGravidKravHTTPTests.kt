@@ -4,28 +4,27 @@ import io.ktor.client.features.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
-import no.nav.helse.KroniskTestData
-import no.nav.helse.fritakagp.db.KroniskKravRepository
+import no.nav.helse.GravidTestData
+import no.nav.helse.fritakagp.db.GravidKravRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import org.koin.java.KoinJavaComponent.inject
 import org.koin.test.inject
 import java.util.*
 
-class SlettKroniskKravHTTPTests : SystemTestBase() {
-    private val kravKroniskUrl = "/api/v1/kronisk/krav"
+class SlettGravidKravHTTPTests : SystemTestBase() {
+    private val kravGravidUrl = "/api/v1/gravid/krav"
 
     @Test
     internal fun `Skal returnere 200 OK når vi sletter med korrekt bruker innlogget`() = suspendableTest {
-        val repo by inject<KroniskKravRepository>()
+        val repo by inject<GravidKravRepository>()
 
-        repo.insert(KroniskTestData.kroniskKrav)
+        repo.insert(GravidTestData.gravidKrav)
 
         val response = httpClient.delete<HttpResponse> {
-            appUrl("$kravKroniskUrl/${KroniskTestData.kroniskKrav.id}")
+            appUrl("$kravGravidUrl/${GravidTestData.gravidKrav.id}")
             contentType(ContentType.Application.Json)
-            loggedInAs(KroniskTestData.kroniskKrav.identitetsnummer)
+            loggedInAs(GravidTestData.gravidKrav.identitetsnummer)
         }
 
         assertThat(response.status).isEqualTo(HttpStatusCode.OK)
@@ -33,15 +32,15 @@ class SlettKroniskKravHTTPTests : SystemTestBase() {
 
     @Test
     internal fun `Skal returnere 404 når kravet ikke finnes`() = suspendableTest {
-        val repo by inject<KroniskKravRepository>()
+        val repo by inject<GravidKravRepository>()
 
-        repo.insert(KroniskTestData.kroniskKrav)
+        repo.insert(GravidTestData.gravidKrav)
 
         val responseExcepion = assertThrows<ClientRequestException> {
             httpClient.delete<HttpResponse> {
-                appUrl("$kravKroniskUrl/${UUID.randomUUID()}")
+                appUrl("$kravGravidUrl/${UUID.randomUUID()}")
                 contentType(ContentType.Application.Json)
-                loggedInAs(KroniskTestData.kroniskKrav.identitetsnummer)
+                loggedInAs(GravidTestData.gravidKrav.identitetsnummer)
             }
         }
 
@@ -50,14 +49,14 @@ class SlettKroniskKravHTTPTests : SystemTestBase() {
 
     @Test
     fun `Skal returnere forbidden hvis virksomheten ikke er i auth listen fra altinn`() = suspendableTest {
-        val repo by inject<KroniskKravRepository>()
+        val repo by inject<GravidKravRepository>()
 
         val id = UUID.randomUUID()
 
-        repo.insert(KroniskTestData.kroniskKrav.copy(virksomhetsnummer = "123456785", id = id))
+        repo.insert(GravidTestData.gravidKrav.copy(virksomhetsnummer = "123456785", id = id))
         val responseExcepion = assertThrows<ClientRequestException> {
             httpClient.delete<HttpResponse> {
-                appUrl("$kravKroniskUrl/$id")
+                appUrl("$kravGravidUrl/$id")
                 contentType(ContentType.Application.Json)
                 loggedInAs("123456789")
             }

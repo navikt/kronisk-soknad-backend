@@ -114,9 +114,10 @@ fun Route.gravidRoutes(
             get("/{id}") {
                 val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
                 val form = gravidKravRepo.getById(UUID.fromString(call.parameters["id"]))
-                if (form == null || form.identitetsnummer != innloggetFnr) {
+                if (form == null) {
                     call.respond(HttpStatusCode.NotFound)
                 } else {
+                    authorize(authorizer, form.virksomhetsnummer)
                     form.sendtAvNavn = form.sendtAvNavn ?: pdlService.finnNavn(innloggetFnr)
                     form.navn = form.navn ?: pdlService.finnNavn(form.identitetsnummer)
 

@@ -158,30 +158,4 @@ class KroniskKravHTTPTests : SystemTestBase() {
             assertThat(it.propertyPath).isIn(possiblePropertyPaths)
         }
     }
-
-    @Test
-    fun `Virksomhetsrute returnerer liste over krav når korrekt bruker er innlogget`() = suspendableTest {
-        val repo by inject<KroniskKravRepository>()
-        repo.insert(KroniskTestData.kroniskKrav)
-
-        val kroniskKravListe = httpClient.get<List<KroniskKrav>> {
-            appUrl("$kravKroniskUrl/virksomhet/${GravidTestData.validOrgNr}")
-            contentType(ContentType.Application.Json)
-            loggedInAs(KroniskTestData.kroniskKrav.identitetsnummer)
-        }
-
-        assertThat(kroniskKravListe.find { it.id == KroniskTestData.kroniskKrav.id }).isEqualTo(KroniskTestData.kroniskKrav)
-    }
-
-    @Test
-    fun `Virksomhetsrute skal returnere forbidden hvis virksomheten ikke er i auth listen fra altinn`() = suspendableTest {
-        val responseException = assertThrows<ClientRequestException> {
-            httpClient.get<HttpResponse> {
-                appUrl("$kravKroniskUrl/virksomhet/123456785")
-                contentType(ContentType.Application.Json)
-                loggedInAs("123456789")
-            }
-        }
-        assertThat(responseException.response.status).isEqualTo(HttpStatusCode.Forbidden)
-    }
 }

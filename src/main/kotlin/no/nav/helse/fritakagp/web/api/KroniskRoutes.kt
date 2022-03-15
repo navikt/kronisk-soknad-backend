@@ -95,15 +95,6 @@ fun Route.kroniskRoutes(
         }
 
         route("/krav") {
-            get("/virksomhet/{virksomhetsnummer}") {
-                val virksomhetsnummer = requireNotNull(call.parameters["virksomhetsnummer"])
-                authorize(authorizer, virksomhetsnummer)
-
-                val kroniskKrav = kroniskKravRepo.getAllForVirksomhet(virksomhetsnummer)
-
-                call.respond(HttpStatusCode.OK, kroniskKrav)
-            }
-
             get("/{id}") {
                 val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
                 val form = kroniskKravRepo.getById(UUID.fromString(call.parameters["id"]))

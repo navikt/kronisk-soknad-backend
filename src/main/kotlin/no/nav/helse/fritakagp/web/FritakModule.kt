@@ -51,6 +51,7 @@ private fun Application.configureCORSAccess(config: ApplicationConfig) {
         method(HttpMethod.Options)
         method(HttpMethod.Post)
         method(HttpMethod.Get)
+        method(HttpMethod.Delete)
 
         when (config.getEnvironment()) {
             AppEnv.PROD -> host("arbeidsgiver.nav.no", schemes = listOf("https"))

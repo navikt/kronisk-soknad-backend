@@ -49,9 +49,9 @@ fun <E> Validator<E>.Property<String?>.isGodskjentFiletyper() =
     }
 
 class DataUrlBase64Constraints : CustomConstraint
-fun <E> Validator<E>.Property<String?>.isNotStorreEnn(maxSize: Long) =
+fun <E> Validator<E>.Property<String?>.isAvStorrelse(minSize: Long, maxSize: Long) =
     this.validate(DataUrlBase64Constraints()) {
-        return@validate extractBase64Del(it!!).toByteArray().size <= maxSize
+        return@validate extractBase64Del(it!!).toByteArray().size <= maxSize && extractBase64Del(it!!).toByteArray().size > minSize
     }
 
 class MaxAgeFravaersDataConstraint : CustomConstraint
@@ -85,7 +85,13 @@ inline fun <reified T : Enum<T>> enumContains(name: String): Boolean {
 }
 
 fun extractBase64Del(dataUrl: String): String = dataUrl.substringAfter("base64,")
-fun extractFilExtDel(dataUrl: String): String = dataUrl.substring(0, dataUrl.indexOf(';')).substringAfter('/')
+
+fun extractFilExtDel(dataUrl: String): String {
+    if (!dataUrl.contains(';'))
+        return ""
+    else
+        return dataUrl.substring(0, dataUrl.indexOf(';')).substringAfter('/')
+}
 
 class VirusCheckConstraint : CustomConstraint
 

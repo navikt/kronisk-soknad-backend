@@ -33,7 +33,7 @@ data class KroniskSoknadRequest(
 
             if (!this@KroniskSoknadRequest.dokumentasjon.isNullOrEmpty()) {
                 validate(KroniskSoknadRequest::dokumentasjon).isGodskjentFiletyper()
-                validate(KroniskSoknadRequest::dokumentasjon).isNotStorreEnn(10L * MB)
+                validate(KroniskSoknadRequest::dokumentasjon).isAvStorrelse(SMALLEST_PDF_SIZE, 10L * MB)
             }
         }
     }
@@ -78,7 +78,7 @@ data class KroniskKravRequest(
 
             if (!this@KroniskKravRequest.dokumentasjon.isNullOrEmpty()) {
                 validate(KroniskKravRequest::dokumentasjon).isGodskjentFiletyper()
-                validate(KroniskKravRequest::dokumentasjon).isNotStorreEnn(10L * MB)
+                validate(KroniskKravRequest::dokumentasjon).isAvStorrelse(SMALLEST_PDF_SIZE, 10L * MB)
             }
         }
     }

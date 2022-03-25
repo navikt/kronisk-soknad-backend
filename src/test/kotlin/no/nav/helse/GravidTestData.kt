@@ -76,6 +76,19 @@ aąbcćdeęfghijlłmnńoóprsśtuwź
         """.trimIndent()
     )
 
+    val gravidSoknadMedTomFil = GravidSoknadRequest(
+        virksomhetsnummer = validOrgNr,
+        identitetsnummer = validIdentitetsnummer,
+        termindato = LocalDate.now().plusDays(25),
+        tilrettelegge = true,
+        tiltak = listOf(Tiltak.ANNET),
+        tiltakBeskrivelse = "beskrivelse",
+        omplassering = Omplassering.JA,
+        omplasseringAarsak = null,
+        bekreftet = true,
+        dokumentasjon = """""".trimIndent()
+    )
+
     val gravidKravRequestValid = GravidKravRequest(
         virksomhetsnummer = validOrgNr,
         identitetsnummer = validIdentitetsnummer,

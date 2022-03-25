@@ -46,7 +46,7 @@ data class GravidSoknadRequest(
 
             if (!this@GravidSoknadRequest.dokumentasjon.isNullOrEmpty()) {
                 validate(GravidSoknadRequest::dokumentasjon).isGodskjentFiletyper()
-                validate(GravidSoknadRequest::dokumentasjon).isNotStorreEnn(10L * MB)
+                validate(GravidSoknadRequest::dokumentasjon).isAvStorrelse(SMALLEST_PDF_SIZE, 10L * MB)
             }
         }
     }
@@ -95,7 +95,7 @@ data class GravidKravRequest(
 
             if (!this@GravidKravRequest.dokumentasjon.isNullOrEmpty()) {
                 validate(GravidKravRequest::dokumentasjon).isGodskjentFiletyper()
-                validate(GravidKravRequest::dokumentasjon).isNotStorreEnn(10L * MB)
+                validate(GravidKravRequest::dokumentasjon).isAvStorrelse(SMALLEST_PDF_SIZE, (10L * MB))
             }
         }
     }
@@ -114,3 +114,4 @@ data class GravidKravRequest(
 }
 
 const val MB = 1024 * 1024
+const val SMALLEST_PDF_SIZE = 500L // https://nav-it.slack.com/archives/GUX7MEP4J/p1648123662006049

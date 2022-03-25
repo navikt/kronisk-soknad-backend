@@ -18,3 +18,10 @@ fun validationShouldFailFor(propertyPath: String, block: () -> Unit): Exception 
     Assertions.assertThat(thrown.constraintViolations.first().property).isEqualTo(propertyPath)
     return thrown
 }
+
+fun <B, A> validationShouldFailNTimesFor(field: KProperty1<B, A>, numViolations: Int, block: () -> Unit): Exception {
+    val thrown = assertThrows<ConstraintViolationException>(block)
+    Assertions.assertThat(thrown.constraintViolations).hasSize(numViolations)
+    Assertions.assertThat(thrown.constraintViolations.first().property).isEqualTo(field.name)
+    return thrown
+}

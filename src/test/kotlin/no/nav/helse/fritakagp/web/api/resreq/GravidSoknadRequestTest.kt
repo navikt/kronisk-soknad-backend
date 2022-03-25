@@ -71,6 +71,13 @@ class GravidSoknadRequestTest {
     }
 
     @Test
+    internal fun `ved tomt vedlegg så skal validering feile`() {
+        validationShouldFailNTimesFor((GravidSoknadRequest::dokumentasjon), 2) {
+            GravidTestData.fullValidSoeknadRequest.copy(dokumentasjon = " ").validate(true)
+        }
+    }
+
+    @Test
     fun `Dersom omplassering ikke er mulig må det finnes en årsak`() {
         validationShouldFailFor(GravidSoknadRequest::omplasseringAarsak) {
             GravidTestData.fullValidSoeknadRequest.copy(

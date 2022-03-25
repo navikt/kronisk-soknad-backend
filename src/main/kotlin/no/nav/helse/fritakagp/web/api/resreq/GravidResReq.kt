@@ -114,4 +114,4 @@ data class GravidKravRequest(
 }
 
 const val MB = 1024 * 1024
-const val SMALLEST_PDF_SIZE = 36L // https://media.ccc.de/v/31c3_-_5930_-_en_-_saal_6_-_201412291400_-_funky_file_formats_-_ange_albertini#t=778
+const val SMALLEST_PDF_SIZE = 500L // https://nav-it.slack.com/archives/GUX7MEP4J/p1648123662006049

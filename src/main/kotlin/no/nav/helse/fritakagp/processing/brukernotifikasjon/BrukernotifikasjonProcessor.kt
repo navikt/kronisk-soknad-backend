@@ -2,9 +2,9 @@ package no.nav.helse.fritakagp.processing.brukernotifikasjon
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import no.nav.brukernotifikasjon.schemas.Beskjed
-import no.nav.brukernotifikasjon.schemas.builders.BeskjedBuilder
-import no.nav.brukernotifikasjon.schemas.builders.NokkelBuilder
+import no.nav.brukernotifikasjon.schemas.builders.BeskjedInputBuilder
+import no.nav.brukernotifikasjon.schemas.builders.NokkelInputBuilder
+import no.nav.brukernotifikasjon.schemas.input.BeskjedInput
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.Bakgrunnsjobb
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbProsesserer
 import no.nav.helse.fritakagp.BrukernotifikasjonerMetrics
@@ -38,47 +38,46 @@ class BrukernotifikasjonProcessor(
     override fun prosesser(jobb: Bakgrunnsjobb) {
         val jobbData = om.readValue<Jobbdata>(jobb.data)
         val beskjed = map(jobbData)
-
-        val nokkel = NokkelBuilder()
-            .withEventId(UUID.randomUUID().toString())
-            .withSystembruker(serviceuserUsername)
+        val uuid = UUID.randomUUID().toString()
+        val nokkel = NokkelInputBuilder()
+            .withEventId(uuid)
+            .withFodselsnummer(beskjed.fnr)
+            .withGrupperingsId(beskjed.skjemaId)
+            .withNamespace("helsearbeidsgiver")
+            .withAppnavn("fritakagp")
             .build()
-
-        kafkaProducerFactory.sendMessage(nokkel, beskjed)
-
+        kafkaProducerFactory.sendMessage(nokkel, beskjed.beskjed)
         BrukernotifikasjonerMetrics.labels(jobbData.skjemaType.name).inc()
     }
 
-    private fun map(jobbData: Jobbdata): Beskjed {
+    private fun map(jobbData: Jobbdata): BeskjedMedFnr {
         return when (jobbData.skjemaType) {
             Jobbdata.SkjemaType.KroniskKrav -> {
                 val skjema = kroniskKravRepo.getById(jobbData.skjemaId) ?: throw IllegalArgumentException("Fant ikke $jobbData")
-                buildBeskjed(skjema.id, "$frontendAppBaseUrl/nb/notifikasjon/kronisk/krav/${skjema.id}", skjema.identitetsnummer, skjema.opprettet, skjema.virksomhetsnavn)
+                BeskjedMedFnr(skjema.identitetsnummer, skjema.id.toString(), buildBeskjed("$frontendAppBaseUrl/nb/notifikasjon/kronisk/krav/${skjema.id}", skjema.opprettet, skjema.virksomhetsnavn))
             }
 
             Jobbdata.SkjemaType.KroniskSøknad -> {
                 val skjema = kroniskSoeknadRepo.getById(jobbData.skjemaId) ?: throw IllegalArgumentException("Fant ikke $jobbData")
-                buildBeskjed(skjema.id, "$frontendAppBaseUrl/nb/notifikasjon/kronisk/soknad/${skjema.id}", skjema.identitetsnummer, skjema.opprettet, skjema.virksomhetsnavn)
+                BeskjedMedFnr(skjema.identitetsnummer, skjema.id.toString(), buildBeskjed("$frontendAppBaseUrl/nb/notifikasjon/kronisk/soknad/${skjema.id}", skjema.opprettet, skjema.virksomhetsnavn))
             }
 
             Jobbdata.SkjemaType.GravidKrav -> {
                 val skjema = gravidKravRepo.getById(jobbData.skjemaId) ?: throw IllegalArgumentException("Fant ikke $jobbData")
-                buildBeskjed(skjema.id, "$frontendAppBaseUrl/nb/notifikasjon/gravid/krav/${skjema.id}", skjema.identitetsnummer, skjema.opprettet, skjema.virksomhetsnavn)
+                BeskjedMedFnr(skjema.identitetsnummer, skjema.id.toString(), buildBeskjed("$frontendAppBaseUrl/nb/notifikasjon/gravid/krav/${skjema.id}", skjema.opprettet, skjema.virksomhetsnavn))
             }
             Jobbdata.SkjemaType.GravidSøknad -> {
                 val skjema = gravidSoeknadRepo.getById(jobbData.skjemaId) ?: throw IllegalArgumentException("Fant ikke $jobbData")
-                buildBeskjed(skjema.id, "$frontendAppBaseUrl/nb/notifikasjon/gravid/soknad/${skjema.id}", skjema.identitetsnummer, skjema.opprettet, skjema.virksomhetsnavn)
+                BeskjedMedFnr(skjema.identitetsnummer, skjema.id.toString(), buildBeskjed("$frontendAppBaseUrl/nb/notifikasjon/gravid/soknad/${skjema.id}", skjema.opprettet, skjema.virksomhetsnavn))
             }
         }
     }
 
     private fun buildBeskjed(
-        id: UUID,
         linkUrl: String,
-        identitetsnummer: String,
         hendselstidspunkt: LocalDateTime,
         virksomhetsNavn: String?
-    ): Beskjed {
+    ): BeskjedInput {
 
         val synligFremTil = LocalDateTime.now().plusDays(31)
         val ukjentArbeidsgiver = "Arbeidsgiveren din"
@@ -87,9 +86,7 @@ class BrukernotifikasjonProcessor(
             .withZoneSameInstant(ZoneId.of("UTC"))
             .toLocalDateTime()
 
-        val beskjed = BeskjedBuilder()
-            .withGrupperingsId(id.toString())
-            .withFodselsnummer(identitetsnummer)
+        val beskjed = BeskjedInputBuilder()
             .withLink(URL(linkUrl))
             .withSikkerhetsnivaa(sikkerhetsNivaa)
             .withSynligFremTil(synligFremTil)
@@ -113,3 +110,9 @@ class BrukernotifikasjonProcessor(
         }
     }
 }
+
+data class BeskjedMedFnr(
+    val fnr: String,
+    val skjemaId: String,
+    val beskjed: BeskjedInput
+)

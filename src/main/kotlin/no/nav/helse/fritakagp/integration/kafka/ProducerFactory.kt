@@ -2,8 +2,8 @@ package no.nav.helse.fritakagp.integration.kafka
 
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig
 import io.confluent.kafka.serializers.KafkaAvroSerializer
-import no.nav.brukernotifikasjon.schemas.Beskjed
-import no.nav.brukernotifikasjon.schemas.Nokkel
+import no.nav.brukernotifikasjon.schemas.input.BeskjedInput
+import no.nav.brukernotifikasjon.schemas.input.NokkelInput
 import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.clients.producer.Producer
 import org.apache.kafka.clients.producer.ProducerConfig
@@ -24,8 +24,8 @@ class StringKafkaProducerFactory : ProducerFactory<String, String> {
     )
 }
 
-class BeskjedProducerFactory(val kafkaSchemaRegistryUrl: String) : ProducerFactory<Nokkel, Beskjed> {
-    override fun createProducer(props: Map<String, Any>) = KafkaProducer<Nokkel, Beskjed>(
+class BeskjedInputProducerFactory(val kafkaSchemaRegistryUrl: String) : ProducerFactory<NokkelInput, BeskjedInput> {
+    override fun createProducer(props: Map<String, Any>) = KafkaProducer<NokkelInput, BeskjedInput>(
         props + mapOf(
             ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG to KafkaAvroSerializer::class.java.canonicalName,
             ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG to KafkaAvroSerializer::class.java.canonicalName,

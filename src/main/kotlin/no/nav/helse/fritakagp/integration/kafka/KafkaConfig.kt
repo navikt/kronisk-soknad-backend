@@ -1,5 +1,7 @@
 package no.nav.helse.fritakagp.integration.kafka
 
+import io.confluent.kafka.schemaregistry.client.SchemaRegistryClientConfig
+import io.confluent.kafka.serializers.KafkaAvroSerializerConfig
 import io.ktor.config.*
 import no.nav.helse.arbeidsgiver.system.getString
 import org.apache.kafka.clients.CommonClientConfigs
@@ -8,6 +10,7 @@ import org.apache.kafka.clients.producer.ProducerConfig
 import org.apache.kafka.common.config.SaslConfigs
 import org.apache.kafka.common.config.SslConfigs
 import org.apache.kafka.common.security.auth.SecurityProtocol
+import org.apache.kafka.common.serialization.StringDeserializer
 import org.apache.kafka.common.serialization.StringSerializer
 
 private const val JAVA_KEYSTORE = "jks"
@@ -16,6 +19,16 @@ private const val LOCALHOST = "localhost:9092"
 private const val GROUP_ID_CONFIG = "helsearbeidsgiver-fritakagp"
 
 private fun envOrThrow(envVar: String) = System.getenv()[envVar] ?: throw IllegalStateException("$envVar er påkrevd miljøvariabel")
+
+fun brukernotifikasjonKafkaProps(config: ApplicationConfig) =
+    mapOf(
+        KafkaAvroSerializerConfig.SCHEMA_REGISTRY_URL_CONFIG to System.getenv("KAFKA_SCHEMA_REGISTRY"),
+        SchemaRegistryClientConfig.BASIC_AUTH_CREDENTIALS_SOURCE to "USER_INFO",
+        SchemaRegistryClientConfig.USER_INFO_CONFIG to System.getenv("KAFKA_SCHEMA_REGISTRY_USER") + ":" + System.getenv("KAFKA_SCHEMA_REGISTRY_PASSWORD"),
+        ConsumerConfig.AUTO_OFFSET_RESET_CONFIG to "earliest",
+        ConsumerConfig.CLIENT_ID_CONFIG to "fritakagp",
+        ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG to StringDeserializer::class.java
+    ) + gcpCommonKafkaProps()
 
 fun onPremCommonKafkaProps(config: ApplicationConfig) =
     mapOf(

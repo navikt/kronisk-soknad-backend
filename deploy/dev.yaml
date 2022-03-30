@@ -97,7 +97,7 @@ spec:
     - name: PDL_SCOPE
       value: api://dev-fss.pdl.pdl-api/.default
     - name: DOKARKIV_SCOPE
-      value: api://972814f3-8bdf-44f8-a191-c2ed00020b54/.default
+      value: api://dev-fss.teamdokumenthandtering.dokarkiv/.default
     - name: DATAPAKKE_ID
       value: "a4570c9e9521df726e1050ebcd917b9a"
     - name: DATAPAKKE_API_URL

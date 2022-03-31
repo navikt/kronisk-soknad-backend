@@ -85,7 +85,7 @@ spec:
     - name: ON_PREM_KAFKA_BROKERS
       value: SASL_SSL://a01apvl00145.adeo.no:8443,SASL_SSL://a01apvl00146.adeo.no:8443,SASL_SSL://a01apvl00147.adeo.no:8443,SASL_SSL://a01apvl00149.adeo.no:8443
     - name: KAFKA_BESKJED_TOPIC_NAME
-      value: min-side.aapen-brukernotifikasjon-nyBeskjed-v1
+      value: min-side.aapen-brukernotifikasjon-beskjed-v1
     - name: PROXY_SCOPE
       value: api://prod-fss.helsearbeidsgiver.helsearbeidsgiver-proxy/.default
     - name: KTOR_APPLICATION_BASEPATH
@@ -97,7 +97,7 @@ spec:
     - name: OPPGAVE_SCOPE
       value: api://prod-fss.oppgavehandtering.oppgave/.default
     - name: DOKARKIV_SCOPE
-      value: api://162b3255-2f72-4399-8f7a-244add9ffaac/.default
+      value: api://prod-fss.teamdokumenthandtering.dokarkiv/.default
     - name: DOKARKIV_URL
       value: https://dokarkiv.prod-fss-pub.nais.io
     - name: OPPGAVEBEHANDLING_URL

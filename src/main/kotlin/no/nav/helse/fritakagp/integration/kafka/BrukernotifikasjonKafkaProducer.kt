@@ -48,9 +48,6 @@ class BrukernotifikasjonBeskjedKafkaProducer(
     }
 
     override fun sendMessage(nokkel: NokkelInput, beskjed: BeskjedInput): RecordMetadata? {
-        val retrievedRecord = sendKafkaMessage(nokkel, beskjed)
-        log.info("Skrevet $beskjed til Kafka til topic ${retrievedRecord!!.topic()} offset: ${retrievedRecord.offset()}")
-
-        return retrievedRecord
+        return sendKafkaMessage(nokkel, beskjed)
     }
 }

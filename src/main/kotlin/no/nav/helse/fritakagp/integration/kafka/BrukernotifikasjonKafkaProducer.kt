@@ -26,6 +26,7 @@ class BrukernotifikasjonBeskjedKafkaProducer(
     private val producerFactory: ProducerFactory<NokkelInput, BeskjedInput>
 ) :
     BrukernotifikasjonBeskjedSender {
+    val log = LoggerFactory.getLogger(BrukernotifikasjonBeskjedKafkaProducer::class.java)
     private var producer = producerFactory.createProducer(props)
 
     private fun sendMelding(nokkel: NokkelInput, beskjed: BeskjedInput): RecordMetadata? {
@@ -47,6 +48,9 @@ class BrukernotifikasjonBeskjedKafkaProducer(
     }
 
     override fun sendMessage(nokkel: NokkelInput, beskjed: BeskjedInput): RecordMetadata? {
-        return sendKafkaMessage(nokkel, beskjed)
+        val retrievedRecord = sendKafkaMessage(nokkel, beskjed)
+        log.info("Skrevet $nokkel til Kafka til topic ${retrievedRecord!!.topic()} offset: ${retrievedRecord.offset()}")
+
+        return retrievedRecord
     }
 }

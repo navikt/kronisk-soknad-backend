@@ -9,18 +9,12 @@ import org.slf4j.LoggerFactory
 
 interface BrukernotifikasjonBeskjedSender {
     fun sendMessage(nokkel: NokkelInput, beskjed: BeskjedInput): RecordMetadata?
-    fun flush()
 }
 
 class MockBrukernotifikasjonBeskjedSender : BrukernotifikasjonBeskjedSender {
-
     override fun sendMessage(nokkel: NokkelInput, beskjed: BeskjedInput): RecordMetadata? {
         LoggerFactory.getLogger(this.javaClass).info("Sender Brukernotifikasjon: $beskjed")
         return null
-    }
-
-    override fun flush() {
-        TODO("Not yet implemented")
     }
 }
 
@@ -31,11 +25,6 @@ class BrukernotifikasjonBeskjedKafkaProducer(
     BrukernotifikasjonBeskjedSender {
     val log = LoggerFactory.getLogger(BrukernotifikasjonBeskjedKafkaProducer::class.java)
     private var producer: KafkaProducer<NokkelInput, BeskjedInput> = KafkaProducer(props)
-
-    override fun flush() {
-        log.info("Flusher")
-        producer.flush()
-    }
 
     override fun sendMessage(nokkel: NokkelInput, beskjed: BeskjedInput): RecordMetadata? {
         val record: ProducerRecord<NokkelInput, BeskjedInput> = ProducerRecord(topicName, nokkel, beskjed)

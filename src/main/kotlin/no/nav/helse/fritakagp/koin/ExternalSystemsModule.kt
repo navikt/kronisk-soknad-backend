@@ -122,8 +122,7 @@ fun Module.externalSystemClients(config: ApplicationConfig) {
     single {
         BrukernotifikasjonBeskjedKafkaProducer(
             brukernotifikasjonKafkaProps(config),
-            config.getString("brukernotifikasjon.topic_name"),
-            BeskjedInputProducerFactory(config.getString("brukernotifikasjon.avro_schema_server_url"))
+            config.getString("brukernotifikasjon.topic_name")
         )
     } bind BrukernotifikasjonBeskjedSender::class
     single { BrregClientImpl(get(), config.getString("berreg_enhet_url")) } bind BrregClient::class

@@ -2,6 +2,7 @@ package no.nav.helse.fritakagp.integration.kafka
 
 import no.nav.brukernotifikasjon.schemas.input.BeskjedInput
 import no.nav.brukernotifikasjon.schemas.input.NokkelInput
+import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.clients.producer.RecordMetadata
 import org.slf4j.LoggerFactory
@@ -25,12 +26,11 @@ class MockBrukernotifikasjonBeskjedSender : BrukernotifikasjonBeskjedSender {
 
 class BrukernotifikasjonBeskjedKafkaProducer(
     props: Map<String, Any>,
-    private val topicName: String,
-    producerFactory: ProducerFactory<NokkelInput, BeskjedInput>
+    private val topicName: String
 ) :
     BrukernotifikasjonBeskjedSender {
     val log = LoggerFactory.getLogger(BrukernotifikasjonBeskjedKafkaProducer::class.java)
-    private var producer = producerFactory.createProducer(props)
+    private var producer: KafkaProducer<NokkelInput, BeskjedInput> = KafkaProducer(props)
 
     override fun flush() {
         log.info("Flusher")

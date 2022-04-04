@@ -1,6 +1,7 @@
 package no.nav.helse.fritakagp.integration.kafka
 
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClientConfig
+import io.confluent.kafka.serializers.KafkaAvroSerializer
 import io.confluent.kafka.serializers.KafkaAvroSerializerConfig
 import io.ktor.config.*
 import no.nav.helse.arbeidsgiver.system.getString
@@ -27,7 +28,10 @@ fun brukernotifikasjonKafkaProps(config: ApplicationConfig) =
         SchemaRegistryClientConfig.USER_INFO_CONFIG to System.getenv("KAFKA_SCHEMA_REGISTRY_USER") + ":" + System.getenv("KAFKA_SCHEMA_REGISTRY_PASSWORD"),
         ConsumerConfig.AUTO_OFFSET_RESET_CONFIG to "earliest",
         ConsumerConfig.CLIENT_ID_CONFIG to "fritakagp",
-        ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG to StringDeserializer::class.java
+        ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG to KafkaAvroSerializer::class.java,
+        ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG to KafkaAvroSerializer::class.java,
+        ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG to KafkaAvroSerializer::class.java,
+        ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG to KafkaAvroSerializer::class.java
     ) + gcpCommonKafkaProps()
 
 fun onPremCommonKafkaProps(config: ApplicationConfig) =

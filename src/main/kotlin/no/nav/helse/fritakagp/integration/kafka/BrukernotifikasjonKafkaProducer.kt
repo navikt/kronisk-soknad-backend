@@ -10,6 +10,7 @@ import java.util.concurrent.ExecutionException
 
 interface BrukernotifikasjonBeskjedSender {
     fun sendMessage(nokkel: NokkelInput, beskjed: BeskjedInput): RecordMetadata?
+    fun flush()
 }
 
 class MockBrukernotifikasjonBeskjedSender : BrukernotifikasjonBeskjedSender {
@@ -17,6 +18,10 @@ class MockBrukernotifikasjonBeskjedSender : BrukernotifikasjonBeskjedSender {
     override fun sendMessage(nokkel: NokkelInput, beskjed: BeskjedInput): RecordMetadata? {
         LoggerFactory.getLogger(this.javaClass).info("Sender Brukernotifikasjon: $beskjed")
         return null
+    }
+
+    override fun flush() {
+        TODO("Not yet implemented")
     }
 }
 
@@ -32,6 +37,10 @@ class BrukernotifikasjonBeskjedKafkaProducer(
     private fun sendMelding(nokkel: NokkelInput, beskjed: BeskjedInput): RecordMetadata? {
         val record: ProducerRecord<NokkelInput, BeskjedInput> = ProducerRecord(topicName, nokkel, beskjed)
         return producer.send(record).get()
+    }
+
+    override fun flush() {
+        producer.flush()
     }
 
     private fun sendKafkaMessage(nokkel: NokkelInput, beskjed: BeskjedInput): RecordMetadata? {

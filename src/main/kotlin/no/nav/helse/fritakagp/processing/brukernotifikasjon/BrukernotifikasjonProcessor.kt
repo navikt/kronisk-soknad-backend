@@ -51,6 +51,7 @@ class BrukernotifikasjonProcessor(
             .withAppnavn("fritakagp")
             .build()
         kafkaProducerFactory.sendMessage(nokkel, beskjed.beskjed)
+        kafkaProducerFactory.flush()
         BrukernotifikasjonerMetrics.labels(jobbData.skjemaType.name).inc()
     }
 

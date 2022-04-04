@@ -26,7 +26,6 @@ class BrukernotifikasjonProcessor(
     private val kroniskSoeknadRepo: KroniskSoeknadRepository,
     private val om: ObjectMapper,
     private val kafkaProducerFactory: BrukernotifikasjonBeskjedSender,
-    private val serviceuserUsername: String,
     private val sikkerhetsNivaa: Int = 4,
     private val frontendAppBaseUrl: String = "https://arbeidsgiver.nav.no/fritak-agp"
 ) : BakgrunnsjobbProsesserer {

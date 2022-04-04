@@ -26,39 +26,22 @@ class MockBrukernotifikasjonBeskjedSender : BrukernotifikasjonBeskjedSender {
 }
 
 class BrukernotifikasjonBeskjedKafkaProducer(
-    private val props: Map<String, Any>,
+    props: Map<String, Any>,
     private val topicName: String,
-    private val producerFactory: ProducerFactory<NokkelInput, BeskjedInput>
+    producerFactory: ProducerFactory<NokkelInput, BeskjedInput>
 ) :
     BrukernotifikasjonBeskjedSender {
     val log = LoggerFactory.getLogger(BrukernotifikasjonBeskjedKafkaProducer::class.java)
     private var producer = producerFactory.createProducer(props)
 
-    private fun sendMelding(nokkel: NokkelInput, beskjed: BeskjedInput): RecordMetadata? {
-        val record: ProducerRecord<NokkelInput, BeskjedInput> = ProducerRecord(topicName, nokkel, beskjed)
-        log.info("Sender melding med nøkkel $nokkel og beskjed $beskjed")
-        return producer.send(record).get()
-    }
-
     override fun flush() {
+        log.info("Flusher")
         producer.flush()
-    }
-
-    private fun sendKafkaMessage(nokkel: NokkelInput, beskjed: BeskjedInput): RecordMetadata? {
-        return try {
-            sendMelding(nokkel, beskjed)
-        } catch (ex: ExecutionException) {
-            if (ex.cause is AuthenticationException) {
-                producer.flush()
-                producer.close()
-                producer = producerFactory.createProducer(props)
-                return sendMelding(nokkel, beskjed)
-            } else throw ex
-        }
     }
 
     override fun sendMessage(nokkel: NokkelInput, beskjed: BeskjedInput): RecordMetadata? {
         val record: ProducerRecord<NokkelInput, BeskjedInput> = ProducerRecord(topicName, nokkel, beskjed)
+        log.info("Sender melding med nøkkel $nokkel og beskjed $beskjed")
         return producer.send(record).get()
     }
 }

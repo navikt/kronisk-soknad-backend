@@ -4,11 +4,9 @@ import io.confluent.kafka.schemaregistry.client.SchemaRegistryClientConfig
 import io.confluent.kafka.serializers.KafkaAvroSerializer
 import io.confluent.kafka.serializers.KafkaAvroSerializerConfig
 import io.ktor.config.*
-import no.nav.helse.arbeidsgiver.system.getString
 import org.apache.kafka.clients.CommonClientConfigs
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.clients.producer.ProducerConfig
-import org.apache.kafka.common.config.SaslConfigs
 import org.apache.kafka.common.config.SslConfigs
 import org.apache.kafka.common.security.auth.SecurityProtocol
 import org.apache.kafka.common.serialization.StringSerializer
@@ -25,26 +23,13 @@ fun brukernotifikasjonKafkaProps(config: ApplicationConfig) =
         KafkaAvroSerializerConfig.SCHEMA_REGISTRY_URL_CONFIG to System.getenv("KAFKA_SCHEMA_REGISTRY"),
         SchemaRegistryClientConfig.BASIC_AUTH_CREDENTIALS_SOURCE to "USER_INFO",
         SchemaRegistryClientConfig.USER_INFO_CONFIG to System.getenv("KAFKA_SCHEMA_REGISTRY_USER") + ":" + System.getenv("KAFKA_SCHEMA_REGISTRY_PASSWORD"),
-        ConsumerConfig.AUTO_OFFSET_RESET_CONFIG to "earliest",
-        ConsumerConfig.CLIENT_ID_CONFIG to "fritakagp",
-        ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG to KafkaAvroSerializer::class.java,
-        ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG to KafkaAvroSerializer::class.java,
         ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG to KafkaAvroSerializer::class.java,
         ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG to KafkaAvroSerializer::class.java
     ) + gcpCommonKafkaProps()
 
-fun onPremCommonKafkaProps(config: ApplicationConfig) =
-    mapOf(
-        CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG to config.getString("brukernotifikasjon.bootstrap_servers"),
-        CommonClientConfigs.SECURITY_PROTOCOL_CONFIG to "SASL_SSL",
-        SaslConfigs.SASL_JAAS_CONFIG to "org.apache.kafka.common.security.plain.PlainLoginModule required username=\"${config.getString("service_user.username")}\" password=\"${config.getString("service_user.password")}\";",
-        SaslConfigs.SASL_MECHANISM to "PLAIN"
-    )
-
 fun gcpCommonKafkaProps() = mutableMapOf<String, Any>(
     ProducerConfig.BOOTSTRAP_SERVERS_CONFIG to envOrThrow("KAFKA_BROKERS"),
     ProducerConfig.ACKS_CONFIG to "all",
-
     CommonClientConfigs.SECURITY_PROTOCOL_CONFIG to SecurityProtocol.SSL.name,
     SslConfigs.SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_CONFIG to "", // Disable server host name verification
     SslConfigs.SSL_TRUSTSTORE_TYPE_CONFIG to JAVA_KEYSTORE,

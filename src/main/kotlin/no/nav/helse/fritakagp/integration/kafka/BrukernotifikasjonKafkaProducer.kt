@@ -29,7 +29,7 @@ class BrukernotifikasjonBeskjedKafkaProducer(
     override fun sendMessage(nokkel: NokkelInput, beskjed: BeskjedInput): RecordMetadata? {
         val record: ProducerRecord<NokkelInput, BeskjedInput> = ProducerRecord(topicName, nokkel, beskjed)
         return producer.send(record).get().also {
-            log.info("Sender melding med nøkkel $nokkel og beskjed $beskjed. Fikk offset ${it.offset()} ${it.serializedKeySize()} ${it.serializedValueSize()} ${it.topic()} ${it.timestamp()}")
+            log.info("Skrevet eventId ${nokkel.getEventId()} til Kafka til topic ${it!!.topic()} med offset ${it.offset()}")
         }
     }
 }

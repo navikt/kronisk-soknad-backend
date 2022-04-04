@@ -36,6 +36,7 @@ class BrukernotifikasjonBeskjedKafkaProducer(
 
     private fun sendMelding(nokkel: NokkelInput, beskjed: BeskjedInput): RecordMetadata? {
         val record: ProducerRecord<NokkelInput, BeskjedInput> = ProducerRecord(topicName, nokkel, beskjed)
+        log.info("Sender melding med nøkkel $nokkel og beskjed $beskjed")
         return producer.send(record).get()
     }
 

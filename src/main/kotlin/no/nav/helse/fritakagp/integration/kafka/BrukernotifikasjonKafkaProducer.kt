@@ -4,9 +4,7 @@ import no.nav.brukernotifikasjon.schemas.input.BeskjedInput
 import no.nav.brukernotifikasjon.schemas.input.NokkelInput
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.clients.producer.RecordMetadata
-import org.apache.kafka.common.errors.AuthenticationException
 import org.slf4j.LoggerFactory
-import java.util.concurrent.ExecutionException
 
 interface BrukernotifikasjonBeskjedSender {
     fun sendMessage(nokkel: NokkelInput, beskjed: BeskjedInput): RecordMetadata?

@@ -26,15 +26,15 @@ data class KroniskSoknadRequest(
             validate(KroniskSoknadRequest::virksomhetsnummer).isValidOrganisasjonsnummer()
             validate(KroniskSoknadRequest::virksomhetsnummer).isVirksomhet(isVirksomhet)
 
-            if (!this@KroniskSoknadRequest.ikkeHistoriskFravaer) {
+            if (this@KroniskSoknadRequest.ikkeHistoriskFravaer) {
+                validate(KroniskSoknadRequest::fravaer).isEmpty()
+                validate(KroniskSoknadRequest::antallPerioder).isEqualTo(0)
+            } else {
                 validate(KroniskSoknadRequest::fravaer).isNotNull()
                 validate(KroniskSoknadRequest::antallPerioder).isBetween(1, 300)
                 validate(KroniskSoknadRequest::fravaer).ingenDataEldreEnn(2)
                 validate(KroniskSoknadRequest::fravaer).ingenDataFraFremtiden()
                 validate(KroniskSoknadRequest::fravaer).ikkeFlereFravaersdagerEnnDagerIMaanden()
-            } else {
-                validate(KroniskSoknadRequest::fravaer).isEmpty()
-                validate(KroniskSoknadRequest::antallPerioder).isEqualTo(0)
             }
 
             if (!this@KroniskSoknadRequest.dokumentasjon.isNullOrEmpty()) {

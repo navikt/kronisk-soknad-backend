@@ -94,12 +94,28 @@ class KroniskSoeknadHTTPTests : SystemTestBase() {
                     fravaer = setOf(FravaerData("2001-01", 12)),
                     bekreftet = true,
                     dokumentasjon = null,
-                    ikkeHistoriskFravaer = true
+                    ikkeHistoriskFravaer = false
                 )
             }
         }
 
         Assertions.assertThat(exception.response.status).isEqualTo(HttpStatusCode.UnprocessableEntity)
+    }
+
+    @Test
+    fun `Skal returnere Created ved gyldig data (ikke historisk fravær)`() = suspendableTest {
+        val response = httpClient.post<HttpResponse> {
+            appUrl(soeknadKroniskUrl)
+            contentType(ContentType.Application.Json)
+            loggedInAs("123456789")
+            body = KroniskTestData.fullValidRequest.copy(
+                ikkeHistoriskFravaer = true,
+                fravaer = setOf(),
+                antallPerioder = 0
+            )
+        }
+
+        Assertions.assertThat(response.status).isEqualTo(HttpStatusCode.Created)
     }
 
     @Test

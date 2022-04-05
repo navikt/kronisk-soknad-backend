@@ -117,8 +117,23 @@ fun Module.externalSystemClients(config: ApplicationConfig) {
         )
     } bind BucketStorage::class
 
-    single { SoeknadmeldingKafkaProducer(soeknadmeldingKafkaProps().toMutableMap(), config.getString("kafka_soeknad_topic_name"), get(), StringKafkaProducerFactory()) } bind SoeknadmeldingSender::class
-    single { KravmeldingKafkaProducer(kravmeldingKafkaProps().toMap(), config.getString("kafka_krav_topic_name"), get(), StringKafkaProducerFactory()) } bind KravmeldingSender::class
+    single {
+        SoeknadmeldingKafkaProducer(
+            soeknadmeldingKafkaProps(),
+            config.getString("kafka_soeknad_topic_name"),
+            get(),
+            StringKafkaProducerFactory()
+        )
+    } bind SoeknadmeldingSender::class
+
+    single {
+        KravmeldingKafkaProducer(
+            kravmeldingKafkaProps(),
+            config.getString("kafka_krav_topic_name"),
+            get(),
+            StringKafkaProducerFactory()
+        )
+    } bind KravmeldingSender::class
 
     single {
         BrukernotifikasjonBeskjedKafkaProducer(

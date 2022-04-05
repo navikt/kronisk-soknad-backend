@@ -18,7 +18,7 @@ interface SoeknadmeldingSender {
 }
 
 class SoeknadmeldingKafkaProducer(
-    private val props: MutableMap<String, Any>,
+    private val props: Map<String, Any>,
     private val topicName: String,
     private val om: ObjectMapper,
     private val producerFactory: ProducerFactory<String, String>

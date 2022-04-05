@@ -38,7 +38,7 @@ fun brukernotifikasjonKafkaProps() =
         ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG to KafkaAvroSerializer::class.java
     ) + gcpCommonKafkaProps()
 
-fun gcpCommonKafkaProps() = mutableMapOf<String, Any>(
+fun gcpCommonKafkaProps() = mapOf<String, Any>(
     ProducerConfig.ACKS_CONFIG to "all",
     ProducerConfig.BOOTSTRAP_SERVERS_CONFIG to envOrThrow("KAFKA_BROKERS"),
     CommonClientConfigs.SECURITY_PROTOCOL_CONFIG to SecurityProtocol.SSL.name,

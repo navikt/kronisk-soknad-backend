@@ -14,6 +14,7 @@ data class KroniskSoeknad(
     // Må være null for tidligere verdier er lagret med null
     var navn: String? = null,
     val fravaer: Set<FravaerData>,
+    val ikkeHistoriskFravaer: Boolean = false,
     val antallPerioder: Int,
     val bekreftet: Boolean,
     val harVedlegg: Boolean = false,

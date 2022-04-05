@@ -11,6 +11,7 @@ import org.valiktor.validate
 data class KroniskSoknadRequest(
     val virksomhetsnummer: String,
     val identitetsnummer: String,
+    val ikkeHistoriskFravaer: Boolean,
     val fravaer: Set<FravaerData>,
     val bekreftet: Boolean,
     val antallPerioder: Int,
@@ -25,11 +26,16 @@ data class KroniskSoknadRequest(
             validate(KroniskSoknadRequest::virksomhetsnummer).isValidOrganisasjonsnummer()
             validate(KroniskSoknadRequest::virksomhetsnummer).isVirksomhet(isVirksomhet)
 
-            validate(KroniskSoknadRequest::fravaer).isNotNull()
-            validate(KroniskSoknadRequest::antallPerioder).isBetween(1, 300)
-            validate(KroniskSoknadRequest::fravaer).ingenDataEldreEnn(2)
-            validate(KroniskSoknadRequest::fravaer).ingenDataFraFremtiden()
-            validate(KroniskSoknadRequest::fravaer).ikkeFlereFravaersdagerEnnDagerIMaanden()
+            if (!this@KroniskSoknadRequest.ikkeHistoriskFravaer) {
+                validate(KroniskSoknadRequest::fravaer).isNotNull()
+                validate(KroniskSoknadRequest::antallPerioder).isBetween(1, 300)
+                validate(KroniskSoknadRequest::fravaer).ingenDataEldreEnn(2)
+                validate(KroniskSoknadRequest::fravaer).ingenDataFraFremtiden()
+                validate(KroniskSoknadRequest::fravaer).ikkeFlereFravaersdagerEnnDagerIMaanden()
+            } else {
+                validate(KroniskSoknadRequest::fravaer).isEmpty()
+                validate(KroniskSoknadRequest::antallPerioder).isEqualTo(0)
+            }
 
             if (!this@KroniskSoknadRequest.dokumentasjon.isNullOrEmpty()) {
                 validate(KroniskSoknadRequest::dokumentasjon).isGodskjentFiletyper()
@@ -46,6 +52,7 @@ data class KroniskSoknadRequest(
         sendtAvNavn = sendtAvNavn,
         antallPerioder = antallPerioder,
         fravaer = fravaer,
+        ikkeHistoriskFravaer = ikkeHistoriskFravaer,
         bekreftet = bekreftet,
         harVedlegg = !dokumentasjon.isNullOrEmpty()
     )

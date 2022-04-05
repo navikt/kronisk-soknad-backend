@@ -93,7 +93,8 @@ class KroniskSoeknadHTTPTests : SystemTestBase() {
                     antallPerioder = 0,
                     fravaer = setOf(FravaerData("2001-01", 12)),
                     bekreftet = true,
-                    dokumentasjon = null
+                    dokumentasjon = null,
+                    ikkeHistoriskFravaer = true
                 )
             }
         }

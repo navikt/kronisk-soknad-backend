@@ -94,4 +94,24 @@ internal class KroniskSoknadRequestTest {
             ).validate(true)
         }
     }
+
+    @Test
+    fun `Gyldig søknad hvor det ikke finnes historisk fravær`() {
+        KroniskTestData.fullValidRequest.copy(
+            ikkeHistoriskFravaer = true,
+            antallPerioder = 0,
+            fravaer = setOf()
+        ).validate(true)
+    }
+
+    @Test
+    fun `Kan ikke ha perioder hvor det ikke finnes historisk fravær`() {
+        validationShouldFailFor(KroniskSoknadRequest::antallPerioder) {
+            KroniskTestData.fullValidRequest.copy(
+                ikkeHistoriskFravaer = true,
+                antallPerioder = 1,
+                fravaer = setOf()
+            ).validate(true)
+        }
+    }
 }

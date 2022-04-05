@@ -28,5 +28,12 @@
     "OrganizationNumber": "911366940",
     "OrganizationForm": "AS",
     "Status": "Active"
+  },
+  {
+    "Name": "SKIKKELIG GJØK",
+    "Type": "Enterprise",
+    "OrganizationNumber": "947064649",
+    "OrganizationForm": "AS",
+    "Status": "Active"
   }
 ]

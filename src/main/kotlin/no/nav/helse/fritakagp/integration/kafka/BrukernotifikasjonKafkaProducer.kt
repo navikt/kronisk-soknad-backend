@@ -1,51 +1,35 @@
 package no.nav.helse.fritakagp.integration.kafka
 
-import no.nav.brukernotifikasjon.schemas.Beskjed
-import no.nav.brukernotifikasjon.schemas.Nokkel
+import no.nav.brukernotifikasjon.schemas.input.BeskjedInput
+import no.nav.brukernotifikasjon.schemas.input.NokkelInput
+import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.clients.producer.RecordMetadata
-import org.apache.kafka.common.errors.AuthenticationException
 import org.slf4j.LoggerFactory
-import java.util.concurrent.ExecutionException
 
 interface BrukernotifikasjonBeskjedSender {
-    fun sendMessage(nokkel: Nokkel, beskjed: Beskjed): RecordMetadata?
+    fun sendMessage(nokkel: NokkelInput, beskjed: BeskjedInput): RecordMetadata?
 }
 
 class MockBrukernotifikasjonBeskjedSender : BrukernotifikasjonBeskjedSender {
-    override fun sendMessage(nokkel: Nokkel, beskjed: Beskjed): RecordMetadata? {
+    override fun sendMessage(nokkel: NokkelInput, beskjed: BeskjedInput): RecordMetadata? {
         LoggerFactory.getLogger(this.javaClass).info("Sender Brukernotifikasjon: $beskjed")
         return null
     }
 }
 
 class BrukernotifikasjonBeskjedKafkaProducer(
-    private val props: Map<String, Any>,
-    private val topicName: String,
-    private val producerFactory: ProducerFactory<Nokkel, Beskjed>
+    props: Map<String, Any>,
+    private val topicName: String
 ) :
     BrukernotifikasjonBeskjedSender {
-    private var producer = producerFactory.createProducer(props)
+    val log = LoggerFactory.getLogger(BrukernotifikasjonBeskjedKafkaProducer::class.java)
+    private var producer: KafkaProducer<NokkelInput, BeskjedInput> = KafkaProducer(props)
 
-    private fun sendMelding(nokkel: Nokkel, beskjed: Beskjed): RecordMetadata? {
-        val record: ProducerRecord<Nokkel, Beskjed> = ProducerRecord(topicName, nokkel, beskjed)
-        return producer.send(record).get()
-    }
-
-    private fun sendKafkaMessage(nokkel: Nokkel, beskjed: Beskjed): RecordMetadata? {
-        return try {
-            sendMelding(nokkel, beskjed)
-        } catch (ex: ExecutionException) {
-            if (ex.cause is AuthenticationException) {
-                producer.flush()
-                producer.close()
-                producer = producerFactory.createProducer(props)
-                return sendMelding(nokkel, beskjed)
-            } else throw ex
+    override fun sendMessage(nokkel: NokkelInput, beskjed: BeskjedInput): RecordMetadata? {
+        val record: ProducerRecord<NokkelInput, BeskjedInput> = ProducerRecord(topicName, nokkel, beskjed)
+        return producer.send(record).get().also {
+            log.info("Skrevet eventId ${nokkel.getEventId()} til Kafka til topic ${it!!.topic()} med offset ${it.offset()}")
         }
-    }
-
-    override fun sendMessage(nokkel: Nokkel, beskjed: Beskjed): RecordMetadata? {
-        return sendKafkaMessage(nokkel, beskjed)
     }
 }

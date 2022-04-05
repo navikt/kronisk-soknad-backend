@@ -1,0 +1,76 @@
+apiVersion: "nais.io/v1alpha1"
+kind: "Application"
+metadata:
+  name: fritakagp
+  namespace: helsearbeidsgiver
+  labels:
+    team: helsearbeidsgiver
+spec:
+  image: {{image}}
+  port: 8080
+  liveness:
+    path: /health/is-alive
+    initialDelay: 10
+    timeout: 2
+    periodSeconds: 30
+    failureThreshold: 10
+  readiness:
+    path: /health/is-ready
+    initialDelay: 10
+    timeout: 2
+    periodSeconds: 5
+    failureThreshold: 10
+  ingresses:
+    {{#each ingresses as |url|}}
+    - {{url}}
+    {{/each}}
+  prometheus:
+    enabled: true
+  replicas:
+    max: 1
+    min: 1
+  resources:
+    limits:
+      cpu: 3500m
+      memory: 1000Mi
+    requests:
+      cpu: 400m
+      memory: 200Mi
+  leaderElection: false
+  secureLogs:
+    enabled: true
+  azure:
+    application:
+      enabled: true
+
+  accessPolicy:
+    outbound:
+      external:
+        {{#each accesspolicy_external}}
+        - host: {{ this }}
+        {{/each}}
+      rules:
+        - application: helsearbeidsgiver-proxy
+          namespace: helsearbeidsgiver
+          cluster: {{accesspolicy_cluster}}
+
+  envFrom:
+    {{#each KUBERNETES_SECRETS}}
+    - secret: {{ this }}
+    {{/each}}
+  env:
+    - name: KOIN_PROFILE
+      value: {{KOIN_PROFILE}}
+
+  gcp:
+    sqlInstances:
+      - type: POSTGRES_11
+        databases:
+          - name: fritakagp-db
+            diskAutoresize: true
+    buckets:
+      - name: {{GCP_BUCKET}
+        uniformBucketLevelAccess: true
+
+  kafka:
+    pool: {{KAFKA_POOL}}    # enum of nav-dev, nav-prod

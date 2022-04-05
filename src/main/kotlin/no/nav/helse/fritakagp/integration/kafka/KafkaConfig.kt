@@ -17,18 +17,30 @@ private const val GROUP_ID_CONFIG = "helsearbeidsgiver-fritakagp"
 
 private fun envOrThrow(envVar: String) = System.getenv()[envVar] ?: throw IllegalStateException("$envVar er påkrevd miljøvariabel")
 
+fun kravmeldingKafkaProps() =
+    mapOf(
+        ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG to StringSerializer::class.java,
+        ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG to StringSerializer::class.java
+    ) + gcpCommonKafkaProps()
+
+fun soeknadmeldingKafkaProps() =
+    mapOf(
+        ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG to StringSerializer::class.java,
+        ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG to StringSerializer::class.java
+    ) + gcpCommonKafkaProps()
+
 fun brukernotifikasjonKafkaProps() =
     mapOf(
-        ProducerConfig.ACKS_CONFIG to "all",
-        ProducerConfig.BOOTSTRAP_SERVERS_CONFIG to envOrThrow("KAFKA_BROKERS"),
+        SchemaRegistryClientConfig.BASIC_AUTH_CREDENTIALS_SOURCE to "USER_INFO",
+        SchemaRegistryClientConfig.USER_INFO_CONFIG to System.getenv("KAFKA_SCHEMA_REGISTRY_USER") + ":" + System.getenv("KAFKA_SCHEMA_REGISTRY_PASSWORD"),
+        KafkaAvroSerializerConfig.SCHEMA_REGISTRY_URL_CONFIG to System.getenv("KAFKA_SCHEMA_REGISTRY"),
         ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG to KafkaAvroSerializer::class.java,
         ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG to KafkaAvroSerializer::class.java
     ) + gcpCommonKafkaProps()
 
 fun gcpCommonKafkaProps() = mutableMapOf<String, Any>(
-    SchemaRegistryClientConfig.BASIC_AUTH_CREDENTIALS_SOURCE to "USER_INFO",
-    SchemaRegistryClientConfig.USER_INFO_CONFIG to System.getenv("KAFKA_SCHEMA_REGISTRY_USER") + ":" + System.getenv("KAFKA_SCHEMA_REGISTRY_PASSWORD"),
-    KafkaAvroSerializerConfig.SCHEMA_REGISTRY_URL_CONFIG to System.getenv("KAFKA_SCHEMA_REGISTRY"),
+    ProducerConfig.ACKS_CONFIG to "all",
+    ProducerConfig.BOOTSTRAP_SERVERS_CONFIG to envOrThrow("KAFKA_BROKERS"),
     CommonClientConfigs.SECURITY_PROTOCOL_CONFIG to SecurityProtocol.SSL.name,
     SslConfigs.SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_CONFIG to "", // Disable server host name verification
     SslConfigs.SSL_TRUSTSTORE_TYPE_CONFIG to JAVA_KEYSTORE,

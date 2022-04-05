@@ -1,6 +1,7 @@
 package no.nav.helse.fritakagp.koin
 
 import io.ktor.config.*
+import io.ktor.util.*
 import no.nav.helse.arbeidsgiver.integrasjoner.AccessTokenProvider
 import no.nav.helse.arbeidsgiver.integrasjoner.OAuth2TokenProvider
 import no.nav.helse.arbeidsgiver.integrasjoner.aareg.AaregArbeidsforholdClient
@@ -34,9 +35,9 @@ import no.nav.security.token.support.client.core.oauth2.OnBehalfOfTokenClient
 import no.nav.security.token.support.client.core.oauth2.TokenExchangeClient
 import org.koin.core.module.Module
 import org.koin.core.qualifier.named
-import org.koin.core.qualifier.qualifier
 import org.koin.dsl.bind
 
+@OptIn(KtorExperimentalAPI::class)
 fun Module.externalSystemClients(config: ApplicationConfig) {
     val accessTokenProviderError = "Fant ikke config i application.conf"
 
@@ -121,7 +122,7 @@ fun Module.externalSystemClients(config: ApplicationConfig) {
 
     single {
         BrukernotifikasjonBeskjedKafkaProducer(
-            brukernotifikasjonKafkaProps(config),
+            brukernotifikasjonKafkaProps(),
             config.getString("brukernotifikasjon.topic_name")
         )
     } bind BrukernotifikasjonBeskjedSender::class

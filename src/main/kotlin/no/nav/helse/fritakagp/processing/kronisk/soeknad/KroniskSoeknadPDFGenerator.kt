@@ -41,12 +41,12 @@ class KroniskSoeknadPDFGenerator {
         content.writeTextWrapped("Person navn: ${soeknad.navn}")
         content.writeTextWrapped("Arbeidsgiver oppgitt i søknad: ${soeknad.virksomhetsnavn} (${soeknad.virksomhetsnummer})")
 
-        val totaltAntallDager = soeknad.fravaer.map { it.antallDagerMedFravaer }.sum()
-        content.writeTextWrapped("Totalt antall fraværsdager siste 2 år: $totaltAntallDager", 2)
-
         if (soeknad.ikkeHistoriskFravaer) {
             content.writeTextWrapped("Det finnes ikke historisk fravær på grunn av nyansettelse, lengre permisjon eller annet.", 2)
         } else {
+            val totaltAntallDager = soeknad.fravaer.map { it.antallDagerMedFravaer }.sum()
+            content.writeTextWrapped("Totalt antall fraværsdager siste 2 år: $totaltAntallDager", 2)
+
             content.writeTextWrapped("Fraværsdager per måned siste 2 år: ", 2)
             content.writeTextWrapped("Antall fraværsperioder siste 2 år: ${soeknad.antallPerioder}")
             val yearlyFravaer = soeknad.fravaer.sortedByDescending { it.yearMonth }.groupBy { it.yearMonth.substring(0, 4) }

@@ -50,16 +50,20 @@ fun generereKroniskSoeknadBeskrivelse(soeknad: KroniskSoeknad, desc: String): St
         appendLine("Mottatt: ${getPDFTimeStampFormat().format(soeknad.opprettet)}")
         appendLine("Person (FNR): ${soeknad.identitetsnummer}")
         appendLine("Arbeidsgiver oppgitt i søknad: ${soeknad.virksomhetsnavn} (${soeknad.virksomhetsnummer})")
-        val totaltAntallDager = soeknad.fravaer.map { it.antallDagerMedFravaer }.sum()
-        appendLine("Totalt antall fraværsdager siste 2 år: $totaltAntallDager")
-        appendLine("Antall fraværsperioder siste 2 år: ${soeknad.antallPerioder}")
-        appendLine("Fraværsdager per måned siste 2 år:")
+        if (soeknad.ikkeHistoriskFravaer) {
+            appendLine("Det finnes ikke historisk fravær på grunn av nyansettelse, lengre permisjon eller annet.")
+        } else {
+            val totaltAntallDager = soeknad.fravaer.map { it.antallDagerMedFravaer }.sum()
+            appendLine("Totalt antall fraværsdager siste 2 år: $totaltAntallDager")
+            appendLine("Antall fraværsperioder siste 2 år: ${soeknad.antallPerioder}")
+            appendLine("Fraværsdager per måned siste 2 år:")
 
-        val yearlyFravaer = soeknad.fravaer.sortedByDescending { it.yearMonth }.groupBy { it.yearMonth.substring(0, 4) }
-        yearlyFravaer.forEach { yearGroup ->
-            appendLine(yearGroup.key)
-            yearGroup.value.sortedBy { it.yearMonth }.forEach {
-                appendLine("${it.toLocalDate().month.name}: ${it.antallDagerMedFravaer}   ")
+            val yearlyFravaer = soeknad.fravaer.sortedByDescending { it.yearMonth }.groupBy { it.yearMonth.substring(0, 4) }
+            yearlyFravaer.forEach { yearGroup ->
+                appendLine(yearGroup.key)
+                yearGroup.value.sortedBy { it.yearMonth }.forEach {
+                    appendLine("${it.toLocalDate().month.name}: ${it.antallDagerMedFravaer}   ")
+                }
             }
         }
     }

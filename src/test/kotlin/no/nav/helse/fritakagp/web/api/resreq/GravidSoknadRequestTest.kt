@@ -35,13 +35,6 @@ class GravidSoknadRequestTest {
     }
 
     @Test
-    fun `Må være aktivt`() {
-        validationShouldFailNTimesFor(GravidSoknadRequest::virksomhetsnummer, 2) {
-            GravidTestData.fullValidSoeknadRequest.copy().validate(false)
-        }
-    }
-
-    @Test
     fun `Når tiltak inneholder ANNET må tiltaksbeskrivelse ha innhold`() {
         validationShouldFailFor(GravidSoknadRequest::tiltakBeskrivelse) {
             GravidTestData.fullValidSoeknadRequest.copy(

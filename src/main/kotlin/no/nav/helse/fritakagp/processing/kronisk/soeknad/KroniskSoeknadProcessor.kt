@@ -185,10 +185,12 @@ class KroniskSoeknadProcessor(
 
     fun opprettOppgave(soeknad: KroniskSoeknad): String {
         val aktoerId = pdlClient.fullPerson(soeknad.identitetsnummer)?.hentIdenter?.trekkUtIdent(PdlIdent.PdlIdentGruppe.AKTORID)
+        val enhetsNr = behandlendeEnhetService.hentBehandlendeEnhet(soeknad.identitetsnummer, soeknad.id.toString())
         requireNotNull(aktoerId) { "Fant ikke AktørID for fnr i ${soeknad.id}" }
 
         val request = OpprettOppgaveRequest(
             aktoerId = aktoerId,
+            tildeltEnhetsnr = enhetsNr,
             journalpostId = soeknad.journalpostId,
             beskrivelse = generereKroniskSoeknadBeskrivelse(soeknad, "Søknad om fritak fra arbeidsgiverperioden ifbm kronisk lidelse"),
             tema = "SYK",
@@ -205,10 +207,12 @@ class KroniskSoeknadProcessor(
 
     fun opprettFordelingsOppgave(soeknad: KroniskSoeknad): String {
         val aktoerId = pdlClient.fullPerson(soeknad.identitetsnummer)?.hentIdenter?.trekkUtIdent(PdlIdent.PdlIdentGruppe.AKTORID)
+        val enhetsNr = behandlendeEnhetService.hentBehandlendeEnhet(soeknad.identitetsnummer, soeknad.id.toString())
         requireNotNull(aktoerId) { "Fant ikke AktørID for fnr i ${soeknad.id}" }
 
         val request = OpprettOppgaveRequest(
             aktoerId = aktoerId,
+            tildeltEnhetsnr = enhetsNr,
             journalpostId = soeknad.journalpostId,
             beskrivelse = generereKroniskSoeknadBeskrivelse(soeknad, "Fordelingsoppgave for søknad om fritak fra arbeidsgiverperioden grunnet kronisk sykdom."),
             tema = "SYK",

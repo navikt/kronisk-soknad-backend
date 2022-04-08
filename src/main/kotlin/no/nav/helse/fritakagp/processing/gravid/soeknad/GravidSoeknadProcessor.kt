@@ -187,10 +187,12 @@ class GravidSoeknadProcessor(
 
     fun opprettOppgave(soeknad: GravidSoeknad): String {
         val aktoerId = pdlClient.fullPerson(soeknad.identitetsnummer)?.hentIdenter?.trekkUtIdent(PdlIdent.PdlIdentGruppe.AKTORID)
+        val enhetsNr = behandlendeEnhetService.hentBehandlendeEnhet(soeknad.identitetsnummer, soeknad.id.toString())
         requireNotNull(aktoerId) { "Fant ikke AktørID for fnr i ${soeknad.id}" }
 
         val request = OpprettOppgaveRequest(
             aktoerId = aktoerId,
+            tildeltEnhetsnr = enhetsNr,
             journalpostId = soeknad.journalpostId,
             beskrivelse = generereGravidSoeknadBeskrivelse(soeknad, "Søknad om fritak fra arbeidsgiverperioden ifbm. graviditet"),
             tema = "SYK",
@@ -209,10 +211,12 @@ class GravidSoeknadProcessor(
 
     fun opprettFordelingsOppgave(soeknad: GravidSoeknad): String {
         val aktoerId = pdlClient.fullPerson(soeknad.identitetsnummer)?.hentIdenter?.trekkUtIdent(PdlIdent.PdlIdentGruppe.AKTORID)
+        val enhetsNr = behandlendeEnhetService.hentBehandlendeEnhet(soeknad.identitetsnummer, soeknad.id.toString())
         requireNotNull(aktoerId) { "Fant ikke AktørID for fnr i ${soeknad.id}" }
 
         val request = OpprettOppgaveRequest(
             aktoerId = aktoerId,
+            tildeltEnhetsnr = enhetsNr,
             journalpostId = soeknad.journalpostId,
             beskrivelse = generereGravidSoeknadBeskrivelse(soeknad, "Fordelingsoppgave for søknad om fritak fra arbeidsgiverperioden grunnet gravid sykdom."),
             tema = "SYK",

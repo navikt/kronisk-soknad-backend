@@ -29,7 +29,7 @@ class GravidSoknadRequestTest {
 
     @Test
     fun `Må være på virksomhetsnummer`() {
-        validationShouldFailFor(GravidSoknadRequest::virksomhetsnummer) {
+        validationShouldFailNTimesFor(GravidSoknadRequest::virksomhetsnummer, 2) {
             GravidTestData.fullValidSoeknadRequest.copy().validate(false)
         }
     }

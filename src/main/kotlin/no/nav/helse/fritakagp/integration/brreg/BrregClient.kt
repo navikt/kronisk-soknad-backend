@@ -7,6 +7,7 @@ import io.ktor.client.request.*
 interface BrregClient {
     suspend fun getVirksomhetsNavn(orgnr: String): String?
     suspend fun erVirksomhet(orgNr: String): Boolean
+    suspend fun erAktiv(orgNr: String): Boolean
 }
 
 class MockBrregClient : BrregClient {
@@ -17,6 +18,10 @@ class MockBrregClient : BrregClient {
     override suspend fun erVirksomhet(orgNr: String): Boolean {
         return true
     }
+
+    override suspend fun erAktiv(orgNr: String): Boolean {
+        return true
+    }
 }
 
 class BrregClientImpl(private val httpClient: HttpClient, private val brregUndervirksomhetUrl: String) : BrregClient {
@@ -24,7 +29,7 @@ class BrregClientImpl(private val httpClient: HttpClient, private val brregUnder
         var navn: String? = null
         try {
             val url = "${brregUndervirksomhetUrl.trimEnd('/')}/$orgnr"
-            navn = httpClient.get<UnderenheterNavnResponse>(url).navn
+            navn = httpClient.get<UnderenheterResponse>(url).navn
         } catch (cause: Throwable) {
             when (cause) {
                 is ClientRequestException -> {
@@ -34,8 +39,18 @@ class BrregClientImpl(private val httpClient: HttpClient, private val brregUnder
                 else -> throw cause
             }
         }
-
         return navn
+    }
+
+    override suspend fun erAktiv(orgnr: String): Boolean {
+        var slettedato: String? = null
+        try {
+            val url = "${brregUndervirksomhetUrl.trimEnd('/')}/$orgnr"
+            slettedato = httpClient.get<UnderenheterResponse>(url).sletteDato
+        } catch (cause: Throwable) {
+            throw cause
+        }
+        return (slettedato != null)
     }
 
     override suspend fun erVirksomhet(orgNr: String): Boolean {

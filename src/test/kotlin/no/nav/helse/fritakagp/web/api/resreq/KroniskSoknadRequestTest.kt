@@ -58,7 +58,7 @@ internal class KroniskSoknadRequestTest {
 
     @Test
     fun `Må være på virksomhetsnummer`() {
-        validationShouldFailFor(KroniskSoknadRequest::virksomhetsnummer) {
+        validationShouldFailNTimesFor(KroniskSoknadRequest::virksomhetsnummer, 2) {
             KroniskTestData.fullValidRequest.copy().validate(false)
         }
     }
@@ -91,6 +91,36 @@ internal class KroniskSoknadRequestTest {
         validationShouldFailFor(KroniskSoknadRequest::antallPerioder) {
             KroniskTestData.fullValidRequest.copy(
                 antallPerioder = invalidAntallPerioder
+            ).validate(true)
+        }
+    }
+
+    @Test
+    fun `Gyldig søknad hvor det ikke finnes historisk fravær`() {
+        KroniskTestData.fullValidRequest.copy(
+            ikkeHistoriskFravaer = true,
+            antallPerioder = 0,
+            fravaer = setOf()
+        ).validate(true)
+    }
+
+    @Test
+    fun `Kan ikke ha perioder hvor det ikke finnes historisk fravær`() {
+        validationShouldFailFor(KroniskSoknadRequest::antallPerioder) {
+            KroniskTestData.fullValidRequest.copy(
+                ikkeHistoriskFravaer = true,
+                antallPerioder = 1,
+                fravaer = setOf()
+            ).validate(true)
+        }
+    }
+
+    @Test
+    fun `Kan ikke ha fravær hvor det ikke finnes historisk fravær`() {
+        validationShouldFailFor(KroniskSoknadRequest::fravaer) {
+            KroniskTestData.fullValidRequest.copy(
+                ikkeHistoriskFravaer = true,
+                antallPerioder = 0
             ).validate(true)
         }
     }

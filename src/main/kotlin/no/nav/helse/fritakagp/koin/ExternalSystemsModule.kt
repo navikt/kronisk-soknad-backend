@@ -1,6 +1,7 @@
 package no.nav.helse.fritakagp.koin
 
 import io.ktor.config.*
+import io.ktor.util.*
 import no.nav.helse.arbeidsgiver.integrasjoner.AccessTokenProvider
 import no.nav.helse.arbeidsgiver.integrasjoner.OAuth2TokenProvider
 import no.nav.helse.arbeidsgiver.integrasjoner.aareg.AaregArbeidsforholdClient
@@ -34,9 +35,9 @@ import no.nav.security.token.support.client.core.oauth2.OnBehalfOfTokenClient
 import no.nav.security.token.support.client.core.oauth2.TokenExchangeClient
 import org.koin.core.module.Module
 import org.koin.core.qualifier.named
-import org.koin.core.qualifier.qualifier
 import org.koin.dsl.bind
 
+@OptIn(KtorExperimentalAPI::class)
 fun Module.externalSystemClients(config: ApplicationConfig) {
     val accessTokenProviderError = "Fant ikke config i application.conf"
 
@@ -116,14 +117,28 @@ fun Module.externalSystemClients(config: ApplicationConfig) {
         )
     } bind BucketStorage::class
 
-    single { SoeknadmeldingKafkaProducer(gcpCommonKafkaProps(), config.getString("kafka_soeknad_topic_name"), get(), StringKafkaProducerFactory()) } bind SoeknadmeldingSender::class
-    single { KravmeldingKafkaProducer(gcpCommonKafkaProps(), config.getString("kafka_krav_topic_name"), get(), StringKafkaProducerFactory()) } bind KravmeldingSender::class
+    single {
+        SoeknadmeldingKafkaProducer(
+            soeknadmeldingKafkaProps(),
+            config.getString("kafka_soeknad_topic_name"),
+            get(),
+            StringKafkaProducerFactory()
+        )
+    } bind SoeknadmeldingSender::class
+
+    single {
+        KravmeldingKafkaProducer(
+            kravmeldingKafkaProps(),
+            config.getString("kafka_krav_topic_name"),
+            get(),
+            StringKafkaProducerFactory()
+        )
+    } bind KravmeldingSender::class
 
     single {
         BrukernotifikasjonBeskjedKafkaProducer(
-            onPremCommonKafkaProps(config),
-            config.getString("brukernotifikasjon.topic_name"),
-            BeskjedProducerFactory(config.getString("brukernotifikasjon.avro_schema_server_url"))
+            brukernotifikasjonKafkaProps(),
+            config.getString("brukernotifikasjon.topic_name")
         )
     } bind BrukernotifikasjonBeskjedSender::class
     single { BrregClientImpl(get(), config.getString("berreg_enhet_url")) } bind BrregClient::class

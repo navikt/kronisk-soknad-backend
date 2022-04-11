@@ -29,7 +29,7 @@ internal class BrukernotifikasjonProcessorTest {
 
     val objectMapper = ObjectMapper().registerModules(KotlinModule(), JavaTimeModule())
 
-    val prosessor = BrukernotifikasjonProcessor(gkRepo, gsRepo, kkRepo, ksRepo, objectMapper, kafkaSenderMock, "srvUsername")
+    val prosessor = BrukernotifikasjonProcessor(gkRepo, gsRepo, kkRepo, ksRepo, objectMapper, kafkaSenderMock, 4)
 
     private val oppgaveId = 9999
     private val arkivReferanse = "12345"

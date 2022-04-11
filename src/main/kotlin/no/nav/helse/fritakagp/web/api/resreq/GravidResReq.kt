@@ -30,6 +30,7 @@ data class GravidSoknadRequest(
             validate(GravidSoknadRequest::bekreftet).isTrue()
             validate(GravidSoknadRequest::virksomhetsnummer).isValidOrganisasjonsnummer()
             validate(GravidSoknadRequest::virksomhetsnummer).isVirksomhet(isVirksomhet)
+            validate(GravidSoknadRequest::virksomhetsnummer).isAktivVirksomhet(isVirksomhet)
 
             if (this@GravidSoknadRequest.tilrettelegge) {
                 validate(GravidSoknadRequest::tiltak).isNotNull()

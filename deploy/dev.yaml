@@ -84,12 +84,8 @@ spec:
       value: https://api-gw-q1.oera.no/ekstern/altinn/api/serviceowner
     - name: ENHETSREGISTERET
       value: https://data.brreg.no/enhetsregisteret/api/underenheter
-    - name: AVRO_SCHEMA_SERVER_URL
-      value: https://kafka-schema-registry.nais-q.adeo.no
-    - name: ON_PREM_KAFKA_BROKERS
-      value: SSL://b27apvl00045.preprod.local:8443,SSL://b27apvl00046.preprod.local:8443,SSL://b27apvl00047.preprod.local:8443
     - name: KAFKA_BESKJED_TOPIC_NAME
-      value: aapen-brukernotifikasjon-nyBeskjed-v1
+      value: min-side.aapen-brukernotifikasjon-beskjed-v1
     - name: PROXY_SCOPE
       value: api://dev-fss.helsearbeidsgiver.helsearbeidsgiver-proxy/.default
     - name: OPPGAVE_SCOPE
@@ -97,7 +93,7 @@ spec:
     - name: PDL_SCOPE
       value: api://dev-fss.pdl.pdl-api/.default
     - name: DOKARKIV_SCOPE
-      value: api://972814f3-8bdf-44f8-a191-c2ed00020b54/.default
+      value: api://dev-fss.teamdokumenthandtering.dokarkiv-q1/.default
     - name: DATAPAKKE_ID
       value: "a4570c9e9521df726e1050ebcd917b9a"
     - name: DATAPAKKE_API_URL

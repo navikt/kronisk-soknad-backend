@@ -26,6 +26,10 @@ class MåVæreVirksomhetContraint : CustomConstraint
 fun <E> Validator<E>.Property<String?>.isVirksomhet(erVirksomhet: Boolean) =
     this.validate(MåVæreVirksomhetContraint()) { erVirksomhet }
 
+class MåVæreAktivVirksomhetContraint : CustomConstraint
+fun <E> Validator<E>.Property<String?>.isAktivVirksomhet(erAktivVirksomhet: Boolean) =
+    this.validate(MåVæreAktivVirksomhetContraint()) { erAktivVirksomhet }
+
 class FraDatoKanIkkeKommeEtterTomDato : CustomConstraint
 fun <E> Validator<E>.Property<LocalDate?>.datoerHarRiktigRekkefolge(tom: LocalDate) =
     this.validate(FraDatoKanIkkeKommeEtterTomDato()) { fom -> fom!!.isEqual(tom) || fom!!.isBefore(tom) }

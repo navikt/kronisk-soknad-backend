@@ -34,7 +34,8 @@ object KroniskTestData {
         fravaer = generateFravaersdata(),
         bekreftet = true,
         antallPerioder = antallPerioder,
-        dokumentasjon = null
+        dokumentasjon = null,
+        ikkeHistoriskFravaer = false
     )
 
     val kroniskSoknadMedFil = fullValidRequest.copy(

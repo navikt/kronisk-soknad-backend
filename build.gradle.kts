@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val ktorVersion = "1.6.0"
-val logback_version = "1.2.7"
+val logback_version = "1.2.11"
 val logback_contrib_version = "0.1.5"
 val jacksonVersion = "2.10.3"
 val prometheusVersion = "0.6.0"
@@ -73,7 +73,7 @@ dependencies {
     implementation("net.logstash.logback:logstash-logback-encoder:6.4")
     implementation("org.codehaus.janino:janino:3.0.6")
     implementation("org.flywaydb:flyway-core:7.3.0")
-    implementation("org.apache.pdfbox:pdfbox:2.0.24")
+    implementation("org.apache.pdfbox:pdfbox:2.0.25")
     implementation("no.nav.tjenestespesifikasjoner:altinn-correspondence-agency-external-basic:1.2019.09.25-00.21-49b69f0625e0")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.11+")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jacksonVersion")

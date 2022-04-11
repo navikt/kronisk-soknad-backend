@@ -7,6 +7,8 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 
+val PERIODE = "Periode:"
+
 fun decodeBase64File(datafile: String): ByteArray {
     return Base64.getDecoder().decode(datafile)
 }
@@ -76,7 +78,7 @@ fun generereKroniskKravBeskrivelse(krav: KroniskKrav, desc: String): String {
         appendLine("Person (FNR): ${krav.identitetsnummer}")
         appendLine("Arbeidsgiver oppgitt i krav: ${krav.virksomhetsnavn} (${krav.virksomhetsnummer})")
         appendLine("Antall lønnsdager: ${krav.antallDager}")
-        appendLine("Periode:")
+        appendLine(PERIODE)
         appendLine(genererePeriodeTable(krav.perioder))
     }
 }
@@ -88,7 +90,7 @@ fun generereSlettKroniskKravBeskrivelse(krav: KroniskKrav, desc: String): String
         appendLine("Tidligere krav med JournalpostId: ${krav.journalpostId}")
         appendLine("Person (FNR): ${krav.identitetsnummer}")
         appendLine("Arbeidsgiver oppgitt i krav: ${krav.virksomhetsnavn} (${krav.virksomhetsnummer})")
-        appendLine("Periode:")
+        appendLine(PERIODE)
         appendLine(genererePeriodeTable(krav.perioder))
     }
 }
@@ -100,7 +102,7 @@ fun generereGravidkKravBeskrivelse(krav: GravidKrav, desc: String): String {
         appendLine("Person (FNR): ${krav.identitetsnummer}")
         appendLine("Arbeidsgiver oppgitt i krav: ${krav.virksomhetsnavn} (${krav.virksomhetsnummer})")
         appendLine("Antall lønnsdager: ${krav.antallDager}")
-        appendLine("Periode:")
+        appendLine(PERIODE)
         appendLine(genererePeriodeTable(krav.perioder))
     }
 }

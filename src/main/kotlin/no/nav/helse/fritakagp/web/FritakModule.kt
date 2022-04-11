@@ -37,8 +37,10 @@ fun Application.fritakModule(config: ApplicationConfig = environment.config) {
         route("$apiBasePath/api/v1") {
             authenticate {
                 systemRoutes()
-                kroniskRoutes(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
-                gravidRoutes(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
+                kroniskSoeknadRoutes(get(), get(), get(), get(), get())
+                kroniskKravRoutes(get(), get(), get(), get(), get(), get(), get())
+                gravidSoeknadRoutes(get(), get(), get(), get(), get())
+                gravidKravRoutes(get(), get(), get(), get(), get(), get(), get())
                 altinnRoutes(get())
             }
         }

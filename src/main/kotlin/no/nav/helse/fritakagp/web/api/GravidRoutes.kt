@@ -25,11 +25,8 @@ import no.nav.helse.fritakagp.processing.GcpOpplasting
 import no.nav.helse.fritakagp.service.PdlService
 import no.nav.helse.fritakagp.web.api.resreq.GravidKravRequest
 import no.nav.helse.fritakagp.web.api.resreq.GravidSoknadRequest
-import no.nav.helse.fritakagp.web.api.resreq.ValidationProblemDetail
-import no.nav.helse.fritakagp.web.api.resreq.getContextualMessageNO
 import no.nav.helse.fritakagp.web.auth.authorize
 import no.nav.helse.fritakagp.web.auth.hentIdentitetsnummerFraLoginToken
-import org.valiktor.ConstraintViolation
 import java.util.UUID
 
 fun Route.gravidSoeknadRoutes(
@@ -172,31 +169,4 @@ fun Route.gravidKravRoutes(
             GravidKravMetrics.tellMottatt()
         }
     }
-}
-
-fun periodValErrs(it: ConstraintViolation): List<ValidationProblemDetail> {
-    val valErrs = mutableListOf<ValidationProblemDetail>()
-    if (it.property == "perioder") {
-        (it.value as Set<*>).forEach { _ ->
-            valErrs.add(
-                ValidationProblemDetail(
-                    it.constraint.name,
-                    it.getContextualMessageNO(),
-                    it.property,
-                    it.value
-                )
-            )
-        }
-    } else {
-        valErrs.add(
-            ValidationProblemDetail(
-                it.constraint.name,
-                it.getContextualMessageNO(),
-                it.property,
-                it.value
-            )
-        )
-    }
-
-    return valErrs
 }

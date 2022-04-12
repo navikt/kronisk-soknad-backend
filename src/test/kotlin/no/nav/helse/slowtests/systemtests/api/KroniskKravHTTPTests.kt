@@ -1,5 +1,6 @@
 package no.nav.helse.slowtests.systemtests.api
 
+import com.zaxxer.hikari.HikariDataSource
 import io.ktor.client.call.*
 import io.ktor.client.features.*
 import io.ktor.client.request.*
@@ -7,15 +8,22 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import no.nav.helse.GravidTestData
 import no.nav.helse.KroniskTestData
+import no.nav.helse.KroniskTestData.kroniskKravRequestValid
 import no.nav.helse.fritakagp.db.KroniskKravRepository
+import no.nav.helse.fritakagp.db.PostgresKroniskKravRepository
+import no.nav.helse.fritakagp.db.createTestHikariConfig
 import no.nav.helse.fritakagp.domain.Arbeidsgiverperiode
+import no.nav.helse.fritakagp.domain.KravStatus
 import no.nav.helse.fritakagp.domain.KroniskKrav
 import no.nav.helse.fritakagp.web.api.resreq.ValidationProblem
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.koin.core.component.get
 import org.koin.test.inject
 import java.time.LocalDate
+import java.util.*
 
 class KroniskKravHTTPTests : SystemTestBase() {
     private val kravKroniskUrl = "/api/v1/kronisk/krav"
@@ -110,6 +118,40 @@ class KroniskKravHTTPTests : SystemTestBase() {
         val krav = response.receive<KroniskKrav>()
         assertThat(response.status).isEqualTo(HttpStatusCode.Created)
         assertThat(krav.harVedlegg).isEqualTo(true)
+    }
+
+    @Test
+    fun `Skal returnere OK når kroniskkrav er slettes`() = suspendableTest {
+
+        val response = httpClient.post<HttpResponse> {
+            appUrl(kravKroniskUrl)
+            contentType(ContentType.Application.Json)
+            loggedInAs("123456789")
+            body = KroniskTestData.kroniskKravRequestMedFil
+        }
+
+        val krav = response.receive<KroniskKrav>()
+        assertThat(response.status).isEqualTo(HttpStatusCode.Created)
+        assertThat(krav.harVedlegg).isEqualTo(true)
+
+        val responseSlett = httpClient.delete<HttpResponse> {
+            appUrl(kravKroniskUrl + "/" + krav.id.toString())
+            contentType(ContentType.Application.Json)
+            loggedInAs("123456789")
+        }
+        assertThat(responseSlett.status).isEqualTo(HttpStatusCode.OK)
+    }
+
+    @Test
+    fun `Skal returnere 404 når kroniskkrav som slettes har ugyldig id`() = suspendableTest {
+        val responseExcepion = assertThrows<ClientRequestException> {
+            val responseSlett = httpClient.delete<HttpResponse> {
+                appUrl(kravKroniskUrl + "/" + UUID.randomUUID().toString())
+                contentType(ContentType.Application.Json)
+                loggedInAs("123456789")
+            }
+        }
+        assertThat(responseExcepion.response.status).isEqualTo(HttpStatusCode.NotFound)
     }
 
     @Test

@@ -54,13 +54,8 @@ fun Route.gravidSoeknadRoutes(
         post {
             val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
             val request = call.receive<GravidSoknadRequest>()
-
-//            var isVirksomhet = false
-//            if (application.environment.config.property("koin.profile").getString() == "PREPROD")
-//                isVirksomhet = true
-//            else breegClient.erVirksomhet(request.virksomhetsnummer)
-//            request.validate(isVirksomhet)
-            val isVirksomhet = if (application.environment.config.property("koin.profile").getString() == "PREPROD") true else breegClient.erVirksomhet(request.virksomhetsnummer)
+            val erIPreprod = application.environment.config.property("koin.profile").getString() == "PREPROD"
+            val isVirksomhet = erIPreprod || breegClient.erVirksomhet(request.virksomhetsnummer)
             request.validate(isVirksomhet)
             val isAktivVirksomhet = breegClient.erAktiv(request.virksomhetsnummer)
             request.validate(isAktivVirksomhet)
@@ -121,7 +116,7 @@ fun Route.gravidKravRoutes(
             request.validate(arbeidsforhold)
 
             val kravId = UUID.fromString(call.parameters["id"])
-            var kravTilSletting = gravidKravRepo.getById(kravId)
+            val kravTilSletting = gravidKravRepo.getById(kravId)
                 ?: return@patch call.respond(HttpStatusCode.NotFound)
             val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
             val sendtAvNavn = pdlService.finnNavn(innloggetFnr)
@@ -136,7 +131,7 @@ fun Route.gravidKravRoutes(
         }
         delete {
             val kravId = UUID.fromString(call.parameters["id"])
-            var form = gravidKravRepo.getById(kravId)
+            val form = gravidKravRepo.getById(kravId)
                 ?: return@delete call.respond(HttpStatusCode.NotFound)
 
             authorize(authorizer, form.virksomhetsnummer)

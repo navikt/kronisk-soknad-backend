@@ -53,8 +53,8 @@ fun Route.kroniskSoeknadRoutes(
     route("/kronisk/soeknad") {
         post {
             val request = call.receive<KroniskSoknadRequest>()
-
-            val isVirksomhet = if (application.environment.config.property("koin.profile").getString() == "PREPROD") true else breegClient.erVirksomhet(request.virksomhetsnummer)
+            val erIPreprod = application.environment.config.property("koin.profile").getString() == "PREPROD"
+            val isVirksomhet = erIPreprod || breegClient.erVirksomhet(request.virksomhetsnummer)
             request.validate(isVirksomhet)
 
             val isAktivVirksomhet = breegClient.erAktiv(request.virksomhetsnummer)
@@ -110,7 +110,7 @@ fun Route.kroniskKravRoutes(
             val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
             val slettetAv = pdlService.finnNavn(innloggetFnr)
             val kravId = UUID.fromString(call.parameters["id"])
-            var form = kroniskKravRepo.getById(kravId)
+            val form = kroniskKravRepo.getById(kravId)
             if (form == null) {
                 call.respond(HttpStatusCode.NotFound)
             } else {

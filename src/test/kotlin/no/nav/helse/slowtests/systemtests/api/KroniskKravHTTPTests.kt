@@ -121,7 +121,7 @@ class KroniskKravHTTPTests : SystemTestBase() {
     }
 
     @Test
-    fun `Skal returnere OK når kroniskkrav er slettes`() = suspendableTest {
+    fun `skal returnere OK når kroniskkrav er slettes`() = suspendableTest {
 
         val response = httpClient.post<HttpResponse> {
             appUrl(kravKroniskUrl)
@@ -143,9 +143,9 @@ class KroniskKravHTTPTests : SystemTestBase() {
     }
 
     @Test
-    fun `Skal returnere 404 når kroniskkrav som slettes har ugyldig id`() = suspendableTest {
+    fun `skal returnere 404 når kroniskkrav som slettes har ugyldig id`() = suspendableTest {
         val responseExcepion = assertThrows<ClientRequestException> {
-            val responseSlett = httpClient.delete<HttpResponse> {
+            httpClient.delete<HttpResponse> {
                 appUrl(kravKroniskUrl + "/" + UUID.randomUUID().toString())
                 contentType(ContentType.Application.Json)
                 loggedInAs("123456789")

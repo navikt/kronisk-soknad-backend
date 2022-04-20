@@ -5,11 +5,14 @@ import no.nav.helse.arbeidsgiver.integrasjoner.AccessTokenProvider
 import no.nav.helse.arbeidsgiver.integrasjoner.arbeidsgiverNotifikasjon.ArbeidsgiverNotifikasjonKlientImpl
 import no.nav.helse.slowtests.systemtests.api.SystemTestBase
 import org.assertj.core.api.Assertions
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
+@Disabled
 class ArbeidsgiverNotifikasjonKlientTest : SystemTestBase() {
     private val tokenClient = mockk<AccessTokenProvider>(relaxed = true)
 
+    @Disabled
     @Test
     fun `Gyldig whoami`() = suspendableTest {
         val client = ArbeidsgiverNotifikasjonKlientImpl(

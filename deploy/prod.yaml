@@ -107,6 +107,8 @@ spec:
       value: https://helsearbeidsgiver-proxy.prod-fss-pub.nais.io/norg
     - name: ARBEIDSGIVER_NOTIFIKASJON_API_URL
       value: https://ag-notifikasjon-produsent-api.intern.nav.no/api/graphql
+    - name: ARBEIDSGIVER_NOTIFIKASJON_SCOPE
+      value: "api://prod-gcp.fager.notifikasjon-produsent-api/.default"
 
   gcp:
     sqlInstances:

@@ -88,7 +88,7 @@ fun Module.externalSystemClients(config: ApplicationConfig) {
     } bind AccessTokenProvider::class
 
     single(named("ARBEIDSGIVERNOTIFIKASJON")) {
-        val clientConfig = OAuth2ClientPropertiesConfig(config, "api://dev-gcp.fager.notifikasjon-produsent-api/.default")
+        val clientConfig = OAuth2ClientPropertiesConfig(config, "7e5c11cd-f49c-43b9-880d-e733fb974261")
         val tokenResolver = TokenResolver()
         val oauthHttpClient = DefaultOAuth2HttpClient(get())
         val accessTokenService = OAuth2AccessTokenService(

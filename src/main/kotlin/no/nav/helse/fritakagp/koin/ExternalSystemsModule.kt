@@ -88,7 +88,7 @@ fun Module.externalSystemClients(config: ApplicationConfig) {
     } bind AccessTokenProvider::class
 
     single(named("ARBEIDSGIVERNOTIFIKASJON")) {
-        val clientConfig = OAuth2ClientPropertiesConfig(config, "arbeidsgivernotifikasjonscope")
+        val clientConfig = OAuth2ClientPropertiesConfig(config, config.getString("arbeidsgiver_notifikasjon_scope"))
         val tokenResolver = TokenResolver()
         val oauthHttpClient = DefaultOAuth2HttpClient(get())
         val accessTokenService = OAuth2AccessTokenService(

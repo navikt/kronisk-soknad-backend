@@ -87,7 +87,7 @@ fun Module.externalSystemClients(config: ApplicationConfig) {
         OAuth2TokenProvider(accessTokenService, azureAdConfig)
     } bind AccessTokenProvider::class
 
-    single(named("ARBEIDSGIVER_NOTIFIKASJON")) {
+    single(named("ARBEIDSGIVERNOTIFIKASJON")) {
         val clientConfig = OAuth2ClientPropertiesConfig(config, "proxyscope")
         val tokenResolver = TokenResolver()
         val oauthHttpClient = DefaultOAuth2HttpClient(get())
@@ -119,7 +119,7 @@ fun Module.externalSystemClients(config: ApplicationConfig) {
 
     single { AaregArbeidsforholdClientImpl(config.getString("aareg_url"), get(qualifier = named("PROXY")), get()) } bind AaregArbeidsforholdClient::class
     single { PdlClientImpl(config.getString("pdl_url"), get(qualifier = named("PROXY")), get(), get()) } bind PdlClient::class
-    single { ArbeidsgiverNotifikasjonKlientImpl(config.getString("arbeidsgiver_notifikasjon_api_url"), get(qualifier = named("ARBEIDSGIVER_NOTIFIKASJON")), get()) } bind ArbeidsgiverNotifikasjonKlient::class
+    single { ArbeidsgiverNotifikasjonKlientImpl(config.getString("arbeidsgiver_notifikasjon_api_url"), get(qualifier = named("ARBEIDSGIVERNOTIFIKASJON")), get()) } bind ArbeidsgiverNotifikasjonKlient::class
     single { DokarkivKlientImpl(config.getString("dokarkiv.base_url"), get(), get(qualifier = named("DOKARKIV"))) } bind DokarkivKlient::class
     single { OppgaveKlientImpl(config.getString("oppgavebehandling.url"), get(qualifier = named("OPPGAVE")), get()) } bind OppgaveKlient::class
     single {

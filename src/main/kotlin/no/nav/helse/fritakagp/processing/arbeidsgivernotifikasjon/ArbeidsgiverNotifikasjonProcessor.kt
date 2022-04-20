@@ -54,12 +54,13 @@ class ArbeidsgiverNotifikasjonProcessor(
                 skjema.opprettet.toString()
             )
         }
+
         val skjema = gravidKravRepo.getById(jobbData.skjemaId)
             ?: throw IllegalArgumentException("Fant ikke $jobbData")
         return SakParametere(
             skjema.id,
             skjema.virksomhetsnummer,
-            " Refusjonskrav fra arbeidsgiverperioden grunnet graviditet",
+            "Refusjonskrav fra arbeidsgiverperioden grunnet graviditet",
             "$frontendAppBaseUrl/gravid/krav/${skjema.id}",
             skjema.opprettet.toString()
         )

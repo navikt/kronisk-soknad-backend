@@ -50,6 +50,7 @@ spec:
         - host: tt02.altinn.no
         - host: kafka-schema-registry.nais-q.adeo.no
         - host: data.brreg.no
+        - host: ag-notifikasjon-produsent-api.dev.nav.no
 
       rules:
         - application: helsearbeidsgiver-proxy
@@ -100,6 +101,8 @@ spec:
       value: "https://datakatalog-api.dev.intern.nav.no/v1/datapackage"
     - name: NORG2_URL
       value: https://helsearbeidsgiver-proxy.dev-fss-pub.nais.io/norg
+    - name: ARBEIDSGIVER_NOTIFIKASJON_API_URL
+      value: https://ag-notifikasjon-produsent-api.dev.nav.no/api/graphql
 
   gcp:
     sqlInstances:

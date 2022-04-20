@@ -19,6 +19,7 @@ import no.nav.helse.fritakagp.domain.KravStatus
 import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
+import no.nav.helse.fritakagp.processing.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravKvitteringProcessor
 import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravProcessor
 import no.nav.helse.fritakagp.processing.kronisk.krav.SlettKroniskKravProcessor
@@ -99,21 +100,13 @@ fun Route.kroniskRoutes(
         }
 
         route("/krav") {
-            get("/virksomhet/{virksomhetsnummer}") {
-                val virksomhetsnummer = requireNotNull(call.parameters["virksomhetsnummer"])
-                authorize(authorizer, virksomhetsnummer)
-
-                val kroniskKrav = kroniskKravRepo.getAllForVirksomhet(virksomhetsnummer)
-
-                call.respond(HttpStatusCode.OK, kroniskKrav)
-            }
-
             get("/{id}") {
                 val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
                 val form = kroniskKravRepo.getById(UUID.fromString(call.parameters["id"]))
                 if (form == null || form.identitetsnummer != innloggetFnr) {
                     call.respond(HttpStatusCode.NotFound)
                 } else {
+                    authorize(authorizer, form.virksomhetsnummer)
                     form.sendtAvNavn = form.sendtAvNavn ?: pdlService.finnNavn(innloggetFnr)
                     form.navn = form.navn ?: pdlService.finnNavn(form.identitetsnummer)
 
@@ -149,6 +142,11 @@ fun Route.kroniskRoutes(
                     bakgunnsjobbService.opprettJobb<KroniskKravKvitteringProcessor>(
                         maksAntallForsoek = 10,
                         data = om.writeValueAsString(KroniskKravKvitteringProcessor.Jobbdata(krav.id)),
+                        connection = connection
+                    )
+                    bakgunnsjobbService.opprettJobb<ArbeidsgiverNotifikasjonProcessor>(
+                        maksAntallForsoek = 10,
+                        data = om.writeValueAsString(ArbeidsgiverNotifikasjonProcessor.Jobbdata(krav.id, ArbeidsgiverNotifikasjonProcessor.Jobbdata.SkjemaType.KroniskKrav)),
                         connection = connection
                     )
                 }

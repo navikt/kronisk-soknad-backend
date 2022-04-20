@@ -7,6 +7,8 @@ import no.nav.helse.arbeidsgiver.integrasjoner.OAuth2TokenProvider
 import no.nav.helse.arbeidsgiver.integrasjoner.aareg.AaregArbeidsforholdClient
 import no.nav.helse.arbeidsgiver.integrasjoner.aareg.AaregArbeidsforholdClientImpl
 import no.nav.helse.arbeidsgiver.integrasjoner.altinn.AltinnRestClient
+import no.nav.helse.arbeidsgiver.integrasjoner.arbeidsgiverNotifikasjon.ArbeidsgiverNotifikasjonKlient
+import no.nav.helse.arbeidsgiver.integrasjoner.arbeidsgiverNotifikasjon.ArbeidsgiverNotifikasjonKlientImpl
 import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.DokarkivKlient
 import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.DokarkivKlientImpl
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OppgaveKlient
@@ -85,6 +87,21 @@ fun Module.externalSystemClients(config: ApplicationConfig) {
         OAuth2TokenProvider(accessTokenService, azureAdConfig)
     } bind AccessTokenProvider::class
 
+    single(named("ARBEIDSGIVER_NOTIFIKASJON")) {
+        val clientConfig = OAuth2ClientPropertiesConfig(config, "proxyscope")
+        val tokenResolver = TokenResolver()
+        val oauthHttpClient = DefaultOAuth2HttpClient(get())
+        val accessTokenService = OAuth2AccessTokenService(
+            tokenResolver,
+            OnBehalfOfTokenClient(oauthHttpClient),
+            ClientCredentialsTokenClient(oauthHttpClient),
+            TokenExchangeClient(oauthHttpClient)
+        )
+
+        val azureAdConfig = clientConfig.clientConfig["azure_ad"] ?: error(accessTokenProviderError)
+        OAuth2TokenProvider(accessTokenService, azureAdConfig)
+    } bind AccessTokenProvider::class
+
     single(named("DOKARKIV")) {
         val clientConfig = OAuth2ClientPropertiesConfig(config, "dokarkivscope")
         val tokenResolver = TokenResolver()
@@ -102,6 +119,7 @@ fun Module.externalSystemClients(config: ApplicationConfig) {
 
     single { AaregArbeidsforholdClientImpl(config.getString("aareg_url"), get(qualifier = named("PROXY")), get()) } bind AaregArbeidsforholdClient::class
     single { PdlClientImpl(config.getString("pdl_url"), get(qualifier = named("PROXY")), get(), get()) } bind PdlClient::class
+    single { ArbeidsgiverNotifikasjonKlientImpl(config.getString("arbeidsgiver_notifikasjon_api_url"), get(qualifier = named("ARBEIDSGIVER_NOTIFIKASJON")), get()) } bind ArbeidsgiverNotifikasjonKlient::class
     single { DokarkivKlientImpl(config.getString("dokarkiv.base_url"), get(), get(qualifier = named("DOKARKIV"))) } bind DokarkivKlient::class
     single { OppgaveKlientImpl(config.getString("oppgavebehandling.url"), get(qualifier = named("OPPGAVE")), get()) } bind OppgaveKlient::class
     single {

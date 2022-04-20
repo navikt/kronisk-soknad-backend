@@ -51,6 +51,7 @@ spec:
         - host: data.brreg.no
         - host: dokarkiv.prod-fss-pub.nais.io
         - host: oppgave.prod-fss-pub.nais.io
+        - host: ag-notifikasjon-produsent-api.intern.nav.no
 
       rules:
         - application: helsearbeidsgiver-proxy
@@ -104,6 +105,8 @@ spec:
       value: "https://datakatalog-api.intern.nav.no/v1/datapackage"
     - name: NORG2_URL
       value: https://helsearbeidsgiver-proxy.prod-fss-pub.nais.io/norg
+    - name: ARBEIDSGIVER_NOTIFIKASJON_API_URL
+      value: https://ag-notifikasjon-produsent-api.intern.nav.no/api/graphql
 
   gcp:
     sqlInstances:

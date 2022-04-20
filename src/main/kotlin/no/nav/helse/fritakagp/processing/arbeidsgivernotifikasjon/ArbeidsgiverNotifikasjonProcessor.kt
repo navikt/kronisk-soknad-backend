@@ -8,6 +8,7 @@ import no.nav.helse.arbeidsgiver.integrasjoner.arbeidsgiverNotifikasjon.Arbeidsg
 import no.nav.helse.fritakagp.db.GravidKravRepository
 import no.nav.helse.fritakagp.db.KroniskKravRepository
 import no.nav.helse.helsearbeidsgiver.graphql.generated.ISO8601DateTime
+import org.joda.time.LocalDateTime
 import org.slf4j.LoggerFactory
 import java.util.*
 
@@ -36,7 +37,7 @@ class ArbeidsgiverNotifikasjonProcessor(
             virksomhetsnummer = sak.virkomhetsnummer,
             tittel = sak.tittel,
             lenke = sak.lenke,
-            tidspunkt = sak.tidspunkt
+            tidspunkt = LocalDateTime.now().toString()
         )
         log.info("Opprettet sak i arbeidsgivernotifikasjon med ${sak.id} med ref $resultat")
     }

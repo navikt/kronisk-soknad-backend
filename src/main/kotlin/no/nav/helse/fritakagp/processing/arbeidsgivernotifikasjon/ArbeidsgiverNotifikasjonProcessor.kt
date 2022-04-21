@@ -49,7 +49,7 @@ class ArbeidsgiverNotifikasjonProcessor(
             return SakParametere(
                 skjema.id,
                 skjema.virksomhetsnummer,
-                "Refusjon arbeidsgiverperiode - kronisk sykdom ${skjema.navn} - ${skjema.identitetsnummer.substring(0, 6)}",
+                "Refusjon arbeidsgiverperiode - kronisk sykdom - ${skjema.navn} - ${skjema.identitetsnummer.take(6)}",
                 "$frontendAppBaseUrl/nb/kronisk/krav/${skjema.id}",
                 skjema.opprettet.toString()
             )
@@ -60,7 +60,7 @@ class ArbeidsgiverNotifikasjonProcessor(
         return SakParametere(
             skjema.id,
             skjema.virksomhetsnummer,
-            "Refusjon arbeidsgiverperiode - graviditet ${skjema.navn} - ${skjema.identitetsnummer.substring(0, 6)}",
+            "Refusjon arbeidsgiverperiode - graviditet - ${skjema.navn} - ${skjema.identitetsnummer.take(6)}",
             "$frontendAppBaseUrl/nb/gravid/krav/${skjema.id}",
             skjema.opprettet.toString()
         )

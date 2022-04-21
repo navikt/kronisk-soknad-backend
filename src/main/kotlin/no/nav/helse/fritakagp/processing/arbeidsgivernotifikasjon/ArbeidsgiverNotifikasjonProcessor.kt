@@ -50,7 +50,7 @@ class ArbeidsgiverNotifikasjonProcessor(
                 skjema.id,
                 skjema.virksomhetsnummer,
                 "Refusjonskrav fra arbeidsgiverperioden grunnet kronisk sykdom",
-                "$frontendAppBaseUrl/kronisk/krav/${skjema.id}",
+                "$frontendAppBaseUrl/nb/kronisk/krav/${skjema.id}",
                 skjema.opprettet.toString()
             )
         }
@@ -61,7 +61,7 @@ class ArbeidsgiverNotifikasjonProcessor(
             skjema.id,
             skjema.virksomhetsnummer,
             "Refusjonskrav fra arbeidsgiverperioden grunnet graviditet",
-            "$frontendAppBaseUrl/gravid/krav/${skjema.id}",
+            "$frontendAppBaseUrl/nb/gravid/krav/${skjema.id}",
             skjema.opprettet.toString()
         )
     }

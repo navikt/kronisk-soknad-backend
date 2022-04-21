@@ -2,7 +2,6 @@ package no.nav.helse.fritakagp.koin
 
 import com.zaxxer.hikari.HikariDataSource
 import io.ktor.config.*
-import io.ktor.util.*
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbRepository
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbService
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.PostgresBakgrunnsjobbRepository
@@ -14,8 +13,8 @@ import no.nav.helse.fritakagp.datapakke.DatapakkePublisherJob
 import no.nav.helse.fritakagp.db.*
 import no.nav.helse.fritakagp.domain.BeløpBeregning
 import no.nav.helse.fritakagp.integration.altinn.message.Clients
-import no.nav.helse.fritakagp.processing.BakgrunnsjobbProcessor
-import no.nav.helse.fritakagp.processing.GcpOpplasting
+import no.nav.helse.fritakagp.processing.BakgrunnsjobbOppretter
+import no.nav.helse.fritakagp.processing.GcpOpplaster
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.gravid.krav.*
 import no.nav.helse.fritakagp.processing.gravid.soeknad.*
@@ -47,8 +46,8 @@ fun preprodConfig(config: ApplicationConfig) = module {
     single { PostgresBakgrunnsjobbRepository(get()) } bind BakgrunnsjobbRepository::class
     single { BakgrunnsjobbService(get(), bakgrunnsvarsler = MetrikkVarsler()) }
 
-    single { GcpOpplasting(get(), get()) }
-    single { BakgrunnsjobbProcessor(get(), get(), get(), get(), get(), get(), get()) }
+    single { GcpOpplaster(get(), get()) }
+    single { BakgrunnsjobbOppretter(get(), get(), get(), get(), get(), get(), get()) }
 
     single { GravidSoeknadProcessor(get(), get(), get(), get(), get(), GravidSoeknadPDFGenerator(), get(), get(), get(), get()) }
     single { GravidKravProcessor(get(), get(), get(), get(), get(), GravidKravPDFGenerator(), get(), get(), get(), get()) }

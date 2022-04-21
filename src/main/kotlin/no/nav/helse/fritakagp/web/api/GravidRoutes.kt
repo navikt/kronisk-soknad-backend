@@ -20,8 +20,8 @@ import no.nav.helse.fritakagp.db.GravidSoeknadRepository
 import no.nav.helse.fritakagp.domain.BeløpBeregning
 import no.nav.helse.fritakagp.domain.KravStatus
 import no.nav.helse.fritakagp.integration.brreg.BrregClient
-import no.nav.helse.fritakagp.processing.BakgrunnsjobbProcessor
-import no.nav.helse.fritakagp.processing.GcpOpplasting
+import no.nav.helse.fritakagp.processing.BakgrunnsjobbOppretter
+import no.nav.helse.fritakagp.processing.GcpOpplaster
 import no.nav.helse.fritakagp.service.PdlService
 import no.nav.helse.fritakagp.web.api.resreq.GravidKravRequest
 import no.nav.helse.fritakagp.web.api.resreq.GravidSoknadRequest
@@ -32,8 +32,8 @@ import java.util.UUID
 fun Route.gravidSoeknadRoutes(
     breegClient: BrregClient,
     gravidSoeknadRepo: GravidSoeknadRepository,
-    bakgrunnsjobbProcessor: BakgrunnsjobbProcessor,
-    gcpOpplasting: GcpOpplasting,
+    bakgrunnsjobbOppretter: BakgrunnsjobbOppretter,
+    gcpOpplaster: GcpOpplaster,
     pdlService: PdlService
 ) {
     route("/gravid/soeknad/{id}") {
@@ -64,9 +64,9 @@ fun Route.gravidSoeknadRoutes(
             val navn = pdlService.finnNavn(request.identitetsnummer)
 
             val soeknad = request.toDomain(innloggetFnr, sendtAvNavn, navn)
-            gcpOpplasting.processDocumentForGCPStorage(request.dokumentasjon, soeknad.id)
-            bakgrunnsjobbProcessor.gravidSoeknadBakgrunnsjobb(soeknad)
-            bakgrunnsjobbProcessor.gravidSoeknadKvitteringBakgrunnsjobb(soeknad)
+            gcpOpplaster.processDocumentForGCPStorage(request.dokumentasjon, soeknad.id)
+            bakgrunnsjobbOppretter.gravidSoeknadBakgrunnsjobb(soeknad)
+            bakgrunnsjobbOppretter.gravidSoeknadKvitteringBakgrunnsjobb(soeknad)
 
             call.respond(HttpStatusCode.Created, soeknad)
             GravidSoeknadMetrics.tellMottatt()
@@ -75,8 +75,8 @@ fun Route.gravidSoeknadRoutes(
 }
 fun Route.gravidKravRoutes(
     gravidKravRepo: GravidKravRepository,
-    bakgrunnsjobbProcessor: BakgrunnsjobbProcessor,
-    gcpOpplasting: GcpOpplasting,
+    bakgrunnsjobbOppretter: BakgrunnsjobbOppretter,
+    gcpOpplaster: GcpOpplaster,
     authorizer: AltinnAuthorizer,
     belopBeregning: BeløpBeregning,
     aaregClient: AaregArbeidsforholdClient,
@@ -121,12 +121,12 @@ fun Route.gravidKravRoutes(
             val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
             val sendtAvNavn = pdlService.finnNavn(innloggetFnr)
             val navn = pdlService.finnNavn(request.identitetsnummer)
-            bakgrunnsjobbProcessor.gravidKravEndretBakgrunnsjobb(KravStatus.ENDRET, innloggetFnr, navn, kravTilSletting)
+            bakgrunnsjobbOppretter.gravidKravEndretBakgrunnsjobb(KravStatus.ENDRET, innloggetFnr, navn, kravTilSletting)
 
             val kravTilOppdatering = request.toDomain(innloggetFnr, sendtAvNavn, navn)
             belopBeregning.beregnBeløpGravid(kravTilOppdatering)
-            bakgrunnsjobbProcessor.gravidKravBakgrunnsjobb(kravTilOppdatering)
-            bakgrunnsjobbProcessor.gravidKravKvitteringBakgrunnsjobb(kravTilOppdatering)
+            bakgrunnsjobbOppretter.gravidKravBakgrunnsjobb(kravTilOppdatering)
+            bakgrunnsjobbOppretter.gravidKravKvitteringBakgrunnsjobb(kravTilOppdatering)
             call.respond(HttpStatusCode.OK, kravTilOppdatering)
         }
         delete {
@@ -137,7 +137,7 @@ fun Route.gravidKravRoutes(
             authorize(authorizer, form.virksomhetsnummer)
             val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
             val slettetAv = pdlService.finnNavn(innloggetFnr)
-            bakgrunnsjobbProcessor.gravidKravEndretBakgrunnsjobb(KravStatus.SLETTET, innloggetFnr, slettetAv, form)
+            bakgrunnsjobbOppretter.gravidKravEndretBakgrunnsjobb(KravStatus.SLETTET, innloggetFnr, slettetAv, form)
             call.respond(HttpStatusCode.OK)
         }
     }
@@ -157,9 +157,9 @@ fun Route.gravidKravRoutes(
 
             val krav = request.toDomain(innloggetFnr, sendtAvNavn, navn)
             belopBeregning.beregnBeløpGravid(krav)
-            gcpOpplasting.processDocumentForGCPStorage(request.dokumentasjon, krav.id)
-            bakgrunnsjobbProcessor.gravidKravBakgrunnsjobb(krav)
-            bakgrunnsjobbProcessor.gravidKravKvitteringBakgrunnsjobb(krav)
+            gcpOpplaster.processDocumentForGCPStorage(request.dokumentasjon, krav.id)
+            bakgrunnsjobbOppretter.gravidKravBakgrunnsjobb(krav)
+            bakgrunnsjobbOppretter.gravidKravKvitteringBakgrunnsjobb(krav)
             call.respond(HttpStatusCode.Created, krav)
             GravidKravMetrics.tellMottatt()
         }

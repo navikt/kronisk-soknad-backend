@@ -19,8 +19,8 @@ import no.nav.helse.fritakagp.db.KroniskSoeknadRepository
 import no.nav.helse.fritakagp.domain.BeløpBeregning
 import no.nav.helse.fritakagp.domain.KravStatus
 import no.nav.helse.fritakagp.integration.brreg.BrregClient
-import no.nav.helse.fritakagp.processing.BakgrunnsjobbProcessor
-import no.nav.helse.fritakagp.processing.GcpOpplasting
+import no.nav.helse.fritakagp.processing.BakgrunnsjobbOppretter
+import no.nav.helse.fritakagp.processing.GcpOpplaster
 import no.nav.helse.fritakagp.service.PdlService
 import no.nav.helse.fritakagp.web.api.resreq.KroniskKravRequest
 import no.nav.helse.fritakagp.web.api.resreq.KroniskSoknadRequest
@@ -32,8 +32,8 @@ fun Route.kroniskSoeknadRoutes(
     breegClient: BrregClient,
     kroniskSoeknadRepo: KroniskSoeknadRepository,
     pdlService: PdlService,
-    gcpOpplasting: GcpOpplasting,
-    bakgrunnsjobbProcessor: BakgrunnsjobbProcessor
+    gcpOpplaster: GcpOpplaster,
+    bakgrunnsjobbOppretter: BakgrunnsjobbOppretter
 ) {
 
     route("/kronisk/soeknad/{id}") {
@@ -66,9 +66,9 @@ fun Route.kroniskSoeknadRoutes(
             val navn = pdlService.finnNavn(request.identitetsnummer)
 
             val soeknad = request.toDomain(innloggetFnr, sendtAvNavn, navn)
-            gcpOpplasting.processDocumentForGCPStorage(request.dokumentasjon, soeknad.id)
-            bakgrunnsjobbProcessor.kroniskSoeknadBakgrunnsjobb(soeknad)
-            bakgrunnsjobbProcessor.kroniskSoeknadKvitteringBakgrunnsjobb(soeknad)
+            gcpOpplaster.processDocumentForGCPStorage(request.dokumentasjon, soeknad.id)
+            bakgrunnsjobbOppretter.kroniskSoeknadBakgrunnsjobb(soeknad)
+            bakgrunnsjobbOppretter.kroniskSoeknadKvitteringBakgrunnsjobb(soeknad)
             call.respond(HttpStatusCode.Created, soeknad)
             KroniskSoeknadMetrics.tellMottatt()
         }
@@ -80,8 +80,8 @@ fun Route.kroniskKravRoutes(
     belopBeregning: BeløpBeregning,
     aaregClient: AaregArbeidsforholdClient,
     pdlService: PdlService,
-    gcpOpplasting: GcpOpplasting,
-    bakgrunnsjobbProcessor: BakgrunnsjobbProcessor
+    gcpOpplaster: GcpOpplaster,
+    bakgrunnsjobbOppretter: BakgrunnsjobbOppretter
 ) {
     route("/kronisk/krav/virksomhet/{virksomhetsnummer}") {
         get {
@@ -115,7 +115,7 @@ fun Route.kroniskKravRoutes(
                 call.respond(HttpStatusCode.NotFound)
             } else {
                 authorize(authorizer, form.virksomhetsnummer)
-                bakgrunnsjobbProcessor.kroniskKravEndretBakgrunnsjobb(KravStatus.SLETTET, innloggetFnr, slettetAv, form)
+                bakgrunnsjobbOppretter.kroniskKravEndretBakgrunnsjobb(KravStatus.SLETTET, innloggetFnr, slettetAv, form)
                 call.respond(HttpStatusCode.OK)
             }
         }
@@ -137,9 +137,9 @@ fun Route.kroniskKravRoutes(
             val krav = request.toDomain(innloggetFnr, sendtAvNavn, navn)
 
             belopBeregning.beregnBeløpKronisk(krav)
-            gcpOpplasting.processDocumentForGCPStorage(request.dokumentasjon, krav.id)
-            bakgrunnsjobbProcessor.kroniskKravBakgrunnsjobb(krav)
-            bakgrunnsjobbProcessor.kroniskKravKvitteringBakgrunnsjobb(krav)
+            gcpOpplaster.processDocumentForGCPStorage(request.dokumentasjon, krav.id)
+            bakgrunnsjobbOppretter.kroniskKravBakgrunnsjobb(krav)
+            bakgrunnsjobbOppretter.kroniskKravKvitteringBakgrunnsjobb(krav)
             call.respond(HttpStatusCode.Created, krav)
             KroniskKravMetrics.tellMottatt()
         }

@@ -13,8 +13,8 @@ import no.nav.helse.fritakagp.db.*
 import no.nav.helse.fritakagp.domain.BeløpBeregning
 import no.nav.helse.fritakagp.integration.GrunnbeløpClient
 import no.nav.helse.fritakagp.integration.kafka.*
-import no.nav.helse.fritakagp.processing.BakgrunnsjobbProcessor
-import no.nav.helse.fritakagp.processing.GcpOpplasting
+import no.nav.helse.fritakagp.processing.BakgrunnsjobbOppretter
+import no.nav.helse.fritakagp.processing.GcpOpplaster
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.gravid.krav.*
 import no.nav.helse.fritakagp.processing.gravid.soeknad.*
@@ -42,8 +42,8 @@ fun localDevConfig(config: ApplicationConfig) = module {
     single { PostgresBakgrunnsjobbRepository(get()) } bind BakgrunnsjobbRepository::class
     single { BakgrunnsjobbService(get()) }
 
-    single { GcpOpplasting(get(), get()) }
-    single { BakgrunnsjobbProcessor(get(), get(), get(), get(), get(), get(), get()) }
+    single { GcpOpplaster(get(), get()) }
+    single { BakgrunnsjobbOppretter(get(), get(), get(), get(), get(), get(), get()) }
 
     single { GravidSoeknadProcessor(get(), get(), get(), get(), get(), GravidSoeknadPDFGenerator(), get(), get(), get(), get()) }
     single { GravidKravProcessor(get(), get(), get(), get(), get(), GravidKravPDFGenerator(), get(), get(), get(), get()) }

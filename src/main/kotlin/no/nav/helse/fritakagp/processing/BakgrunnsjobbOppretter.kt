@@ -21,7 +21,7 @@ import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadKvitterin
 import java.time.LocalDateTime
 import javax.sql.DataSource
 
-class BakgrunnsjobbProcessor(
+class BakgrunnsjobbOppretter(
     private val datasource: DataSource,
     private val bakgunnsjobbService: BakgrunnsjobbService,
     private val gravidKravRepo: GravidKravRepository,

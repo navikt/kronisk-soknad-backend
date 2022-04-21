@@ -10,7 +10,7 @@ import org.valiktor.ConstraintViolationException
 import org.valiktor.DefaultConstraintViolation
 import java.util.*
 
-class GcpOpplasting(
+class GcpOpplaster(
     private val virusScanner: VirusScanner,
     private val bucket: BucketStorage
 ) {

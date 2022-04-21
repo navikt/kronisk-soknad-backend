@@ -241,33 +241,6 @@ fun Route.gravidRoutes(
     }
 }
 
-fun periodValErrs(it: ConstraintViolation): List<ValidationProblemDetail> {
-    val valErrs = mutableListOf<ValidationProblemDetail>()
-    if (it.property == "perioder") {
-        (it.value as Set<*>).forEach { _ ->
-            valErrs.add(
-                ValidationProblemDetail(
-                    it.constraint.name,
-                    it.getContextualMessageNO(),
-                    it.property,
-                    it.value
-                )
-            )
-        }
-    } else {
-        valErrs.add(
-            ValidationProblemDetail(
-                it.constraint.name,
-                it.getContextualMessageNO(),
-                it.property,
-                it.value
-            )
-        )
-    }
-
-    return valErrs
-}
-
 suspend fun processDocumentForGCPStorage(doc: String?, virusScanner: VirusScanner, bucket: BucketStorage, id: UUID) {
     if (!doc.isNullOrEmpty()) {
         val fileContent = extractBase64Del(doc)

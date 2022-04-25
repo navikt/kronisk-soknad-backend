@@ -10,6 +10,7 @@ class BrregClientImpTest : SystemTestBase() {
 
     private val nesoddenKommuneVirksomhet = "996727750"
     private val nesoddenKommuneOrgLedd = "974637685"
+    private val slettetVirksomhet = "995986450"
 
     @Test
     fun `Skal returnere riktig navn`() = suspendableTest {
@@ -23,6 +24,13 @@ class BrregClientImpTest : SystemTestBase() {
         val client = BrregClientImpl(httpClient, enhetsUrl)
         val erVirksomhet = client.erVirksomhet(nesoddenKommuneVirksomhet)
         Assertions.assertThat(erVirksomhet).isTrue()
+    }
+
+    @Test
+    fun `Skal returnere false for slettet virksomhetsnummer`() = suspendableTest {
+        val client = BrregClientImpl(httpClient, enhetsUrl)
+        val erVirksomhet = client.erVirksomhet(slettetVirksomhet)
+        Assertions.assertThat(erVirksomhet).isFalse()
     }
 
     @Test

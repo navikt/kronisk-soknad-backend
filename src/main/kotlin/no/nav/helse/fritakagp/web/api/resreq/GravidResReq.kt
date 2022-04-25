@@ -24,13 +24,13 @@ data class GravidSoknadRequest(
 
     val dokumentasjon: String?
 ) {
+
     fun validate(isVirksomhet: Boolean) {
         validate(this) {
             validate(GravidSoknadRequest::identitetsnummer).isValidIdentitetsnummer()
             validate(GravidSoknadRequest::bekreftet).isTrue()
             validate(GravidSoknadRequest::virksomhetsnummer).isValidOrganisasjonsnummer()
             validate(GravidSoknadRequest::virksomhetsnummer).isVirksomhet(isVirksomhet)
-            validate(GravidSoknadRequest::virksomhetsnummer).isAktivVirksomhet(isVirksomhet)
 
             if (this@GravidSoknadRequest.tilrettelegge) {
                 validate(GravidSoknadRequest::tiltak).isNotNull()

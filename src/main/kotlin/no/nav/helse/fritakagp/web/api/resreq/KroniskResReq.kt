@@ -25,7 +25,6 @@ data class KroniskSoknadRequest(
             validate(KroniskSoknadRequest::bekreftet).isTrue()
             validate(KroniskSoknadRequest::virksomhetsnummer).isValidOrganisasjonsnummer()
             validate(KroniskSoknadRequest::virksomhetsnummer).isVirksomhet(isVirksomhet)
-            validate(KroniskSoknadRequest::virksomhetsnummer).isAktivVirksomhet(isVirksomhet)
 
             if (this@KroniskSoknadRequest.ikkeHistoriskFravaer) {
                 validate(KroniskSoknadRequest::fravaer).isEmpty()

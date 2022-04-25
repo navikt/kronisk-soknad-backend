@@ -7,7 +7,6 @@ import io.ktor.client.request.*
 interface BrregClient {
     suspend fun getVirksomhetsNavn(orgnr: String): String?
     suspend fun erVirksomhet(orgNr: String): Boolean
-    suspend fun erAktiv(orgNr: String): Boolean
 }
 
 class MockBrregClient : BrregClient {
@@ -16,10 +15,6 @@ class MockBrregClient : BrregClient {
     }
 
     override suspend fun erVirksomhet(orgNr: String): Boolean {
-        return true
-    }
-
-    override suspend fun erAktiv(orgNr: String): Boolean {
         return true
     }
 }
@@ -42,22 +37,14 @@ class BrregClientImpl(private val httpClient: HttpClient, private val brregUnder
         return navn
     }
 
-    override suspend fun erAktiv(orgnr: String): Boolean {
-        var slettedato: String? = null
-        try {
-            val url = "${brregUndervirksomhetUrl.trimEnd('/')}/$orgnr"
-            slettedato = httpClient.get<UnderenheterResponse>(url).sletteDato
-        } catch (cause: Throwable) {
-            throw cause
-        }
-        return (slettedato != null)
-    }
-
+    // Sjekker at vi har en virksomhet som eksisterer og ikke er slettet.
     override suspend fun erVirksomhet(orgNr: String): Boolean {
+        var slettedato: String? = null
         return try {
             val url = "${brregUndervirksomhetUrl.trimEnd('/')}/$orgNr"
+            slettedato = httpClient.get<UnderenheterResponse>(url).sletteDato
             httpClient.get<Unit>(url)
-            true
+            return (slettedato == null)
         } catch (cause: ClientRequestException) {
             if (404 == cause.response?.status?.value) {
                 false

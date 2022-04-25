@@ -68,9 +68,6 @@ fun Route.kroniskRoutes(
                 val isVirksomhet = if (application.environment.config.property("koin.profile").getString() == "PREPROD") true else breegClient.erVirksomhet(request.virksomhetsnummer)
                 request.validate(isVirksomhet)
 
-                val isAktivVirksomhet = breegClient.erAktiv(request.virksomhetsnummer)
-                request.validate(isAktivVirksomhet)
-
                 val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
 
                 val sendtAvNavn = pdlService.finnNavn(innloggetFnr)

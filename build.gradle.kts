@@ -29,6 +29,7 @@ plugins {
     id("com.github.ben-manes.versions") version "0.27.0"
     id("com.autonomousapps.dependency-analysis") version "0.79.0"
     jacoco
+    id("org.sonarqube") version "3.3"
 }
 
 application {
@@ -184,6 +185,28 @@ task<Test>("slowTests") {
     group = "verification"
 }
 
+tasks.jacocoTestReport {
+    dependsOn(tasks.test)
+    reports {
+        xml.required.set(true)
+        csv.required.set(false)
+        html.outputLocation.set(layout.buildDirectory.dir("jacocoHtml"))
+    }
+}
+
+tasks.test {
+    finalizedBy(tasks.jacocoTestReport)
+}
+
 tasks.withType<Wrapper> {
     gradleVersion = "7.3"
+}
+
+sonarqube {
+    properties {
+        property("sonar.projectKey", "navikt_fritakagp")
+        property("sonar.organization", "navit")
+        property("sonar.host.url", "https://sonarcloud.io")
+        property("sonar.sourceEncoding", "UTF-8")
+    }
 }

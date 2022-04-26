@@ -58,7 +58,7 @@ internal class KroniskSoknadRequestTest {
 
     @Test
     fun `Må være på virksomhetsnummer`() {
-        validationShouldFailNTimesFor(KroniskSoknadRequest::virksomhetsnummer, 2) {
+        validationShouldFailFor(KroniskSoknadRequest::virksomhetsnummer) {
             KroniskTestData.fullValidRequest.copy().validate(false)
         }
     }

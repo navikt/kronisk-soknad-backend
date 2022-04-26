@@ -76,9 +76,6 @@ fun Route.gravidRoutes(
                 val isVirksomhet = if (application.environment.config.property("koin.profile").getString() == "PREPROD") true else breegClient.erVirksomhet(request.virksomhetsnummer)
                 request.validate(isVirksomhet)
 
-                val isAktivVirksomhet = breegClient.erAktiv(request.virksomhetsnummer)
-                request.validate(isAktivVirksomhet)
-
                 val sendtAvNavn = pdlService.finnNavn(innloggetFnr)
                 val navn = pdlService.finnNavn(request.identitetsnummer)
 
@@ -237,33 +234,6 @@ fun Route.gravidRoutes(
             }
         }
     }
-}
-
-fun periodValErrs(it: ConstraintViolation): List<ValidationProblemDetail> {
-    val valErrs = mutableListOf<ValidationProblemDetail>()
-    if (it.property == "perioder") {
-        (it.value as Set<*>).forEach { _ ->
-            valErrs.add(
-                ValidationProblemDetail(
-                    it.constraint.name,
-                    it.getContextualMessageNO(),
-                    it.property,
-                    it.value
-                )
-            )
-        }
-    } else {
-        valErrs.add(
-            ValidationProblemDetail(
-                it.constraint.name,
-                it.getContextualMessageNO(),
-                it.property,
-                it.value
-            )
-        )
-    }
-
-    return valErrs
 }
 
 suspend fun processDocumentForGCPStorage(doc: String?, virusScanner: VirusScanner, bucket: BucketStorage, id: UUID) {

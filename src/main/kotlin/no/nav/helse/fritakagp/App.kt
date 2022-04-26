@@ -45,6 +45,14 @@ class FritakAgpApplication(val port: Int = 8080) : KoinComponent {
     private var appConfig: HoconApplicationConfig = HoconApplicationConfig(ConfigFactory.load())
     private val runtimeEnvironment = appConfig.getEnvironment()
 
+    fun test(x: Int): Int {
+        return x * x
+    }
+
+    fun test2(x: Int): Int {
+        return x * 2
+    }
+
     fun start() {
         if (runtimeEnvironment == AppEnv.PREPROD || runtimeEnvironment == AppEnv.PROD) {
             logger.info("Sover i 30s i påvente av SQL proxy sidecar")

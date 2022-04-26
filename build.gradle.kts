@@ -108,8 +108,6 @@ dependencies {
     implementation("de.m3y.kformat:kformat:0.7")
 }
 
-tasks.named<KotlinCompile>("compileKotlin")
-
 tasks.named<KotlinCompile>("compileKotlin") {
     kotlinOptions.jvmTarget = "11"
 }
@@ -127,13 +125,6 @@ repositories {
     mavenCentral()
     google()
     maven(url = "https://packages.confluent.io/maven/")
-//    maven {
-//        credentials {
-//            username = "x-access-token"
-//            password = githubPassword
-//        }
-//        setUrl("https://maven.pkg.github.com/navikt/inntektsmelding-kontrakt")
-//    }
     maven(url = "https://jitpack.io") {
         content {
             excludeGroup("no.nav.helsearbeidsgiver")

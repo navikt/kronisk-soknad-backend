@@ -42,6 +42,10 @@ class ArbeidsgiverNotifikasjonProcessor(
         log.info("Opprettet sak i arbeidsgivernotifikasjon med ${sak.id} med ref $resultat")
     }
 
+    private fun genererTittel(navn: String?, identitetsnummer: String, skjemaType: String) =
+        "Fritak fra arbeidsgiverperioden - $skjemaType: $navn - f. ${identitetsnummer.take(6)}"
+
+
     private fun map(jobbData: Jobbdata): SakParametere {
         if (jobbData.skjemaType == Jobbdata.SkjemaType.KroniskKrav) {
             val skjema = kroniskKravRepo.getById(jobbData.skjemaId)
@@ -49,7 +53,7 @@ class ArbeidsgiverNotifikasjonProcessor(
             return SakParametere(
                 skjema.id,
                 skjema.virksomhetsnummer,
-                "Refusjon arbeidsgiverperiode - kronisk sykdom - ${skjema.navn} - ${skjema.identitetsnummer.take(6)}",
+                genererTittel(skjema.navn, skjema.identitetsnummer, "kronisk sykdom"),
                 "$frontendAppBaseUrl/nb/kronisk/krav/${skjema.id}",
                 skjema.opprettet.toString()
             )
@@ -60,7 +64,7 @@ class ArbeidsgiverNotifikasjonProcessor(
         return SakParametere(
             skjema.id,
             skjema.virksomhetsnummer,
-            "Refusjon arbeidsgiverperiode - graviditet - ${skjema.navn} - ${skjema.identitetsnummer.take(6)}",
+            genererTittel(skjema.navn, skjema.identitetsnummer, "graviditet"),
             "$frontendAppBaseUrl/nb/gravid/krav/${skjema.id}",
             skjema.opprettet.toString()
         )

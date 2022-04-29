@@ -45,27 +45,42 @@ fun Module.mockExternalDependecies() {
             override suspend fun hentArbeidsforhold(ident: String, callId: String): List<Arbeidsforhold> =
                 listOf<Arbeidsforhold>(
                     Arbeidsforhold(
+                        1,
+                        "1",
+                        "Arbeids",
                         Arbeidsgiver("test", "810007842"), Opplysningspliktig("Juice", "810007702"), emptyList(),
                         Ansettelsesperiode(
-                            Periode(LocalDate.MIN, null)
+                            Periode(LocalDate.MIN, null),
+                            Periode(LocalDate.MIN, null),
+                            "a"
                         ),
                         LocalDate.MIN.atStartOfDay()
                     ),
                     Arbeidsforhold(
+                        1,
+                        "1",
+                        "Arbeids",
                         Arbeidsgiver("test", "910098896"), Opplysningspliktig("Juice", "910098896"), emptyList(),
                         Ansettelsesperiode(
                             Periode(
-                                LocalDate.MIN, null
-                            )
+                                LocalDate.MIN, null,
+                            ),
+                            Periode(LocalDate.MIN, null),
+                            "a"
                         ),
                         LocalDate.MIN.atStartOfDay()
                     ),
                     Arbeidsforhold(
+                        1,
+                        "1",
+                        "Arbeids",
                         Arbeidsgiver("test", "917404437"), Opplysningspliktig("Juice", "910098896"), emptyList(),
                         Ansettelsesperiode(
                             Periode(
                                 LocalDate.MIN, null
-                            )
+                            ),
+                            Periode(LocalDate.MIN, null),
+                            "a"
                         ),
                         LocalDate.MIN.atStartOfDay()
                     )

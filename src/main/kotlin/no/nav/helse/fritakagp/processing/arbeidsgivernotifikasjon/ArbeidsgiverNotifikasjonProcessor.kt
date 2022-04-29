@@ -45,7 +45,6 @@ class ArbeidsgiverNotifikasjonProcessor(
     private fun genererTittel(navn: String?, identitetsnummer: String, skjemaType: String) =
         "Fritak fra arbeidsgiverperioden - $skjemaType: $navn - f. ${identitetsnummer.take(6)}"
 
-
     private fun map(jobbData: Jobbdata): SakParametere {
         if (jobbData.skjemaType == Jobbdata.SkjemaType.KroniskKrav) {
             val skjema = kroniskKravRepo.getById(jobbData.skjemaId)

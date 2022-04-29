@@ -100,6 +100,9 @@ class AaregConstraintsKtTest {
         val arbeidsgiver = Arbeidsgiver("AS", "1232242423")
         val opplysningspliktig = Opplysningspliktig("AS", "1212121212")
         val arbeidsForhold1 = Arbeidsforhold(
+            1,
+            "1",
+            "Arbeids",
             arbeidsgiver,
             opplysningspliktig,
             emptyList(),
@@ -107,12 +110,17 @@ class AaregConstraintsKtTest {
                 Periode(
                     LocalDate.of(2019, 1, 1),
                     LocalDate.of(2021, 2, 28)
-                )
+                ),
+                Periode(LocalDate.MIN, null),
+                "a"
             ),
             LocalDateTime.now()
         )
 
         val arbeidsForhold2 = Arbeidsforhold(
+            1,
+            "1",
+            "Arbeids",
             arbeidsgiver,
             opplysningspliktig,
             emptyList(),
@@ -120,7 +128,9 @@ class AaregConstraintsKtTest {
                 Periode(
                     LocalDate.of(2021, 3, 1),
                     null
-                )
+                ),
+                Periode(LocalDate.MIN, null),
+                "a"
             ),
             LocalDateTime.now()
         )

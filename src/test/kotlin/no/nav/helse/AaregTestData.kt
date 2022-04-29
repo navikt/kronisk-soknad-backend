@@ -19,6 +19,9 @@ object AaregTestData {
 
     val evigArbeidsForholdListe = listOf(
         Arbeidsforhold(
+            1,
+            "1",
+            "Arbeids",
             arbeidsgiver,
             opplysningspliktig,
             emptyList(),
@@ -26,13 +29,18 @@ object AaregTestData {
                 Periode(
                     LocalDate.MIN,
                     LocalDate.MAX
-                )
+                ),
+                Periode(LocalDate.MIN, null),
+                "a"
             ),
             LocalDateTime.now()
         )
     )
     val avsluttetArbeidsforholdListe = listOf(
         Arbeidsforhold(
+            1,
+            "1",
+            "Arbeids",
             arbeidsgiver,
             opplysningspliktig,
             emptyList(),
@@ -40,7 +48,9 @@ object AaregTestData {
                 Periode(
                     LocalDate.MIN,
                     LocalDate.of(2021, 2, 5)
-                )
+                ),
+                Periode(LocalDate.MIN, null),
+                "a"
             ),
             LocalDateTime.now()
         )
@@ -48,6 +58,9 @@ object AaregTestData {
 
     val pågåendeArbeidsforholdListe = listOf(
         Arbeidsforhold(
+            1,
+            "1",
+            "Arbeids",
             arbeidsgiver,
             opplysningspliktig,
             emptyList(),
@@ -55,13 +68,18 @@ object AaregTestData {
                 Periode(
                     LocalDate.of(2021, 2, 5),
                     null
-                )
+                ),
+                Periode(LocalDate.MIN, null),
+                "a"
             ),
             LocalDateTime.now()
         )
     )
     val arbeidsforholdMedSluttDato = listOf(
         Arbeidsforhold(
+            1,
+            "1",
+            "Arbeids",
             arbeidsgiver,
             opplysningspliktig,
             emptyList(),
@@ -69,11 +87,16 @@ object AaregTestData {
                 Periode(
                     LocalDate.of(2004, 6, 1),
                     LocalDate.of(2004, 6, 30),
-                )
+                ),
+                Periode(LocalDate.MIN, null),
+                "a"
             ),
             LocalDateTime.now()
         ),
         Arbeidsforhold(
+            1,
+            "1",
+            "Arbeids",
             arbeidsgiver,
             opplysningspliktig,
             emptyList(),
@@ -81,11 +104,16 @@ object AaregTestData {
                 Periode(
                     LocalDate.of(2004, 9, 1),
                     LocalDate.of(2004, 9, 30)
-                )
+                ),
+                Periode(LocalDate.MIN, null),
+                "a"
             ),
             LocalDateTime.now()
         ),
         Arbeidsforhold(
+            1,
+            "1",
+            "Arbeids",
             arbeidsgiver,
             opplysningspliktig,
             emptyList(),
@@ -93,11 +121,16 @@ object AaregTestData {
                 Periode(
                     LocalDate.of(2005, 1, 1),
                     LocalDate.of(2005, 2, 28)
-                )
+                ),
+                Periode(LocalDate.MIN, null),
+                "a"
             ),
             LocalDateTime.now()
         ),
         Arbeidsforhold(
+            1,
+            "1",
+            "Arbeids",
             arbeidsgiver,
             opplysningspliktig,
             emptyList(),
@@ -105,11 +138,16 @@ object AaregTestData {
                 Periode(
                     LocalDate.of(2005, 9, 6),
                     LocalDate.of(2007, 12, 31)
-                )
+                ),
+                Periode(LocalDate.MIN, null),
+                "a"
             ),
             LocalDateTime.now()
         ),
         Arbeidsforhold(
+            1,
+            "1",
+            "Arbeids",
             arbeidsgiver,
             opplysningspliktig,
             emptyList(),
@@ -117,11 +155,16 @@ object AaregTestData {
                 Periode(
                     LocalDate.of(2008, 6, 16),
                     LocalDate.of(2008, 8, 3)
-                )
+                ),
+                Periode(LocalDate.MIN, null),
+                "a"
             ),
             LocalDateTime.now()
         ),
         Arbeidsforhold(
+            1,
+            "1",
+            "Arbeids",
             arbeidsgiver,
             opplysningspliktig,
             emptyList(),
@@ -129,11 +172,16 @@ object AaregTestData {
                 Periode(
                     LocalDate.of(2009, 3, 5),
                     LocalDate.of(2010, 8, 30)
-                )
+                ),
+                Periode(LocalDate.MIN, null),
+                "a"
             ),
             LocalDateTime.now()
         ),
         Arbeidsforhold(
+            1,
+            "1",
+            "Arbeids",
             arbeidsgiver,
             opplysningspliktig,
             emptyList(),
@@ -141,11 +189,16 @@ object AaregTestData {
                 Periode(
                     LocalDate.of(2010, 11, 26),
                     LocalDate.of(2011, 9, 4)
-                )
+                ),
+                Periode(LocalDate.MIN, null),
+                "a"
             ),
             LocalDateTime.now()
         ),
         Arbeidsforhold(
+            1,
+            "1",
+            "Arbeids",
             arbeidsgiver,
             opplysningspliktig,
             emptyList(),
@@ -153,11 +206,16 @@ object AaregTestData {
                 Periode(
                     LocalDate.of(2011, 9, 5),
                     LocalDate.of(2013, 3, 30)
-                )
+                ),
+                Periode(LocalDate.MIN, null),
+                "a"
             ),
             LocalDateTime.now()
         ),
         Arbeidsforhold(
+            1,
+            "1",
+            "Arbeids",
             arbeidsgiver,
             opplysningspliktig,
             emptyList(),
@@ -165,11 +223,16 @@ object AaregTestData {
                 Periode(
                     LocalDate.of(2013, 3, 31),
                     LocalDate.of(2014, 1, 1)
-                )
+                ),
+                Periode(LocalDate.MIN, null),
+                "a"
             ),
             LocalDateTime.now()
         ),
         Arbeidsforhold(
+            1,
+            "1",
+            "Arbeids",
             arbeidsgiver,
             opplysningspliktig,
             emptyList(),
@@ -177,11 +240,16 @@ object AaregTestData {
                 Periode(
                     LocalDate.of(2013, 3, 31),
                     LocalDate.of(2013, 3, 31)
-                )
+                ),
+                Periode(LocalDate.MIN, null),
+                "a"
             ),
             LocalDateTime.now()
         ),
         Arbeidsforhold(
+            1,
+            "1",
+            "Arbeids",
             arbeidsgiver,
             opplysningspliktig,
             emptyList(),
@@ -189,11 +257,16 @@ object AaregTestData {
                 Periode(
                     LocalDate.of(2014, 2, 24),
                     LocalDate.of(2014, 2, 24)
-                )
+                ),
+                Periode(LocalDate.MIN, null),
+                "a"
             ),
             LocalDateTime.now()
         ),
         Arbeidsforhold(
+            1,
+            "1",
+            "Arbeids",
             arbeidsgiver,
             opplysningspliktig,
             emptyList(),
@@ -201,11 +274,16 @@ object AaregTestData {
                 Periode(
                     LocalDate.of(2014, 3, 28),
                     LocalDate.of(2014, 5, 31)
-                )
+                ),
+                Periode(LocalDate.MIN, null),
+                "a"
             ),
             LocalDateTime.now()
         ),
         Arbeidsforhold(
+            1,
+            "1",
+            "Arbeids",
             arbeidsgiver,
             opplysningspliktig,
             emptyList(),
@@ -213,11 +291,16 @@ object AaregTestData {
                 Periode(
                     LocalDate.of(2014, 6, 1),
                     LocalDate.of(2022, 4, 30)
-                )
+                ),
+                Periode(LocalDate.MIN, null),
+                "a"
             ),
             LocalDateTime.now()
         ),
         Arbeidsforhold(
+            1,
+            "1",
+            "Arbeids",
             arbeidsgiver,
             opplysningspliktig,
             emptyList(),
@@ -225,11 +308,16 @@ object AaregTestData {
                 Periode(
                     LocalDate.of(2014, 6, 1),
                     LocalDate.of(2014, 12, 31)
-                )
+                ),
+                Periode(LocalDate.MIN, null),
+                "a"
             ),
             LocalDateTime.now()
         ),
         Arbeidsforhold(
+            1,
+            "1",
+            "Arbeids",
             arbeidsgiver,
             opplysningspliktig,
             emptyList(),
@@ -237,7 +325,9 @@ object AaregTestData {
                 Periode(
                     LocalDate.of(2022, 5, 1),
                     null
-                )
+                ),
+                Periode(LocalDate.MIN, null),
+                "a"
             ),
             LocalDateTime.now()
         )
@@ -245,6 +335,9 @@ object AaregTestData {
 
     val listeMedEttArbeidsforhold = listOf(
         Arbeidsforhold(
+            1,
+            "1",
+            "Arbeids",
             arbeidsgiver,
             opplysningspliktig,
             emptyList(),
@@ -252,12 +345,17 @@ object AaregTestData {
                 Periode(
                     LocalDate.of(2019, 1, 1),
                     LocalDate.of(2021, 2, 28)
-                )
+                ),
+                Periode(LocalDate.MIN, null),
+                "a"
             ),
             LocalDateTime.now()
         ),
 
         Arbeidsforhold(
+            1,
+            "1",
+            "Arbeids",
             arbeidsgiver,
             opplysningspliktig,
             emptyList(),
@@ -265,7 +363,9 @@ object AaregTestData {
                 Periode(
                     LocalDate.of(2021, 3, 1),
                     null
-                )
+                ),
+                Periode(LocalDate.MIN, null),
+                "a"
             ),
             LocalDateTime.now()
         )

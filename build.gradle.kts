@@ -64,7 +64,7 @@ dependencies {
     implementation("com.github.navikt:brukernotifikasjon-schemas:$brukernotifikasjonSchemasVersion")
     implementation("javax.ws.rs:javax.ws.rs-api:2.1.1")
     implementation("no.nav.security:mock-oauth2-server:$mockOAuth2ServerVersion")
-    implementation("no.nav.helsearbeidsgiver:helse-arbeidsgiver-felles-backend:2022.04.28-15-15-708e7")
+    implementation("no.nav.helsearbeidsgiver:helse-arbeidsgiver-felles-backend:2022.04.29-10-24-ddb8a")
     implementation("no.nav.common:log:2.2020.10.27_15.17-901cc4cfbbe4")
     implementation(kotlin("stdlib"))
     implementation("org.slf4j:slf4j-api:1.7.30")

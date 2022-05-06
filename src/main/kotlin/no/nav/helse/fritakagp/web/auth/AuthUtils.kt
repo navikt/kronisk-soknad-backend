@@ -3,14 +3,13 @@ package no.nav.helse.fritakagp.web.auth
 import io.ktor.application.*
 import io.ktor.config.*
 import io.ktor.request.*
-import io.ktor.util.*
 import io.ktor.util.pipeline.*
 import no.nav.helse.arbeidsgiver.web.auth.AltinnAuthorizer
 import no.nav.helse.fritakagp.integration.altinn.ManglerAltinnRettigheterException
 import no.nav.security.token.support.core.jwt.JwtToken
+import org.slf4j.LoggerFactory
 import java.time.Instant
 import java.util.*
-import javax.ws.rs.ForbiddenException
 
 fun PipelineContext<Unit, ApplicationCall>.authorize(authorizer: AltinnAuthorizer, arbeidsgiverId: String) {
     val identitetsnummer = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
@@ -20,8 +19,12 @@ fun PipelineContext<Unit, ApplicationCall>.authorize(authorizer: AltinnAuthorize
 }
 
 fun hentIdentitetsnummerFraLoginToken(config: ApplicationConfig, request: ApplicationRequest): String {
+    val logger = LoggerFactory.getLogger("AuthUtils")
     val tokenString = getTokenString(config, request)
-    return JwtToken(tokenString).subject
+    val pid = JwtToken(tokenString).jwtTokenClaims.get("pid")
+    if (pid != null) logger.info("pid not null with length: ${pid.toString().length}")
+    else logger.info("pid failed")
+    return pid?.toString() ?: JwtToken(tokenString).subject
 }
 
 fun hentUtløpsdatoFraLoginToken(config: ApplicationConfig, request: ApplicationRequest): Date {

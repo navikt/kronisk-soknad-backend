@@ -76,7 +76,7 @@ dependencies {
     implementation("org.flywaydb:flyway-core:7.3.0")
     implementation("org.apache.pdfbox:pdfbox:2.0.24")
     implementation("no.nav.tjenestespesifikasjoner:altinn-correspondence-agency-external-basic:1.2019.09.25-00.21-49b69f0625e0")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.11+")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.13+")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jacksonVersion")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
     implementation("com.zaxxer:HikariCP:$hikariVersion")

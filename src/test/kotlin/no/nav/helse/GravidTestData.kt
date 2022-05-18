@@ -204,6 +204,62 @@ aąbcćdeęfghijlłmnńoóprsśtuwź
         navn = validNavn
     )
 
+    val gravidLangtKrav = GravidKrav(
+        sendtAv = validIdentitetsnummer,
+        virksomhetsnummer = validOrgNr,
+
+        identitetsnummer = validIdentitetsnummer,
+
+        perioder = listOf(
+            Arbeidsgiverperiode(
+                LocalDate.of(2020, 1, 5),
+                LocalDate.of(2020, 1, 10),
+                5,
+                månedsinntekt = 2590.8
+            ),
+            Arbeidsgiverperiode(
+                LocalDate.of(2020, 1, 5),
+                LocalDate.of(2020, 1, 10),
+                5,
+                månedsinntekt = 2590.8
+            ),
+            Arbeidsgiverperiode(
+                LocalDate.of(2020, 1, 5),
+                LocalDate.of(2020, 1, 10),
+                5,
+                månedsinntekt = 2590.8
+            ),
+            Arbeidsgiverperiode(
+                LocalDate.of(2020, 1, 5),
+                LocalDate.of(2020, 1, 10),
+                5,
+                månedsinntekt = 2590.8
+            ),
+            Arbeidsgiverperiode(
+                LocalDate.of(2020, 1, 5),
+                LocalDate.of(2020, 1, 10),
+                5,
+                månedsinntekt = 2590.8
+            ),
+            Arbeidsgiverperiode(
+                LocalDate.of(2020, 1, 5),
+                LocalDate.of(2020, 1, 10),
+                5,
+                månedsinntekt = 2590.8
+            ),
+            Arbeidsgiverperiode(
+                LocalDate.of(2020, 1, 5),
+                LocalDate.of(2020, 1, 10),
+                5,
+                månedsinntekt = 2590.8
+            )
+        ),
+        kontrollDager = null,
+        antallDager = 4,
+        sendtAvNavn = validSendtAvNavn,
+        navn = validNavn
+    )
+
     val gravidOpprettOppgaveResponse = OpprettOppgaveResponse(
         id = 1234,
         tildeltEnhetsnr = "0100",

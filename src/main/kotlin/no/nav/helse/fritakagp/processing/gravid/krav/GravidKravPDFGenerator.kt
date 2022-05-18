@@ -58,6 +58,7 @@ class GravidKravPDFGenerator {
                 writeTextWrapped("Beregnet månedsinntekt (NOK): ${periode.månedsinntekt}")
                 writeTextWrapped("Dagsats (NOK): ${periode.dagsats}")
                 writeTextWrapped("Beløp (NOK): ${periode.belop}")
+                writeTextWrapped("")
             }
         }
 

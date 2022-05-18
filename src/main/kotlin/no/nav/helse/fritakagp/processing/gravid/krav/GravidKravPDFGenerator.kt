@@ -16,10 +16,8 @@ class GravidKravPDFGenerator {
     private val MARGIN_Y = 40f
     private val FONT_NAME = "fonts/ARIALUNI.TTF"
 
-    fun lagPDF(krav: GravidKrav): ByteArray {
-        val doc = PDDocument()
+    fun lagNySide(doc: PDDocument, font: PDType0Font): PDPageContentStream {
         val page = PDPage()
-        val font = PDType0Font.load(doc, this::class.java.classLoader.getResource(FONT_NAME).openStream())
         doc.addPage(page)
         val content = PDPageContentStream(doc, page)
         content.beginText()
@@ -27,6 +25,14 @@ class GravidKravPDFGenerator {
         val startX = mediaBox.lowerLeftX + MARGIN_X
         val startY = mediaBox.upperRightY - MARGIN_Y
         content.newLineAtOffset(startX, startY)
+        content.setFont(font, FONT_SIZE)
+        return content
+    }
+
+    fun lagPDF(krav: GravidKrav): ByteArray {
+        val doc = PDDocument()
+        val font = PDType0Font.load(doc, this::class.java.classLoader.getResource(FONT_NAME).openStream())
+        var content = lagNySide(doc, font)
         content.setFont(font, FONT_SIZE + 4)
         content.showText("Krav om refusjon av sykepenger i arbeidsgiverperioden")
         content.setFont(font, FONT_SIZE)
@@ -37,16 +43,21 @@ class GravidKravPDFGenerator {
         content.writeTextWrapped("Arbeidsgiver oppgitt i krav: ${krav.virksomhetsnavn} (${krav.virksomhetsnummer})")
         content.writeTextWrapped("Antall lønnsdager: ${krav.antallDager}")
         content.writeTextWrapped("Arbeidsgiverperiode", 2)
-        krav.perioder.forEach {
-            val gradering = (it.gradering * 100).toString()
+        krav.perioder.withIndex().forEach { (index, periode) ->
+            // For hvert 4 nye krav, lag ny side
+            if (index != 0 && index % 4 == 0) {
+                content.close()
+                content = lagNySide(doc, font)
+            }
+            val gradering = (periode.gradering * 100).toString()
             with(content) {
-                writeTextWrapped("FOM: ${it.fom}")
-                writeTextWrapped("TOM: ${it.tom}")
+                writeTextWrapped("FOM: ${periode.fom}")
+                writeTextWrapped("TOM: ${periode.tom}")
                 writeTextWrapped("Sykmeldingsgrad: $gradering%")
-                writeTextWrapped("Antall dager det kreves refusjon for: ${it.antallDagerMedRefusjon}")
-                writeTextWrapped("Beregnet månedsinntekt (NOK): ${it.månedsinntekt}")
-                writeTextWrapped("Dagsats (NOK): ${it.dagsats}")
-                writeTextWrapped("Beløp (NOK): ${it.belop}")
+                writeTextWrapped("Antall dager det kreves refusjon for: ${periode.antallDagerMedRefusjon}")
+                writeTextWrapped("Beregnet månedsinntekt (NOK): ${periode.månedsinntekt}")
+                writeTextWrapped("Dagsats (NOK): ${periode.dagsats}")
+                writeTextWrapped("Beløp (NOK): ${periode.belop}")
             }
         }
 
@@ -61,15 +72,8 @@ class GravidKravPDFGenerator {
 
     fun lagSlettingPDF(krav: GravidKrav): ByteArray {
         val doc = PDDocument()
-        val page = PDPage()
         val font = PDType0Font.load(doc, this::class.java.classLoader.getResource(FONT_NAME).openStream())
-        doc.addPage(page)
-        val content = PDPageContentStream(doc, page)
-        content.beginText()
-        val mediaBox = page.mediaBox
-        val startX = mediaBox.lowerLeftX + MARGIN_X
-        val startY = mediaBox.upperRightY - MARGIN_Y
-        content.newLineAtOffset(startX, startY)
+        var content = lagNySide(doc, font)
         content.setFont(font, FONT_SIZE + 4)
         content.showText("Annuller krav om refusjon av sykepenger i arbeidsgiverperioden")
         content.setFont(font, FONT_SIZE)
@@ -81,16 +85,21 @@ class GravidKravPDFGenerator {
         content.writeTextWrapped("Arbeidsgiver oppgitt i krav: ${krav.virksomhetsnavn} (${krav.virksomhetsnummer})")
         content.writeTextWrapped("Perioder", 2)
 
-        krav.perioder.forEach {
-            val gradering = (it.gradering * 100).toString()
+        krav.perioder.withIndex().forEach { (index, periode) ->
+            // For hvert 4 nye krav, lag ny side
+            if (index != 0 && index % 4 == 0) {
+                content.close()
+                content = lagNySide(doc, font)
+            }
+            val gradering = (periode.gradering * 100).toString()
             with(content) {
-                writeTextWrapped("FOM: ${it.fom}")
-                writeTextWrapped("TOM: ${it.tom}")
+                writeTextWrapped("FOM: ${periode.fom}")
+                writeTextWrapped("TOM: ${periode.tom}")
                 writeTextWrapped("Sykmeldingsgrad: $gradering%")
-                writeTextWrapped("Antall dager det kreves refusjon for: ${it.antallDagerMedRefusjon}")
-                writeTextWrapped("Beregnet månedsinntekt (NOK): ${it.månedsinntekt}")
-                writeTextWrapped("Dagsats (NOK): ${it.dagsats}")
-                writeTextWrapped("Beløp (NOK): ${it.belop}")
+                writeTextWrapped("Antall dager det kreves refusjon for: ${periode.antallDagerMedRefusjon}")
+                writeTextWrapped("Beregnet månedsinntekt (NOK): ${periode.månedsinntekt}")
+                writeTextWrapped("Dagsats (NOK): ${periode.dagsats}")
+                writeTextWrapped("Beløp (NOK): ${periode.belop}")
                 writeTextWrapped("")
             }
         }

@@ -83,3 +83,4 @@ jobs:
           RESOURCE: deploy/dev.yaml
           REF: ${{ env.COMMIT }}
           IMAGE: ${{ env.IMAGE }}:${{ github.sha }}
+          

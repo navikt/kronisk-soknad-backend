@@ -19,9 +19,22 @@ class GravidKravPDFGeneratorTest {
         assertThat(pdf).isNotNull
 
         val pdfText = extractTextFromPdf(pdf)
+        val antallSider = numberOfPagesInPDF(pdf)
 
         assertThat(pdfText).contains(krav.navn)
         assertThat(pdfText).contains(krav.virksomhetsnummer)
+        assertThat(antallSider).isEqualTo(1)
+    }
+
+    @Test
+    fun `test lag krav over flere sider`() {
+        val krav = GravidTestData.gravidLangtKrav
+        val pdf = GravidKravPDFGenerator().lagPDF(krav)
+        assertThat(pdf).isNotNull
+
+        val antallSider = numberOfPagesInPDF(pdf)
+
+        assertThat(antallSider).isEqualTo(2)
     }
 
     @Test
@@ -48,6 +61,11 @@ class GravidKravPDFGeneratorTest {
         file.writeBytes(pdf)
 
         Desktop.getDesktop().open(file)
+    }
+
+    private fun numberOfPagesInPDF(pdf: ByteArray): Int {
+        val pdfReader = PDDocument.load(pdf)
+        return pdfReader.numberOfPages
     }
 
     private fun extractTextFromPdf(pdf: ByteArray): String? {

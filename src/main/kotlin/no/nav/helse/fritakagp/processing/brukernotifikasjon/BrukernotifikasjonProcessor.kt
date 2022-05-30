@@ -94,7 +94,7 @@ class BrukernotifikasjonProcessor(
             .withSikkerhetsnivaa(sikkerhetsNivaa)
             .withSynligFremTil(synligFremTil)
             .withTekst("${virksomhetsNavn ?: ukjentArbeidsgiver} har søkt om utvidet støtte fra NAV angående sykepenger til deg.")
-            .withEksternVarsling(false)
+            .withEksternVarsling(true)
             .withTidspunkt(hendelsestidsPunktUtc)
             .build()
 

@@ -76,11 +76,11 @@ internal class KroniskSoknadRequestTest {
 
     @Test
     fun `Kan ikke ha fraværsdager som overstiger antall dager i måneden`() {
-        val invalidNumberOfDays = LocalDate.now().lengthOfMonth() + 1
+        val invalidNumberOfDays = LocalDate.now().lengthOfMonth() + 1F
         validationShouldFailFor(KroniskSoknadRequest::fravaer) {
             KroniskTestData.fullValidRequest.copy(
                 fravaer = setOf(
-                    FravaerData(LocalDate.now().toYearMonthString(), invalidNumberOfDays as Float)
+                    FravaerData(LocalDate.now().toYearMonthString(), invalidNumberOfDays)
                 )
             ).validate(true)
         }

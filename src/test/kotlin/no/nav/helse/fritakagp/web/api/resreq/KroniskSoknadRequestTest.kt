@@ -43,14 +43,14 @@ internal class KroniskSoknadRequestTest {
     fun `Kan ikke ha eldre fraværsdata enn 2 år`() {
         KroniskTestData.fullValidRequest.copy(
             fravaer = setOf(
-                FravaerData(LocalDate.now().minusMonths(24).toYearMonthString(), 5)
+                FravaerData(LocalDate.now().minusMonths(24).toYearMonthString(), 5F)
             )
         ).validate(true)
 
         validationShouldFailFor(KroniskSoknadRequest::fravaer) {
             KroniskTestData.fullValidRequest.copy(
                 fravaer = setOf(
-                    FravaerData(LocalDate.now().minusMonths(25).toYearMonthString(), 5)
+                    FravaerData(LocalDate.now().minusMonths(25).toYearMonthString(), 5F)
                 )
             ).validate(true)
         }
@@ -68,7 +68,7 @@ internal class KroniskSoknadRequestTest {
         validationShouldFailFor(KroniskSoknadRequest::fravaer) {
             KroniskTestData.fullValidRequest.copy(
                 fravaer = setOf(
-                    FravaerData(LocalDate.now().plusMonths(1).toYearMonthString(), 5)
+                    FravaerData(LocalDate.now().plusMonths(1).toYearMonthString(), 5F)
                 )
             ).validate(true)
         }
@@ -80,7 +80,7 @@ internal class KroniskSoknadRequestTest {
         validationShouldFailFor(KroniskSoknadRequest::fravaer) {
             KroniskTestData.fullValidRequest.copy(
                 fravaer = setOf(
-                    FravaerData(LocalDate.now().toYearMonthString(), invalidNumberOfDays)
+                    FravaerData(LocalDate.now().toYearMonthString(), invalidNumberOfDays as Float)
                 )
             ).validate(true)
         }

@@ -37,7 +37,7 @@ data class KroniskSoeknad(
 
 data class FravaerData(
     val yearMonth: String,
-    val antallDagerMedFravaer: Int
+    val antallDagerMedFravaer: Float
 ) {
     fun toLocalDate() = LocalDate.parse("$yearMonth-01")
 }

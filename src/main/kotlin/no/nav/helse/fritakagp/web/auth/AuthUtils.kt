@@ -34,3 +34,5 @@ private fun getTokenString(config: ApplicationConfig, request: ApplicationReques
     return request.cookies[cookieName]
         ?: request.headers["Authorization"]?.replaceFirst("Bearer ", "")
         ?: throw IllegalAccessException("Du må angi et identitetstoken som cookieen $cookieName eller i Authorization-headeren")
+}
+

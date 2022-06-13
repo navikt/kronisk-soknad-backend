@@ -91,7 +91,7 @@ class KroniskSoeknadHTTPTests : SystemTestBase() {
                     virksomhetsnummer = "lkajsbdfv",
                     identitetsnummer = "lkdf",
                     antallPerioder = 0,
-                    fravaer = setOf(FravaerData("2001-01", 12)),
+                    fravaer = setOf(FravaerData("2001-01", 12F)),
                     bekreftet = true,
                     dokumentasjon = null,
                     ikkeHistoriskFravaer = false

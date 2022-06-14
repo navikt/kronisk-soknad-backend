@@ -29,9 +29,7 @@ fun hentUtløpsdatoFraLoginToken(config: ApplicationConfig, request: Application
 }
 
 private fun getTokenString(config: ApplicationConfig, request: ApplicationRequest): String {
-    val cookieName = config.configList("no.nav.security.jwt.issuers")[0].property("cookie_name").getString()
-
-    return request.cookies[cookieName]
-        ?: request.headers["Authorization"]?.replaceFirst("Bearer ", "")
-        ?: throw IllegalAccessException("Du må angi et identitetstoken som cookieen $cookieName eller i Authorization-headeren")
+    return request.headers["Authorization"]?.replaceFirst("Bearer ", "")
+        ?: request.cookies[config.configList("no.nav.security.jwt.issuers")[0].property("cookie_name").getString()]
+        ?: throw IllegalAccessException("Du må angi et identitetstoken som i cookie eller i Authorization-headeren")
 }

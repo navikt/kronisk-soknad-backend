@@ -7,7 +7,6 @@ metadata:
     team: helsearbeidsgiver
   annotations:
     nginx.ingress.kubernetes.io/proxy-body-size: "50M"
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
 spec:
   image: {{image}}
   port: 8080
@@ -59,6 +58,8 @@ spec:
         - application: helsearbeidsgiver-proxy
           namespace: helsearbeidsgiver
           cluster: dev-fss
+        - application: clamav
+          namespace: clamav
 
   envFrom:
     # servicebrukerens passord som er  hentet fra vault og lagt inn slik: https://doc.nais.io/security/secrets/kubernetes-secrets/

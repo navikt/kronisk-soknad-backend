@@ -106,6 +106,7 @@ dependencies {
     implementation("org.apache.kafka:kafka-clients:$kafkaClient")
     implementation("io.confluent:kafka-avro-serializer:$confluentVersion")
     implementation("de.m3y.kformat:kformat:0.7")
+    implementation("no.nav.helsearbeidsgiver:helsearbeidsgiver-arbeidsgiver-notifikasjon-klient:0.1.1")
 }
 
 tasks.named<KotlinCompile>("compileKotlin") {
@@ -135,7 +136,7 @@ repositories {
             username = "x-access-token"
             password = githubPassword
         }
-        setUrl("https://maven.pkg.github.com/navikt/helse-arbeidsgiver-felles-backend")
+        setUrl("https://maven.pkg.github.com/navikt/*")
     }
 }
 

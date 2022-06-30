@@ -19,8 +19,10 @@ import no.nav.helse.fritakagp.processing.gravid.soeknad.*
 import no.nav.helse.fritakagp.processing.kronisk.krav.*
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.*
 import no.nav.helse.fritakagp.service.PdlService
+import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonKlient
 import org.koin.dsl.bind
 import org.koin.dsl.module
+import java.net.URL
 import javax.sql.DataSource
 
 fun localDevConfig(config: ApplicationConfig) = module {
@@ -70,4 +72,6 @@ fun localDevConfig(config: ApplicationConfig) = module {
 
     single { DatapakkePublisherJob(get(), get(), config.getString("datapakke.api_url"), config.getString("datapakke.id"), get()) }
     single { StatsRepoImpl(get()) } bind IStatsRepo::class
+
+    single { ArbeidsgiverNotifikasjonKlient(URL(config.getString("arbeidsgiver_notifikasjon_api_url")), get(), get()) }
 }

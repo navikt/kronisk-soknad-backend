@@ -14,6 +14,7 @@ import no.nav.helse.fritakagp.datapakke.DatapakkePublisherJob
 import no.nav.helse.fritakagp.db.*
 import no.nav.helse.fritakagp.domain.BeløpBeregning
 import no.nav.helse.fritakagp.integration.altinn.message.Clients
+import no.nav.helse.fritakagp.processing.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.gravid.krav.*
 import no.nav.helse.fritakagp.processing.gravid.soeknad.*
@@ -102,7 +103,7 @@ fun preprodConfig(config: ApplicationConfig) = module {
     single { KroniskSoeknadKafkaProcessor(get(), get(), get()) }
     single { KroniskKravKafkaProcessor(get(), get(), get()) }
     single { BrukernotifikasjonProcessor(get(), get(), get(), get(), get(), get(), 3, "https://fritak-agp-frontend.dev.nav.no") }
-
+    single { ArbeidsgiverNotifikasjonProcessor(get(), get(), get(), "https://arbeidsgiver.dev.nav.no/fritak-agp", get()) }
     single { PdlService(get()) }
 
     single { DefaultAltinnAuthorizer(get()) } bind AltinnAuthorizer::class

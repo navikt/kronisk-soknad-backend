@@ -19,6 +19,7 @@ import no.nav.helse.fritakagp.domain.decodeBase64File
 import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
+import no.nav.helse.fritakagp.processing.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravKvitteringProcessor
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravProcessor
 import no.nav.helse.fritakagp.processing.gravid.krav.SlettGravidKravProcessor
@@ -102,21 +103,13 @@ fun Route.gravidRoutes(
         }
 
         route("/krav") {
-            get("/virksomhet/{virksomhetsnummer}") {
-                val virksomhetsnummer = requireNotNull(call.parameters["virksomhetsnummer"])
-                authorize(authorizer, virksomhetsnummer)
-
-                val gravidKrav = gravidKravRepo.getAllForVirksomhet(virksomhetsnummer)
-
-                call.respond(HttpStatusCode.OK, gravidKrav)
-            }
-
             get("/{id}") {
                 val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
                 val form = gravidKravRepo.getById(UUID.fromString(call.parameters["id"]))
-                if (form == null || form.identitetsnummer != innloggetFnr) {
+                if (form == null) {
                     call.respond(HttpStatusCode.NotFound)
                 } else {
+                    authorize(authorizer, form.virksomhetsnummer)
                     form.sendtAvNavn = form.sendtAvNavn ?: pdlService.finnNavn(innloggetFnr)
                     form.navn = form.navn ?: pdlService.finnNavn(form.identitetsnummer)
 
@@ -153,13 +146,20 @@ fun Route.gravidRoutes(
                         data = om.writeValueAsString(GravidKravKvitteringProcessor.Jobbdata(krav.id)),
                         connection = connection
                     )
+                    bakgunnsjobbService.opprettJobb<ArbeidsgiverNotifikasjonProcessor>(
+                        maksAntallForsoek = 10,
+                        data = om.writeValueAsString(ArbeidsgiverNotifikasjonProcessor.Jobbdata(krav.id, ArbeidsgiverNotifikasjonProcessor.Jobbdata.SkjemaType.KroniskKrav)),
+                        connection = connection
+                    )
                 }
+
                 call.respond(HttpStatusCode.Created, krav)
                 GravidKravMetrics.tellMottatt()
             }
 
             patch("/{id}") {
                 val request = call.receive<GravidKravRequest>()
+
                 authorize(authorizer, request.virksomhetsnummer)
 
                 val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
@@ -173,7 +173,7 @@ fun Route.gravidRoutes(
                 request.validate(arbeidsforhold)
 
                 val kravId = UUID.fromString(call.parameters["id"])
-                var kravTilSletting = gravidKravRepo.getById(kravId)
+                val kravTilSletting = gravidKravRepo.getById(kravId)
                     ?: return@patch call.respond(HttpStatusCode.NotFound)
 
                 val kravTilOppdatering = request.toDomain(innloggetFnr, sendtAvNavn, navn)
@@ -216,10 +216,11 @@ fun Route.gravidRoutes(
                 val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
                 val slettetAv = pdlService.finnNavn(innloggetFnr)
                 val kravId = UUID.fromString(call.parameters["id"])
-                var form = gravidKravRepo.getById(kravId)
+                val form = gravidKravRepo.getById(kravId)
                     ?: return@delete call.respond(HttpStatusCode.NotFound)
 
                 authorize(authorizer, form.virksomhetsnummer)
+
                 form.status = KravStatus.SLETTET
                 form.slettetAv = innloggetFnr
                 form.slettetAvNavn = slettetAv

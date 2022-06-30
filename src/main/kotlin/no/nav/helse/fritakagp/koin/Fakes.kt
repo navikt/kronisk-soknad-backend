@@ -3,6 +3,7 @@ package no.nav.helse.fritakagp.koin
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.helse.arbeidsgiver.integrasjoner.AccessTokenProvider
+import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.AccessTokenProvider as ArbeidsgiverNotifikasjonAccessTokenProvider
 import no.nav.helse.arbeidsgiver.integrasjoner.aareg.*
 import no.nav.helse.arbeidsgiver.integrasjoner.altinn.AltinnOrganisasjon
 import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.DokarkivKlient
@@ -39,6 +40,14 @@ fun Module.mockExternalDependecies() {
             }
         }
     } bind AccessTokenProvider::class
+
+    single {
+        object : ArbeidsgiverNotifikasjonAccessTokenProvider {
+            override fun getToken(): String {
+                return "fake token"
+            }
+        }
+    } bind ArbeidsgiverNotifikasjonAccessTokenProvider::class
 
     single {
         object : AaregArbeidsforholdClient {

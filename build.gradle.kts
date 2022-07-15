@@ -23,11 +23,7 @@ buildscript {
     }
 }
 
-tasks.named<KotlinCompile>("compileKotlin") {
-    kotlinOptions.jvmTarget = "11"
-}
-
-tasks.named<KotlinCompile>("compileTestKotlin") {
+tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "11"
 }
 

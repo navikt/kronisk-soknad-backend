@@ -1,26 +1,6 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-val ktorVersion = "1.6.0"
-val logback_version = "1.2.11"
-val logback_contrib_version = "0.1.5"
-val jacksonVersion = "2.10.3"
-val prometheusVersion = "0.6.0"
-val hikariVersion = "3.3.1"
-val mainClass = "no.nav.helse.fritakagp.AppKt"
-val junitJupiterVersion = "5.7.0"
-val assertJVersion = "3.12.2"
-val mockKVersion = "1.9.3"
-val tokenSupportVersion = "1.3.9"
-val mockOAuth2ServerVersion = "0.3.4"
-val koinVersion = "3.1.3"
-val valiktorVersion = "0.12.0"
-val gcpStorageVersion = "1.113.14-sp.3"
-val cxfVersion = "3.4.5"
-val jaxwsVersion = "2.3.1"
-val jaxwsToolsVersion = "2.3.3"
-val kafkaClient = "7.0.1-ce"
-val confluentVersion = "7.0.1"
-val brukernotifikasjonSchemasVersion = "v2.5.1"
+val mainClassFritakAgp = "no.nav.helse.fritakagp.AppKt"
 val githubPassword: String by project
 
 plugins {
@@ -34,7 +14,7 @@ plugins {
 }
 
 application {
-    mainClass.set("no.nav.helse.fritakagp.AppKt")
+    mainClass.set(mainClassFritakAgp)
 }
 
 buildscript {
@@ -43,7 +23,122 @@ buildscript {
     }
 }
 
+tasks.named<KotlinCompile>("compileKotlin") {
+    kotlinOptions.jvmTarget = "11"
+}
+
+tasks.named<KotlinCompile>("compileTestKotlin") {
+    kotlinOptions.jvmTarget = "11"
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+}
+
+repositories {
+    mavenCentral()
+    google()
+    maven(url = "https://packages.confluent.io/maven/")
+    maven(url = "https://jitpack.io") {
+        content {
+            excludeGroup("no.nav.helsearbeidsgiver")
+        }
+    }
+    maven {
+        credentials {
+            username = "x-access-token"
+            password = githubPassword
+        }
+        setUrl("https://maven.pkg.github.com/navikt/helse-arbeidsgiver-felles-backend")
+    }
+}
+
+tasks.named<Jar>("jar") {
+    archiveBaseName.set("app")
+    manifest {
+        attributes["Main-Class"] = mainClassFritakAgp
+        attributes["Class-Path"] = configurations.runtimeClasspath.get().joinToString(separator = " ") {
+            it.name
+        }
+    }
+    doLast {
+        configurations.runtimeClasspath.get().forEach {
+            val file = File("$buildDir/libs/${it.name}")
+            if (!file.exists())
+                it.copyTo(file)
+        }
+    }
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")
+        showStackTraces = true
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    }
+}
+
+tasks.named<Test>("test") {
+    include("no/nav/helse/**")
+    exclude("no/nav/helse/slowtests/**")
+}
+
+task<Test>("slowTests") {
+    include("no/nav/helse/slowtests/**")
+    outputs.upToDateWhen { false }
+    group = "verification"
+}
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test)
+    reports {
+        xml.required.set(true)
+        csv.required.set(false)
+        html.outputLocation.set(layout.buildDirectory.dir("jacocoHtml"))
+    }
+}
+
+tasks.test {
+    finalizedBy(tasks.jacocoTestReport)
+}
+
+tasks.withType<Wrapper> {
+    gradleVersion = "7.3"
+}
+
+sonarqube {
+    properties {
+        property("sonar.projectKey", "navikt_fritakagp")
+        property("sonar.organization", "navikt")
+        property("sonar.host.url", "https://sonarcloud.io")
+        property("sonar.sourceEncoding", "UTF-8")
+    }
+}
+
 dependencies {
+    val ktorVersion = "1.6.0"
+    val logback_version = "1.2.11"
+    val logback_contrib_version = "0.1.5"
+    val jacksonVersion = "2.10.3"
+    val prometheusVersion = "0.6.0"
+    val hikariVersion = "3.3.1"
+    val junitJupiterVersion = "5.7.0"
+    val assertJVersion = "3.12.2"
+    val mockKVersion = "1.9.3"
+    val tokenSupportVersion = "1.3.9"
+    val mockOAuth2ServerVersion = "0.3.4"
+    val koinVersion = "3.1.3"
+    val valiktorVersion = "0.12.0"
+    val gcpStorageVersion = "1.113.14-sp.3"
+    val cxfVersion = "3.4.5"
+    val jaxwsVersion = "2.3.1"
+    val jaxwsToolsVersion = "2.3.3"
+    val kafkaClient = "7.0.1-ce"
+    val confluentVersion = "7.0.1"
+    val brukernotifikasjonSchemasVersion = "v2.5.1"
+
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
     implementation("io.ktor:ktor-jackson:$ktorVersion")
     implementation("io.ktor:ktor-client-core:$ktorVersion")
@@ -107,98 +202,4 @@ dependencies {
     implementation("org.apache.kafka:kafka-clients:$kafkaClient")
     implementation("io.confluent:kafka-avro-serializer:$confluentVersion")
     implementation("de.m3y.kformat:kformat:0.7")
-}
-
-tasks.named<KotlinCompile>("compileKotlin") {
-    kotlinOptions.jvmTarget = "11"
-}
-
-tasks.named<KotlinCompile>("compileTestKotlin") {
-    kotlinOptions.jvmTarget = "11"
-}
-
-java {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
-}
-
-repositories {
-    mavenCentral()
-    google()
-    maven(url = "https://packages.confluent.io/maven/")
-    maven(url = "https://jitpack.io") {
-        content {
-            excludeGroup("no.nav.helsearbeidsgiver")
-        }
-    }
-    maven {
-        credentials {
-            username = "x-access-token"
-            password = githubPassword
-        }
-        setUrl("https://maven.pkg.github.com/navikt/helse-arbeidsgiver-felles-backend")
-    }
-}
-
-tasks.named<Jar>("jar") {
-    archiveBaseName.set("app")
-    manifest {
-        attributes["Main-Class"] = mainClass
-        attributes["Class-Path"] = configurations.runtimeClasspath.get().joinToString(separator = " ") {
-            it.name
-        }
-    }
-    doLast {
-        configurations.runtimeClasspath.get().forEach {
-            val file = File("$buildDir/libs/${it.name}")
-            if (!file.exists())
-                it.copyTo(file)
-        }
-    }
-}
-
-tasks.withType<Test> {
-    useJUnitPlatform()
-    testLogging {
-        events("passed", "skipped", "failed")
-        showStackTraces = true
-        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
-    }
-}
-
-tasks.named<Test>("test") {
-    include("no/nav/helse/**")
-    exclude("no/nav/helse/slowtests/**")
-}
-
-task<Test>("slowTests") {
-    include("no/nav/helse/slowtests/**")
-    outputs.upToDateWhen { false }
-    group = "verification"
-}
-
-tasks.jacocoTestReport {
-    dependsOn(tasks.test)
-    reports {
-        xml.required.set(true)
-        csv.required.set(false)
-        html.outputLocation.set(layout.buildDirectory.dir("jacocoHtml"))
-    }
-}
-
-tasks.test {
-    finalizedBy(tasks.jacocoTestReport)
-}
-
-tasks.withType<Wrapper> {
-    gradleVersion = "7.3"
-}
-
-sonarqube {
-    properties {
-        property("sonar.projectKey", "navikt_fritakagp")
-        property("sonar.organization", "navikt")
-        property("sonar.host.url", "https://sonarcloud.io")
-        property("sonar.sourceEncoding", "UTF-8")
-    }
 }

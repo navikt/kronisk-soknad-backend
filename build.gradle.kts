@@ -17,12 +17,6 @@ application {
     mainClass.set(mainClassFritakAgp)
 }
 
-buildscript {
-    dependencies {
-        classpath("org.junit.platform:junit-platform-gradle-plugin:1.2.0")
-    }
-}
-
 tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "11"
 }

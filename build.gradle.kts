@@ -118,26 +118,26 @@ sonarqube {
 }
 
 dependencies {
-    val ktorVersion = "1.6.0"
-    val logback_version = "1.2.11"
-    val logback_contrib_version = "0.1.5"
-    val jacksonVersion = "2.10.3"
-    val prometheusVersion = "0.6.0"
-    val hikariVersion = "3.3.1"
-    val junitJupiterVersion = "5.7.0"
-    val assertJVersion = "3.12.2"
-    val mockKVersion = "1.9.3"
-    val tokenSupportVersion = "1.3.9"
-    val mockOAuth2ServerVersion = "0.3.4"
-    val koinVersion = "3.1.3"
-    val valiktorVersion = "0.12.0"
-    val gcpStorageVersion = "1.113.14-sp.3"
-    val cxfVersion = "3.4.5"
-    val jaxwsVersion = "2.3.1"
-    val jaxwsToolsVersion = "2.3.3"
-    val kafkaClient = "7.0.1-ce"
-    val confluentVersion = "7.0.1"
-    val brukernotifikasjonSchemasVersion = "v2.5.1"
+    val ktorVersion: String by project
+    val logback_version: String by project
+    val logback_contrib_version: String by project
+    val jacksonVersion: String by project
+    val prometheusVersion: String by project
+    val hikariVersion: String by project
+    val junitJupiterVersion: String by project
+    val assertJVersion: String by project
+    val mockKVersion: String by project
+    val tokenSupportVersion: String by project
+    val mockOAuth2ServerVersion: String by project
+    val koinVersion: String by project
+    val valiktorVersion: String by project
+    val gcpStorageVersion: String by project
+    val cxfVersion: String by project
+    val jaxwsVersion: String by project
+    val jaxwsToolsVersion: String by project
+    val kafkaClient: String by project
+    val confluentVersion: String by project
+    val brukernotifikasjonSchemasVersion: String by project
 
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
     implementation("io.ktor:ktor-jackson:$ktorVersion")

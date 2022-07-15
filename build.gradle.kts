@@ -192,7 +192,6 @@ dependencies {
     implementation("org.slf4j:slf4j-api:1.7.30")
     implementation("org.valiktor:valiktor-core:$valiktorVersion")
     implementation("org.valiktor:valiktor-javatime:$valiktorVersion")
-    implementation(kotlin("stdlib"))
 
     testImplementation("io.insert-koin:koin-test:$koinVersion")
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")

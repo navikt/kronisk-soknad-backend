@@ -4,7 +4,7 @@ import no.nav.helse.fritakagp.integration.GrunnbeløpClient
 import java.math.BigDecimal
 import java.math.RoundingMode
 
-class BeløpBeregning(
+class BeloepBeregning(
     grunnbeløpClient: GrunnbeløpClient
 ) {
     private val seksG = grunnbeløpClient.hentGrunnbeløp().grunnbeløp * 6.0

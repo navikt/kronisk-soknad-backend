@@ -4,9 +4,7 @@ import io.mockk.every
 import io.mockk.mockk
 import no.nav.helse.AaregTestData
 import no.nav.helse.GravidTestData
-import no.nav.helse.KroniskTestData
-import no.nav.helse.fritakagp.domain.Arbeidsgiverperiode
-import no.nav.helse.fritakagp.domain.BeløpBeregning
+import no.nav.helse.fritakagp.domain.BeloepBeregning
 import no.nav.helse.fritakagp.integration.GrunnbeløpClient
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -112,7 +110,7 @@ class GravidKravRequestTest {
         val grunnbeløpClient = mockk<GrunnbeløpClient>(relaxed = true)
         every { grunnbeløpClient.hentGrunnbeløp().grunnbeløp } returns 106399
 
-        val belopBeregning = BeløpBeregning(grunnbeløpClient)
+        val belopBeregning = BeloepBeregning(grunnbeløpClient)
         val krav = GravidTestData.gravidKravRequestValid.toDomain(sendtAv, sendtAvNavn, navn)
         belopBeregning.beregnBeløpGravid(krav)
 
@@ -125,7 +123,7 @@ class GravidKravRequestTest {
         val grunnbeløpClient = mockk<GrunnbeløpClient>(relaxed = true)
         every { grunnbeløpClient.hentGrunnbeløp().grunnbeløp } returns 106399
 
-        val belopBeregning = BeløpBeregning(grunnbeløpClient)
+        val belopBeregning = BeloepBeregning(grunnbeløpClient)
         val krav = GravidTestData.gravidKravRequestWithWrongDecimal.toDomain(sendtAv, sendtAvNavn, navn)
         belopBeregning.beregnBeløpGravid(krav)
 

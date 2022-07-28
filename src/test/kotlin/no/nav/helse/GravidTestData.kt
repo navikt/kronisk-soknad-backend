@@ -13,13 +13,7 @@ object GravidTestData {
     val validIdentitetsnummer = "20015001543"
     val validOrgNr = "917404437"
     val validSendtAvNavn = "Ola M Avsender"
-
-    val soeknadGravid = GravidSoeknad(
-        virksomhetsnummer = validOrgNr,
-        identitetsnummer = validIdentitetsnummer,
-        tilrettelegge = true,
-        tiltak = listOf(Tiltak.HJEMMEKONTOR, Tiltak.ANNET),
-        tiltakBeskrivelse = """Vi prøvde både det ene og det andre og det første kanskje virka litt men muligens and the andre ikke var så på stell men akk ja sånn lorem
+    val tiltakBeskrivelse = """Vi prøvde både det ene og det andre og det første kanskje virka litt men muligens and the andre ikke var så på stell men akk ja sånn lorem
     \t\b\n\r\f\'\"\\
     |44.44% 34 %   %%
     |=><!~?:==<=>=!=&&||++--+-*/&|^%<<>>>>>+=-=*=/=&=|=^=%=<<=>>=>>>=
@@ -34,7 +28,14 @@ aąbcćdeęfghijlłmnńoóprsśtuwź
 |私わたしワタシ金魚きんぎょキンギョ煙草莨たばこタバコ東京とうきょうトーキョー
 |kinesisk
 |的 一 是不了人我在
-        """.trimMargin(),
+        """.trimMargin()
+
+    val soeknadGravid = GravidSoeknad(
+        virksomhetsnummer = validOrgNr,
+        identitetsnummer = validIdentitetsnummer,
+        tilrettelegge = true,
+        tiltak = listOf(Tiltak.HJEMMEKONTOR, Tiltak.ANNET),
+        tiltakBeskrivelse = tiltakBeskrivelse,
         omplassering = Omplassering.IKKE_MULIG,
         omplasseringAarsak = OmplasseringAarsak.HELSETILSTANDEN,
         sendtAv = validIdentitetsnummer,
@@ -187,9 +188,7 @@ aąbcćdeęfghijlłmnńoóprsśtuwź
     val gravidKrav = GravidKrav(
         sendtAv = validIdentitetsnummer,
         virksomhetsnummer = validOrgNr,
-
         identitetsnummer = validIdentitetsnummer,
-
         perioder = listOf(
             Arbeidsgiverperiode(
                 LocalDate.of(2020, 1, 5),

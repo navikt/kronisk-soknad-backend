@@ -2,14 +2,14 @@ package no.nav.helse.fritakagp.domain
 
 import no.nav.helse.fritakagp.db.SimpleJsonbEntity
 import java.time.LocalDateTime
-import java.util.*
+import java.util.UUID
 
 data class KroniskKrav(
     override val id: UUID = UUID.randomUUID(),
-    val opprettet: LocalDateTime = LocalDateTime.now(),
+    override val opprettet: LocalDateTime = LocalDateTime.now(),
     val sendtAv: String,
 
-    val virksomhetsnummer: String,
+    override val virksomhetsnummer: String,
     val identitetsnummer: String,
     // Må være null for tidligere verdier er lagret med null
     var navn: String? = null,

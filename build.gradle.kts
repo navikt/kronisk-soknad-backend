@@ -115,6 +115,7 @@ dependencies {
     val coroutinesVersion: String by project
     val cxfVersion: String by project
     val fellesBackendVersion: String by project
+    val fellesUtilsVersion: String by project
     val flywayVersion: String by project
     val gcpStorageVersion: String by project
     val hikariVersion: String by project
@@ -181,6 +182,7 @@ dependencies {
     implementation("net.logstash.logback:logstash-logback-encoder:$logbackEncoderVersion")
     implementation("no.nav.common:log:$navCommonLogVersion")
     implementation("no.nav.helsearbeidsgiver:helse-arbeidsgiver-felles-backend:$fellesBackendVersion")
+    implementation("no.nav.helsearbeidsgiver:utils:$fellesUtilsVersion")
     implementation("no.nav.security:mock-oauth2-server:$mockOAuth2ServerVersion")
     implementation("no.nav.security:token-client-core:$tokenSupportVersion")
     implementation("no.nav.security:token-validation-ktor:$tokenSupportVersion")
@@ -193,6 +195,7 @@ dependencies {
     implementation("org.apache.pdfbox:pdfbox:$pdfboxVersion")
     implementation("org.codehaus.janino:janino:$janinoVersion")
     implementation("org.flywaydb:flyway-core:$flywayVersion")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
     implementation("org.postgresql:postgresql:$postgresqlVersion")
     implementation("org.slf4j:slf4j-api:$slf4jVersion")
     implementation("org.valiktor:valiktor-core:$valiktorVersion")

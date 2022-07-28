@@ -28,11 +28,9 @@ class BehandlendeEnhetService(
             geografiskOmraade = geografiskTilknytning?.geografiskTilknytning
         )
 
-        val callId = MDCOperations.getFromMDC(MDCOperations.MDC_CALL_ID)
-
         try {
             val arbeidsfordelinger = runBlocking {
-                norg2Client.hentAlleArbeidsfordelinger(criteria, callId)
+                norg2Client.hentAlleArbeidsfordelinger(criteria, null)
             }
             log.info("Fant enheter: " + arbeidsfordelinger.toString())
             val behandlendeEnhet = finnAktivBehandlendeEnhet(

@@ -2,7 +2,6 @@ package no.nav.helse.fritakagp.koin
 
 import com.zaxxer.hikari.HikariDataSource
 import io.ktor.config.*
-import io.ktor.util.*
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbRepository
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbService
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.PostgresBakgrunnsjobbRepository
@@ -14,6 +13,7 @@ import no.nav.helse.fritakagp.datapakke.DatapakkePublisherJob
 import no.nav.helse.fritakagp.db.*
 import no.nav.helse.fritakagp.domain.BeløpBeregning
 import no.nav.helse.fritakagp.integration.altinn.message.Clients
+import no.nav.helse.fritakagp.processing.SlettUtdaterteJob
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.gravid.krav.*
 import no.nav.helse.fritakagp.processing.gravid.soeknad.*
@@ -28,12 +28,10 @@ fun preprodConfig(config: ApplicationConfig) = module {
     externalSystemClients(config)
 
     single {
-        HikariDataSource(
-            createHikariConfig(
-                config.getjdbcUrlFromProperties(),
-                config.getString("database.username"),
-                config.getString("database.password")
-            )
+        createHikariDataSource(
+            jdbcUrl = config.getjdbcUrlFromProperties(),
+            username = config.getString("database.username"),
+            password = config.getString("database.password"),
         )
     } bind DataSource::class
 
@@ -52,6 +50,8 @@ fun preprodConfig(config: ApplicationConfig) = module {
     single { KroniskSoeknadProcessor(get(), get(), get(), get(), get(), KroniskSoeknadPDFGenerator(), get(), get(), get(), get()) }
     single { KroniskKravProcessor(get(), get(), get(), get(), get(), KroniskKravPDFGenerator(), get(), get(), get(), get()) }
     single { SlettKroniskKravProcessor(get(), get(), get(), get(), get(), KroniskKravPDFGenerator(), get(), get(), get(), get()) }
+
+    single { SlettUtdaterteJob(get(), get(), get(), get()) }
 
     single { Clients.iCorrespondenceExternalBasic(config.getString("altinn_melding.altinn_endpoint")) }
 

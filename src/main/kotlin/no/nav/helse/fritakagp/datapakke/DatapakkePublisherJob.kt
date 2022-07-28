@@ -12,6 +12,7 @@ import kotlinx.coroutines.runBlocking
 import no.nav.helse.arbeidsgiver.utils.RecurringJob
 import no.nav.helse.arbeidsgiver.utils.loadFromResources
 import no.nav.helse.fritakagp.db.IStatsRepo
+import no.nav.helsearbeidsgiver.utils.logger
 import java.time.DayOfWeek
 import java.time.Duration
 import java.time.LocalDateTime
@@ -29,6 +30,8 @@ class DatapakkePublisherJob(
         CoroutineScope(Dispatchers.IO),
         Duration.ofHours(3).toMillis()
     ) {
+    private val logger = this.logger()
+
     override fun doJob() {
         val now = LocalDateTime.now()
         if (applyWeeklyOnly && now.dayOfWeek != DayOfWeek.MONDAY && now.hour != 0) {

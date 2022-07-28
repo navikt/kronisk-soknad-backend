@@ -1,52 +1,38 @@
 package no.nav.helse.slowtests
 
-import com.zaxxer.hikari.HikariDataSource
-import no.nav.helse.GravidTestData
+import com.fasterxml.jackson.databind.ObjectMapper
 import no.nav.helse.fritakagp.db.PostgresGravidSoeknadRepository
-import no.nav.helse.fritakagp.db.createTestHikariConfig
-import no.nav.helse.slowtests.systemtests.api.SystemTestBase
-import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
-import org.koin.core.component.get
-import kotlin.test.assertNotNull
+import no.nav.helse.fritakagp.domain.GravidSoeknad
+import no.nav.helse.fritakagp.domain.Tiltak
+import no.nav.helse.mockGravidSoeknad
+import java.time.LocalDateTime
+import javax.sql.DataSource
 
-class PostgresGravidSoeknadRepositoryTest : SystemTestBase() {
+class PostgresGravidSoeknadRepositoryTest : RepositoryTest<GravidSoeknad>() {
+    override fun instantiateRepo(ds: DataSource, om: ObjectMapper): PostgresGravidSoeknadRepository =
+        PostgresGravidSoeknadRepository(ds, om)
 
-    lateinit var repo: PostgresGravidSoeknadRepository
-    val testSoeknad = GravidTestData.soeknadGravid
+    override fun GravidSoeknad.alteredCopy(): GravidSoeknad =
+        this.copy(
+            navn = "Samwise Gamgee",
+            tiltak = listOf(
+                Tiltak.HJEMMEKONTOR,
+                Tiltak.TILPASSEDE_ARBEIDSOPPGAVER,
+            ),
+            journalpostId = "123"
+        )
 
-    @BeforeEach
-    internal fun setUp() {
-        val ds = HikariDataSource(createTestHikariConfig())
+    override fun mockEntity(
+        opprettet: LocalDateTime,
+        virksomhetsnummer: String?,
+    ): GravidSoeknad =
+        mockGravidSoeknad().let {
+            it.copy(
+                opprettet = opprettet,
+                virksomhetsnummer = virksomhetsnummer ?: it.virksomhetsnummer,
+            )
+        }
 
-        repo = PostgresGravidSoeknadRepository(ds, get())
-        repo.insert(testSoeknad)
-    }
-
-    @AfterEach
-    internal fun tearDown() {
-        repo.delete(testSoeknad.id)
-    }
-
-    @Test
-    fun `finnerDataIDb`() {
-        val soeknadGravidResult = repo.getById(testSoeknad.id)
-        assertThat(soeknadGravidResult).isEqualTo(testSoeknad)
-    }
-
-    @Test
-    fun `kanOppdatereData`() {
-        val soeknadGravidResult = repo.getById(testSoeknad.id)
-        assertNotNull(soeknadGravidResult, "Må finnes")
-
-        soeknadGravidResult.journalpostId = "1234"
-        soeknadGravidResult.oppgaveId = "78990"
-
-        repo.update(soeknadGravidResult)
-
-        val afterUpdate = repo.getById(soeknadGravidResult.id)
-        assertThat(afterUpdate).isEqualTo(soeknadGravidResult)
-    }
+    override fun arrayOf(vararg elements: GravidSoeknad): Array<GravidSoeknad> =
+        kotlin.arrayOf(*elements)
 }

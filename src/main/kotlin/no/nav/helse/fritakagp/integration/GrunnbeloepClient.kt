@@ -1,26 +1,26 @@
 package no.nav.helse.fritakagp.integration
 
-import io.ktor.client.*
-import io.ktor.client.request.*
+import io.ktor.client.HttpClient
+import io.ktor.client.request.get
+import io.ktor.client.request.url
 import kotlinx.coroutines.runBlocking
 import no.nav.helse.arbeidsgiver.utils.SimpleHashMapCache
 import java.time.Duration
 import java.time.LocalDate
 
-class GrunnbeloepClient(val httpClient: HttpClient) {
-    val cache = SimpleHashMapCache<GrunnbeløpInfo>(Duration.ofDays(1), 2)
+class GrunnbeloepClient(
+    private val httpClient: HttpClient,
+) {
+    private val cache = SimpleHashMapCache<GrunnbeløpInfo>(Duration.ofDays(1), 2)
 
-    fun hentGrunnbeløp(): GrunnbeløpInfo {
-        if (cache.hasValidCacheEntry("g")) return cache.get("g")
-
-        val g = runBlocking {
-            httpClient.get<GrunnbeløpInfo> {
-                url("https://g.nav.no/api/v1/grunnbeløp")
+    fun hentGrunnbeløp(): GrunnbeløpInfo =
+        cache.use("g") {
+            runBlocking {
+                httpClient.get {
+                    url("https://g.nav.no/api/v1/grunnbeløp")
+                }
             }
         }
-        cache.put("g", g)
-        return g
-    }
 }
 
 /**

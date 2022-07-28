@@ -1,26 +1,35 @@
 package no.nav.helse.fritakagp.db
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import no.nav.helsearbeidsgiver.utils.logger
 import java.sql.Connection
-import java.util.*
+import java.sql.ResultSet
+import java.time.LocalDateTime
+import java.util.UUID
 import javax.sql.DataSource
 
 interface SimpleJsonbEntity {
     val id: UUID
+    val opprettet: LocalDateTime
+    val virksomhetsnummer: String
 }
 
-interface SimpleJsonbRepository<T : SimpleJsonbEntity> {
-    fun getById(id: UUID): T?
-    fun getAllForVirksomhet(virksomhetsnummer: String): List<T?>
+sealed interface SimpleJsonbRepository<T : SimpleJsonbEntity> {
+    val tableName: String
 
-    fun insert(soeknad: T): T
-    fun insert(soeknad: T, connection: Connection): T
+    fun getById(id: UUID): T?
+    fun getAllByVirksomhet(virksomhetsnummer: String): List<T>
+    fun getAll(sql: String): List<T>
+
+    fun insert(entity: T): Int
+    fun insert(entity: T, connection: Connection): Int
 
     fun delete(id: UUID): Int
     fun delete(id: UUID, connection: Connection): Int
+    fun deleteAllOpprettetFoer(opprettetFoer: LocalDateTime): Int
 
-    fun update(soeknad: T)
-    fun update(soeknad: T, connection: Connection)
+    fun update(entity: T): Int
+    fun update(entity: T, connection: Connection): Int
 }
 
 /**
@@ -29,90 +38,102 @@ interface SimpleJsonbRepository<T : SimpleJsonbEntity> {
  * SQL:
  *  CREATE TABLE $tableName (data jsonb not null);
  */
-abstract class SimpleJsonbRepositoryBase<T : SimpleJsonbEntity>(
-    val tableName: String,
-    val ds: DataSource,
-    val mapper: ObjectMapper,
-    val clazz: Class<T>
+sealed class SimpleJsonbRepositoryBase<T : SimpleJsonbEntity>(
+    override val tableName: String,
+    private val ds: DataSource,
+    private val mapper: ObjectMapper,
+    private val clazz: Class<T>
 ) : SimpleJsonbRepository<T> {
+    private val logger = this.logger()
 
-    private val getByIdStatement = """SELECT * FROM $tableName WHERE data ->> 'id' = ?"""
-    private val getAllForVirksomhetStatement = """SELECT * FROM $tableName WHERE data ->> 'virksomhetsnummer' = ?"""
-    private val saveStatement = "INSERT INTO $tableName (data) VALUES (?::json);"
-    private val updateStatement = "UPDATE $tableName SET data = ?::json WHERE data ->> 'id' = ?"
-    private val deleteStatement = """DELETE FROM $tableName WHERE data ->> 'id' = ?"""
+    override fun getById(id: UUID): T? =
+        "SELECT * FROM $tableName WHERE data ->> 'id' = '$id'"
+            .executeQuery(
+                "SELECT med ID mot $tableName feilet. Gjelder ID=$id."
+            )
+            .firstOrNull()
 
-    override fun getAllForVirksomhet(virksomhetsnummer: String): List<T?> {
+    override fun getAllByVirksomhet(virksomhetsnummer: String): List<T> =
+        "SELECT * FROM $tableName WHERE data ->> 'virksomhetsnummer' = '$virksomhetsnummer'"
+            .executeQuery(null)
+
+    override fun getAll(sql: String): List<T> =
+        sql.executeQuery(null)
+
+    override fun insert(entity: T, connection: Connection): Int =
+        "INSERT INTO $tableName (data) VALUES ('${entity.toJson()}'::json)"
+            .executeUpdate(
+                connection,
+                "INSERT mot $tableName feilet. Mulig duplikat. Gjelder objekt med ID=${entity.id}.",
+            )
+
+    override fun insert(entity: T): Int =
         ds.connection.use {
-            val existingList = ArrayList<T>()
-            val res = it.prepareStatement(getAllForVirksomhetStatement).apply {
-                setString(1, virksomhetsnummer)
-            }.executeQuery()
+            insert(entity, it)
+        }
 
-            while (res.next()) {
-                val sg = mapper.readValue(res.getString("data"), clazz)
-                existingList.add(sg)
+    override fun delete(id: UUID, connection: Connection): Int =
+        "DELETE FROM $tableName WHERE data ->> 'id' = '$id'"
+            .executeUpdate(
+                connection,
+                "DELETE mot $tableName feilet. Gjelder ID=$id.",
+            )
+
+    override fun delete(id: UUID): Int =
+        ds.connection.use {
+            delete(id, it)
+        }
+
+    override fun deleteAllOpprettetFoer(opprettetFoer: LocalDateTime): Int =
+        ds.connection.use {
+            "DELETE FROM $tableName WHERE data ->> 'opprettet' < '$opprettetFoer'"
+                .executeUpdate(it, null)
+        }
+
+    override fun update(entity: T, connection: Connection): Int =
+        "UPDATE $tableName SET data = '${entity.toJson()}'::json WHERE data ->> 'id' = '${entity.id}'"
+            .executeUpdate(
+                connection,
+                "UPDATE mot $tableName feilet. Gjelder objekt med ID=${entity.id}.",
+            )
+
+    override fun update(entity: T): Int =
+        ds.connection.use {
+            update(entity, it)
+        }
+
+    private fun String.executeQuery(failureMsg: String?): List<T> =
+        ds.connection.use {
+            val rs = it.prepareStatement(this)
+                .executeQuery()
+
+            val results = mutableListOf<T>()
+            while (rs.next()) {
+                rs.toObject()
+                    .let(results::add)
+            }
+            results
+        }
+            .also {
+                if (it.isEmpty() && failureMsg != null)
+                    logger.info(failureMsg)
             }
 
-            return existingList
-        }
-    }
-
-    override fun getById(id: UUID): T? {
-        ds.connection.use {
-            val existingList = ArrayList<T>()
-            val res = it.prepareStatement(getByIdStatement).apply {
-                setString(1, id.toString())
-            }.executeQuery()
-
-            while (res.next()) {
-                val sg = mapper.readValue(res.getString("data"), clazz)
-                existingList.add(sg)
+    private fun String.executeUpdate(connection: Connection, failureMsg: String?): Int =
+        connection.prepareStatement(this)
+            .executeUpdate()
+            .also {
+                if (it == 0 && failureMsg != null)
+                    logger.info(failureMsg)
             }
 
-            return existingList.firstOrNull()
-        }
-    }
+    private fun ResultSet.toObject(): T =
+        this.getString("data")!!
+            .let(::fromJson)
 
-    override fun insert(entity: T, connection: Connection): T {
-        val json = mapper.writeValueAsString(entity)
-        connection.prepareStatement(saveStatement).apply {
-            setString(1, json)
-        }.executeUpdate()
-        return entity
-    }
+    private fun T.toJson(): String =
+        mapper.writeValueAsString(this)
 
-    override fun insert(entity: T): T {
-        ds.connection.use {
-            return insert(entity, it)
-        }
-    }
-
-    override fun delete(id: UUID, connection: Connection): Int {
-        return connection.prepareStatement(deleteStatement).apply {
-            setString(1, id.toString())
-        }.executeUpdate()
-    }
-
-    override fun delete(id: UUID): Int {
-        ds.connection.use {
-            return delete(id, it)
-        }
-    }
-
-    override fun update(entity: T, connection: Connection) {
-        val json = mapper.writeValueAsString(entity)
-        ds.connection.use {
-            it.prepareStatement(updateStatement).apply {
-                setString(1, json)
-                setString(2, entity.id.toString())
-            }.executeUpdate()
-        }
-    }
-
-    override fun update(entity: T) {
-        ds.connection.use {
-            return update(entity, it)
-        }
-    }
+    private fun fromJson(json: String): T =
+        mapper.readValue(json, clazz)
 }

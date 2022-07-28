@@ -12,6 +12,7 @@ import no.nav.helse.arbeidsgiver.system.AppEnv
 import no.nav.helse.arbeidsgiver.system.getEnvironment
 import no.nav.helse.arbeidsgiver.system.getString
 import no.nav.helse.fritakagp.koin.selectModuleBasedOnProfile
+import no.nav.helse.fritakagp.processing.SlettUtdaterteJob
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravKafkaProcessor
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravKvitteringProcessor
@@ -45,7 +46,7 @@ class FritakAgpApplication(val port: Int = 8080) : KoinComponent {
     private val runtimeEnvironment = appConfig.getEnvironment()
 
     fun start() {
-        if (runtimeEnvironment == AppEnv.PREPROD || runtimeEnvironment == AppEnv.PROD) {
+        if (runtimeEnvironment in listOf(AppEnv.PREPROD, AppEnv.PROD)) {
             logger.info("Sover i 30s i påvente av SQL proxy sidecar")
             Thread.sleep(30000)
         }
@@ -89,6 +90,9 @@ class FritakAgpApplication(val port: Int = 8080) : KoinComponent {
 
     private fun configAndStartBackgroundWorker() {
         if (appConfig.getString("run_background_workers") == "true") {
+
+            get<SlettUtdaterteJob>()
+                .startAsync(retryOnFail = true)
 
             get<BakgrunnsjobbService>().apply {
                 registrer(get<GravidSoeknadProcessor>())

@@ -1,52 +1,32 @@
 package no.nav.helse.slowtests
 
-import com.zaxxer.hikari.HikariDataSource
-import no.nav.helse.GravidTestData
+import com.fasterxml.jackson.databind.ObjectMapper
 import no.nav.helse.fritakagp.db.PostgresGravidKravRepository
-import no.nav.helse.fritakagp.db.createTestHikariConfig
-import no.nav.helse.slowtests.systemtests.api.SystemTestBase
-import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
-import org.koin.core.component.get
-import kotlin.test.assertNotNull
+import no.nav.helse.fritakagp.db.SimpleJsonbRepository
+import no.nav.helse.fritakagp.domain.GravidKrav
+import no.nav.helse.mockGravidKrav
+import java.time.LocalDateTime
+import javax.sql.DataSource
 
-class PostgresGravidKravRepositoryTest : SystemTestBase() {
+class PostgresGravidKravRepositoryTest : RepositoryTest<GravidKrav>() {
+    override fun instantiateRepo(ds: DataSource, om: ObjectMapper): SimpleJsonbRepository<GravidKrav> =
+        PostgresGravidKravRepository(ds, om)
 
-    lateinit var repo: PostgresGravidKravRepository
-    val testKrav = GravidTestData.gravidKrav
+    override fun GravidKrav.alteredCopy(): GravidKrav =
+        this.copy(
+            antallDager = 10,
+            journalpostId = "123",
+            slettetAv = "Sauron",
+        )
 
-    @BeforeEach
-    internal fun setUp() {
-        val ds = HikariDataSource(createTestHikariConfig())
+    override fun mockEntity(opprettet: LocalDateTime, virksomhetsnummer: String?): GravidKrav =
+        mockGravidKrav().let {
+            it.copy(
+                opprettet = opprettet,
+                virksomhetsnummer = virksomhetsnummer ?: it.virksomhetsnummer,
+            )
+        }
 
-        repo = PostgresGravidKravRepository(ds, get())
-        repo.insert(testKrav)
-    }
-
-    @AfterEach
-    internal fun tearDown() {
-        repo.delete(testKrav.id)
-    }
-
-    @Test
-    fun `test getById`() {
-        val soeknadKroniskResult = repo.getById(testKrav.id)
-        assertThat(soeknadKroniskResult).isEqualTo(testKrav)
-    }
-
-    @Test
-    fun `kan oppdatere data`() {
-        val soeknadKroniskResult = repo.getById(testKrav.id)
-        assertNotNull(soeknadKroniskResult, "Må finnes")
-
-        soeknadKroniskResult.journalpostId = "1234"
-        soeknadKroniskResult.oppgaveId = "78990"
-
-        repo.update(soeknadKroniskResult)
-
-        val afterUpdate = repo.getById(soeknadKroniskResult.id)
-        assertThat(afterUpdate).isEqualTo(soeknadKroniskResult)
-    }
+    override fun arrayOf(vararg elements: GravidKrav): Array<GravidKrav> =
+        kotlin.arrayOf(*elements)
 }

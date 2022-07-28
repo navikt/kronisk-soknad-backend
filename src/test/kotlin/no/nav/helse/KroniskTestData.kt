@@ -180,10 +180,10 @@ object KroniskTestData {
         prioritet = Prioritet.NORM,
         status = Status.UNDER_BEHANDLING
     )
-}
 
-private fun generateFravaersdata() = (0..24L)
-    .map { FravaerData(LocalDate.now().minusMonths(it).toYearMonthString(), Random.nextFloat() * 28) }
-    .toMutableSet()
+    fun generateFravaersdata() = (0..24L)
+        .map { FravaerData(LocalDate.now().minusMonths(it).toYearMonthString(), Random.nextFloat() * 28) }
+        .toMutableSet()
+}
 
 fun LocalDate.toYearMonthString() = this.format(DateTimeFormatter.ofPattern("yyyy-MM"))

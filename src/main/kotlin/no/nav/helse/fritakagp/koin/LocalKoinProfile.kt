@@ -1,6 +1,5 @@
 package no.nav.helse.fritakagp.koin
 
-import com.zaxxer.hikari.HikariDataSource
 import io.ktor.config.*
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbRepository
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbService
@@ -13,6 +12,7 @@ import no.nav.helse.fritakagp.db.*
 import no.nav.helse.fritakagp.domain.BeløpBeregning
 import no.nav.helse.fritakagp.integration.GrunnbeløpClient
 import no.nav.helse.fritakagp.integration.kafka.*
+import no.nav.helse.fritakagp.processing.SlettUtdaterteJob
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.gravid.krav.*
 import no.nav.helse.fritakagp.processing.gravid.soeknad.*
@@ -28,7 +28,15 @@ fun localDevConfig(config: ApplicationConfig) = module {
     mockExternalDependecies()
     single { GrunnbeløpClient(get()) }
     single { BeløpBeregning(get()) }
-    single { HikariDataSource(createHikariConfig(config.getjdbcUrlFromProperties(), config.getString("database.username"), config.getString("database.password"))) } bind DataSource::class
+
+    single {
+        createHikariDataSource(
+            jdbcUrl = config.getjdbcUrlFromProperties(),
+            username = config.getString("database.username"),
+            password = config.getString("database.password"),
+        )
+    } bind DataSource::class
+
     single { PostgresGravidSoeknadRepository(get(), get()) } bind GravidSoeknadRepository::class
     single { PostgresGravidKravRepository(get(), get()) } bind GravidKravRepository::class
     single { PostgresKroniskSoeknadRepository(get(), get()) } bind KroniskSoeknadRepository::class
@@ -46,6 +54,8 @@ fun localDevConfig(config: ApplicationConfig) = module {
     single { KroniskSoeknadProcessor(get(), get(), get(), get(), get(), KroniskSoeknadPDFGenerator(), get(), get(), get(), get()) }
     single { KroniskKravProcessor(get(), get(), get(), get(), get(), KroniskKravPDFGenerator(), get(), get(), get(), get()) }
     single { SlettKroniskKravProcessor(get(), get(), get(), get(), get(), KroniskKravPDFGenerator(), get(), get(), get(), get()) }
+
+    single { SlettUtdaterteJob(get(), get(), get(), get()) }
 
     single { GravidSoeknadKvitteringSenderDummy() } bind GravidSoeknadKvitteringSender::class
     single { GravidSoeknadKvitteringProcessor(get(), get(), get()) }

@@ -1,52 +1,32 @@
 package no.nav.helse.slowtests
 
-import com.zaxxer.hikari.HikariDataSource
-import no.nav.helse.KroniskTestData
+import com.fasterxml.jackson.databind.ObjectMapper
 import no.nav.helse.fritakagp.db.PostgresKroniskSoeknadRepository
-import no.nav.helse.fritakagp.db.createTestHikariConfig
-import no.nav.helse.slowtests.systemtests.api.SystemTestBase
-import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
-import org.koin.core.component.get
-import kotlin.test.assertNotNull
+import no.nav.helse.fritakagp.db.SimpleJsonbRepository
+import no.nav.helse.fritakagp.domain.KroniskSoeknad
+import no.nav.helse.mockKroniskSoeknad
+import java.time.LocalDateTime
+import javax.sql.DataSource
 
-class PostgresKroniskSoeknadRepositoryTest : SystemTestBase() {
+class PostgresKroniskSoeknadRepositoryTest : RepositoryTest<KroniskSoeknad>() {
+    override fun instantiateRepo(ds: DataSource, om: ObjectMapper): SimpleJsonbRepository<KroniskSoeknad> =
+        PostgresKroniskSoeknadRepository(ds, om)
 
-    lateinit var repo: PostgresKroniskSoeknadRepository
-    val testSoeknad = KroniskTestData.soeknadKronisk
+    override fun KroniskSoeknad.alteredCopy(): KroniskSoeknad =
+        this.copy(
+            journalpostId = "1234",
+            oppgaveId = "78990",
+            ikkeHistoriskFravaer = true,
+        )
 
-    @BeforeEach
-    internal fun setUp() {
-        val ds = HikariDataSource(createTestHikariConfig())
+    override fun mockEntity(opprettet: LocalDateTime, virksomhetsnummer: String?): KroniskSoeknad =
+        mockKroniskSoeknad().let {
+            it.copy(
+                opprettet = opprettet,
+                virksomhetsnummer = virksomhetsnummer ?: it.virksomhetsnummer,
+            )
+        }
 
-        repo = PostgresKroniskSoeknadRepository(ds, get())
-        repo.insert(testSoeknad)
-    }
-
-    @AfterEach
-    internal fun tearDown() {
-        repo.delete(testSoeknad.id)
-    }
-
-    @Test
-    fun `finnerDataIDb`() {
-        val soeknadKroniskResult = repo.getById(testSoeknad.id)
-        assertThat(soeknadKroniskResult).isEqualTo(testSoeknad)
-    }
-
-    @Test
-    fun `kanOppdatereData`() {
-        val soeknadKroniskResult = repo.getById(testSoeknad.id)
-        assertNotNull(soeknadKroniskResult, "Må finnes")
-
-        soeknadKroniskResult.journalpostId = "1234"
-        soeknadKroniskResult.oppgaveId = "78990"
-
-        repo.update(soeknadKroniskResult)
-
-        val afterUpdate = repo.getById(soeknadKroniskResult.id)
-        assertThat(afterUpdate).isEqualTo(soeknadKroniskResult)
-    }
+    override fun arrayOf(vararg elements: KroniskSoeknad): Array<KroniskSoeknad> =
+        kotlin.arrayOf(*elements)
 }

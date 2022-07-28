@@ -31,7 +31,6 @@ import no.nav.helse.fritakagp.web.auth.hentIdentitetsnummerFraLoginToken
 import no.nav.helse.fritakagp.web.api.resreq.validation.VirusCheckConstraint
 import no.nav.helse.fritakagp.web.api.resreq.validation.extractBase64Del
 import no.nav.helse.fritakagp.web.api.resreq.validation.extractFilExtDel
-import org.valiktor.ConstraintViolation
 import org.valiktor.ConstraintViolationException
 import org.valiktor.DefaultConstraintViolation
 import java.time.LocalDateTime
@@ -106,7 +105,7 @@ fun Route.gravidRoutes(
                 val virksomhetsnummer = requireNotNull(call.parameters["virksomhetsnummer"])
                 authorize(authorizer, virksomhetsnummer)
 
-                val gravidKrav = gravidKravRepo.getAllForVirksomhet(virksomhetsnummer)
+                val gravidKrav = gravidKravRepo.getAllByVirksomhet(virksomhetsnummer)
 
                 call.respond(HttpStatusCode.OK, gravidKrav)
             }

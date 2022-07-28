@@ -47,8 +47,8 @@ class SlettGravidKravProcessor(
     }
     override val type: String get() = JOB_TYPE
 
-    val digitalKravBehandingsType = "ae0121"
-    val fritakAGPBehandingsTema = "ab0200"
+    val digitalKravBehandlingsType = "ae0121"
+    val fritakAGPBehandlingsTema = "ab0200"
 
     val log = LoggerFactory.getLogger(SlettGravidKravProcessor::class.java)
 
@@ -169,9 +169,9 @@ class SlettGravidKravProcessor(
             journalpostId = krav.journalpostId,
             beskrivelse = generereSlettGravidKravBeskrivelse(krav, "Annullering av refusjonskrav ifbm sykdom i aprbeidsgiverperioden med fritak fra arbeidsgiverperioden grunnet kronisk sykdom."),
             tema = "SYK",
-            behandlingstype = digitalKravBehandingsType,
+            behandlingstype = digitalKravBehandlingsType,
             oppgavetype = "BEH_REF",
-            behandlingstema = fritakAGPBehandingsTema,
+            behandlingstema = fritakAGPBehandlingsTema,
             aktivDato = LocalDate.now(),
             fristFerdigstillelse = LocalDate.now().plusDays(7),
             prioritet = "NORM"
@@ -189,9 +189,9 @@ class SlettGravidKravProcessor(
             journalpostId = krav.journalpostId,
             beskrivelse = generereSlettGravidKravBeskrivelse(krav, "Fordelingsoppgave for annullering av refusjonskrav ifbm sykdom i aprbeidsgiverperioden med fritak fra arbeidsgiverperioden grunnet kronisk sykdom."),
             tema = "SYK",
-            behandlingstype = digitalKravBehandingsType,
+            behandlingstype = digitalKravBehandlingsType,
             oppgavetype = OPPGAVETYPE_FORDELINGSOPPGAVE,
-            behandlingstema = fritakAGPBehandingsTema,
+            behandlingstema = fritakAGPBehandlingsTema,
             aktivDato = LocalDate.now(),
             fristFerdigstillelse = LocalDate.now().plusDays(7),
             prioritet = "NORM"

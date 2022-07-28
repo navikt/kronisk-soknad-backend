@@ -7,7 +7,7 @@ import no.nav.helse.arbeidsgiver.utils.SimpleHashMapCache
 import java.time.Duration
 import java.time.LocalDate
 
-class GrunnbeløpClient(val httpClient: HttpClient) {
+class GrunnbeloepClient(val httpClient: HttpClient) {
     val cache = SimpleHashMapCache<GrunnbeløpInfo>(Duration.ofDays(1), 2)
 
     fun hentGrunnbeløp(): GrunnbeløpInfo {

@@ -110,7 +110,7 @@ class GravidKravRequestTest {
     @Test
     fun `Beløp og dagsats er beregnet`() {
         val grunnbeløpClient = mockk<GrunnbeløpClient>(relaxed = true)
-        every { grunnbeløpClient.hentGrunnbeløp().grunnbeløp } returns 106399
+        every { grunnbeløpClient.hentGrunnbeløp(any()).grunnbeløp } returns 106399
 
         val belopBeregning = BeløpBeregning(grunnbeløpClient)
         val krav = GravidTestData.gravidKravRequestValid.toDomain(sendtAv, sendtAvNavn, navn)
@@ -123,7 +123,7 @@ class GravidKravRequestTest {
     @Test
     fun `Beløp har riktig desimaltall`() {
         val grunnbeløpClient = mockk<GrunnbeløpClient>(relaxed = true)
-        every { grunnbeløpClient.hentGrunnbeløp().grunnbeløp } returns 106399
+        every { grunnbeløpClient.hentGrunnbeløp(any()).grunnbeløp } returns 106399
 
         val belopBeregning = BeløpBeregning(grunnbeløpClient)
         val krav = GravidTestData.gravidKravRequestWithWrongDecimal.toDomain(sendtAv, sendtAvNavn, navn)

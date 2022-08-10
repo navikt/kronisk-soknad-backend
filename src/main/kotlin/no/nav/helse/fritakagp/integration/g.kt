@@ -8,10 +8,18 @@ import java.time.Duration
 import java.time.LocalDate
 
 class GrunnbeløpClient(val httpClient: HttpClient) {
-    fun hentGrunnbeløp(dato: LocalDate): GrunnbeløpInfo = runBlocking {
-        httpClient.get<GrunnbeløpInfo> {
-            url("https://g.nav.no/api/v1/grunnbeløp?dato=$dato")
+    val cache = SimpleHashMapCache<GrunnbeløpInfo>(Duration.ofDays(1), 10)
+
+    fun hentGrunnbeløp(dato: LocalDate): GrunnbeløpInfo {
+        val cacheKey = if (dato.month.value > 5) "${dato.year}-1" else "${dato.year}-2"
+        if (cache.hasValidCacheEntry(cacheKey)) return cache.get(cacheKey)
+        val g = runBlocking {
+            httpClient.get<GrunnbeløpInfo> {
+                url("https://g.nav.no/api/v1/grunnbeløp?dato=$dato")
+            }
         }
+        cache.put(cacheKey, g)
+        return g
     }
 }
 

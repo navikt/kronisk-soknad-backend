@@ -8,10 +8,10 @@ import java.time.Duration
 import java.time.LocalDate
 
 class GrunnbeløpClient(val httpClient: HttpClient) {
-    val cache = SimpleHashMapCache<GrunnbeløpInfo>(Duration.ofDays(1), 10)
+    val cache = SimpleHashMapCache<GrunnbeløpInfo>(Duration.ofDays(1), 5)
 
     fun hentGrunnbeløp(dato: LocalDate): GrunnbeløpInfo {
-        val cacheKey = if (dato.month.value > 5) "${dato.year}-1" else "${dato.year}-2"
+        val cacheKey = if (dato.month.value > 5) "${dato.year}-05" else "${dato.year-1}-05"
         if (cache.hasValidCacheEntry(cacheKey)) return cache.get(cacheKey)
         val g = runBlocking {
             httpClient.get<GrunnbeløpInfo> {

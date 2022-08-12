@@ -45,6 +45,7 @@ class FritakAgpApplication(val port: Int = 8080) : KoinComponent {
     private val runtimeEnvironment = appConfig.getEnvironment()
 
     fun start() {
+        println("start")
         if (runtimeEnvironment == AppEnv.PREPROD || runtimeEnvironment == AppEnv.PROD) {
             logger.info("Sover i 30s i påvente av SQL proxy sidecar")
             Thread.sleep(30000)

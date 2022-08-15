@@ -11,26 +11,29 @@ import java.time.LocalDate
 class GrunnbeloepClient(
     private val httpClient: HttpClient,
 ) {
-    private val cache = SimpleHashMapCache<GrunnbeløpInfo>(Duration.ofDays(1), 2)
+    private val cache = SimpleHashMapCache<GrunnbeløpInfo>(Duration.ofDays(1), 5)
 
-    fun hentGrunnbeløp(): GrunnbeløpInfo =
-        cache.use("g") {
+    fun hentGrunnbeløp(dato: LocalDate): GrunnbeløpInfo {
+        val cacheKey = if (dato.month.value >= 5) "${dato.year}-05" else "${dato.year - 1}-05"
+
+        return cache.use(cacheKey) {
             runBlocking {
                 httpClient.get {
-                    url("https://g.nav.no/api/v1/grunnbeløp")
+                    url("https://g.nav.no/api/v1/grunnbeløp?dato=$dato")
                 }
             }
         }
+    }
 }
 
 /**
  * {
- "dato": "2020-05-01",
- "grunnbeløp": 101351,
- "grunnbeløpPerMåned": 8446,
- "gjennomsnittPerÅr": 100853,
- "omregningsfaktor": 1.014951
- }
+"dato": "2020-05-01",
+"grunnbeløp": 101351,
+"grunnbeløpPerMåned": 8446,
+"gjennomsnittPerÅr": 100853,
+"omregningsfaktor": 1.014951
+}
  */
 data class GrunnbeløpInfo(
     val dato: LocalDate,

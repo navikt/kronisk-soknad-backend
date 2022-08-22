@@ -4,19 +4,19 @@ import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.request.url
 import kotlinx.coroutines.runBlocking
-import no.nav.helse.arbeidsgiver.utils.SimpleHashMapCache
-import java.time.Duration
+import no.nav.helsearbeidsgiver.utils.cache.LocalCache
 import java.time.LocalDate
+import kotlin.time.Duration.Companion.days
 
 class GrunnbeloepClient(
     private val httpClient: HttpClient,
 ) {
-    private val cache = SimpleHashMapCache<GrunnbeløpInfo>(Duration.ofDays(1), 5)
+    private val cache = LocalCache<GrunnbeløpInfo>(1.days, 5)
 
     fun hentGrunnbeløp(dato: LocalDate): GrunnbeløpInfo {
         val cacheKey = if (dato.month.value >= 5) "${dato.year}-05" else "${dato.year - 1}-05"
 
-        return cache.use(cacheKey) {
+        return cache.get(cacheKey) {
             runBlocking {
                 httpClient.get {
                     url("https://g.nav.no/api/v1/grunnbeløp?dato=$dato")

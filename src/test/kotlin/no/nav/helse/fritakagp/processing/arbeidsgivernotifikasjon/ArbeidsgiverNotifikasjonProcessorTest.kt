@@ -13,11 +13,11 @@ import io.mockk.mockk
 import no.nav.helse.GravidTestData
 import no.nav.helse.KroniskTestData
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.Bakgrunnsjobb
+import no.nav.helse.arbeidsgiver.integrasjoner.AccessTokenProvider
 import no.nav.helse.fritakagp.db.GravidKravRepository
 import no.nav.helse.fritakagp.db.KroniskKravRepository
 import no.nav.helse.fritakagp.domain.GravidKrav
 import no.nav.helse.fritakagp.domain.KroniskKrav
-import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.AccessTokenProvider
 import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonKlient
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach

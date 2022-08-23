@@ -34,7 +34,6 @@ import no.nav.security.token.support.client.core.oauth2.ClientCredentialsTokenCl
 import no.nav.security.token.support.client.core.oauth2.OAuth2AccessTokenService
 import no.nav.security.token.support.client.core.oauth2.OnBehalfOfTokenClient
 import no.nav.security.token.support.client.core.oauth2.TokenExchangeClient
-import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.AccessTokenProvider as ArbeidsgiverNotifikasjonAccessTokenProvider
 import org.koin.core.module.Module
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind

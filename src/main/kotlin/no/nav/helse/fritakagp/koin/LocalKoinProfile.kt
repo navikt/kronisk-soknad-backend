@@ -65,6 +65,9 @@ fun localDevConfig(config: ApplicationConfig) = module {
     single { KroniskSoeknadKafkaProcessor(get(), get(), get()) }
     single { KroniskKravKafkaProcessor(get(), get(), get()) }
 
+    single { GravidKravOppdaterNotifikasjonProcessor(get(), get(), get(), "https://localhost:3000/fritak-agp") }
+    single { KroniskKravOppdaterNotifikasjonProcessor(get(), get(), get(), "https://localhost:3000/fritak-agp") }
+
     single { PdlService(get()) }
 
     single { BrukernotifikasjonProcessor(get(), get(), get(), get(), get(), get(), 4, "mock") }

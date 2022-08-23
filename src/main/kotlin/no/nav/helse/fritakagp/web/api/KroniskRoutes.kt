@@ -20,6 +20,7 @@ import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
 import no.nav.helse.fritakagp.processing.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravKvitteringProcessor
+import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravOppdaterNotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravProcessor
 import no.nav.helse.fritakagp.processing.kronisk.krav.SlettKroniskKravProcessor
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadKvitteringProcessor
@@ -149,6 +150,66 @@ fun Route.kroniskRoutes(
 
                 call.respond(HttpStatusCode.Created, krav)
                 KroniskKravMetrics.tellMottatt()
+            }
+
+            patch("/{id}") {
+                val request = call.receive<KroniskKravRequest>()
+
+                authorize(authorizer, request.virksomhetsnummer)
+
+                val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
+                val sendtAvNavn = pdlService.finnNavn(innloggetFnr)
+                val navn = pdlService.finnNavn(request.identitetsnummer)
+
+                val arbeidsforhold = aaregClient
+                    .hentArbeidsforhold(request.identitetsnummer, UUID.randomUUID().toString())
+                    .filter { it.arbeidsgiver.organisasjonsnummer == request.virksomhetsnummer }
+
+                request.validate(arbeidsforhold)
+
+                val kravId = UUID.fromString(call.parameters["id"])
+                val kravTilSletting = kroniskKravRepo.getById(kravId)
+                    ?: return@patch call.respond(HttpStatusCode.NotFound)
+
+                val kravTilOppdatering = request.toDomain(innloggetFnr, sendtAvNavn, navn)
+                belopBeregning.beregnBeløpKronisk(kravTilOppdatering)
+
+                kravTilSletting.status = KravStatus.ENDRET
+                kravTilSletting.slettetAv = innloggetFnr
+                kravTilSletting.slettetAvNavn = sendtAvNavn
+                kravTilSletting.endretDato = LocalDateTime.now()
+
+                // Sletter gammelt krav
+                datasource.connection.use { connection ->
+                    kroniskKravRepo.update(kravTilSletting, connection)
+                    bakgunnsjobbService.opprettJobb<SlettKroniskKravProcessor>(
+                        maksAntallForsoek = 10,
+                        data = om.writeValueAsString(KroniskKravProcessor.JobbData(kravTilSletting.id)),
+                        connection = connection
+                    )
+                }
+
+                // Oppretter nytt krav
+                datasource.connection.use { connection ->
+                    kroniskKravRepo.insert(kravTilOppdatering, connection)
+                    bakgunnsjobbService.opprettJobb<KroniskKravProcessor>(
+                        maksAntallForsoek = 10,
+                        data = om.writeValueAsString(KroniskKravProcessor.JobbData(kravTilOppdatering.id)),
+                        connection = connection
+                    )
+                    bakgunnsjobbService.opprettJobb<KroniskKravKvitteringProcessor>(
+                        maksAntallForsoek = 10,
+                        data = om.writeValueAsString(KroniskKravKvitteringProcessor.Jobbdata(kravTilOppdatering.id)),
+                        connection = connection
+                    )
+                    bakgunnsjobbService.opprettJobb<KroniskKravOppdaterNotifikasjonProcessor>(
+                        maksAntallForsoek = 10,
+                        data = om.writeValueAsString(KroniskKravKvitteringProcessor.Jobbdata(kravTilOppdatering.id)),
+                        connection = connection
+                    )
+                }
+
+                call.respond(HttpStatusCode.OK, kravTilOppdatering)
             }
 
             delete("/{id}") {

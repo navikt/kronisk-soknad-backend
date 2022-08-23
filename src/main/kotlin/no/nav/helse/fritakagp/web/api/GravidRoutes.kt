@@ -21,6 +21,7 @@ import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
 import no.nav.helse.fritakagp.processing.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravKvitteringProcessor
+import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravOppdaterNotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravProcessor
 import no.nav.helse.fritakagp.processing.gravid.krav.SlettGravidKravProcessor
 import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadKvitteringProcessor
@@ -54,7 +55,6 @@ fun Route.gravidRoutes(
 ) {
     route("/gravid") {
         route("/soeknad") {
-
             get("/{id}") {
                 val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
                 val form = gravidSoeknadRepo.getById(UUID.fromString(call.parameters["id"]))
@@ -202,6 +202,11 @@ fun Route.gravidRoutes(
                         connection = connection
                     )
                     bakgunnsjobbService.opprettJobb<GravidKravKvitteringProcessor>(
+                        maksAntallForsoek = 10,
+                        data = om.writeValueAsString(GravidKravKvitteringProcessor.Jobbdata(kravTilOppdatering.id)),
+                        connection = connection
+                    )
+                    bakgunnsjobbService.opprettJobb<GravidKravOppdaterNotifikasjonProcessor>(
                         maksAntallForsoek = 10,
                         data = om.writeValueAsString(GravidKravKvitteringProcessor.Jobbdata(kravTilOppdatering.id)),
                         connection = connection

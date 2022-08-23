@@ -53,11 +53,12 @@ class ArbeidsgiverNotifikasjonProcessor(
             val skjema = kroniskKravRepo.getById(jobbData.skjemaId)
                 ?: throw IllegalArgumentException("Fant ikke $jobbData")
             skjema.arbeidsgiverSakId = id
-            return kroniskKravRepo.update(skjema)
+            kroniskKravRepo.update(skjema)
+        } else {
+            val skjema = gravidKravRepo.getById(jobbData.skjemaId) ?: throw IllegalArgumentException("Fant ikke $jobbData")
+            skjema.arbeidsgiverSakId = id
+            gravidKravRepo.update(skjema)
         }
-        val skjema = gravidKravRepo.getById(jobbData.skjemaId) ?: throw IllegalArgumentException("Fant ikke $jobbData")
-        skjema.arbeidsgiverSakId = id
-        gravidKravRepo.update(skjema)
     }
 
     private fun map(jobbData: JobbData): SakParametere {
@@ -71,17 +72,17 @@ class ArbeidsgiverNotifikasjonProcessor(
                 "$frontendAppBaseUrl/nb/kronisk/krav/${skjema.id}",
                 "P3Y"
             )
+        } else {
+            val skjema = gravidKravRepo.getById(jobbData.skjemaId)
+                ?: throw IllegalArgumentException("Fant ikke $jobbData")
+            return SakParametere(
+                skjema.id,
+                skjema.virksomhetsnummer,
+                genererTittel(skjema.navn, skjema.identitetsnummer, "graviditet"),
+                "$frontendAppBaseUrl/nb/gravid/krav/${skjema.id}",
+                "P1Y"
+            )
         }
-
-        val skjema = gravidKravRepo.getById(jobbData.skjemaId)
-            ?: throw IllegalArgumentException("Fant ikke $jobbData")
-        return SakParametere(
-            skjema.id,
-            skjema.virksomhetsnummer,
-            genererTittel(skjema.navn, skjema.identitetsnummer, "graviditet"),
-            "$frontendAppBaseUrl/nb/gravid/krav/${skjema.id}",
-            "P1Y"
-        )
     }
 
     data class SakParametere(

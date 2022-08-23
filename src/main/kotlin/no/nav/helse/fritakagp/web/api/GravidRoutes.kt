@@ -22,7 +22,7 @@ import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
 import no.nav.helse.fritakagp.processing.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravKvitteringProcessor
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravProcessor
-import no.nav.helse.fritakagp.processing.gravid.krav.SlettGravidKravProcessor
+import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravSlettProcessor
 import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadKvitteringProcessor
 import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadProcessor
 import no.nav.helse.fritakagp.service.PdlService
@@ -185,7 +185,7 @@ fun Route.gravidRoutes(
                 // Sletter gammelt krav
                 datasource.connection.use { connection ->
                     gravidKravRepo.update(kravTilSletting, connection)
-                    bakgunnsjobbService.opprettJobb<SlettGravidKravProcessor>(
+                    bakgunnsjobbService.opprettJobb<GravidKravSlettProcessor>(
                         maksAntallForsoek = 10,
                         data = om.writeValueAsString(GravidKravProcessor.JobbData(kravTilSletting.id)),
                         connection = connection
@@ -230,7 +230,7 @@ fun Route.gravidRoutes(
                 form.endretDato = LocalDateTime.now()
                 datasource.connection.use { connection ->
                     gravidKravRepo.update(form, connection)
-                    bakgunnsjobbService.opprettJobb<SlettGravidKravProcessor>(
+                    bakgunnsjobbService.opprettJobb<GravidKravSlettProcessor>(
                         maksAntallForsoek = 10,
                         data = om.writeValueAsString(GravidKravProcessor.JobbData(form.id)),
                         connection = connection

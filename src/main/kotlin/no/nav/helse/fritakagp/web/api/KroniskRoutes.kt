@@ -21,7 +21,7 @@ import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
 import no.nav.helse.fritakagp.processing.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravKvitteringProcessor
 import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravProcessor
-import no.nav.helse.fritakagp.processing.kronisk.krav.SlettKroniskKravProcessor
+import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravSlettProcessor
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadKvitteringProcessor
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadProcessor
 import no.nav.helse.fritakagp.service.PdlService
@@ -181,7 +181,7 @@ fun Route.kroniskRoutes(
                 // Sletter gammelt krav
                 datasource.connection.use { connection ->
                     kroniskKravRepo.update(kravTilSletting, connection)
-                    bakgunnsjobbService.opprettJobb<SlettKroniskKravProcessor>(
+                    bakgunnsjobbService.opprettJobb<KroniskKravSlettProcessor>(
                         maksAntallForsoek = 10,
                         data = om.writeValueAsString(KroniskKravProcessor.JobbData(kravTilSletting.id)),
                         connection = connection
@@ -226,7 +226,7 @@ fun Route.kroniskRoutes(
                     form.endretDato = LocalDateTime.now()
                     datasource.connection.use { connection ->
                         kroniskKravRepo.update(form, connection)
-                        bakgunnsjobbService.opprettJobb<SlettKroniskKravProcessor>(
+                        bakgunnsjobbService.opprettJobb<KroniskKravSlettProcessor>(
                             maksAntallForsoek = 10,
                             data = om.writeValueAsString(KroniskKravProcessor.JobbData(form.id)),
                             connection = connection

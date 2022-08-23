@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory
 import java.time.LocalDate
 import java.util.*
 
-class SlettGravidKravProcessor(
+class GravidKravSlettProcessor(
     private val gravidKravRepo: GravidKravRepository,
     private val dokarkivKlient: DokarkivKlient,
     private val oppgaveKlient: OppgaveKlient,
@@ -54,7 +54,7 @@ class SlettGravidKravProcessor(
     val digitalKravBehandingsType = "ae0121"
     val fritakAGPBehandingsTema = "ab0200"
 
-    val log = LoggerFactory.getLogger(SlettGravidKravProcessor::class.java)
+    val log = LoggerFactory.getLogger(GravidKravSlettProcessor::class.java)
 
     /**
      * Prosesserer sletting av  gravidkrav; journalfører og oppretter en oppgave for saksbehandler.
@@ -174,7 +174,7 @@ class SlettGravidKravProcessor(
         val request = OpprettOppgaveRequest(
             aktoerId = aktoerId,
             journalpostId = krav.journalpostId,
-            beskrivelse = generereSlettGravidKravBeskrivelse(krav, "Annullering av refusjonskrav ifbm sykdom i aprbeidsgiverperioden med fritak fra arbeidsgiverperioden grunnet kronisk sykdom."),
+            beskrivelse = generereSlettGravidKravBeskrivelse(krav, "Annullering av refusjonskrav ifbm sykefravær i arbeidsgiverperioden med fritak fra arbeidsgiverperioden grunnet graviditet."),
             tema = "SYK",
             behandlingstype = digitalKravBehandingsType,
             oppgavetype = "BEH_REF",
@@ -194,7 +194,7 @@ class SlettGravidKravProcessor(
         val request = OpprettOppgaveRequest(
             aktoerId = aktoerId,
             journalpostId = krav.journalpostId,
-            beskrivelse = generereSlettGravidKravBeskrivelse(krav, "Fordelingsoppgave for annullering av refusjonskrav ifbm sykdom i aprbeidsgiverperioden med fritak fra arbeidsgiverperioden grunnet kronisk sykdom."),
+            beskrivelse = generereSlettGravidKravBeskrivelse(krav, "Fordelingsoppgave for annullering av refusjonskrav ifbm sykefravær i arbeidsgiverperioden med fritak fra arbeidsgiverperioden grunnet graviditet."),
             tema = "SYK",
             behandlingstype = digitalKravBehandingsType,
             oppgavetype = OPPGAVETYPE_FORDELINGSOPPGAVE,

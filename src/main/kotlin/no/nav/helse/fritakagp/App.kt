@@ -93,7 +93,7 @@ class FritakAgpApplication(val port: Int = 8080) : KoinComponent {
                 registrer(get<GravidKravProcessor>())
                 registrer(get<GravidKravKafkaProcessor>())
                 registrer(get<GravidKravKvitteringProcessor>())
-                registrer(get<SlettGravidKravProcessor>())
+                registrer(get<GravidKravSlettProcessor>())
 
                 registrer(get<KroniskSoeknadProcessor>())
                 registrer(get<KroniskSoeknadKafkaProcessor>())
@@ -102,7 +102,7 @@ class FritakAgpApplication(val port: Int = 8080) : KoinComponent {
                 registrer(get<KroniskKravProcessor>())
                 registrer(get<KroniskKravKafkaProcessor>())
                 registrer(get<KroniskKravKvitteringProcessor>())
-                registrer(get<SlettKroniskKravProcessor>())
+                registrer(get<KroniskKravSlettProcessor>())
 
                 registrer(get<BrukernotifikasjonProcessor>())
                 registrer(get<ArbeidsgiverNotifikasjonProcessor>())

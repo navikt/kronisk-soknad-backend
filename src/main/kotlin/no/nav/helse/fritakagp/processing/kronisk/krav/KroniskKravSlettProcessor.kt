@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory
 import java.time.LocalDate
 import java.util.*
 
-class SlettKroniskKravProcessor(
+class KroniskKravSlettProcessor(
     private val kroniskKravRepo: KroniskKravRepository,
     private val dokarkivKlient: DokarkivKlient,
     private val oppgaveKlient: OppgaveKlient,
@@ -53,7 +53,7 @@ class SlettKroniskKravProcessor(
     val digitalKravBehandingsType = "ae0121"
     val fritakAGPBehandingsTema = "ab0200"
 
-    val log = LoggerFactory.getLogger(SlettKroniskKravProcessor::class.java)
+    val log = LoggerFactory.getLogger(KroniskKravSlettProcessor::class.java)
 
     /**
      * Prosesserer sletting av kroniskkrav; journalfører og oppretter en oppgave for saksbehandler.

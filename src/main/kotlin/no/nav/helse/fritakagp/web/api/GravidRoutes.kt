@@ -32,7 +32,6 @@ import no.nav.helse.fritakagp.web.auth.hentIdentitetsnummerFraLoginToken
 import no.nav.helse.fritakagp.web.api.resreq.validation.VirusCheckConstraint
 import no.nav.helse.fritakagp.web.api.resreq.validation.extractBase64Del
 import no.nav.helse.fritakagp.web.api.resreq.validation.extractFilExtDel
-import org.valiktor.ConstraintViolation
 import org.valiktor.ConstraintViolationException
 import org.valiktor.DefaultConstraintViolation
 import java.time.LocalDateTime
@@ -148,7 +147,7 @@ fun Route.gravidRoutes(
                     )
                     bakgunnsjobbService.opprettJobb<ArbeidsgiverNotifikasjonProcessor>(
                         maksAntallForsoek = 10,
-                        data = om.writeValueAsString(ArbeidsgiverNotifikasjonProcessor.Jobbdata(krav.id, ArbeidsgiverNotifikasjonProcessor.Jobbdata.SkjemaType.KroniskKrav)),
+                        data = om.writeValueAsString(ArbeidsgiverNotifikasjonProcessor.JobbData(krav.id, ArbeidsgiverNotifikasjonProcessor.JobbData.SkjemaType.KroniskKrav)),
                         connection = connection
                     )
                 }

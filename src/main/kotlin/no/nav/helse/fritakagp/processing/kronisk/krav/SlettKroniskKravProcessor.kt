@@ -25,6 +25,8 @@ import no.nav.helse.fritakagp.domain.generereSlettKroniskKravBeskrivelse
 import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.service.BehandlendeEnhetService
+import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonKlient
+import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.hardDeleteSak
 import org.slf4j.LoggerFactory
 import java.time.LocalDate
 import java.util.*
@@ -39,7 +41,8 @@ class SlettKroniskKravProcessor(
     private val om: ObjectMapper,
     private val bucketStorage: BucketStorage,
     private val brregClient: BrregClient,
-    private val behandlendeEnhetService: BehandlendeEnhetService
+    private val behandlendeEnhetService: BehandlendeEnhetService,
+    private val arbeidsgiverNotifikasjonKlient: ArbeidsgiverNotifikasjonKlient
 ) : BakgrunnsjobbProsesserer {
     companion object {
         val JOB_TYPE = "slett-kronisk-krav"
@@ -63,6 +66,9 @@ class SlettKroniskKravProcessor(
             krav.sletteJournalpostId = journalførSletting(krav)
             krav.sletteOppgaveId = opprettOppgave(krav)
         } finally {
+            krav.arbeidsgiverSakId?.let {
+                runBlocking { arbeidsgiverNotifikasjonKlient.hardDeleteSak(it) }
+            }
             updateAndLogOnFailure(krav)
         }
     }

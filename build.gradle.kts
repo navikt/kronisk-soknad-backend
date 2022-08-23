@@ -58,7 +58,6 @@ dependencies {
     implementation("io.insert-koin:koin-core-jvm:$koinVersion")
     implementation("io.insert-koin:koin-core:$koinVersion")
     implementation("io.insert-koin:koin-ktor:$koinVersion")
-    testImplementation("io.insert-koin:koin-test:$koinVersion")
     implementation("no.nav.security:token-client-core:$tokenSupportVersion")
     implementation("no.nav.security:token-validation-ktor:$tokenSupportVersion")
     implementation("com.github.navikt:brukernotifikasjon-schemas:$brukernotifikasjonSchemasVersion")
@@ -94,6 +93,11 @@ dependencies {
         exclude(group = "com.sun.xml.ws", module = "policy")
     }
     implementation("com.github.javafaker:javafaker:1.0.2") // flytt denne til test når generatorene ikke er nødvendige i prod-koden lenger
+    implementation("com.google.cloud:google-cloud-storage:$gcpStorageVersion")
+    implementation("org.apache.kafka:kafka-clients:$kafkaClient")
+    implementation("io.confluent:kafka-avro-serializer:$confluentVersion")
+    implementation("de.m3y.kformat:kformat:0.7")
+    implementation("no.nav.helsearbeidsgiver:helsearbeidsgiver-arbeidsgiver-notifikasjon-klient:0.1.4")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.3.2")
     testImplementation("io.mockk:mockk:$mockKVersion")
     testImplementation("io.ktor:ktor-server-tests:$ktorVersion")
@@ -101,12 +105,9 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-params:$junitJupiterVersion")
     testImplementation("org.assertj:assertj-core:$assertJVersion")
+    testImplementation("io.insert-koin:koin-test:$koinVersion")
+    testImplementation("io.ktor:ktor-client-mock:$ktorVersion")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitJupiterVersion")
-    implementation("com.google.cloud:google-cloud-storage:$gcpStorageVersion")
-    implementation("org.apache.kafka:kafka-clients:$kafkaClient")
-    implementation("io.confluent:kafka-avro-serializer:$confluentVersion")
-    implementation("de.m3y.kformat:kformat:0.7")
-    implementation("no.nav.helsearbeidsgiver:helsearbeidsgiver-arbeidsgiver-notifikasjon-klient:0.1.1")
 }
 
 tasks.named<KotlinCompile>("compileKotlin") {

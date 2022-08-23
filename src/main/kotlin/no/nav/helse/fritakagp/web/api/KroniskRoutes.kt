@@ -9,12 +9,11 @@ import io.ktor.routing.*
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbService
 import no.nav.helse.arbeidsgiver.integrasjoner.aareg.AaregArbeidsforholdClient
 import no.nav.helse.arbeidsgiver.web.auth.AltinnAuthorizer
-import no.nav.helse.arbeidsgiver.web.validation.OrganisasjonsnummerValidator
 import no.nav.helse.fritakagp.KroniskKravMetrics
 import no.nav.helse.fritakagp.KroniskSoeknadMetrics
 import no.nav.helse.fritakagp.db.KroniskKravRepository
 import no.nav.helse.fritakagp.db.KroniskSoeknadRepository
-import no.nav.helse.fritakagp.domain.BeløpBeregning
+import no.nav.helse.fritakagp.domain.BeloepBeregning
 import no.nav.helse.fritakagp.domain.KravStatus
 import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
@@ -44,7 +43,7 @@ fun Route.kroniskRoutes(
     virusScanner: VirusScanner,
     bucket: BucketStorage,
     authorizer: AltinnAuthorizer,
-    belopBeregning: BeløpBeregning,
+    belopBeregning: BeloepBeregning,
     aaregClient: AaregArbeidsforholdClient,
     pdlService: PdlService
 ) {

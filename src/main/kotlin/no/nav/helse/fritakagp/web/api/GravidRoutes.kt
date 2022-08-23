@@ -13,7 +13,7 @@ import no.nav.helse.fritakagp.GravidKravMetrics
 import no.nav.helse.fritakagp.GravidSoeknadMetrics
 import no.nav.helse.fritakagp.db.GravidKravRepository
 import no.nav.helse.fritakagp.db.GravidSoeknadRepository
-import no.nav.helse.fritakagp.domain.BeløpBeregning
+import no.nav.helse.fritakagp.domain.BeloepBeregning
 import no.nav.helse.fritakagp.domain.KravStatus
 import no.nav.helse.fritakagp.domain.decodeBase64File
 import no.nav.helse.fritakagp.integration.brreg.BrregClient
@@ -48,7 +48,7 @@ fun Route.gravidRoutes(
     virusScanner: VirusScanner,
     bucket: BucketStorage,
     authorizer: AltinnAuthorizer,
-    belopBeregning: BeløpBeregning,
+    belopBeregning: BeloepBeregning,
     aaregClient: AaregArbeidsforholdClient,
     pdlService: PdlService
 ) {

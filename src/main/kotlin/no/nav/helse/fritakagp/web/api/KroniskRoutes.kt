@@ -19,6 +19,7 @@ import no.nav.helse.fritakagp.domain.KravStatus
 import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
+import no.nav.helse.fritakagp.processing.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravKvitteringProcessor
 import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravProcessor
 import no.nav.helse.fritakagp.processing.kronisk.krav.SlettKroniskKravProcessor
@@ -138,6 +139,11 @@ fun Route.kroniskRoutes(
                     bakgunnsjobbService.opprettJobb<KroniskKravKvitteringProcessor>(
                         maksAntallForsoek = 10,
                         data = om.writeValueAsString(KroniskKravKvitteringProcessor.Jobbdata(krav.id)),
+                        connection = connection
+                    )
+                    bakgunnsjobbService.opprettJobb<ArbeidsgiverNotifikasjonProcessor>(
+                        maksAntallForsoek = 10,
+                        data = om.writeValueAsString(ArbeidsgiverNotifikasjonProcessor.JobbData(krav.id, ArbeidsgiverNotifikasjonProcessor.JobbData.SkjemaType.KroniskKrav)),
                         connection = connection
                     )
                 }

@@ -147,7 +147,7 @@ fun Route.gravidRoutes(
                     )
                     bakgunnsjobbService.opprettJobb<ArbeidsgiverNotifikasjonProcessor>(
                         maksAntallForsoek = 10,
-                        data = om.writeValueAsString(ArbeidsgiverNotifikasjonProcessor.JobbData(krav.id, ArbeidsgiverNotifikasjonProcessor.JobbData.SkjemaType.KroniskKrav)),
+                        data = om.writeValueAsString(ArbeidsgiverNotifikasjonProcessor.JobbData(krav.id, ArbeidsgiverNotifikasjonProcessor.JobbData.SkjemaType.GravidKrav)),
                         connection = connection
                     )
                 }

@@ -2,7 +2,6 @@ package no.nav.helse.fritakagp.koin
 
 import com.zaxxer.hikari.HikariDataSource
 import io.ktor.config.*
-import io.ktor.util.*
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbRepository
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbService
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.PostgresBakgrunnsjobbRepository
@@ -12,14 +11,13 @@ import no.nav.helse.arbeidsgiver.web.auth.DefaultAltinnAuthorizer
 import no.nav.helse.fritakagp.MetrikkVarsler
 import no.nav.helse.fritakagp.datapakke.DatapakkePublisherJob
 import no.nav.helse.fritakagp.db.*
-import no.nav.helse.fritakagp.domain.BeløpBeregning
+import no.nav.helse.fritakagp.domain.BeloepBeregning
 import no.nav.helse.fritakagp.integration.altinn.message.Clients
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.gravid.krav.*
 import no.nav.helse.fritakagp.processing.gravid.soeknad.*
 import no.nav.helse.fritakagp.processing.kronisk.krav.*
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.*
-import no.nav.helse.fritakagp.service.BehandlendeEnhetService
 import no.nav.helse.fritakagp.service.PdlService
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -107,7 +105,7 @@ fun prodConfig(config: ApplicationConfig) = module {
     single { PdlService(get()) }
 
     single { DefaultAltinnAuthorizer(get()) } bind AltinnAuthorizer::class
-    single { BeløpBeregning(get()) }
+    single { BeloepBeregning(get()) }
 
     single { DatapakkePublisherJob(get(), get(), config.getString("datapakke.api_url"), config.getString("datapakke.id"), get()) }
     single { StatsRepoImpl(get()) } bind IStatsRepo::class

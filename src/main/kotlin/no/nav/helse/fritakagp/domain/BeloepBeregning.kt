@@ -1,12 +1,11 @@
 package no.nav.helse.fritakagp.domain
 
-import no.nav.helse.fritakagp.integration.GrunnbeløpClient
+import no.nav.helse.fritakagp.integration.GrunnbeloepClient
 import java.math.BigDecimal
 import java.math.RoundingMode
-import java.time.LocalDate
 
-class BeløpBeregning(
-    private val grunnbeløpClient: GrunnbeløpClient
+class BeloepBeregning(
+    private val grunnbeloepClient: GrunnbeloepClient
 ) {
     fun beregnBeløpKronisk(krav: KroniskKrav) = beregnPeriodeData(krav.perioder, krav.antallDager)
 
@@ -14,7 +13,7 @@ class BeløpBeregning(
 
     private fun beregnPeriodeData(perioder: List<Arbeidsgiverperiode>, antallDager: Int) {
         perioder.forEach {
-            val seksG = grunnbeløpClient.hentGrunnbeløp(it.fom).grunnbeløp * 6.0
+            val seksG = grunnbeloepClient.hentGrunnbeløp(it.fom).grunnbeløp * 6.0
             val arslonn = it.månedsinntekt * 12
             it.dagsats = if (arslonn < seksG)
                 round2DigitDecimal(arslonn / antallDager)

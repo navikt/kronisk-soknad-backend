@@ -97,7 +97,7 @@ dependencies {
     implementation("org.apache.kafka:kafka-clients:$kafkaClient")
     implementation("io.confluent:kafka-avro-serializer:$confluentVersion")
     implementation("de.m3y.kformat:kformat:0.7")
-    implementation("no.nav.helsearbeidsgiver:helsearbeidsgiver-arbeidsgiver-notifikasjon-klient:0.1.4")
+    implementation("no.nav.helsearbeidsgiver:helsearbeidsgiver-arbeidsgiver-notifikasjon-klient:0.1.5")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.3.2")
     testImplementation("io.mockk:mockk:$mockKVersion")
     testImplementation("io.ktor:ktor-server-tests:$ktorVersion")

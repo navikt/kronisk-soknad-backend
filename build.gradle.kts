@@ -142,6 +142,7 @@ dependencies {
     val prometheusVersion: String by project
     val slf4jVersion: String by project
     val tokenSupportVersion: String by project
+    val utilsVersion: String by project
     val valiktorVersion: String by project
     val wiremockStandaloneVersion: String by project
 
@@ -181,6 +182,7 @@ dependencies {
     implementation("net.logstash.logback:logstash-logback-encoder:$logbackEncoderVersion")
     implementation("no.nav.common:log:$navCommonLogVersion")
     implementation("no.nav.helsearbeidsgiver:helse-arbeidsgiver-felles-backend:$fellesBackendVersion")
+    implementation("no.nav.helsearbeidsgiver:utils:$utilsVersion")
     implementation("no.nav.security:mock-oauth2-server:$mockOAuth2ServerVersion")
     implementation("no.nav.security:token-client-core:$tokenSupportVersion")
     implementation("no.nav.security:token-validation-ktor:$tokenSupportVersion")

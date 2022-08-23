@@ -116,7 +116,7 @@ fun Module.externalSystemClients(config: ApplicationConfig) {
 
         val azureAdConfig = clientConfig.clientConfig["azure_ad"] ?: error(accessTokenProviderError)
         OAuth2TokenProvider(accessTokenService, azureAdConfig)
-    } bind ArbeidsgiverNotifikasjonAccessTokenProvider::class
+    } bind AccessTokenProvider::class
 
     single { AaregArbeidsforholdClientImpl(config.getString("aareg_url"), get(qualifier = named("PROXY")), get()) } bind AaregArbeidsforholdClient::class
     single { PdlClientImpl(config.getString("pdl_url"), get(qualifier = named("PROXY")), get(), get()) } bind PdlClient::class

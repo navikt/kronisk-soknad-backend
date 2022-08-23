@@ -103,9 +103,6 @@ fun preprodConfig(config: ApplicationConfig) = module {
     single { KroniskSoeknadKafkaProcessor(get(), get(), get()) }
     single { KroniskKravKafkaProcessor(get(), get(), get()) }
 
-    single { GravidKravOppdaterNotifikasjonProcessor(get(), get(), get(), "https://arbeidsgiver.dev.nav.no/fritak-agp") }
-    single { KroniskKravOppdaterNotifikasjonProcessor(get(), get(), get(), "https://arbeidsgiver.dev.nav.no/fritak-agp") }
-
     single { BrukernotifikasjonProcessor(get(), get(), get(), get(), get(), get(), 3, "https://fritak-agp-frontend.dev.nav.no") }
     single { ArbeidsgiverNotifikasjonProcessor(get(), get(), get(), "https://arbeidsgiver.dev.nav.no/fritak-agp", get()) }
     single { PdlService(get()) }

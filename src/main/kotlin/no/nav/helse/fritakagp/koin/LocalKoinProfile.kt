@@ -27,7 +27,6 @@ import java.net.URL
 import javax.sql.DataSource
 
 fun localDevConfig(config: ApplicationConfig) = module {
-
     mockExternalDependecies()
     single { GrunnbeloepClient(get()) }
     single { BeloepBeregning(get()) }
@@ -64,9 +63,6 @@ fun localDevConfig(config: ApplicationConfig) = module {
     single { GravidKravKafkaProcessor(get(), get(), get()) }
     single { KroniskSoeknadKafkaProcessor(get(), get(), get()) }
     single { KroniskKravKafkaProcessor(get(), get(), get()) }
-
-    single { GravidKravOppdaterNotifikasjonProcessor(get(), get(), get(), "https://localhost:3000/fritak-agp") }
-    single { KroniskKravOppdaterNotifikasjonProcessor(get(), get(), get(), "https://localhost:3000/fritak-agp") }
 
     single { PdlService(get()) }
 

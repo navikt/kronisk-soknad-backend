@@ -103,7 +103,6 @@ fun prodConfig(config: ApplicationConfig) = module {
     single { KroniskKravKafkaProcessor(get(), get(), get()) }
 
     single { GravidKravOppdaterNotifikasjonProcessor(get(), get(), get(), "https://arbeidsgiver.nav.no/fritak-agp") }
-    single { KroniskKravOppdaterNotifikasjonProcessor(get(), get(), get(), "https://arbeidsgiver.nav.no/fritak-agp") }
 
     single { BrukernotifikasjonProcessor(get(), get(), get(), get(), get(), get(), 4, "https://arbeidsgiver.nav.no/fritak-agp") }
     single { ArbeidsgiverNotifikasjonProcessor(get(), get(), get(), "https://arbeidsgiver.nav.no/fritak-agp", get()) }

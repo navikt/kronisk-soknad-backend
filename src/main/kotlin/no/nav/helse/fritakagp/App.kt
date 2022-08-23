@@ -14,17 +14,11 @@ import no.nav.helse.arbeidsgiver.system.getString
 import no.nav.helse.fritakagp.koin.selectModuleBasedOnProfile
 import no.nav.helse.fritakagp.processing.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
-import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravKafkaProcessor
-import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravKvitteringProcessor
-import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravProcessor
-import no.nav.helse.fritakagp.processing.gravid.krav.SlettGravidKravProcessor
+import no.nav.helse.fritakagp.processing.gravid.krav.*
 import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadKafkaProcessor
 import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadKvitteringProcessor
 import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadProcessor
-import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravKafkaProcessor
-import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravKvitteringProcessor
-import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravProcessor
-import no.nav.helse.fritakagp.processing.kronisk.krav.SlettKroniskKravProcessor
+import no.nav.helse.fritakagp.processing.kronisk.krav.*
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadKafkaProcessor
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadKvitteringProcessor
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadProcessor
@@ -100,6 +94,7 @@ class FritakAgpApplication(val port: Int = 8080) : KoinComponent {
                 registrer(get<GravidKravKafkaProcessor>())
                 registrer(get<GravidKravKvitteringProcessor>())
                 registrer(get<SlettGravidKravProcessor>())
+                registrer(get<GravidKravOppdaterNotifikasjonProcessor>())
 
                 registrer(get<KroniskSoeknadProcessor>())
                 registrer(get<KroniskSoeknadKafkaProcessor>())
@@ -109,6 +104,7 @@ class FritakAgpApplication(val port: Int = 8080) : KoinComponent {
                 registrer(get<KroniskKravKafkaProcessor>())
                 registrer(get<KroniskKravKvitteringProcessor>())
                 registrer(get<SlettKroniskKravProcessor>())
+                registrer(get<KroniskKravOppdaterNotifikasjonProcessor>())
 
                 registrer(get<BrukernotifikasjonProcessor>())
                 registrer(get<ArbeidsgiverNotifikasjonProcessor>())

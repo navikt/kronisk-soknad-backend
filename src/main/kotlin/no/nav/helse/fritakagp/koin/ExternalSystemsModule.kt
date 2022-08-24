@@ -29,6 +29,7 @@ import no.nav.helse.fritakagp.integration.oauth2.TokenResolver
 import no.nav.helse.fritakagp.integration.virusscan.ClamavVirusScannerImp
 import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
 import no.nav.helse.fritakagp.service.BehandlendeEnhetService
+import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonKlient
 import no.nav.security.token.support.client.core.oauth2.ClientCredentialsTokenClient
 import no.nav.security.token.support.client.core.oauth2.OAuth2AccessTokenService
 import no.nav.security.token.support.client.core.oauth2.OnBehalfOfTokenClient
@@ -36,6 +37,7 @@ import no.nav.security.token.support.client.core.oauth2.TokenExchangeClient
 import org.koin.core.module.Module
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
+import java.net.URL
 
 @OptIn(KtorExperimentalAPI::class)
 fun Module.externalSystemClients(config: ApplicationConfig) {
@@ -100,10 +102,26 @@ fun Module.externalSystemClients(config: ApplicationConfig) {
         OAuth2TokenProvider(accessTokenService, azureAdConfig)
     } bind AccessTokenProvider::class
 
+    single(named("ARBEIDSGIVERNOTIFIKASJON")) {
+        val clientConfig = OAuth2ClientPropertiesConfig(config, "arbeidsgivernotifikasjonscope")
+        val tokenResolver = TokenResolver()
+        val oauthHttpClient = DefaultOAuth2HttpClient(get())
+        val accessTokenService = OAuth2AccessTokenService(
+            tokenResolver,
+            OnBehalfOfTokenClient(oauthHttpClient),
+            ClientCredentialsTokenClient(oauthHttpClient),
+            TokenExchangeClient(oauthHttpClient)
+        )
+
+        val azureAdConfig = clientConfig.clientConfig["azure_ad"] ?: error(accessTokenProviderError)
+        OAuth2TokenProvider(accessTokenService, azureAdConfig)
+    } bind AccessTokenProvider::class
+
     single { AaregArbeidsforholdClientImpl(config.getString("aareg_url"), get(qualifier = named("PROXY")), get()) } bind AaregArbeidsforholdClient::class
     single { PdlClientImpl(config.getString("pdl_url"), get(qualifier = named("PROXY")), get(), get()) } bind PdlClient::class
     single { DokarkivKlientImpl(config.getString("dokarkiv.base_url"), get(), get(qualifier = named("DOKARKIV"))) } bind DokarkivKlient::class
     single { OppgaveKlientImpl(config.getString("oppgavebehandling.url"), get(qualifier = named("OPPGAVE")), get()) } bind OppgaveKlient::class
+    single { ArbeidsgiverNotifikasjonKlient(URL(config.getString("arbeidsgiver_notifikasjon_api_url")), get(qualifier = named("ARBEIDSGIVERNOTIFIKASJON")), get()) }
     single {
         ClamavVirusScannerImp(
             get(),

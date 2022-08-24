@@ -11,7 +11,6 @@ interface SimpleJsonbEntity {
 
 interface SimpleJsonbRepository<T : SimpleJsonbEntity> {
     fun getById(id: UUID): T?
-    fun getAllForVirksomhet(virksomhetsnummer: String): List<T?>
 
     fun insert(soeknad: T): T
     fun insert(soeknad: T, connection: Connection): T
@@ -37,26 +36,9 @@ abstract class SimpleJsonbRepositoryBase<T : SimpleJsonbEntity>(
 ) : SimpleJsonbRepository<T> {
 
     private val getByIdStatement = """SELECT * FROM $tableName WHERE data ->> 'id' = ?"""
-    private val getAllForVirksomhetStatement = """SELECT * FROM $tableName WHERE data ->> 'virksomhetsnummer' = ?"""
     private val saveStatement = "INSERT INTO $tableName (data) VALUES (?::json);"
     private val updateStatement = "UPDATE $tableName SET data = ?::json WHERE data ->> 'id' = ?"
     private val deleteStatement = """DELETE FROM $tableName WHERE data ->> 'id' = ?"""
-
-    override fun getAllForVirksomhet(virksomhetsnummer: String): List<T?> {
-        ds.connection.use {
-            val existingList = ArrayList<T>()
-            val res = it.prepareStatement(getAllForVirksomhetStatement).apply {
-                setString(1, virksomhetsnummer)
-            }.executeQuery()
-
-            while (res.next()) {
-                val sg = mapper.readValue(res.getString("data"), clazz)
-                existingList.add(sg)
-            }
-
-            return existingList
-        }
-    }
 
     override fun getById(id: UUID): T? {
         ds.connection.use {

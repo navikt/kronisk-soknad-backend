@@ -32,6 +32,13 @@ import java.time.LocalDateTime
 fun Module.mockExternalDependecies() {
     single { MockAltinnRepo(get()) } bind AltinnOrganisationsRepository::class
     single { MockBrukernotifikasjonBeskjedSender() } bind BrukernotifikasjonBeskjedSender::class
+    single {
+        object : AccessTokenProvider {
+            override fun getToken(): String {
+                return "fake token"
+            }
+        }
+    } bind AccessTokenProvider::class
 
     single {
         object : AaregArbeidsforholdClient {

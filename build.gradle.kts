@@ -40,7 +40,7 @@ repositories {
             username = "x-access-token"
             password = githubPassword
         }
-        setUrl("https://maven.pkg.github.com/navikt/helse-arbeidsgiver-felles-backend")
+        setUrl("https://maven.pkg.github.com/navikt/*")
     }
 }
 
@@ -109,6 +109,7 @@ sonarqube {
 
 dependencies {
     val altinnCorrespondenceAgencyVersion: String by project
+    val arbeidsgiverNotifikasjonKlientVersion: String by project
     val assertJVersion: String by project
     val brukernotifikasjonSchemasVersion: String by project
     val confluentVersion: String by project
@@ -182,6 +183,7 @@ dependencies {
     implementation("net.logstash.logback:logstash-logback-encoder:$logbackEncoderVersion")
     implementation("no.nav.common:log:$navCommonLogVersion")
     implementation("no.nav.helsearbeidsgiver:helse-arbeidsgiver-felles-backend:$fellesBackendVersion")
+    implementation("no.nav.helsearbeidsgiver:helsearbeidsgiver-arbeidsgiver-notifikasjon-klient:$arbeidsgiverNotifikasjonKlientVersion")
     implementation("no.nav.helsearbeidsgiver:utils:$utilsVersion")
     implementation("no.nav.security:mock-oauth2-server:$mockOAuth2ServerVersion")
     implementation("no.nav.security:token-client-core:$tokenSupportVersion")
@@ -201,6 +203,7 @@ dependencies {
     implementation("org.valiktor:valiktor-javatime:$valiktorVersion")
 
     testImplementation("io.insert-koin:koin-test:$koinVersion")
+    testImplementation("io.ktor:ktor-client-mock:$ktorVersion")
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
     testImplementation("io.ktor:ktor-server-tests:$ktorVersion")
     testImplementation("io.mockk:mockk:$mockKVersion")

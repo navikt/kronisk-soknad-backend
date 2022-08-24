@@ -170,6 +170,10 @@ fun Route.kroniskRoutes(
                 val kravTilSletting = kroniskKravRepo.getById(kravId)
                     ?: return@patch call.respond(HttpStatusCode.NotFound)
 
+                if (kravTilSletting.virksomhetsnummer != request.virksomhetsnummer) {
+                    return@patch call.respond(HttpStatusCode.Forbidden)
+                }
+
                 val kravTilOppdatering = request.toDomain(innloggetFnr, sendtAvNavn, navn)
                 belopBeregning.beregnBeløpKronisk(kravTilOppdatering)
 

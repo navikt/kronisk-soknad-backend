@@ -174,6 +174,10 @@ fun Route.gravidRoutes(
                 val kravTilSletting = gravidKravRepo.getById(kravId)
                     ?: return@patch call.respond(HttpStatusCode.NotFound)
 
+                if (kravTilSletting.virksomhetsnummer != request.virksomhetsnummer) {
+                    return@patch call.respond(HttpStatusCode.Forbidden)
+                }
+
                 val kravTilOppdatering = request.toDomain(innloggetFnr, sendtAvNavn, navn)
                 belopBeregning.beregnBeløpGravid(kravTilOppdatering)
 

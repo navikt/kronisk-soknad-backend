@@ -32,7 +32,9 @@ data class GravidKrav(
 
     var status: KravStatus = KravStatus.OPPRETTET,
     var aarsakEndring: String? = null,
-    var endretDato: LocalDateTime? = null
+    var endretDato: LocalDateTime? = null,
+
+    var arbeidsgiverSakId: String? = null
 ) : SimpleJsonbEntity
 
 enum class KravStatus {

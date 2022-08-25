@@ -7,8 +7,8 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import no.nav.helse.GravidTestData
-import no.nav.helse.fritakagp.integration.kafka.ProducerFactory
 import no.nav.helse.fritakagp.integration.kafka.KravmeldingKafkaProducer
+import no.nav.helse.fritakagp.integration.kafka.ProducerFactory
 import no.nav.helse.fritakagp.integration.kafka.localCommonKafkaProps
 import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.clients.producer.RecordMetadata

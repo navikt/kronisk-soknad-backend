@@ -1,17 +1,9 @@
 package no.nav.helse
 
 import no.nav.helse.arbeidsgiver.integrasjoner.aareg.*
-import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OpprettOppgaveResponse
-import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.Prioritet
-import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.Status
 import no.nav.helse.fritakagp.domain.*
-import no.nav.helse.fritakagp.web.api.resreq.GravidKravRequest
-import no.nav.helse.fritakagp.web.api.resreq.KroniskKravRequest
-import no.nav.helse.fritakagp.web.api.resreq.KroniskSoknadRequest
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
-import kotlin.random.Random
 
 object AaregTestData {
     val arbeidsgiver = Arbeidsgiver("AS", "1232242423")

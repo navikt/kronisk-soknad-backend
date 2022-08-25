@@ -5,16 +5,13 @@ import io.ktor.client.features.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
-import no.nav.helse.GravidTestData
 import no.nav.helse.KroniskTestData
-import no.nav.helse.fritakagp.db.KroniskKravRepository
 import no.nav.helse.fritakagp.domain.Arbeidsgiverperiode
 import no.nav.helse.fritakagp.domain.KroniskKrav
 import no.nav.helse.fritakagp.web.api.resreq.ValidationProblem
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import org.koin.test.inject
 import java.time.LocalDate
 
 class KroniskKravHTTPTests : SystemTestBase() {

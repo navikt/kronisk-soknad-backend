@@ -4,7 +4,6 @@ import io.mockk.every
 import io.mockk.mockk
 import no.nav.helse.arbeidsgiver.utils.loadFromResources
 import no.nav.helse.fritakagp.datapakke.DatapakkePublisherJob
-import no.nav.helse.fritakagp.db.AntallType
 import no.nav.helse.fritakagp.db.GravidSoeknadTiltak
 import no.nav.helse.fritakagp.db.IStatsRepo
 import no.nav.helse.fritakagp.db.SykeGradAntall

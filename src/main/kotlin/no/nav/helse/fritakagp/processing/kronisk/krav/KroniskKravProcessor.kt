@@ -28,7 +28,7 @@ import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor.Jobbdata.SkjemaType
 import no.nav.helse.fritakagp.service.BehandlendeEnhetService
-import org.slf4j.LoggerFactory
+import no.nav.helsearbeidsgiver.utils.log.logger
 import java.time.LocalDate
 import java.util.Base64
 import java.util.UUID
@@ -54,7 +54,7 @@ class KroniskKravProcessor(
     val digitalKravBehandingsType = "ae0121"
     val fritakAGPBehandingsTema = "ab0200"
 
-    val log = LoggerFactory.getLogger(KroniskKravProcessor::class.java)
+    private val logger = this.logger()
 
     /**
      * Prosesserer et kroniskkrav; journalfører kravet og oppretter en oppgave for saksbehandler.
@@ -62,13 +62,13 @@ class KroniskKravProcessor(
      */
     override fun prosesser(jobb: Bakgrunnsjobb) {
         val krav = getOrThrow(jobb)
-        log.info("Prosesserer krav ${krav.id}")
+        logger.info("Prosesserer krav ${krav.id}")
 
         try {
             if (krav.virksomhetsnavn == null) {
                 runBlocking {
                     krav.virksomhetsnavn = brregClient.getVirksomhetsNavn(krav.virksomhetsnummer)
-                    log.info("Slo opp virksomhet")
+                    logger.info("Slo opp virksomhet")
                 }
             }
             if (krav.journalpostId == null) {
@@ -77,11 +77,11 @@ class KroniskKravProcessor(
             }
 
             bucketStorage.deleteDoc(krav.id)
-            log.info("Slettet eventuelle vedlegg")
+            logger.info("Slettet eventuelle vedlegg")
 
             if (krav.oppgaveId == null) {
                 krav.oppgaveId = opprettOppgave(krav)
-                log.info("Oppgave opprettet med id ${krav.oppgaveId}")
+                logger.info("Oppgave opprettet med id ${krav.oppgaveId}")
                 KroniskKravMetrics.tellOppgaveOpprettet()
             }
             bakgrunnsjobbRepo.save(
@@ -116,7 +116,7 @@ class KroniskKravProcessor(
     override fun stoppet(jobb: Bakgrunnsjobb) {
         val krav = getOrThrow(jobb)
         val oppgaveId = opprettFordelingsOppgave(krav)
-        log.warn("Jobben ${jobb.uuid} feilet permanenet og resulterte i fordelignsoppgave $oppgaveId")
+        logger.warn("Jobben ${jobb.uuid} feilet permanenet og resulterte i fordelignsoppgave $oppgaveId")
     }
 
     private fun updateAndLogOnFailure(krav: KroniskKrav) {
@@ -149,7 +149,7 @@ class KroniskKravProcessor(
 
         )
 
-        log.info("Journalført ${krav.id} med ref ${response.journalpostId}")
+        logger.info("Journalført ${krav.id} med ref ${response.journalpostId}")
         return response.journalpostId
     }
 
@@ -203,7 +203,7 @@ class KroniskKravProcessor(
         val aktoerId = pdlClient.fullPerson(krav.identitetsnummer)?.hentIdenter?.trekkUtIdent(PdlIdent.PdlIdentGruppe.AKTORID)
         val enhetsNr = behandlendeEnhetService.hentBehandlendeEnhet(krav.identitetsnummer, krav.id.toString())
         requireNotNull(aktoerId) { "Fant ikke AktørID for fnr i ${krav.id}" }
-        log.info("Fant aktørid")
+        logger.info("Fant aktørid")
         val request = OpprettOppgaveRequest(
             tildeltEnhetsnr = enhetsNr,
             aktoerId = aktoerId,

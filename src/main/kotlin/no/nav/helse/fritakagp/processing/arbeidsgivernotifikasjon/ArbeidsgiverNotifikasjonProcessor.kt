@@ -9,7 +9,7 @@ import no.nav.helse.fritakagp.db.GravidKravRepository
 import no.nav.helse.fritakagp.db.KroniskKravRepository
 import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonKlient
 import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.opprettNySak
-import org.slf4j.LoggerFactory
+import no.nav.helsearbeidsgiver.utils.log.logger
 import java.util.UUID
 
 class ArbeidsgiverNotifikasjonProcessor(
@@ -19,7 +19,7 @@ class ArbeidsgiverNotifikasjonProcessor(
     private val frontendAppBaseUrl: String = "https://arbeidsgiver.nav.no/fritak-agp",
     private val arbeidsgiverNotifikasjonKlient: ArbeidsgiverNotifikasjonKlient
 ) : BakgrunnsjobbProsesserer {
-    val log = LoggerFactory.getLogger(ArbeidsgiverNotifikasjonProcessor::class.java)
+    private val logger = this.logger()
 
     companion object {
         const val JOB_TYPE = "arbeidsgivernotifikasjon"
@@ -28,7 +28,7 @@ class ArbeidsgiverNotifikasjonProcessor(
     override val type: String get() = JOB_TYPE
 
     override fun prosesser(jobb: Bakgrunnsjobb) {
-        log.info("Prosesserer ${jobb.uuid} med type ${jobb.type}")
+        logger.info("Prosesserer ${jobb.uuid} med type ${jobb.type}")
         val jobbData = om.readValue<JobbData>(jobb.data)
         val sak = map(jobbData)
         val resultat = runBlocking {
@@ -42,7 +42,7 @@ class ArbeidsgiverNotifikasjonProcessor(
             )
         }
         updateSaksId(jobbData, resultat)
-        log.info("Opprettet sak i arbeidsgivernotifikasjon med ${sak.id} med ref $resultat")
+        logger.info("Opprettet sak i arbeidsgivernotifikasjon med ${sak.id} med ref $resultat")
     }
 
     private fun genererTittel(navn: String?, identitetsnummer: String, skjemaType: String) =

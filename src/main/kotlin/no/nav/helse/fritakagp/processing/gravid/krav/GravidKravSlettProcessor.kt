@@ -27,7 +27,7 @@ import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.service.BehandlendeEnhetService
 import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonKlient
 import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.hardDeleteSak
-import org.slf4j.LoggerFactory
+import no.nav.helsearbeidsgiver.utils.log.logger
 import java.time.LocalDate
 import java.util.Base64
 import java.util.UUID
@@ -55,7 +55,7 @@ class GravidKravSlettProcessor(
     val digitalKravBehandingsType = "ae0121"
     val fritakAGPBehandingsTema = "ab0200"
 
-    val log = LoggerFactory.getLogger(GravidKravSlettProcessor::class.java)
+    private val logger = this.logger()
 
     /**
      * Prosesserer sletting av  gravidkrav; journalfører og oppretter en oppgave for saksbehandler.
@@ -63,7 +63,7 @@ class GravidKravSlettProcessor(
      */
     override fun prosesser(jobb: Bakgrunnsjobb) {
         val krav = getOrThrow(jobb)
-        log.info("Sletter krav ${krav.id}")
+        logger.info("Sletter krav ${krav.id}")
         try {
             journalførSletting(krav)
             krav.oppgaveId = opprettOppgave(krav)
@@ -85,7 +85,7 @@ class GravidKravSlettProcessor(
     override fun stoppet(jobb: Bakgrunnsjobb) {
         val krav = getOrThrow(jobb)
         val oppgaveId = opprettFordelingsOppgave(krav)
-        log.warn("Jobben ${jobb.uuid} feilet permanenet og resulterte i fordelignsoppgave $oppgaveId")
+        logger.warn("Jobben ${jobb.uuid} feilet permanenet og resulterte i fordelignsoppgave $oppgaveId")
     }
 
     private fun updateAndLogOnFailure(krav: GravidKrav) {
@@ -117,7 +117,7 @@ class GravidKravSlettProcessor(
 
         )
 
-        log.debug("Journalført ${krav.id} med ref ${response.journalpostId}")
+        logger.debug("Journalført ${krav.id} med ref ${response.journalpostId}")
         return response.journalpostId
     }
 
@@ -171,7 +171,7 @@ class GravidKravSlettProcessor(
 
         val aktoerId = pdlClient.fullPerson(krav.identitetsnummer)?.hentIdenter?.trekkUtIdent(PdlIdent.PdlIdentGruppe.AKTORID)
         requireNotNull(aktoerId) { "Fant ikke AktørID for fnr i ${krav.id}" }
-        log.info("Fant aktørid")
+        logger.info("Fant aktørid")
         val request = OpprettOppgaveRequest(
             aktoerId = aktoerId,
             journalpostId = krav.journalpostId,

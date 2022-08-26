@@ -7,7 +7,7 @@ import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbProsesserer
 import no.nav.helse.fritakagp.db.GravidSoeknadRepository
 import no.nav.helse.fritakagp.integration.kafka.SoeknadmeldingSender
 import org.slf4j.LoggerFactory
-import java.util.*
+import java.util.UUID
 
 class GravidSoeknadKafkaProcessor(
     private val gravidSoeknadRepo: GravidSoeknadRepository,

@@ -29,7 +29,8 @@ import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjo
 import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.hardDeleteSak
 import org.slf4j.LoggerFactory
 import java.time.LocalDate
-import java.util.*
+import java.util.Base64
+import java.util.UUID
 
 class GravidKravSlettProcessor(
     private val gravidKravRepo: GravidKravRepository,

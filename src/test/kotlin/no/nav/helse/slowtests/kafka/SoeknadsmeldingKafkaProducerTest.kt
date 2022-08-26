@@ -2,7 +2,10 @@ package no.nav.helse.slowtests.kafka
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import no.nav.helse.GravidTestData
-import no.nav.helse.fritakagp.integration.kafka.*
+import no.nav.helse.fritakagp.integration.kafka.SoeknadmeldingKafkaProducer
+import no.nav.helse.fritakagp.integration.kafka.StringKafkaProducerFactory
+import no.nav.helse.fritakagp.integration.kafka.consumerFakeConfig
+import no.nav.helse.fritakagp.integration.kafka.localCommonKafkaProps
 import no.nav.helse.slowtests.kafka.KafkaAdminForTests.Companion.topicName
 import no.nav.helse.slowtests.systemtests.api.SystemTestBase
 import org.assertj.core.api.Assertions.assertThat

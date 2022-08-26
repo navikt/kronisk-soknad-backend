@@ -1,8 +1,7 @@
 package no.nav.helse.fritakagp.integration.oauth2
 
 import com.nimbusds.oauth2.sdk.auth.ClientAuthenticationMethod
-import io.ktor.config.*
-import io.ktor.util.*
+import io.ktor.config.ApplicationConfig
 import no.nav.security.token.support.client.core.ClientAuthenticationProperties
 import no.nav.security.token.support.client.core.ClientProperties
 import no.nav.security.token.support.client.core.OAuth2GrantType

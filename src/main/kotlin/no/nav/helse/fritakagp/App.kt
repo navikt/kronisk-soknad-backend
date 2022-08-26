@@ -1,9 +1,12 @@
 package no.nav.helse.fritakagp
 
 import com.typesafe.config.ConfigFactory
-import io.ktor.config.*
-import io.ktor.server.engine.*
-import io.ktor.server.netty.*
+import io.ktor.config.HoconApplicationConfig
+import io.ktor.server.engine.applicationEngineEnvironment
+import io.ktor.server.engine.connector
+import io.ktor.server.engine.embeddedServer
+import io.ktor.server.netty.Netty
+import io.ktor.server.netty.NettyApplicationEngine
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbService
 import no.nav.helse.arbeidsgiver.kubernetes.KubernetesProbeManager
 import no.nav.helse.arbeidsgiver.kubernetes.LivenessComponent

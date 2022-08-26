@@ -5,8 +5,7 @@ import no.nav.helse.arbeidsgiver.bakgrunnsjobb.Bakgrunnsjobb
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbProsesserer
 import no.nav.helse.fritakagp.GravidKravMetrics
 import no.nav.helse.fritakagp.db.GravidKravRepository
-import java.lang.IllegalArgumentException
-import java.util.*
+import java.util.UUID
 
 class GravidKravKvitteringProcessor(
     private val gravidKravKvitteringSender: GravidKravKvitteringSender,

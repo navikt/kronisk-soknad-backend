@@ -3,7 +3,10 @@ package no.nav.helse
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OpprettOppgaveResponse
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.Prioritet
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.Status
-import no.nav.helse.fritakagp.domain.*
+import no.nav.helse.fritakagp.domain.Arbeidsgiverperiode
+import no.nav.helse.fritakagp.domain.FravaerData
+import no.nav.helse.fritakagp.domain.KroniskKrav
+import no.nav.helse.fritakagp.domain.KroniskSoeknad
 import no.nav.helse.fritakagp.web.api.resreq.KroniskKravRequest
 import no.nav.helse.fritakagp.web.api.resreq.KroniskSoknadRequest
 import java.time.LocalDate

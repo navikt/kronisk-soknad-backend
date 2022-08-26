@@ -12,7 +12,11 @@ import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.helse.AaregTestData
 import no.nav.helse.GravidTestData
-import no.nav.helse.arbeidsgiver.integrasjoner.aareg.*
+import no.nav.helse.arbeidsgiver.integrasjoner.aareg.Ansettelsesperiode
+import no.nav.helse.arbeidsgiver.integrasjoner.aareg.Arbeidsforhold
+import no.nav.helse.arbeidsgiver.integrasjoner.aareg.Arbeidsgiver
+import no.nav.helse.arbeidsgiver.integrasjoner.aareg.Opplysningspliktig
+import no.nav.helse.arbeidsgiver.integrasjoner.aareg.Periode
 import no.nav.helse.arbeidsgiver.utils.loadFromResources
 import no.nav.helse.fritakagp.domain.Arbeidsgiverperiode
 import no.nav.helse.fritakagp.web.api.resreq.GravidKravRequest

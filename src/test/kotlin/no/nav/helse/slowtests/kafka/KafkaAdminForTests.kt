@@ -10,7 +10,7 @@ import org.apache.kafka.common.errors.TopicExistsException
 import org.apache.kafka.common.serialization.StringDeserializer
 import org.slf4j.LoggerFactory
 import java.time.Duration
-import java.util.*
+import java.util.Collections
 import java.util.concurrent.TimeUnit
 
 class KafkaAdminForTests {

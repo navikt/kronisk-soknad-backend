@@ -5,7 +5,7 @@ import de.m3y.kformat.table
 import no.nav.helse.fritakagp.processing.gravid.krav.getPDFTimeStampFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.*
+import java.util.Base64
 
 fun decodeBase64File(datafile: String): ByteArray {
     return Base64.getDecoder().decode(datafile)

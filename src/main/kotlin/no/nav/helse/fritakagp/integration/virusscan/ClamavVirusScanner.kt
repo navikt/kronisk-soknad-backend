@@ -1,10 +1,14 @@
 package no.nav.helse.fritakagp.integration.virusscan
 
 import io.ktor.client.HttpClient
-import io.ktor.client.request.*
-import io.ktor.client.request.forms.*
-import io.ktor.http.*
-import io.ktor.utils.io.core.*
+import io.ktor.client.request.forms.MultiPartFormDataContent
+import io.ktor.client.request.forms.append
+import io.ktor.client.request.forms.formData
+import io.ktor.client.request.request
+import io.ktor.client.request.url
+import io.ktor.http.ContentType
+import io.ktor.http.HttpMethod
+import io.ktor.utils.io.core.writeFully
 
 interface VirusScanner {
     suspend fun scanDoc(vedlagt: ByteArray): Boolean

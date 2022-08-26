@@ -5,7 +5,6 @@ import no.nav.helse.fritakagp.domain.GravidKrav
 import no.nav.helse.fritakagp.domain.GravidSoeknad
 import no.nav.helse.fritakagp.domain.KroniskKrav
 import no.nav.helse.fritakagp.domain.KroniskSoeknad
-import java.util.*
 import javax.sql.DataSource
 
 class PostgresGravidSoeknadRepository(ds: DataSource, om: ObjectMapper) : GravidSoeknadRepository,

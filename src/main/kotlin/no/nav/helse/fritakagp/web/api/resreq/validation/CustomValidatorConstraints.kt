@@ -1,11 +1,9 @@
 package no.nav.helse.fritakagp.web.api.resreq.validation
 
-import no.nav.helse.arbeidsgiver.web.validation.OrganisasjonsnummerConstraint
-import no.nav.helse.arbeidsgiver.web.validation.OrganisasjonsnummerValidator
 import no.nav.helse.fritakagp.domain.Arbeidsgiverperiode
 import no.nav.helse.fritakagp.domain.FravaerData
-import no.nav.helse.fritakagp.domain.KroniskSoeknad
 import no.nav.helse.fritakagp.domain.GodkjenteFiletyper
+import no.nav.helse.fritakagp.domain.KroniskSoeknad
 import org.valiktor.Constraint
 import org.valiktor.Validator
 import java.time.LocalDate

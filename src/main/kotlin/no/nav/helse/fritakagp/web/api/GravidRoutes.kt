@@ -1,11 +1,17 @@
 package no.nav.helse.fritakagp.web.api
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import io.ktor.application.*
-import io.ktor.http.*
-import io.ktor.request.*
-import io.ktor.response.*
-import io.ktor.routing.*
+import io.ktor.application.application
+import io.ktor.application.call
+import io.ktor.http.HttpStatusCode
+import io.ktor.request.receive
+import io.ktor.response.respond
+import io.ktor.routing.Route
+import io.ktor.routing.delete
+import io.ktor.routing.get
+import io.ktor.routing.patch
+import io.ktor.routing.post
+import io.ktor.routing.route
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbService
 import no.nav.helse.arbeidsgiver.integrasjoner.aareg.AaregArbeidsforholdClient
 import no.nav.helse.arbeidsgiver.web.auth.AltinnAuthorizer
@@ -26,16 +32,17 @@ import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravSlettProcessor
 import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadKvitteringProcessor
 import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadProcessor
 import no.nav.helse.fritakagp.service.PdlService
-import no.nav.helse.fritakagp.web.api.resreq.*
-import no.nav.helse.fritakagp.web.auth.authorize
-import no.nav.helse.fritakagp.web.auth.hentIdentitetsnummerFraLoginToken
+import no.nav.helse.fritakagp.web.api.resreq.GravidKravRequest
+import no.nav.helse.fritakagp.web.api.resreq.GravidSoknadRequest
 import no.nav.helse.fritakagp.web.api.resreq.validation.VirusCheckConstraint
 import no.nav.helse.fritakagp.web.api.resreq.validation.extractBase64Del
 import no.nav.helse.fritakagp.web.api.resreq.validation.extractFilExtDel
+import no.nav.helse.fritakagp.web.auth.authorize
+import no.nav.helse.fritakagp.web.auth.hentIdentitetsnummerFraLoginToken
 import org.valiktor.ConstraintViolationException
 import org.valiktor.DefaultConstraintViolation
 import java.time.LocalDateTime
-import java.util.*
+import java.util.UUID
 import javax.sql.DataSource
 
 fun Route.gravidRoutes(

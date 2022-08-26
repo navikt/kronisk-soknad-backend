@@ -1,17 +1,15 @@
 package no.nav.helse.slowtests.datapakke
 
+// import no.nav.helse.fritakagp.db.SykeGradAntall
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.helse.arbeidsgiver.utils.loadFromResources
 import no.nav.helse.fritakagp.datapakke.DatapakkePublisherJob
-import no.nav.helse.fritakagp.db.AntallType
 import no.nav.helse.fritakagp.db.GravidSoeknadTiltak
 import no.nav.helse.fritakagp.db.IStatsRepo
 import no.nav.helse.fritakagp.db.SykeGradAntall
-// import no.nav.helse.fritakagp.db.SykeGradAntall
 import no.nav.helse.fritakagp.db.WeeklyStats
 import no.nav.helse.slowtests.systemtests.api.SystemTestBase
-import no.nav.security.mock.oauth2.http.objectMapper
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test

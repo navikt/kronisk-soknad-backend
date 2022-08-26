@@ -10,7 +10,7 @@ import no.nav.helse.fritakagp.db.KroniskKravRepository
 import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonKlient
 import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.opprettNySak
 import org.slf4j.LoggerFactory
-import java.util.*
+import java.util.UUID
 
 class ArbeidsgiverNotifikasjonProcessor(
     private val gravidKravRepo: GravidKravRepository,

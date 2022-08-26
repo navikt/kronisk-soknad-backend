@@ -1,10 +1,13 @@
 package no.nav.helse.slowtests.systemtests.api
 
-import io.ktor.client.call.*
-import io.ktor.client.features.*
-import io.ktor.client.request.*
-import io.ktor.client.statement.*
-import io.ktor.http.*
+import io.ktor.client.call.receive
+import io.ktor.client.features.ClientRequestException
+import io.ktor.client.request.get
+import io.ktor.client.request.post
+import io.ktor.client.statement.HttpResponse
+import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.contentType
 import no.nav.helse.GravidTestData
 import no.nav.helse.fritakagp.db.GravidSoeknadRepository
 import no.nav.helse.fritakagp.domain.GravidSoeknad

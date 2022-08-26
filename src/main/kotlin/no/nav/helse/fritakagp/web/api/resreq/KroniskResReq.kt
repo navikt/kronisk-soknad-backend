@@ -3,9 +3,29 @@ package no.nav.helse.fritakagp.web.api.resreq
 import no.nav.helse.arbeidsgiver.integrasjoner.aareg.Arbeidsforhold
 import no.nav.helse.arbeidsgiver.web.validation.isValidIdentitetsnummer
 import no.nav.helse.arbeidsgiver.web.validation.isValidOrganisasjonsnummer
-import no.nav.helse.fritakagp.domain.*
-import no.nav.helse.fritakagp.web.api.resreq.validation.*
-import org.valiktor.functions.*
+import no.nav.helse.fritakagp.domain.Arbeidsgiverperiode
+import no.nav.helse.fritakagp.domain.FravaerData
+import no.nav.helse.fritakagp.domain.KroniskKrav
+import no.nav.helse.fritakagp.domain.KroniskSoeknad
+import no.nav.helse.fritakagp.web.api.resreq.validation.datoerHarRiktigRekkefolge
+import no.nav.helse.fritakagp.web.api.resreq.validation.ikkeFlereFravaersdagerEnnDagerIMaanden
+import no.nav.helse.fritakagp.web.api.resreq.validation.ingenDataEldreEnn
+import no.nav.helse.fritakagp.web.api.resreq.validation.ingenDataFraFremtiden
+import no.nav.helse.fritakagp.web.api.resreq.validation.isAvStorrelse
+import no.nav.helse.fritakagp.web.api.resreq.validation.isGodskjentFiletyper
+import no.nav.helse.fritakagp.web.api.resreq.validation.isVirksomhet
+import no.nav.helse.fritakagp.web.api.resreq.validation.maanedsInntektErMellomNullOgTiMil
+import no.nav.helse.fritakagp.web.api.resreq.validation.måHaAktivtArbeidsforhold
+import no.nav.helse.fritakagp.web.api.resreq.validation.refusjonsDagerIkkeOverstigerPeriodelengde
+import org.valiktor.functions.isBetween
+import org.valiktor.functions.isEmpty
+import org.valiktor.functions.isEqualTo
+import org.valiktor.functions.isGreaterThan
+import org.valiktor.functions.isGreaterThanOrEqualTo
+import org.valiktor.functions.isLessThanOrEqualTo
+import org.valiktor.functions.isNotNull
+import org.valiktor.functions.isTrue
+import org.valiktor.functions.validateForEach
 import org.valiktor.validate
 
 data class KroniskSoknadRequest(

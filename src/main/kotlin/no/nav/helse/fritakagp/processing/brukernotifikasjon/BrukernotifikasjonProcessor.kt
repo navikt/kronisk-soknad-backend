@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory
 import java.net.URL
 import java.time.LocalDateTime
 import java.time.ZoneId
-import java.util.*
+import java.util.UUID
 
 class BrukernotifikasjonProcessor(
     private val gravidKravRepo: GravidKravRepository,

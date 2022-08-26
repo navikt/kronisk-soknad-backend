@@ -10,7 +10,6 @@ import org.apache.pdfbox.pdmodel.font.PDType0Font
 import java.io.ByteArrayOutputStream
 import java.time.LocalDate
 import java.time.Month
-import java.time.format.DateTimeFormatter
 
 class KroniskSoeknadPDFGenerator {
     private val FONT_SIZE = 11f

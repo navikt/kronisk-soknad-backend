@@ -1,8 +1,8 @@
 package no.nav.helse.fritakagp.integration.brreg
 
-import io.ktor.client.*
-import io.ktor.client.features.*
-import io.ktor.client.request.*
+import io.ktor.client.HttpClient
+import io.ktor.client.features.ClientRequestException
+import io.ktor.client.request.get
 
 interface BrregClient {
     suspend fun getVirksomhetsNavn(orgnr: String): String?

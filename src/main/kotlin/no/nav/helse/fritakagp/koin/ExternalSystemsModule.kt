@@ -1,7 +1,7 @@
 package no.nav.helse.fritakagp.koin
 
-import io.ktor.config.*
-import io.ktor.util.*
+import io.ktor.config.ApplicationConfig
+import io.ktor.util.KtorExperimentalAPI
 import no.nav.helse.arbeidsgiver.integrasjoner.AccessTokenProvider
 import no.nav.helse.arbeidsgiver.integrasjoner.OAuth2TokenProvider
 import no.nav.helse.arbeidsgiver.integrasjoner.aareg.AaregArbeidsforholdClient
@@ -21,7 +21,16 @@ import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.brreg.BrregClientImpl
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.integration.gcp.BucketStorageImpl
-import no.nav.helse.fritakagp.integration.kafka.*
+import no.nav.helse.fritakagp.integration.kafka.BrukernotifikasjonBeskjedKafkaProducer
+import no.nav.helse.fritakagp.integration.kafka.BrukernotifikasjonBeskjedSender
+import no.nav.helse.fritakagp.integration.kafka.KravmeldingKafkaProducer
+import no.nav.helse.fritakagp.integration.kafka.KravmeldingSender
+import no.nav.helse.fritakagp.integration.kafka.SoeknadmeldingKafkaProducer
+import no.nav.helse.fritakagp.integration.kafka.SoeknadmeldingSender
+import no.nav.helse.fritakagp.integration.kafka.StringKafkaProducerFactory
+import no.nav.helse.fritakagp.integration.kafka.brukernotifikasjonKafkaProps
+import no.nav.helse.fritakagp.integration.kafka.kravmeldingKafkaProps
+import no.nav.helse.fritakagp.integration.kafka.soeknadmeldingKafkaProps
 import no.nav.helse.fritakagp.integration.norg.Norg2Client
 import no.nav.helse.fritakagp.integration.oauth2.DefaultOAuth2HttpClient
 import no.nav.helse.fritakagp.integration.oauth2.OAuth2ClientPropertiesConfig

@@ -6,7 +6,14 @@ import kotlinx.coroutines.runBlocking
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.Bakgrunnsjobb
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbProsesserer
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbRepository
-import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.*
+import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.AvsenderMottaker
+import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.Bruker
+import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.DokarkivKlient
+import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.Dokument
+import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.DokumentVariant
+import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.IdType
+import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.JournalpostRequest
+import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.Journalposttype
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OPPGAVETYPE_FORDELINGSOPPGAVE
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OppgaveKlient
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OpprettOppgaveRequest
@@ -16,14 +23,15 @@ import no.nav.helse.fritakagp.KroniskSoeknadMetrics
 import no.nav.helse.fritakagp.db.KroniskSoeknadRepository
 import no.nav.helse.fritakagp.domain.KroniskSoeknad
 import no.nav.helse.fritakagp.domain.generereKroniskSoeknadBeskrivelse
+import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor.Jobbdata.SkjemaType
-import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.service.BehandlendeEnhetService
 import org.slf4j.LoggerFactory
 import java.time.LocalDate
-import java.util.*
+import java.util.Base64
+import java.util.UUID
 
 class KroniskSoeknadProcessor(
     private val kroniskSoeknadRepo: KroniskSoeknadRepository,

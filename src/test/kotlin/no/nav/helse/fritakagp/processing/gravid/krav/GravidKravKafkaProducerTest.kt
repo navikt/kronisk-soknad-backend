@@ -2,7 +2,7 @@ package no.nav.helse.fritakagp.processing.gravid.krav
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.KotlinModule
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -20,7 +20,7 @@ import java.util.concurrent.ExecutionException
 import java.util.concurrent.TimeUnit
 
 class GravidKravKafkaProducerTest {
-    val omMock = ObjectMapper().registerModules(KotlinModule(), JavaTimeModule())
+    val omMock = ObjectMapper().registerKotlinModule().registerModule(JavaTimeModule())
     val producerProviderMock = mockk<ProducerFactory<String, String>>()
     val unauthorizedProducerMock = mockk<KafkaProducer<String, String>>(relaxed = true)
     val authedProducerMock = mockk<KafkaProducer<String, String>>(relaxed = true)

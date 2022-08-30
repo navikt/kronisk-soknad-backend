@@ -1,8 +1,8 @@
 package no.nav.helse.fritakagp.integration
 
 import io.ktor.client.HttpClient
+import io.ktor.client.call.body
 import io.ktor.client.request.get
-import io.ktor.client.request.url
 import kotlinx.coroutines.runBlocking
 import no.nav.helsearbeidsgiver.utils.cache.LocalCache
 import java.time.LocalDate
@@ -18,9 +18,8 @@ class GrunnbeloepClient(
 
         return cache.get(cacheKey) {
             runBlocking {
-                httpClient.get {
-                    url("https://g.nav.no/api/v1/grunnbeløp?dato=$dato")
-                }
+                httpClient.get("https://g.nav.no/api/v1/grunnbeløp?dato=$dato")
+                    .body()
             }
         }
     }

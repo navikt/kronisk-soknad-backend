@@ -6,7 +6,7 @@ import com.fasterxml.jackson.module.kotlin.KotlinModule
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
-import io.ktor.client.features.json.JsonFeature
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
@@ -97,6 +97,6 @@ fun buildClientArbeidsgiverNotifikasjonKlient(
     return ArbeidsgiverNotifikasjonKlient(
         URL("https://notifikasjon-fake-produsent-api.labs.nais.io/"),
         AccessTokenProviderMock(),
-        HttpClient(mockEngine) { install(JsonFeature) }
+        HttpClient(mockEngine) { install(ContentNegotiation) }
     )
 }

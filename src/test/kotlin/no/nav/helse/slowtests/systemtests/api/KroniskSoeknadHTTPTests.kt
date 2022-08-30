@@ -1,10 +1,10 @@
 package no.nav.helse.slowtests.systemtests.api
 
-import io.ktor.client.call.receive
-import io.ktor.client.features.ClientRequestException
+import io.ktor.client.call.body
+import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.request.get
 import io.ktor.client.request.post
-import io.ktor.client.statement.HttpResponse
+import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
@@ -29,7 +29,7 @@ class KroniskSoeknadHTTPTests : SystemTestBase() {
         repo.insert(KroniskTestData.soeknadKronisk)
         val exception = assertThrows<ClientRequestException>
         {
-            httpClient.get<HttpResponse> {
+            httpClient.get {
                 appUrl("$soeknadKroniskUrl/${KroniskTestData.soeknadKronisk.id}")
                 contentType(ContentType.Application.Json)
                 loggedInAs("123456789")
@@ -38,11 +38,12 @@ class KroniskSoeknadHTTPTests : SystemTestBase() {
 
         Assertions.assertThat(exception.response.status).isEqualTo(HttpStatusCode.NotFound)
 
-        val accessGrantedForm = httpClient.get<KroniskSoeknad> {
+        val accessGrantedForm = httpClient.get {
             appUrl("$soeknadKroniskUrl/${KroniskTestData.soeknadKronisk.id}")
             contentType(ContentType.Application.Json)
             loggedInAs(KroniskTestData.soeknadKronisk.identitetsnummer)
         }
+            .body<KroniskSoeknad>()
 
         Assertions.assertThat(accessGrantedForm).isEqualTo(KroniskTestData.soeknadKronisk)
     }
@@ -51,18 +52,20 @@ class KroniskSoeknadHTTPTests : SystemTestBase() {
     fun `invalid enum fields gives 400 Bad request`() = suspendableTest {
         val exception = assertThrows<ClientRequestException>
         {
-            httpClient.post<HttpResponse> {
+            httpClient.post {
                 appUrl(soeknadKroniskUrl)
                 contentType(ContentType.Application.Json)
                 loggedInAs("123456789")
 
-                body = """
-                {
-                    "fnr": "${GravidTestData.validIdentitetsnummer}",
-                    "orgnr": "${GravidTestData.fullValidSoeknadRequest.virksomhetsnummer}",
-                    "bekreftelse": true,
-                }
-                """.trimIndent()
+                setBody(
+                    """
+                    {
+                        "fnr": "${GravidTestData.validIdentitetsnummer}",
+                        "orgnr": "${GravidTestData.fullValidSoeknadRequest.virksomhetsnummer}",
+                        "bekreftelse": true,
+                    }
+                    """.trimIndent()
+                )
             }
         }
 
@@ -71,14 +74,14 @@ class KroniskSoeknadHTTPTests : SystemTestBase() {
 
     @Test
     fun `Skal returnere Created ved feilfritt skjema uten fil`() = suspendableTest {
-        val response = httpClient.post<HttpResponse> {
+        val response = httpClient.post {
             appUrl(soeknadKroniskUrl)
             contentType(ContentType.Application.Json)
             loggedInAs("123456789")
-            body = KroniskTestData.fullValidRequest
+            setBody(KroniskTestData.fullValidRequest)
         }
 
-        val soeknad = response.receive<KroniskSoeknad>()
+        val soeknad = response.body<KroniskSoeknad>()
         Assertions.assertThat(response.status).isEqualTo(HttpStatusCode.Created)
         Assertions.assertThat(soeknad.virksomhetsnummer).isEqualTo(KroniskTestData.fullValidRequest.virksomhetsnummer)
     }
@@ -87,18 +90,20 @@ class KroniskSoeknadHTTPTests : SystemTestBase() {
     fun `Skal validere feil ved ugyldig data`() = suspendableTest {
         val exception = assertThrows<ClientRequestException>
         {
-            httpClient.post<HttpResponse> {
+            httpClient.post {
                 appUrl(soeknadKroniskUrl)
                 contentType(ContentType.Application.Json)
                 loggedInAs("123456789")
-                body = KroniskSoknadRequest(
-                    virksomhetsnummer = "lkajsbdfv",
-                    identitetsnummer = "lkdf",
-                    antallPerioder = 0,
-                    fravaer = setOf(FravaerData("2001-01", 12F)),
-                    bekreftet = true,
-                    dokumentasjon = null,
-                    ikkeHistoriskFravaer = false
+                setBody(
+                    KroniskSoknadRequest(
+                        virksomhetsnummer = "lkajsbdfv",
+                        identitetsnummer = "lkdf",
+                        antallPerioder = 0,
+                        fravaer = setOf(FravaerData("2001-01", 12F)),
+                        bekreftet = true,
+                        dokumentasjon = null,
+                        ikkeHistoriskFravaer = false
+                    )
                 )
             }
         }
@@ -108,14 +113,16 @@ class KroniskSoeknadHTTPTests : SystemTestBase() {
 
     @Test
     fun `Skal returnere Created ved gyldig data (ikke historisk fravær)`() = suspendableTest {
-        val response = httpClient.post<HttpResponse> {
+        val response = httpClient.post {
             appUrl(soeknadKroniskUrl)
             contentType(ContentType.Application.Json)
             loggedInAs("123456789")
-            body = KroniskTestData.fullValidRequest.copy(
-                ikkeHistoriskFravaer = true,
-                fravaer = setOf(),
-                antallPerioder = 0
+            setBody(
+                KroniskTestData.fullValidRequest.copy(
+                    ikkeHistoriskFravaer = true,
+                    fravaer = setOf(),
+                    antallPerioder = 0
+                )
             )
         }
 
@@ -124,14 +131,14 @@ class KroniskSoeknadHTTPTests : SystemTestBase() {
 
     @Test
     fun `Skal returnere Created når fil er vedlagt`() = suspendableTest {
-        val response = httpClient.post<HttpResponse> {
+        val response = httpClient.post {
             appUrl(soeknadKroniskUrl)
             contentType(ContentType.Application.Json)
             loggedInAs("123456789")
-            body = KroniskTestData.kroniskSoknadMedFil
+            setBody(KroniskTestData.kroniskSoknadMedFil)
         }
 
-        val soeknad = response.receive<KroniskSoeknad>()
+        val soeknad = response.body<KroniskSoeknad>()
         Assertions.assertThat(response.status).isEqualTo(HttpStatusCode.Created)
         Assertions.assertThat(soeknad.harVedlegg).isEqualTo(true)
     }

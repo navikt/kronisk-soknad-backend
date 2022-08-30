@@ -1,33 +1,31 @@
 package no.nav.helse.fritakagp.web
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import io.ktor.application.Application
-import io.ktor.application.install
-import io.ktor.auth.Authentication
-import io.ktor.auth.authenticate
-import io.ktor.config.ApplicationConfig
-import io.ktor.features.CORS
-import io.ktor.features.ContentNegotiation
 import io.ktor.http.ContentType
 import io.ktor.http.HttpMethod
-import io.ktor.jackson.JacksonConverter
-import io.ktor.locations.KtorExperimentalLocationsAPI
-import io.ktor.routing.IgnoreTrailingSlash
-import io.ktor.routing.route
-import io.ktor.routing.routing
-import no.nav.helse.arbeidsgiver.system.AppEnv
-import no.nav.helse.arbeidsgiver.system.getEnvironment
-import no.nav.helse.arbeidsgiver.system.getString
+import io.ktor.serialization.jackson.JacksonConverter
+import io.ktor.server.application.Application
+import io.ktor.server.application.install
+import io.ktor.server.auth.Authentication
+import io.ktor.server.auth.authenticate
+import io.ktor.server.config.ApplicationConfig
+import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.server.plugins.cors.routing.CORS
+import io.ktor.server.routing.IgnoreTrailingSlash
+import io.ktor.server.routing.route
+import io.ktor.server.routing.routing
+import no.nav.helse.fritakagp.config.AppEnv
+import no.nav.helse.fritakagp.config.env
+import no.nav.helse.fritakagp.config.prop
 import no.nav.helse.fritakagp.web.api.altinnRoutes
 import no.nav.helse.fritakagp.web.api.configureExceptionHandling
 import no.nav.helse.fritakagp.web.api.gravidRoutes
 import no.nav.helse.fritakagp.web.api.kroniskRoutes
 import no.nav.helse.fritakagp.web.api.swaggerRoutes
 import no.nav.helse.fritakagp.web.api.systemRoutes
-import no.nav.security.token.support.ktor.tokenValidationSupport
+import no.nav.security.token.support.v2.tokenValidationSupport
 import org.koin.ktor.ext.get
 
-@KtorExperimentalLocationsAPI
 fun Application.fritakModule(config: ApplicationConfig = environment.config) {
 
     install(IgnoreTrailingSlash)
@@ -39,12 +37,12 @@ fun Application.fritakModule(config: ApplicationConfig = environment.config) {
     configureExceptionHandling()
 
     install(ContentNegotiation) {
-        val commonObjectMapper = get<ObjectMapper>()
+        val commonObjectMapper = this@fritakModule.get<ObjectMapper>()
         register(ContentType.Application.Json, JacksonConverter(commonObjectMapper))
     }
 
     routing {
-        val apiBasePath = config.getString("ktor.application.basepath")
+        val apiBasePath = config.prop("ktor.application.basepath")
         route("$apiBasePath/api/v1") {
             authenticate {
                 systemRoutes()
@@ -53,22 +51,22 @@ fun Application.fritakModule(config: ApplicationConfig = environment.config) {
                 altinnRoutes(get())
             }
         }
-        swaggerRoutes("$apiBasePath")
+        swaggerRoutes(apiBasePath)
     }
 }
 
 private fun Application.configureCORSAccess(config: ApplicationConfig) {
     install(CORS) {
-        method(HttpMethod.Options)
-        method(HttpMethod.Post)
-        method(HttpMethod.Get)
-        method(HttpMethod.Delete)
-        method(HttpMethod.Patch)
+        allowMethod(HttpMethod.Options)
+        allowMethod(HttpMethod.Post)
+        allowMethod(HttpMethod.Get)
+        allowMethod(HttpMethod.Delete)
+        allowMethod(HttpMethod.Patch)
 
-        when (config.getEnvironment()) {
-            AppEnv.PROD -> host("arbeidsgiver.nav.no", schemes = listOf("https"))
-            AppEnv.PREPROD -> host("arbeidsgiver.dev.nav.no", schemes = listOf("https"))
-            else -> anyHost()
+        when (config.env()) {
+            AppEnv.PROD -> allowHost("arbeidsgiver.nav.no", schemes = listOf("https"))
+            AppEnv.PREPROD -> allowHost("arbeidsgiver.dev.nav.no", schemes = listOf("https"))
+            AppEnv.LOCAL -> anyHost()
         }
 
         allowCredentials = true

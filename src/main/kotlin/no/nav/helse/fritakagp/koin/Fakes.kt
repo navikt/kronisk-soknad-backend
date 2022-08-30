@@ -57,7 +57,7 @@ fun Module.mockExternalDependecies() {
     single {
         object : AaregArbeidsforholdClient {
             override suspend fun hentArbeidsforhold(ident: String, callId: String): List<Arbeidsforhold> =
-                listOf<Arbeidsforhold>(
+                listOf(
                     Arbeidsforhold(
                         Arbeidsgiver("test", "810007842"), Opplysningspliktig("Juice", "810007702"), emptyList(),
                         Ansettelsesperiode(

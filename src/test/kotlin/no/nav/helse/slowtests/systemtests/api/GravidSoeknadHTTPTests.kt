@@ -1,10 +1,10 @@
 package no.nav.helse.slowtests.systemtests.api
 
-import io.ktor.client.call.receive
-import io.ktor.client.features.ClientRequestException
+import io.ktor.client.call.body
+import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.request.get
 import io.ktor.client.request.post
-import io.ktor.client.statement.HttpResponse
+import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
@@ -27,7 +27,7 @@ class GravidSoeknadHTTPTests : SystemTestBase() {
 
         val exception = assertThrows<ClientRequestException>
         {
-            httpClient.get<HttpResponse> {
+            httpClient.get {
                 appUrl("$soeknadGravidUrl/${GravidTestData.soeknadGravid.id}")
                 contentType(ContentType.Application.Json)
                 loggedInAs("123456789")
@@ -36,11 +36,12 @@ class GravidSoeknadHTTPTests : SystemTestBase() {
 
         assertThat(exception.response.status).isEqualTo(HttpStatusCode.NotFound)
 
-        val accessGrantedForm = httpClient.get<GravidSoeknad> {
+        val accessGrantedForm = httpClient.get {
             appUrl("$soeknadGravidUrl/${GravidTestData.soeknadGravid.id}")
             contentType(ContentType.Application.Json)
             loggedInAs(GravidTestData.soeknadGravid.identitetsnummer)
         }
+            .body<GravidSoeknad>()
 
         assertThat(accessGrantedForm).isEqualTo(GravidTestData.soeknadGravid)
     }
@@ -49,19 +50,21 @@ class GravidSoeknadHTTPTests : SystemTestBase() {
     fun `invalid enum fields gives 400 Bad request`() = suspendableTest {
         val exception = assertThrows<ClientRequestException>
         {
-            httpClient.post<HttpResponse> {
+            httpClient.post {
                 appUrl(soeknadGravidUrl)
                 contentType(ContentType.Application.Json)
                 loggedInAs("123456789")
 
-                body = """
-                {
-                    "fnr": "${GravidTestData.validIdentitetsnummer}",
-                    "orgnr": "${GravidTestData.fullValidSoeknadRequest.virksomhetsnummer}",
-                    "tilrettelegge": true,
-                    "tiltak": ["IKKE GYLDIG"]
-                }
-                """.trimIndent()
+                setBody(
+                    """
+                    {
+                        "fnr": "${GravidTestData.validIdentitetsnummer}",
+                        "orgnr": "${GravidTestData.fullValidSoeknadRequest.virksomhetsnummer}",
+                        "tilrettelegge": true,
+                        "tiltak": ["IKKE GYLDIG"]
+                    }
+                    """.trimIndent()
+                )
             }
         }
 
@@ -70,28 +73,28 @@ class GravidSoeknadHTTPTests : SystemTestBase() {
 
     @Test
     fun `Skal returnere Created ved feilfritt skjema uten fil`() = suspendableTest {
-        val response = httpClient.post<HttpResponse> {
+        val response = httpClient.post {
             appUrl(soeknadGravidUrl)
             contentType(ContentType.Application.Json)
             loggedInAs("123456789")
-            body = GravidTestData.fullValidSoeknadRequest
+            setBody(GravidTestData.fullValidSoeknadRequest)
         }
 
-        val soeknad = response.receive<GravidSoeknad>()
+        val soeknad = response.body<GravidSoeknad>()
         assertThat(response.status).isEqualTo(HttpStatusCode.Created)
         assertThat(soeknad.virksomhetsnummer).isEqualTo(GravidTestData.fullValidSoeknadRequest.virksomhetsnummer)
     }
 
     @Test
     fun `Skal returnere Created når fil er vedlagt`() = suspendableTest {
-        val response = httpClient.post<HttpResponse> {
+        val response = httpClient.post {
             appUrl(soeknadGravidUrl)
             contentType(ContentType.Application.Json)
             loggedInAs("123456789")
-            body = GravidTestData.gravidSoknadMedFil
+            setBody(GravidTestData.gravidSoknadMedFil)
         }
 
-        val soeknad = response.receive<GravidSoeknad>()
+        val soeknad = response.body<GravidSoeknad>()
         assertThat(response.status).isEqualTo(HttpStatusCode.Created)
         assertThat(soeknad.harVedlegg).isEqualTo(true)
     }

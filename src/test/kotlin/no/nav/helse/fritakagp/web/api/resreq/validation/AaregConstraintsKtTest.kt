@@ -8,8 +8,8 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.fasterxml.jackson.module.kotlin.readValue
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import no.nav.helse.AaregTestData
 import no.nav.helse.GravidTestData
 import no.nav.helse.arbeidsgiver.integrasjoner.aareg.Ansettelsesperiode
@@ -36,7 +36,7 @@ class AaregConstraintsKtTest {
     @Disabled
     fun `Rådata fra aareg (Brukes for å feilsøke med respons fra AA-reg)`() {
         val om = ObjectMapper()
-        om.registerModule(KotlinModule())
+        om.registerKotlinModule()
         om.registerModule(Jdk8Module())
         om.registerModule(JavaTimeModule())
         om.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)

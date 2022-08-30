@@ -1,7 +1,6 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val mainClassFritakAgp = "no.nav.helse.fritakagp.AppKt"
-val githubPassword: String by project
 
 plugins {
     application
@@ -27,6 +26,8 @@ java {
 }
 
 repositories {
+    val githubPassword: String by project
+
     mavenCentral()
     google()
     maven(url = "https://packages.confluent.io/maven/")
@@ -122,7 +123,6 @@ dependencies {
     val jacksonModuleKotlinVersion: String by project
     val jacksonVersion: String by project
     val janinoVersion: String by project
-    val javafakerVersion: String by project
     val javaxActivationVersion: String by project
     val javaxWsRsApiVersion: String by project
     val jaxwsToolsVersion: String by project
@@ -153,7 +153,6 @@ dependencies {
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jacksonVersion")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonModuleKotlinVersion")
-    implementation("com.github.javafaker:javafaker:$javafakerVersion") // flytt denne til test når generatorene ikke er nødvendige i prod-koden lenger
     implementation("com.github.navikt:brukernotifikasjon-schemas:$brukernotifikasjonSchemasVersion")
     implementation("com.github.tomakehurst:wiremock-standalone:$wiremockStandaloneVersion")
     implementation("com.google.cloud:google-cloud-storage:$gcpStorageVersion")
@@ -164,18 +163,19 @@ dependencies {
     implementation("com.zaxxer:HikariCP:$hikariVersion")
     implementation("de.m3y.kformat:kformat:$kformatVersion")
     implementation("io.confluent:kafka-avro-serializer:$confluentVersion")
-    implementation("io.insert-koin:koin-core-jvm:$koinVersion")
     implementation("io.insert-koin:koin-core:$koinVersion")
     implementation("io.insert-koin:koin-ktor:$koinVersion")
-    implementation("io.ktor:ktor-auth:$ktorVersion")
     implementation("io.ktor:ktor-client-apache:$ktorVersion")
-    implementation("io.ktor:ktor-client-core-jvm:$ktorVersion")
+    implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
     implementation("io.ktor:ktor-client-core:$ktorVersion")
-    implementation("io.ktor:ktor-client-jackson:$ktorVersion")
     implementation("io.ktor:ktor-client-json:$ktorVersion")
-    implementation("io.ktor:ktor-jackson:$ktorVersion")
-    implementation("io.ktor:ktor-locations:$ktorVersion")
+    implementation("io.ktor:ktor-serialization-jackson:$ktorVersion")
+    implementation("io.ktor:ktor-server-auth:$ktorVersion")
+    implementation("io.ktor:ktor-server-content-negotiation:$ktorVersion")
+    implementation("io.ktor:ktor-server-cors:$ktorVersion")
+    implementation("io.ktor:ktor-server-locations:$ktorVersion")
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
+    implementation("io.ktor:ktor-server-status-pages:$ktorVersion")
     implementation("io.prometheus:simpleclient_common:$prometheusVersion")
     implementation("io.prometheus:simpleclient_hotspot:$prometheusVersion")
     implementation("javax.ws.rs:javax.ws.rs-api:$javaxWsRsApiVersion")
@@ -187,7 +187,7 @@ dependencies {
     implementation("no.nav.helsearbeidsgiver:utils:$utilsVersion")
     implementation("no.nav.security:mock-oauth2-server:$mockOAuth2ServerVersion")
     implementation("no.nav.security:token-client-core:$tokenSupportVersion")
-    implementation("no.nav.security:token-validation-ktor:$tokenSupportVersion")
+    implementation("no.nav.security:token-validation-ktor-v2:$tokenSupportVersion")
     implementation("no.nav.tjenestespesifikasjoner:altinn-correspondence-agency-external-basic:$altinnCorrespondenceAgencyVersion")
     implementation("org.apache.cxf:cxf-rt-features-logging:$cxfVersion")
     implementation("org.apache.cxf:cxf-rt-frontend-jaxws:$cxfVersion")

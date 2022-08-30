@@ -1,7 +1,8 @@
 package no.nav.helse.fritakagp.integration.brreg
 
 import io.ktor.client.HttpClient
-import io.ktor.client.features.ClientRequestException
+import io.ktor.client.call.body
+import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.request.get
 
 interface BrregClient {
@@ -24,11 +25,11 @@ class BrregClientImpl(private val httpClient: HttpClient, private val brregUnder
         var navn: String? = null
         try {
             val url = "${brregUndervirksomhetUrl.trimEnd('/')}/$orgnr"
-            navn = httpClient.get<UnderenheterResponse>(url).navn
+            navn = httpClient.get(url).body<UnderenheterResponse>().navn
         } catch (cause: Throwable) {
             when (cause) {
                 is ClientRequestException -> {
-                    if (404 == cause.response?.status?.value)
+                    if (404 == cause.response.status.value)
                         navn = "Ukjent arbeidsgiver"
                 }
                 else -> throw cause
@@ -42,11 +43,10 @@ class BrregClientImpl(private val httpClient: HttpClient, private val brregUnder
         var slettedato: String? = null
         return try {
             val url = "${brregUndervirksomhetUrl.trimEnd('/')}/$orgNr"
-            slettedato = httpClient.get<UnderenheterResponse>(url).sletteDato
-            httpClient.get<Unit>(url)
+            slettedato = httpClient.get(url).body<UnderenheterResponse>().sletteDato
             return (slettedato == null)
         } catch (cause: ClientRequestException) {
-            if (404 == cause.response?.status?.value) {
+            if (404 == cause.response.status.value) {
                 false
             } else {
                 throw cause

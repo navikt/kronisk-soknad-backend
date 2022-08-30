@@ -1,45 +1,43 @@
 package no.nav.helse.fritakagp.integration.oauth2
 
 import com.nimbusds.oauth2.sdk.auth.ClientAuthenticationMethod
-import io.ktor.config.ApplicationConfig
+import io.ktor.server.config.ApplicationConfig
+import io.ktor.server.config.tryGetString
+import no.nav.helse.fritakagp.config.prop
 import no.nav.security.token.support.client.core.ClientAuthenticationProperties
 import no.nav.security.token.support.client.core.ClientProperties
 import no.nav.security.token.support.client.core.OAuth2GrantType
 import java.net.URI
 
 class OAuth2ClientPropertiesConfig(
-    applicationConfig: ApplicationConfig,
+    appConfig: ApplicationConfig,
     scope: String
 ) {
     internal val clientConfig: Map<String, ClientProperties> =
-        applicationConfig.configList(CLIENTS_PATH)
-            .associate { clientConfig ->
-                val wellKnownUrl = clientConfig.propertyToStringOrNull("well_known_url")
-                val resourceUrl = clientConfig.propertyToStringOrNull("resource_url")
-                clientConfig.propertyToString(CLIENT_NAME) to ClientProperties(
-                    URI(clientConfig.propertyToString("token_endpoint_url")),
+        appConfig.configList(CLIENTS_PATH)
+            .associate { config ->
+                val wellKnownUrl = config.tryGetString("well_known_url")
+                val resourceUrl = config.tryGetString("resource_url")
+                config.prop(CLIENT_NAME) to ClientProperties(
+                    URI(config.prop("token_endpoint_url")),
                     wellKnownUrl?.let { URI(it) },
-                    OAuth2GrantType(clientConfig.propertyToString("grant_type")),
-                    clientConfig.propertyToStringOrNull(scope)?.split(","),
+                    OAuth2GrantType(config.prop("grant_type")),
+                    config.tryGetString(scope)?.split(","),
                     ClientAuthenticationProperties(
-                        clientConfig.propertyToString("authentication.client_id"),
+                        config.prop("authentication.client_id"),
                         ClientAuthenticationMethod(
-                            clientConfig.propertyToString("authentication.client_auth_method")
+                            config.prop("authentication.client_auth_method")
                         ),
-                        clientConfig.propertyToStringOrNull("authentication.client_secret"),
-                        clientConfig.propertyToStringOrNull("authentication.client_jwk")
+                        config.tryGetString("authentication.client_secret"),
+                        config.tryGetString("authentication.client_jwk")
                     ),
                     resourceUrl?.let { URI(it) },
                     ClientProperties.TokenExchangeProperties(
-                        clientConfig.propertyToStringOrNull("token-exchange.audience") ?: "",
-                        clientConfig.propertyToStringOrNull("token-exchange.resource")
+                        config.tryGetString("token-exchange.audience") ?: "",
+                        config.tryGetString("token-exchange.resource")
                     )
                 )
             }
-
-    internal fun ApplicationConfig.propertyToString(prop: String) = this.property(prop).getString()
-
-    internal fun ApplicationConfig.propertyToStringOrNull(prop: String) = this.propertyOrNull(prop)?.getString()
 
     companion object CommonConfigurationAttributes {
         const val COMMON_PREFIX = "no.nav.security.jwt.client.registration"

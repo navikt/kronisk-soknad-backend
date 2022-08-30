@@ -1,7 +1,7 @@
 package no.nav.helse.fritakagp
 
 import com.typesafe.config.ConfigFactory
-import io.ktor.config.HoconApplicationConfig
+import io.ktor.server.config.HoconApplicationConfig
 import io.ktor.server.engine.applicationEngineEnvironment
 import io.ktor.server.engine.connector
 import io.ktor.server.engine.embeddedServer
@@ -11,9 +11,9 @@ import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbService
 import no.nav.helse.arbeidsgiver.kubernetes.KubernetesProbeManager
 import no.nav.helse.arbeidsgiver.kubernetes.LivenessComponent
 import no.nav.helse.arbeidsgiver.kubernetes.ReadynessComponent
-import no.nav.helse.arbeidsgiver.system.AppEnv
-import no.nav.helse.arbeidsgiver.system.getEnvironment
-import no.nav.helse.arbeidsgiver.system.getString
+import no.nav.helse.fritakagp.config.AppEnv
+import no.nav.helse.fritakagp.config.env
+import no.nav.helse.fritakagp.config.shouldRunBackgroundWorkers
 import no.nav.helse.fritakagp.koin.selectModuleBasedOnProfile
 import no.nav.helse.fritakagp.processing.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
@@ -44,12 +44,13 @@ import org.slf4j.LoggerFactory
 
 class FritakAgpApplication(val port: Int = 8080) : KoinComponent {
     private val logger = LoggerFactory.getLogger(FritakAgpApplication::class.simpleName)
+    private val appConfig = HoconApplicationConfig(ConfigFactory.load())
+    private val runtimeEnvironment = appConfig.env()
+
     private var webserver: NettyApplicationEngine? = null
-    private var appConfig: HoconApplicationConfig = HoconApplicationConfig(ConfigFactory.load())
-    private val runtimeEnvironment = appConfig.getEnvironment()
 
     fun start() {
-        if (runtimeEnvironment == AppEnv.PREPROD || runtimeEnvironment == AppEnv.PROD) {
+        if (runtimeEnvironment in listOf(AppEnv.PREPROD, AppEnv.PROD)) {
             logger.info("Sover i 30s i påvente av SQL proxy sidecar")
             Thread.sleep(30000)
         }
@@ -92,7 +93,7 @@ class FritakAgpApplication(val port: Int = 8080) : KoinComponent {
     }
 
     private fun configAndStartBackgroundWorker() {
-        if (appConfig.getString("run_background_workers") == "true") {
+        if (appConfig.shouldRunBackgroundWorkers()) {
             get<BakgrunnsjobbService>().apply {
                 registrer(get<GravidSoeknadProcessor>())
                 registrer(get<GravidSoeknadKafkaProcessor>())
@@ -151,8 +152,7 @@ fun main() {
         logger.error("uncaught exception in thread ${thread.name}: ${err.message}", err)
     }
 
-    val application = FritakAgpApplication()
-    application.start()
+    val application = FritakAgpApplication().also { it.start() }
 
     Runtime.getRuntime().addShutdownHook(
         Thread {

@@ -8,73 +8,64 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.KotlinModule
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.apache.Apache
-import io.ktor.client.features.json.JacksonSerializer
-import io.ktor.client.features.json.JsonFeature
-import io.ktor.config.ApplicationConfig
-import io.ktor.http.ContentType
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.serialization.jackson.jackson
+import io.ktor.server.config.ApplicationConfig
 import no.nav.helse.arbeidsgiver.kubernetes.KubernetesProbeManager
+import no.nav.helse.fritakagp.config.AppEnv
+import no.nav.helse.fritakagp.config.env
 import org.koin.core.module.Module
 import org.koin.dsl.module
 
 fun selectModuleBasedOnProfile(config: ApplicationConfig): List<Module> {
-    val envModule = when (config.property("koin.profile").getString()) {
-        "LOCAL" -> localDevConfig(config)
-        "PREPROD" -> preprodConfig(config)
-        "PROD" -> prodConfig(config)
-        else -> localDevConfig(config)
+    val envModule = when (config.env()) {
+        AppEnv.PROD -> ::prodConfig
+        AppEnv.PREPROD -> ::preprodConfig
+        AppEnv.LOCAL -> ::localDevConfig
     }
+        .invoke(config)
+
     return listOf(common, envModule)
 }
 
 val common = module {
-    val om = ObjectMapper()
-    om.registerModule(KotlinModule())
-    om.registerModule(Jdk8Module())
-    om.registerModule(JavaTimeModule())
-    om.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-    om.configure(SerializationFeature.INDENT_OUTPUT, true)
-    om.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
-    om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+    val om = ObjectMapper().apply {
+        registerKotlinModule()
+        registerModule(Jdk8Module())
+        registerModule(JavaTimeModule())
+        disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+        configure(SerializationFeature.INDENT_OUTPUT, true)
+        configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
+        configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 
-    om.setDefaultPrettyPrinter(
-        DefaultPrettyPrinter().apply {
-            indentArraysWith(DefaultPrettyPrinter.FixedSpaceIndenter.instance)
-            indentObjectsWith(DefaultIndenter("  ", "\n"))
-        }
-    )
+        setDefaultPrettyPrinter(
+            DefaultPrettyPrinter().apply {
+                indentArraysWith(DefaultPrettyPrinter.FixedSpaceIndenter.instance)
+                indentObjectsWith(DefaultIndenter("  ", "\n"))
+            }
+        )
+    }
 
     single { om }
 
     single { KubernetesProbeManager() }
 
     val httpClient = HttpClient(Apache) {
-        install(JsonFeature) {
-            serializer = JacksonSerializer {
-                registerModule(KotlinModule())
+        install(ContentNegotiation) {
+            jackson {
+                registerKotlinModule()
                 registerModule(Jdk8Module())
                 registerModule(JavaTimeModule())
                 disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
                 configure(SerializationFeature.INDENT_OUTPUT, true)
                 configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
                 configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
-                accept(ContentType.Application.Json)
             }
         }
     }
 
     single { httpClient }
-}
-
-// utils
-
-fun ApplicationConfig.getjdbcUrlFromProperties(): String {
-    return String.format(
-        "jdbc:postgresql://%s:%s/%s",
-        this.property("database.host").getString(),
-        this.property("database.port").getString(),
-        this.property("database.name").getString()
-    )
 }

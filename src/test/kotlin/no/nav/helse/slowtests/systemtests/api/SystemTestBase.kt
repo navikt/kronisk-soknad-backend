@@ -5,10 +5,10 @@ import com.fasterxml.jackson.databind.MapperFeature
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import io.ktor.client.HttpClient
-import io.ktor.client.call.receive
+import io.ktor.client.call.body
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.get
 import io.ktor.client.request.header
@@ -41,7 +41,7 @@ open class SystemTestBase : KoinTest {
     val httpClient by inject<HttpClient>()
     val objectMapper = jacksonObjectMapper()
         .configure(SerializationFeature.INDENT_OUTPUT, true)
-        .registerModule(KotlinModule())
+        .registerKotlinModule()
         .registerModule(Jdk8Module())
         .registerModule(JavaTimeModule())
         .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
@@ -78,7 +78,7 @@ open class SystemTestBase : KoinTest {
      * Hjelpefunksjon for å hente ut gyldig JWT-token og legge det til som Auth header på en request
      */
     suspend fun HttpRequestBuilder.loggedInAs(subject: String) {
-        val response = httpClient.get<HttpResponse> {
+        val response = httpClient.get {
             appUrl("/local/cookie-please?subject=$subject")
             contentType(ContentType.Application.Json)
         }
@@ -97,5 +97,5 @@ open class SystemTestBase : KoinTest {
     }
 
     suspend fun extractResponseBody(response: HttpResponse) =
-        response.call.response.receive<Problem>()
+        response.call.response.body<Problem>()
 }

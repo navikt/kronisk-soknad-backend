@@ -2,15 +2,14 @@ package no.nav.helse.fritakagp.web.api
 
 import com.fasterxml.jackson.databind.JsonMappingException
 import com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException
-import io.ktor.application.Application
-import io.ktor.application.ApplicationCall
-import io.ktor.application.call
-import io.ktor.application.install
-import io.ktor.features.ParameterConversionException
-import io.ktor.features.StatusPages
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
-import io.ktor.response.respond
+import io.ktor.server.application.Application
+import io.ktor.server.application.ApplicationCall
+import io.ktor.server.application.install
+import io.ktor.server.plugins.ParameterConversionException
+import io.ktor.server.plugins.statuspages.StatusPages
+import io.ktor.server.response.respond
 import no.nav.helse.arbeidsgiver.web.validation.Problem
 import no.nav.helse.arbeidsgiver.web.validation.ValidationProblem
 import no.nav.helse.arbeidsgiver.web.validation.ValidationProblemDetail
@@ -48,7 +47,7 @@ fun Application.configureExceptionHandling() {
             call.respond(HttpStatusCode.UnprocessableEntity, ValidationProblem(problems))
         }
 
-        exception<InvocationTargetException> { cause ->
+        exception<InvocationTargetException> { call, cause ->
             when (cause.targetException) {
                 is ConstraintViolationException -> handleValidationError(
                     call,
@@ -58,18 +57,18 @@ fun Application.configureExceptionHandling() {
             }
         }
 
-        exception<ManglerAltinnRettigheterException> {
+        exception<ManglerAltinnRettigheterException> { call, _ ->
             call.respond(
                 HttpStatusCode.Forbidden,
                 Problem(URI.create("urn:fritak:forbidden"), "Ikke korrekte Altinnrettigheter på valgt virksomhet", HttpStatusCode.Forbidden.value)
             )
         }
 
-        exception<Throwable> { cause ->
+        exception<Throwable> { call, cause ->
             handleUnexpectedException(call, cause)
         }
 
-        exception<ParameterConversionException> { cause ->
+        exception<ParameterConversionException> { call, cause ->
             call.respond(
                 HttpStatusCode.BadRequest,
                 ValidationProblem(
@@ -86,7 +85,7 @@ fun Application.configureExceptionHandling() {
             logger.warn("${cause.parameterName} kunne ikke konverteres")
         }
 
-        exception<MissingKotlinParameterException> { cause ->
+        exception<MissingKotlinParameterException> { call, cause ->
             val userAgent = call.request.headers.get(HttpHeaders.UserAgent) ?: "Ukjent"
             call.respond(
                 HttpStatusCode.BadRequest,
@@ -106,7 +105,7 @@ fun Application.configureExceptionHandling() {
             logger.warn("Feil med validering av ${cause.parameter.name ?: "Ukjent"} for $userAgent: ${cause.message}")
         }
 
-        exception<JsonMappingException> { cause ->
+        exception<JsonMappingException> { call, cause ->
             if (cause.cause is ConstraintViolationException) {
                 handleValidationError(call, cause.cause as ConstraintViolationException)
             } else {
@@ -124,7 +123,7 @@ fun Application.configureExceptionHandling() {
             }
         }
 
-        exception<ConstraintViolationException> { cause ->
+        exception<ConstraintViolationException> { call, cause ->
             handleValidationError(call, cause)
         }
     }

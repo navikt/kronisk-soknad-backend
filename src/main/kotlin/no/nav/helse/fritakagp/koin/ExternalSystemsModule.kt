@@ -1,7 +1,6 @@
 package no.nav.helse.fritakagp.koin
 
-import io.ktor.config.ApplicationConfig
-import io.ktor.util.KtorExperimentalAPI
+import io.ktor.server.config.ApplicationConfig
 import no.nav.helse.arbeidsgiver.integrasjoner.AccessTokenProvider
 import no.nav.helse.arbeidsgiver.integrasjoner.OAuth2TokenProvider
 import no.nav.helse.arbeidsgiver.integrasjoner.aareg.AaregArbeidsforholdClient
@@ -13,8 +12,8 @@ import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OppgaveKlient
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OppgaveKlientImpl
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlClient
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlClientImpl
-import no.nav.helse.arbeidsgiver.system.getString
 import no.nav.helse.arbeidsgiver.web.auth.AltinnOrganisationsRepository
+import no.nav.helse.fritakagp.config.prop
 import no.nav.helse.fritakagp.integration.GrunnbeloepClient
 import no.nav.helse.fritakagp.integration.altinn.CachedAuthRepo
 import no.nav.helse.fritakagp.integration.brreg.BrregClient
@@ -48,17 +47,16 @@ import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import java.net.URL
 
-@OptIn(KtorExperimentalAPI::class)
 fun Module.externalSystemClients(config: ApplicationConfig) {
     val accessTokenProviderError = "Fant ikke config i application.conf"
 
     single {
         CachedAuthRepo(
             AltinnRestClient(
-                config.getString("altinn.service_owner_api_url"),
-                config.getString("altinn.gw_api_key"),
-                config.getString("altinn.altinn_api_key"),
-                config.getString("altinn.service_id"),
+                config.prop("altinn.service_owner_api_url"),
+                config.prop("altinn.gw_api_key"),
+                config.prop("altinn.altinn_api_key"),
+                config.prop("altinn.service_id"),
                 get()
             )
         )
@@ -126,28 +124,28 @@ fun Module.externalSystemClients(config: ApplicationConfig) {
         OAuth2TokenProvider(accessTokenService, azureAdConfig)
     } bind AccessTokenProvider::class
 
-    single { AaregArbeidsforholdClientImpl(config.getString("aareg_url"), get(qualifier = named("PROXY")), get()) } bind AaregArbeidsforholdClient::class
-    single { PdlClientImpl(config.getString("pdl_url"), get(qualifier = named("PROXY")), get(), get()) } bind PdlClient::class
-    single { DokarkivKlientImpl(config.getString("dokarkiv.base_url"), get(), get(qualifier = named("DOKARKIV"))) } bind DokarkivKlient::class
-    single { OppgaveKlientImpl(config.getString("oppgavebehandling.url"), get(qualifier = named("OPPGAVE")), get()) } bind OppgaveKlient::class
-    single { ArbeidsgiverNotifikasjonKlient(URL(config.getString("arbeidsgiver_notifikasjon_api_url")), get(qualifier = named("ARBEIDSGIVERNOTIFIKASJON")), get()) }
+    single { AaregArbeidsforholdClientImpl(config.prop("aareg_url"), get(qualifier = named("PROXY")), get()) } bind AaregArbeidsforholdClient::class
+    single { PdlClientImpl(config.prop("pdl_url"), get(qualifier = named("PROXY")), get(), get()) } bind PdlClient::class
+    single { DokarkivKlientImpl(config.prop("dokarkiv.base_url"), get(), get(qualifier = named("DOKARKIV"))) } bind DokarkivKlient::class
+    single { OppgaveKlientImpl(config.prop("oppgavebehandling.url"), get(qualifier = named("OPPGAVE")), get()) } bind OppgaveKlient::class
+    single { ArbeidsgiverNotifikasjonKlient(URL(config.prop("arbeidsgiver_notifikasjon_api_url")), get(qualifier = named("ARBEIDSGIVERNOTIFIKASJON")), get()) }
     single {
         ClamavVirusScannerImp(
             get(),
-            config.getString("clamav_url")
+            config.prop("clamav_url")
         )
     } bind VirusScanner::class
     single {
         BucketStorageImpl(
-            config.getString("gcp_bucket_name"),
-            config.getString("gcp_prjId")
+            config.prop("gcp_bucket_name"),
+            config.prop("gcp_prjId")
         )
     } bind BucketStorage::class
 
     single {
         SoeknadmeldingKafkaProducer(
             soeknadmeldingKafkaProps(),
-            config.getString("kafka_soeknad_topic_name"),
+            config.prop("kafka_soeknad_topic_name"),
             get(),
             StringKafkaProducerFactory()
         )
@@ -156,7 +154,7 @@ fun Module.externalSystemClients(config: ApplicationConfig) {
     single {
         KravmeldingKafkaProducer(
             kravmeldingKafkaProps(),
-            config.getString("kafka_krav_topic_name"),
+            config.prop("kafka_krav_topic_name"),
             get(),
             StringKafkaProducerFactory()
         )
@@ -165,11 +163,11 @@ fun Module.externalSystemClients(config: ApplicationConfig) {
     single {
         BrukernotifikasjonBeskjedKafkaProducer(
             brukernotifikasjonKafkaProps(),
-            config.getString("brukernotifikasjon.topic_name")
+            config.prop("brukernotifikasjon.topic_name")
         )
     } bind BrukernotifikasjonBeskjedSender::class
-    single { BrregClientImpl(get(), config.getString("berreg_enhet_url")) } bind BrregClient::class
+    single { BrregClientImpl(get(), config.prop("berreg_enhet_url")) } bind BrregClient::class
 
-    single { Norg2Client(config.getString("norg2_url"), get(qualifier = named("PROXY")), get()) }
+    single { Norg2Client(config.prop("norg2_url"), get(qualifier = named("PROXY")), get()) }
     single { BehandlendeEnhetService(get(), get()) }
 }

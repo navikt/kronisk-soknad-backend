@@ -1,14 +1,15 @@
 package no.nav.helse.fritakagp.koin
 
 import com.zaxxer.hikari.HikariDataSource
-import io.ktor.config.ApplicationConfig
+import io.ktor.server.config.ApplicationConfig
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbRepository
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbService
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.PostgresBakgrunnsjobbRepository
-import no.nav.helse.arbeidsgiver.system.getString
 import no.nav.helse.arbeidsgiver.web.auth.AltinnAuthorizer
 import no.nav.helse.arbeidsgiver.web.auth.DefaultAltinnAuthorizer
 import no.nav.helse.fritakagp.MetrikkVarsler
+import no.nav.helse.fritakagp.config.jdbcUrl
+import no.nav.helse.fritakagp.config.prop
 import no.nav.helse.fritakagp.datapakke.DatapakkePublisherJob
 import no.nav.helse.fritakagp.db.GravidKravRepository
 import no.nav.helse.fritakagp.db.GravidSoeknadRepository
@@ -52,19 +53,20 @@ import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadKvitterin
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadPDFGenerator
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadProcessor
 import no.nav.helse.fritakagp.service.PdlService
+import org.koin.core.module.Module
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import javax.sql.DataSource
 
-fun preprodConfig(config: ApplicationConfig) = module {
+fun preprodConfig(config: ApplicationConfig): Module = module {
     externalSystemClients(config)
 
     single {
         HikariDataSource(
             createHikariConfig(
-                config.getjdbcUrlFromProperties(),
-                config.getString("database.username"),
-                config.getString("database.password")
+                config.jdbcUrl(),
+                config.prop("database.username"),
+                config.prop("database.password")
             )
         )
     } bind DataSource::class
@@ -85,14 +87,14 @@ fun preprodConfig(config: ApplicationConfig) = module {
     single { KroniskKravProcessor(get(), get(), get(), get(), get(), KroniskKravPDFGenerator(), get(), get(), get(), get()) }
     single { KroniskKravSlettProcessor(get(), get(), get(), get(), get(), KroniskKravPDFGenerator(), get(), get(), get(), get(), get()) }
 
-    single { Clients.iCorrespondenceExternalBasic(config.getString("altinn_melding.altinn_endpoint")) }
+    single { Clients.iCorrespondenceExternalBasic(config.prop("altinn_melding.altinn_endpoint")) }
 
     single {
         GravidSoeknadAltinnKvitteringSender(
-            config.getString("altinn_melding.service_id"),
+            config.prop("altinn_melding.service_id"),
             get(),
-            config.getString("altinn_melding.username"),
-            config.getString("altinn_melding.password")
+            config.prop("altinn_melding.username"),
+            config.prop("altinn_melding.password")
         )
     } bind GravidSoeknadKvitteringSender::class
 
@@ -100,10 +102,10 @@ fun preprodConfig(config: ApplicationConfig) = module {
 
     single {
         GravidKravAltinnKvitteringSender(
-            config.getString("altinn_melding.service_id"),
+            config.prop("altinn_melding.service_id"),
             get(),
-            config.getString("altinn_melding.username"),
-            config.getString("altinn_melding.password")
+            config.prop("altinn_melding.username"),
+            config.prop("altinn_melding.password")
         )
     } bind GravidKravKvitteringSender::class
 
@@ -111,20 +113,20 @@ fun preprodConfig(config: ApplicationConfig) = module {
 
     single {
         KroniskSoeknadAltinnKvitteringSender(
-            config.getString("altinn_melding.service_id"),
+            config.prop("altinn_melding.service_id"),
             get(),
-            config.getString("altinn_melding.username"),
-            config.getString("altinn_melding.password")
+            config.prop("altinn_melding.username"),
+            config.prop("altinn_melding.password")
         )
     } bind KroniskSoeknadKvitteringSender::class
     single { KroniskSoeknadKvitteringProcessor(get(), get(), get()) }
 
     single {
         KroniskKravAltinnKvitteringSender(
-            config.getString("altinn_melding.service_id"),
+            config.prop("altinn_melding.service_id"),
             get(),
-            config.getString("altinn_melding.username"),
-            config.getString("altinn_melding.password")
+            config.prop("altinn_melding.username"),
+            config.prop("altinn_melding.password")
         )
     } bind KroniskKravKvitteringSender::class
     single { KroniskKravKvitteringProcessor(get(), get(), get()) }
@@ -142,6 +144,6 @@ fun preprodConfig(config: ApplicationConfig) = module {
     single { DefaultAltinnAuthorizer(get()) } bind AltinnAuthorizer::class
     single { BeloepBeregning(get()) }
 
-    single { DatapakkePublisherJob(get(), get(), config.getString("datapakke.api_url"), config.getString("datapakke.id"), get()) }
+    single { DatapakkePublisherJob(get(), get(), config.prop("datapakke.api_url"), config.prop("datapakke.id"), get()) }
     single { StatsRepoImpl(get()) } bind IStatsRepo::class
 }

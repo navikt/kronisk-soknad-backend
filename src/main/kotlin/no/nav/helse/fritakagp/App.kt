@@ -47,7 +47,7 @@ class FritakAgpApplication(val port: Int = 8080) : KoinComponent {
     private val appConfig = HoconApplicationConfig(ConfigFactory.load())
     private val runtimeEnvironment = appConfig.env()
 
-    private var webserver: NettyApplicationEngine? = null
+    private lateinit var webserver: NettyApplicationEngine
 
     init {
         if (runtimeEnvironment in listOf(AppEnv.PREPROD, AppEnv.PROD)) {
@@ -64,7 +64,7 @@ class FritakAgpApplication(val port: Int = 8080) : KoinComponent {
     }
 
     fun shutdown() {
-        webserver?.stop(1000, 1000)
+        webserver.stop(1000, 1000)
         get<BakgrunnsjobbService>().stop()
         stopKoin()
     }
@@ -88,8 +88,7 @@ class FritakAgpApplication(val port: Int = 8080) : KoinComponent {
                 }
             }
         )
-
-        webserver!!.start(wait = false)
+            .start(wait = false)
     }
 
     private fun configAndStartBackgroundWorker() {

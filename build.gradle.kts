@@ -203,7 +203,7 @@ dependencies {
     implementation("org.valiktor:valiktor-javatime:$valiktorVersion")
 
     testImplementation("io.insert-koin:koin-test:$koinVersion")
-    testImplementation("io.ktor:ktor-client-mock:$ktorVersion")
+    implementation("io.ktor:ktor-client-mock:$ktorVersion")
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
     testImplementation("io.ktor:ktor-server-tests:$ktorVersion")
     testImplementation("io.mockk:mockk:$mockKVersion")

@@ -49,7 +49,7 @@ class FritakAgpApplication(val port: Int = 8080) : KoinComponent {
 
     private lateinit var webserver: NettyApplicationEngine
 
-    init {
+    fun start() {
         if (runtimeEnvironment in listOf(AppEnv.PREPROD, AppEnv.PROD)) {
             logger.info("Sover i 30s i påvente av SQL proxy sidecar")
             Thread.sleep(30000)
@@ -151,7 +151,7 @@ fun main() {
         logger.error("uncaught exception in thread ${thread.name}: ${err.message}", err)
     }
 
-    val application = FritakAgpApplication()
+    val application = FritakAgpApplication().also { it.start() }
 
     Runtime.getRuntime().addShutdownHook(
         Thread {

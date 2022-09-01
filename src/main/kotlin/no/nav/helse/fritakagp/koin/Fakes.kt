@@ -2,15 +2,6 @@ package no.nav.helse.fritakagp.koin
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.mock.MockEngine
-import io.ktor.client.engine.mock.respond
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.http.Headers
-import io.ktor.http.HttpHeaders
-import io.ktor.http.HttpStatusCode
-import io.ktor.http.headersOf
-import io.ktor.utils.io.ByteReadChannel
 import no.nav.helse.arbeidsgiver.integrasjoner.AccessTokenProvider
 import no.nav.helse.arbeidsgiver.integrasjoner.aareg.AaregArbeidsforholdClient
 import no.nav.helse.arbeidsgiver.integrasjoner.aareg.Ansettelsesperiode
@@ -35,7 +26,6 @@ import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlIdent
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlPersonNavnMetadata
 import no.nav.helse.arbeidsgiver.utils.loadFromResources
 import no.nav.helse.arbeidsgiver.web.auth.AltinnOrganisationsRepository
-import no.nav.helse.fritakagp.config.prop
 import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.brreg.MockBrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
@@ -48,10 +38,8 @@ import no.nav.helse.fritakagp.integration.norg.Norg2Client
 import no.nav.helse.fritakagp.integration.virusscan.MockVirusScanner
 import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
 import no.nav.helse.fritakagp.service.BehandlendeEnhetService
-import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonKlient
 import org.koin.core.module.Module
 import org.koin.dsl.bind
-import java.net.URL
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -100,6 +88,18 @@ fun Module.mockExternalDependecies() {
     } bind AaregArbeidsforholdClient::class
 
     single {
+        object : DokarkivKlient {
+            override fun journalførDokument(
+                journalpost: JournalpostRequest,
+                forsoekFerdigstill: Boolean,
+                callId: String
+            ): JournalpostResponse {
+                return JournalpostResponse("arkiv-ref", true, "J", null, emptyList())
+            }
+        }
+    } bind DokarkivKlient::class
+
+    single {
         object : PdlClient {
             override fun fullPerson(ident: String) =
                 PdlHentFullPerson(
@@ -138,6 +138,31 @@ fun Module.mockExternalDependecies() {
     } bind PdlClient::class
 
     single {
+        object : OppgaveKlient {
+            override suspend fun hentOppgave(oppgaveId: Int, callId: String): OppgaveResponse {
+                return OppgaveResponse(oppgaveId, 1, oppgavetype = "JFR", aktivDato = LocalDateTime.now().minusDays(3).toLocalDate(), prioritet = Prioritet.NORM.toString())
+            }
+
+            override suspend fun opprettOppgave(
+                opprettOppgaveRequest: OpprettOppgaveRequest,
+                callId: String
+            ): OpprettOppgaveResponse = OpprettOppgaveResponse(
+                1234, "0100",
+                tema = "KON",
+                oppgavetype = "JFR",
+                versjon = 1,
+                aktivDato = LocalDate.now(),
+                Prioritet.NORM,
+                Status.UNDER_BEHANDLING
+            )
+        }
+    } bind OppgaveKlient::class
+
+    single { MockVirusScanner() } bind VirusScanner::class
+    single { MockBucketStorage() } bind BucketStorage::class
+    single { MockBrregClient() } bind BrregClient::class
+
+    single {
         object : Norg2Client(
             "",
             object : AccessTokenProvider {
@@ -174,47 +199,6 @@ fun Module.mockExternalDependecies() {
         }
     } bind Norg2Client::class
 
-    single {
-        object : DokarkivKlient {
-            override fun journalførDokument(
-                journalpost: JournalpostRequest,
-                forsoekFerdigstill: Boolean,
-                callId: String
-            ): JournalpostResponse {
-                return JournalpostResponse("arkiv-ref", true, "J", null, emptyList())
-            }
-        }
-    } bind DokarkivKlient::class
-
-    single {
-        object : OppgaveKlient {
-            override suspend fun hentOppgave(oppgaveId: Int, callId: String): OppgaveResponse {
-                return OppgaveResponse(oppgaveId, 1, oppgavetype = "JFR", aktivDato = LocalDateTime.now().minusDays(3).toLocalDate(), prioritet = Prioritet.NORM.toString())
-            }
-
-            override suspend fun opprettOppgave(
-                opprettOppgaveRequest: OpprettOppgaveRequest,
-                callId: String
-            ): OpprettOppgaveResponse = OpprettOppgaveResponse(
-                1234, "0100",
-                tema = "KON",
-                oppgavetype = "JFR",
-                versjon = 1,
-                aktivDato = LocalDate.now(),
-                Prioritet.NORM,
-                Status.UNDER_BEHANDLING
-            )
-        }
-    } bind OppgaveKlient::class
-
-    single {
-        buildClientArbeidsgiverNotifikasjonKlient("""{"data":{"nySak":{"__typename": "NySakVellykket","id": "1"}}}""")
-    }
-
-    single { MockVirusScanner() } bind VirusScanner::class
-    single { MockBucketStorage() } bind BucketStorage::class
-    single { MockBrregClient() } bind BrregClient::class
-
     single { BehandlendeEnhetService(get(), get()) }
 }
 
@@ -222,25 +206,4 @@ class MockAltinnRepo(om: ObjectMapper) : AltinnOrganisationsRepository {
     private val mockList = "altinn-mock/organisasjoner-med-rettighet.json".loadFromResources()
     private val mockAcl = om.readValue<Set<AltinnOrganisasjon>>(mockList)
     override fun hentOrgMedRettigheterForPerson(identitetsnummer: String): Set<AltinnOrganisasjon> = mockAcl
-}
-
-fun buildClientArbeidsgiverNotifikasjonKlient(
-    response: String,
-    status: HttpStatusCode = HttpStatusCode.OK,
-    headers: Headers = headersOf(HttpHeaders.ContentType, "application/json")
-): ArbeidsgiverNotifikasjonKlient {
-    val mockEngine = MockEngine {
-        respond(
-            content = ByteReadChannel(response),
-            status = status,
-            headers = headers
-        )
-    }
-
-    return ArbeidsgiverNotifikasjonKlient(
-        URL("https://notifikasjon-fake-produsent-api.labs.nais.io/"),
-        HttpClient(mockEngine) { install(ContentNegotiation) }
-    ) {
-        "fake token"
-    }
 }

@@ -2,7 +2,7 @@ package no.nav.helse.fritakagp.processing.arbeidsgivernotifikasjon
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.KotlinModule
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
@@ -17,7 +17,6 @@ import io.mockk.mockk
 import no.nav.helse.GravidTestData
 import no.nav.helse.KroniskTestData
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.Bakgrunnsjobb
-import no.nav.helse.arbeidsgiver.integrasjoner.AccessTokenProvider
 import no.nav.helse.fritakagp.db.GravidKravRepository
 import no.nav.helse.fritakagp.db.KroniskKravRepository
 import no.nav.helse.fritakagp.domain.GravidKrav
@@ -28,7 +27,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.net.URL
 
-internal class ArbeidsgiverNotifikasjonProcessorTest {
+class ArbeidsgiverNotifikasjonProcessorTest {
     private fun getResourceAsText(filename: String) =
         this::class.java.classLoader.getResource("responses/$filename")!!.readText()
 
@@ -36,7 +35,7 @@ internal class ArbeidsgiverNotifikasjonProcessorTest {
     val arbeidsgiverNotifikasjonKlient = buildClientArbeidsgiverNotifikasjonKlient(response)
     val gravidKravRepositoryMock = mockk<GravidKravRepository>(relaxed = true)
     val kroniskKravRepositoryMock = mockk<KroniskKravRepository>(relaxed = true)
-    val objectMapper = ObjectMapper().registerModule(KotlinModule()).registerModule(JavaTimeModule())
+    val objectMapper = ObjectMapper().registerKotlinModule().registerModule(JavaTimeModule())
 
     lateinit var gravidKrav: GravidKrav
     lateinit var kroniskKrav: KroniskKrav
@@ -77,10 +76,6 @@ internal class ArbeidsgiverNotifikasjonProcessorTest {
     }
 }
 
-class AccessTokenProviderMock : AccessTokenProvider {
-    override fun getToken(): String = "fake token"
-}
-
 fun buildClientArbeidsgiverNotifikasjonKlient(
     response: String,
     status: HttpStatusCode = HttpStatusCode.OK,
@@ -96,7 +91,8 @@ fun buildClientArbeidsgiverNotifikasjonKlient(
 
     return ArbeidsgiverNotifikasjonKlient(
         URL("https://notifikasjon-fake-produsent-api.labs.nais.io/"),
-        AccessTokenProviderMock(),
         HttpClient(mockEngine) { install(ContentNegotiation) }
-    )
+    ) {
+        "fake token"
+    }
 }

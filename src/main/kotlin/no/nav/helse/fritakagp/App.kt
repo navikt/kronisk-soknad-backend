@@ -47,9 +47,9 @@ class FritakAgpApplication(val port: Int = 8080) : KoinComponent {
     private val appConfig = HoconApplicationConfig(ConfigFactory.load())
     private val runtimeEnvironment = appConfig.env()
 
-    private var webserver: NettyApplicationEngine? = null
+    private lateinit var webserver: NettyApplicationEngine
 
-    fun start() {
+    init {
         if (runtimeEnvironment in listOf(AppEnv.PREPROD, AppEnv.PROD)) {
             logger.info("Sover i 30s i påvente av SQL proxy sidecar")
             Thread.sleep(30000)
@@ -64,7 +64,7 @@ class FritakAgpApplication(val port: Int = 8080) : KoinComponent {
     }
 
     fun shutdown() {
-        webserver?.stop(1000, 1000)
+        webserver.stop(1000, 1000)
         get<BakgrunnsjobbService>().stop()
         stopKoin()
     }
@@ -88,8 +88,7 @@ class FritakAgpApplication(val port: Int = 8080) : KoinComponent {
                 }
             }
         )
-
-        webserver!!.start(wait = false)
+            .start(wait = false)
     }
 
     private fun configAndStartBackgroundWorker() {
@@ -152,7 +151,7 @@ fun main() {
         logger.error("uncaught exception in thread ${thread.name}: ${err.message}", err)
     }
 
-    val application = FritakAgpApplication().also { it.start() }
+    val application = FritakAgpApplication()
 
     Runtime.getRuntime().addShutdownHook(
         Thread {

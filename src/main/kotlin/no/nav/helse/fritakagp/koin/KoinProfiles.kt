@@ -31,41 +31,41 @@ fun selectModuleBasedOnProfile(config: ApplicationConfig): List<Module> {
     return listOf(common, envModule)
 }
 
-val common = module {
-    val om = ObjectMapper().apply {
-        registerKotlinModule()
-        registerModule(Jdk8Module())
-        registerModule(JavaTimeModule())
-        disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-        configure(SerializationFeature.INDENT_OUTPUT, true)
-        configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
-        configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+private val common = module {
+    single {
+        ObjectMapper().apply {
+            registerKotlinModule()
+            configureCustom()
 
-        setDefaultPrettyPrinter(
-            DefaultPrettyPrinter().apply {
-                indentArraysWith(DefaultPrettyPrinter.FixedSpaceIndenter.instance)
-                indentObjectsWith(DefaultIndenter("  ", "\n"))
-            }
-        )
+            setDefaultPrettyPrinter(
+                DefaultPrettyPrinter().apply {
+                    indentArraysWith(DefaultPrettyPrinter.FixedSpaceIndenter.instance)
+                    indentObjectsWith(DefaultIndenter("  ", "\n"))
+                }
+            )
+        }
     }
 
-    single { om }
-
-    single { KubernetesProbeManager() }
-
-    val httpClient = HttpClient(Apache) {
-        install(ContentNegotiation) {
-            jackson {
-                registerKotlinModule()
-                registerModule(Jdk8Module())
-                registerModule(JavaTimeModule())
-                disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-                configure(SerializationFeature.INDENT_OUTPUT, true)
-                configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-                configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
+    single {
+        HttpClient(Apache) {
+            install(ContentNegotiation) {
+                jackson {
+                    configureCustom()
+                }
             }
         }
     }
 
-    single { httpClient }
+    single { KubernetesProbeManager() }
+}
+
+private fun ObjectMapper.configureCustom() {
+    registerModules(
+        Jdk8Module(),
+        JavaTimeModule(),
+    )
+    disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+    configure(SerializationFeature.INDENT_OUTPUT, true)
+    configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+    configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
 }

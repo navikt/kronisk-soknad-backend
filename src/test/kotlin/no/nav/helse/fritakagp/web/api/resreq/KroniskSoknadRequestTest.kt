@@ -7,7 +7,7 @@ import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 
-internal class KroniskSoknadRequestTest {
+class KroniskSoknadRequestTest {
     val navn = "Personliga Person"
     val sendtAv = "123"
     val sendtAvNavn = "Ola M Avsender"

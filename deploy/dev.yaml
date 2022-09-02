@@ -110,6 +110,8 @@ spec:
       value: https://ag-notifikasjon-produsent-api.dev.nav.no/api/graphql
     - name: ARBEIDSGIVER_NOTIFIKASJON_SCOPE
       value: "api://dev-gcp.fager.notifikasjon-produsent-api/.default"
+    - name: FRONTEND_URL
+      value: https://arbeidsgiver.dev.nav.no/fritak-agp
 
   gcp:
     sqlInstances:

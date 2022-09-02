@@ -66,8 +66,8 @@ fun localDevConfig(config: ApplicationConfig) = module {
 
     single { PdlService(get()) }
 
-    single { BrukernotifikasjonProcessor(get(), get(), get(), get(), get(), get(), 4, "mock") }
-    single { ArbeidsgiverNotifikasjonProcessor(get(), get(), get(), "https://mock.no", get()) }
+    single { BrukernotifikasjonProcessor(get(), get(), get(), get(), get(), get(), 4, config.getString("frontend_app_url")) }
+    single { ArbeidsgiverNotifikasjonProcessor(get(), get(), get(), config.getString("frontend_app_url"), get()) }
 
     single { DefaultAltinnAuthorizer(get()) } bind AltinnAuthorizer::class
 

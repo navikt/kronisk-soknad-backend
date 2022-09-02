@@ -18,12 +18,12 @@ application {
 }
 
 tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "11"
+    kotlinOptions.jvmTarget = "17"
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
 
 repositories {
@@ -135,7 +135,7 @@ dependencies {
     val logbackEncoderVersion: String by project
     val logback_contrib_version: String by project
     val logback_version: String by project
-    val mockKVersion: String by project
+    val mockkVersion: String by project
     val mockOAuth2ServerVersion: String by project
     val navCommonLogVersion: String by project
     val pdfboxVersion: String by project
@@ -206,7 +206,7 @@ dependencies {
     testImplementation("io.ktor:ktor-client-mock:$ktorVersion")
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
     testImplementation("io.ktor:ktor-server-tests:$ktorVersion")
-    testImplementation("io.mockk:mockk:$mockKVersion")
+    testImplementation("io.mockk:mockk:$mockkVersion")
     testImplementation("org.assertj:assertj-core:$assertJVersion")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion")

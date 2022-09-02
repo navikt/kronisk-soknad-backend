@@ -46,6 +46,7 @@ class GravidKravPDFGenerator {
         krav.perioder.withIndex().forEach { (index, periode) ->
             // For hvert 4 nye krav, lag ny side
             if (index != 0 && index % 4 == 0) {
+                content.endText()
                 content.close()
                 content = lagNySide(doc, font)
             }

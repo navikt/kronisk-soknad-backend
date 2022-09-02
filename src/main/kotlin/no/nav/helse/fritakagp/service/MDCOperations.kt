@@ -3,7 +3,7 @@ package no.nav.helse.fritakagp.service
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.slf4j.MDC
-import java.security.SecureRandom
+import kotlin.random.Random
 
 class MDCOperations {
     companion object {
@@ -11,7 +11,6 @@ class MDCOperations {
         const val MDC_CALL_ID = "callId"
         const val MDC_USER_ID = "userId"
         const val MDC_CONSUMER_ID = "consumerId"
-        private val RANDOM = SecureRandom()
 
         fun generateCallId(): String = "CallId_${getRandomNumber()}_${getSystemTime()}"
 
@@ -31,7 +30,7 @@ class MDCOperations {
             MDC.remove(key)
         }
 
-        private fun getRandomNumber(): Int = RANDOM.nextInt(Int.MAX_VALUE)
+        private fun getRandomNumber(): Int = Random.nextInt(Int.MAX_VALUE)
         private fun getSystemTime(): Long = System.currentTimeMillis()
     }
 }

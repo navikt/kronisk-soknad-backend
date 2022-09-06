@@ -12,6 +12,7 @@ import io.ktor.routing.get
 import io.ktor.routing.patch
 import io.ktor.routing.post
 import io.ktor.routing.route
+import kotlinx.coroutines.runBlocking
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbService
 import no.nav.helse.arbeidsgiver.integrasjoner.aareg.AaregArbeidsforholdClient
 import no.nav.helse.arbeidsgiver.web.auth.AltinnAuthorizer
@@ -39,6 +40,8 @@ import no.nav.helse.fritakagp.web.api.resreq.validation.extractBase64Del
 import no.nav.helse.fritakagp.web.api.resreq.validation.extractFilExtDel
 import no.nav.helse.fritakagp.web.auth.authorize
 import no.nav.helse.fritakagp.web.auth.hentIdentitetsnummerFraLoginToken
+import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonKlient
+import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.hardDeleteSak
 import org.valiktor.ConstraintViolationException
 import org.valiktor.DefaultConstraintViolation
 import java.time.LocalDateTime
@@ -57,7 +60,8 @@ fun Route.gravidRoutes(
     authorizer: AltinnAuthorizer,
     belopBeregning: BeloepBeregning,
     aaregClient: AaregArbeidsforholdClient,
-    pdlService: PdlService
+    pdlService: PdlService,
+    arbeidsgiverNotifikasjonKlient: ArbeidsgiverNotifikasjonKlient
 ) {
     route("/gravid") {
         route("/soeknad") {
@@ -235,6 +239,9 @@ fun Route.gravidRoutes(
 
                 authorize(authorizer, form.virksomhetsnummer)
 
+                form.arbeidsgiverSakId?.let {
+                    runBlocking { arbeidsgiverNotifikasjonKlient.hardDeleteSak(it) }
+                }
                 form.status = KravStatus.SLETTET
                 form.slettetAv = innloggetFnr
                 form.slettetAvNavn = slettetAv

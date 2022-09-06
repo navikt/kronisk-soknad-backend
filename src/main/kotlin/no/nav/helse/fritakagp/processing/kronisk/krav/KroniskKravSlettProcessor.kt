@@ -43,7 +43,6 @@ class KroniskKravSlettProcessor(
     private val bucketStorage: BucketStorage,
     private val brregClient: BrregClient,
     private val behandlendeEnhetService: BehandlendeEnhetService,
-    private val arbeidsgiverNotifikasjonKlient: ArbeidsgiverNotifikasjonKlient
 ) : BakgrunnsjobbProsesserer {
     companion object {
         val JOB_TYPE = "slett-kronisk-krav"
@@ -67,9 +66,6 @@ class KroniskKravSlettProcessor(
             krav.sletteJournalpostId = journalførSletting(krav)
             krav.sletteOppgaveId = opprettOppgave(krav)
         } finally {
-            krav.arbeidsgiverSakId?.let {
-                runBlocking { arbeidsgiverNotifikasjonKlient.hardDeleteSak(it) }
-            }
             updateAndLogOnFailure(krav)
         }
     }

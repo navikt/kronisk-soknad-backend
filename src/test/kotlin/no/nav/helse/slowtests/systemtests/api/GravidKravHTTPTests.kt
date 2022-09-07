@@ -51,7 +51,7 @@ class GravidKravHTTPTests : SystemTestBase() {
 
     @Test
     fun `invalid json gives 400 Bad request`() = suspendableTest {
-        val responseExcepion = assertThrows<ClientRequestException> {
+        val responseExcepion = assertThrows<IllegalStateException> {
             httpClient.post<HttpResponse> {
                 appUrl(kravGravidUrl)
                 contentType(ContentType.Application.Json)

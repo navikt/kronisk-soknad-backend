@@ -6,7 +6,7 @@ import no.nav.helse.fritakagp.domain.GeografiskTilknytningData
 import no.nav.helse.fritakagp.integration.norg.ArbeidsfordelingRequest
 import no.nav.helse.fritakagp.integration.norg.ArbeidsfordelingResponse
 import no.nav.helse.fritakagp.integration.norg.Norg2Client
-import org.slf4j.LoggerFactory
+import no.nav.helsearbeidsgiver.utils.log.logger
 import java.time.LocalDate
 
 const val SYKEPENGER_UTLAND = "4474"
@@ -17,7 +17,7 @@ class BehandlendeEnhetService(
     private val norg2Client: Norg2Client,
 ) {
 
-    var log = LoggerFactory.getLogger(BehandlendeEnhetService::class.java)
+    private val logger = this.logger()
 
     fun hentBehandlendeEnhet(fnr: String, uuid: String, tidspunkt: LocalDate = LocalDate.now()): String {
         val geografiskTilknytning = hentGeografiskTilknytning(fnr)
@@ -34,17 +34,17 @@ class BehandlendeEnhetService(
             val arbeidsfordelinger = runBlocking {
                 norg2Client.hentAlleArbeidsfordelinger(criteria, callId)
             }
-            log.info("Fant enheter: " + arbeidsfordelinger.toString())
+            logger.info("Fant enheter: " + arbeidsfordelinger.toString())
             val behandlendeEnhet = finnAktivBehandlendeEnhet(
                 arbeidsfordelinger,
                 geografiskTilknytning?.geografiskTilknytning,
                 tidspunkt
             )
 
-            log.info("Fant geografiskTilknytning ${geografiskTilknytning.geografiskTilknytning} med behandlendeEnhet $behandlendeEnhet for krav $uuid")
+            logger.info("Fant geografiskTilknytning ${geografiskTilknytning.geografiskTilknytning} med behandlendeEnhet $behandlendeEnhet for krav $uuid")
             return behandlendeEnhet
         } catch (e: RuntimeException) {
-            log.error("Klarte ikke å hente behandlende enhet!", e)
+            logger.error("Klarte ikke å hente behandlende enhet!", e)
             throw BehandlendeEnhetFeiletException(e)
         }
     }

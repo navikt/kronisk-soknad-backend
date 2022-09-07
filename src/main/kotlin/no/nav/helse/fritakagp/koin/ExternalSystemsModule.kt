@@ -31,7 +31,7 @@ import no.nav.helse.fritakagp.integration.kafka.kravmeldingKafkaProps
 import no.nav.helse.fritakagp.integration.kafka.soeknadmeldingKafkaProps
 import no.nav.helse.fritakagp.integration.norg.Norg2Client
 import no.nav.helse.fritakagp.integration.oauth2.DefaultOAuth2HttpClient
-import no.nav.helse.fritakagp.integration.oauth2.OAuth2ClientPropertiesConfig
+import no.nav.helse.fritakagp.integration.oauth2.OAuth2ClientConfig
 import no.nav.helse.fritakagp.integration.oauth2.TokenResolver
 import no.nav.helse.fritakagp.integration.virusscan.ClamavVirusScannerImp
 import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
@@ -170,7 +170,7 @@ private fun Scope.oAuth2TokenProvider(config: ApplicationConfig, authScope: Auth
             TokenExchangeClient(it)
         )
     }
-    val azureAdConfig = OAuth2ClientPropertiesConfig(config, authScope.scope)
+    val azureAdConfig = OAuth2ClientConfig(config, authScope.scope)
         .clientConfig["azure_ad"]
         ?: error("Fant ikke config i application.conf")
 

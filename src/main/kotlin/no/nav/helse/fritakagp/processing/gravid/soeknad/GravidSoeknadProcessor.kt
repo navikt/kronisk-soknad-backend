@@ -28,7 +28,7 @@ import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor.Jobbdata.SkjemaType.GravidSøknad
 import no.nav.helse.fritakagp.service.BehandlendeEnhetService
-import org.slf4j.LoggerFactory
+import no.nav.helsearbeidsgiver.utils.log.logger
 import java.time.LocalDate
 import java.util.Base64
 import java.util.UUID
@@ -54,7 +54,7 @@ class GravidSoeknadProcessor(
     val digitalSoeknadBehandingsType = "ae0227"
     val fritakAGPBehandingsTema = "ab0338"
 
-    val log = LoggerFactory.getLogger(GravidSoeknadProcessor::class.java)
+    private val logger = this.logger()
 
     /**
      * Prosesserer en gravidsøknad; journalfører søknaden og oppretter en oppgave for saksbehandler.
@@ -132,7 +132,7 @@ class GravidSoeknadProcessor(
 
         )
 
-        log.debug("Journalført ${soeknad.id} med ref ${response.journalpostId}")
+        logger.debug("Journalført ${soeknad.id} med ref ${response.journalpostId}")
         return response.journalpostId
     }
 
@@ -142,7 +142,7 @@ class GravidSoeknadProcessor(
     override fun stoppet(jobb: Bakgrunnsjobb) {
         val soeknad = getSoeknadOrThrow(jobb)
         val oppgaveId = opprettFordelingsOppgave(soeknad)
-        log.warn("Jobben ${jobb.uuid} feilet permanenet og resulterte i fordelignsoppgave $oppgaveId")
+        logger.warn("Jobben ${jobb.uuid} feilet permanenet og resulterte i fordelignsoppgave $oppgaveId")
     }
 
     private fun getSoeknadOrThrow(jobb: Bakgrunnsjobb): GravidSoeknad {

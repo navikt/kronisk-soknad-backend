@@ -15,12 +15,12 @@ import no.nav.helse.fritakagp.config.env
 import no.nav.helse.fritakagp.config.jwtIssuerAudience
 import no.nav.helse.fritakagp.config.jwtIssuerCookieName
 import no.nav.helse.fritakagp.config.jwtIssuerName
+import no.nav.helsearbeidsgiver.utils.log.logger
 import no.nav.security.mock.oauth2.MockOAuth2Server
-import org.slf4j.LoggerFactory
 
 fun Application.localCookieDispenser(config: ApplicationConfig) {
     val oauthMockPort = 6666
-    val logger = LoggerFactory.getLogger("LocalCookieDispenser")
+    val logger = "LocalCookieDispenser".logger()
     logger.info("Starter OAuth Mock")
     val server = MockOAuth2Server()
     val cookieName = config.jwtIssuerCookieName()

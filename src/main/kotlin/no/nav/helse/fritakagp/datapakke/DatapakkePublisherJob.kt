@@ -13,6 +13,7 @@ import kotlinx.coroutines.runBlocking
 import no.nav.helse.arbeidsgiver.utils.RecurringJob
 import no.nav.helse.arbeidsgiver.utils.loadFromResources
 import no.nav.helse.fritakagp.db.IStatsRepo
+import no.nav.helsearbeidsgiver.utils.log.logger
 import java.time.DayOfWeek
 import java.time.Duration
 import java.time.LocalDateTime
@@ -30,6 +31,8 @@ class DatapakkePublisherJob(
         CoroutineScope(Dispatchers.IO),
         Duration.ofHours(3).toMillis()
     ) {
+    private val jobLogger = this.logger()
+
     override fun doJob() {
         val now = LocalDateTime.now()
         if (applyWeeklyOnly && now.dayOfWeek != DayOfWeek.MONDAY && now.hour != 0) {
@@ -84,14 +87,14 @@ class DatapakkePublisherJob(
             )*/
 
         runBlocking {
-            logger.info("Populerte datapakke template med data: $populatedDatapakke")
+            jobLogger.info("Populerte datapakke template med data: $populatedDatapakke")
 
             val response = httpClient.put("$datapakkeApiUrl/$datapakkeId") {
                 contentType(ContentType.Application.Json)
                 setBody(om.readTree(populatedDatapakke))
             }
 
-            logger.info("Oppdaterte datapakke $datapakkeId med respons ${response.bodyAsText()}")
+            jobLogger.info("Oppdaterte datapakke $datapakkeId med respons ${response.bodyAsText()}")
         }
     }
 }

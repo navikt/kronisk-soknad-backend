@@ -2,11 +2,8 @@ package no.nav.helse.fritakagp.web.api
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.ktor.http.HttpStatusCode
-import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.application
 import io.ktor.server.application.call
-import io.ktor.server.plugins.BadRequestException
-import io.ktor.server.request.ContentTransformationException
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
@@ -15,7 +12,6 @@ import io.ktor.server.routing.get
 import io.ktor.server.routing.patch
 import io.ktor.server.routing.post
 import io.ktor.server.routing.route
-import kotlinx.coroutines.runBlocking
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbService
 import no.nav.helse.arbeidsgiver.integrasjoner.aareg.AaregArbeidsforholdClient
 import no.nav.helse.arbeidsgiver.web.auth.AltinnAuthorizer
@@ -129,7 +125,7 @@ fun Route.gravidRoutes(
             }
 
             post {
-                val request = call.bada<GravidKravRequest>()
+                val request = call.receive<GravidKravRequest>()
                 authorize(authorizer, request.virksomhetsnummer)
                 val arbeidsforhold = aaregClient
                     .hentArbeidsforhold(request.identitetsnummer, UUID.randomUUID().toString())
@@ -258,13 +254,6 @@ fun Route.gravidRoutes(
         }
     }
 }
-
-private suspend inline fun <reified T : Any> ApplicationCall.bada(): T =
-    try {
-        receive()
-    } catch (e: ContentTransformationException) {
-        throw BadRequestException("Ugyldig json.", e)
-    }
 
 suspend fun processDocumentForGCPStorage(doc: String?, virusScanner: VirusScanner, bucket: BucketStorage, id: UUID) {
     if (!doc.isNullOrEmpty()) {

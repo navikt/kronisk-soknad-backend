@@ -12,12 +12,12 @@ import io.ktor.routing.get
 import io.ktor.routing.routing
 import no.nav.helse.arbeidsgiver.system.AppEnv
 import no.nav.helse.arbeidsgiver.system.getEnvironment
+import no.nav.helsearbeidsgiver.utils.log.logger
 import no.nav.security.mock.oauth2.MockOAuth2Server
-import org.slf4j.LoggerFactory
 
 fun Application.localCookieDispenser(config: ApplicationConfig) {
     val oauthMockPort = 6666
-    val logger = LoggerFactory.getLogger("LocalCookieDispenser")
+    val logger = "LocalCookieDispenser".logger()
     logger.info("Starter OAuth Mock")
     val server = MockOAuth2Server()
     val cookieName = config.configList("no.nav.security.jwt.issuers")[0].property("cookie_name").getString()

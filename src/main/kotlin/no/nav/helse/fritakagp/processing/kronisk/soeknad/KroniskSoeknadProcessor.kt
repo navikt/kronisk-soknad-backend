@@ -28,7 +28,7 @@ import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor.Jobbdata.SkjemaType
 import no.nav.helse.fritakagp.service.BehandlendeEnhetService
-import org.slf4j.LoggerFactory
+import no.nav.helsearbeidsgiver.utils.log.logger
 import java.time.LocalDate
 import java.util.Base64
 import java.util.UUID
@@ -53,7 +53,7 @@ class KroniskSoeknadProcessor(
     val digitalSoeknadBehandingsType = "ae0227"
     val fritakAGPBehandingsTema = "ab0338"
 
-    val log = LoggerFactory.getLogger(KroniskSoeknadProcessor::class.java)
+    private val logger = this.logger()
 
     /**
      * Prosesserer en kronisksøknad; journalfører søknaden og oppretter en oppgave for saksbehandler.
@@ -105,7 +105,7 @@ class KroniskSoeknadProcessor(
     override fun stoppet(jobb: Bakgrunnsjobb) {
         val soeknad = getSoeknadOrThrow(jobb)
         val oppgaveId = opprettFordelingsOppgave(soeknad)
-        log.warn("Jobben ${jobb.uuid} feilet permanenet og resulterte i fordelignsoppgave $oppgaveId")
+        logger.warn("Jobben ${jobb.uuid} feilet permanenet og resulterte i fordelignsoppgave $oppgaveId")
     }
 
     private fun getSoeknadOrThrow(jobb: Bakgrunnsjobb): KroniskSoeknad {
@@ -119,7 +119,7 @@ class KroniskSoeknadProcessor(
         try {
             kroniskSoeknadRepo.update(soeknad)
         } catch (e: Exception) {
-            log.error("Feilet i å lagre ${soeknad.id} etter at en ekstern operasjon har blitt utført. JournalpostID: ${soeknad.journalpostId} OppgaveID: ${soeknad.oppgaveId}")
+            logger.error("Feilet i å lagre ${soeknad.id} etter at en ekstern operasjon har blitt utført. JournalpostID: ${soeknad.journalpostId} OppgaveID: ${soeknad.oppgaveId}")
             throw e
         }
     }
@@ -146,7 +146,7 @@ class KroniskSoeknadProcessor(
 
         )
 
-        log.debug("Journalført ${soeknad.id} med ref ${response.journalpostId}")
+        logger.debug("Journalført ${soeknad.id} med ref ${response.journalpostId}")
         return response.journalpostId
     }
 

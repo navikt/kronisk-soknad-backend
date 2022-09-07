@@ -16,7 +16,7 @@ import no.nav.helse.arbeidsgiver.web.validation.ValidationProblem
 import no.nav.helse.arbeidsgiver.web.validation.ValidationProblemDetail
 import no.nav.helse.fritakagp.integration.altinn.ManglerAltinnRettigheterException
 import no.nav.helse.fritakagp.web.dto.validation.getContextualMessage
-import org.slf4j.LoggerFactory
+import no.nav.helsearbeidsgiver.utils.log.logger
 import org.valiktor.ConstraintViolationException
 import java.lang.reflect.InvocationTargetException
 import java.net.URI
@@ -24,7 +24,7 @@ import java.util.UUID
 
 fun Application.configureExceptionHandling() {
     install(StatusPages) {
-        val logger = LoggerFactory.getLogger("StatusPages")
+        val logger = "StatusPages".logger()
 
         suspend fun handleUnexpectedException(call: ApplicationCall, cause: Throwable) {
             val errorId = UUID.randomUUID()

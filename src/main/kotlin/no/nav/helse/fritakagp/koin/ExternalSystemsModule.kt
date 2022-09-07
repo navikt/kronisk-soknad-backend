@@ -33,7 +33,7 @@ import no.nav.helse.fritakagp.integration.kafka.kravmeldingKafkaProps
 import no.nav.helse.fritakagp.integration.kafka.soeknadmeldingKafkaProps
 import no.nav.helse.fritakagp.integration.norg.Norg2Client
 import no.nav.helse.fritakagp.integration.oauth2.DefaultOAuth2HttpClient
-import no.nav.helse.fritakagp.integration.oauth2.OAuth2ClientPropertiesConfig
+import no.nav.helse.fritakagp.integration.oauth2.OAuth2ClientConfig
 import no.nav.helse.fritakagp.integration.oauth2.TokenResolver
 import no.nav.helse.fritakagp.integration.virusscan.ClamavVirusScannerImp
 import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
@@ -67,7 +67,7 @@ fun Module.externalSystemClients(config: ApplicationConfig) {
     single { GrunnbeloepClient(get()) }
 
     single(named("OPPGAVE")) {
-        val clientConfig = OAuth2ClientPropertiesConfig(config, "oppgavescope")
+        val clientConfig = OAuth2ClientConfig(config, "oppgavescope")
         val tokenResolver = TokenResolver()
         val oauthHttpClient = DefaultOAuth2HttpClient(get())
         val accessTokenService = OAuth2AccessTokenService(
@@ -82,7 +82,7 @@ fun Module.externalSystemClients(config: ApplicationConfig) {
     } bind AccessTokenProvider::class
 
     single(named("PROXY")) {
-        val clientConfig = OAuth2ClientPropertiesConfig(config, "proxyscope")
+        val clientConfig = OAuth2ClientConfig(config, "proxyscope")
         val tokenResolver = TokenResolver()
         val oauthHttpClient = DefaultOAuth2HttpClient(get())
         val accessTokenService = OAuth2AccessTokenService(
@@ -97,7 +97,7 @@ fun Module.externalSystemClients(config: ApplicationConfig) {
     } bind AccessTokenProvider::class
 
     single(named("DOKARKIV")) {
-        val clientConfig = OAuth2ClientPropertiesConfig(config, "dokarkivscope")
+        val clientConfig = OAuth2ClientConfig(config, "dokarkivscope")
         val tokenResolver = TokenResolver()
         val oauthHttpClient = DefaultOAuth2HttpClient(get())
         val accessTokenService = OAuth2AccessTokenService(
@@ -112,7 +112,7 @@ fun Module.externalSystemClients(config: ApplicationConfig) {
     } bind AccessTokenProvider::class
 
     single(named("ARBEIDSGIVERNOTIFIKASJON")) {
-        val clientConfig = OAuth2ClientPropertiesConfig(config, "arbeidsgivernotifikasjonscope")
+        val clientConfig = OAuth2ClientConfig(config, "arbeidsgivernotifikasjonscope")
         val tokenResolver = TokenResolver()
         val oauthHttpClient = DefaultOAuth2HttpClient(get())
         val accessTokenService = OAuth2AccessTokenService(

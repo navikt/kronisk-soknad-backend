@@ -28,7 +28,7 @@ import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor.Jobbdata.SkjemaType
 import no.nav.helse.fritakagp.service.BehandlendeEnhetService
-import org.slf4j.LoggerFactory
+import no.nav.helsearbeidsgiver.utils.log.logger
 import java.time.LocalDate
 import java.util.Base64
 import java.util.UUID
@@ -56,7 +56,7 @@ class GravidKravProcessor(
     val digitalKravBehandingsType = "ae0121"
     val fritakAGPBehandingsTema = "ab0200"
 
-    val log = LoggerFactory.getLogger(GravidKravProcessor::class.java)
+    private val logger = this.logger()
 
     /**
      * Prosesserer et gravidkrav; journalfører kravet og oppretter en oppgave for saksbehandler.
@@ -114,7 +114,7 @@ class GravidKravProcessor(
     override fun stoppet(jobb: Bakgrunnsjobb) {
         val krav = getOrThrow(jobb)
         val oppgaveId = opprettFordelingsOppgave(krav)
-        log.warn("Jobben ${jobb.uuid} feilet permanenet og resulterte i fordelignsoppgave $oppgaveId")
+        logger.warn("Jobben ${jobb.uuid} feilet permanenet og resulterte i fordelignsoppgave $oppgaveId")
     }
 
     private fun updateAndLogOnFailure(krav: GravidKrav) {
@@ -146,7 +146,7 @@ class GravidKravProcessor(
 
         )
 
-        log.debug("Journalført ${krav.id} med ref ${response.journalpostId}")
+        logger.debug("Journalført ${krav.id} med ref ${response.journalpostId}")
         return response.journalpostId
     }
 

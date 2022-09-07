@@ -34,16 +34,16 @@ import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadProcessor
 import no.nav.helse.fritakagp.web.auth.localCookieDispenser
 import no.nav.helse.fritakagp.web.fritakModule
 import no.nav.helse.fritakagp.web.nais.nais
+import no.nav.helsearbeidsgiver.utils.log.logger
 import org.flywaydb.core.Flyway
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import org.koin.core.context.GlobalContext
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
-import org.slf4j.LoggerFactory
 
 class FritakAgpApplication(val port: Int = 8080) : KoinComponent {
-    private val logger = LoggerFactory.getLogger(FritakAgpApplication::class.simpleName)
+    private val logger = this.logger()
     private val appConfig = HoconApplicationConfig(ConfigFactory.load())
     private val runtimeEnvironment = appConfig.env()
 
@@ -145,7 +145,7 @@ class FritakAgpApplication(val port: Int = 8080) : KoinComponent {
 }
 
 fun main() {
-    val logger = LoggerFactory.getLogger("main")
+    val logger = "main".logger()
 
     Thread.currentThread().setUncaughtExceptionHandler { thread, err ->
         logger.error("uncaught exception in thread ${thread.name}: ${err.message}", err)

@@ -9,7 +9,7 @@ import no.nav.security.token.support.client.core.ClientProperties
 import no.nav.security.token.support.client.core.OAuth2GrantType
 import java.net.URI
 
-class OAuth2ClientPropertiesConfig(
+class OAuth2ClientConfig(
     appConfig: ApplicationConfig,
     scope: String
 ) {

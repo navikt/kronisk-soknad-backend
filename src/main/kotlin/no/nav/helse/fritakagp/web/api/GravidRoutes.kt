@@ -5,6 +5,8 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.application
 import io.ktor.server.application.call
 import io.ktor.server.request.receive
+import io.ktor.server.request.receiveNullable
+import io.ktor.server.request.receiveOrNull
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.delete
@@ -44,6 +46,7 @@ import no.nav.helse.fritakagp.web.auth.hentIdentitetsnummerFraLoginToken
 import org.valiktor.ConstraintViolationException
 import org.valiktor.DefaultConstraintViolation
 import java.time.LocalDateTime
+import java.util.IllegalFormatFlagsException
 import java.util.UUID
 import javax.sql.DataSource
 
@@ -125,7 +128,7 @@ fun Route.gravidRoutes(
             }
 
             post {
-                val request = call.receive<GravidKravRequest>()
+                val request = call.receiveNullable<GravidKravRequest>() ?: throw IllegalFormatFlagsException("tester noe")
                 authorize(authorizer, request.virksomhetsnummer)
                 val arbeidsforhold = aaregClient
                     .hentArbeidsforhold(request.identitetsnummer, UUID.randomUUID().toString())

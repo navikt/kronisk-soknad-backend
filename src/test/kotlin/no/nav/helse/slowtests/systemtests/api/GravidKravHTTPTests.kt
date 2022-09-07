@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.koin.test.inject
 import java.time.LocalDate
+import kotlin.test.assertTrue
 
 class GravidKravHTTPTests : SystemTestBase() {
     private val kravGravidUrl = "/api/v1/gravid/krav"
@@ -51,7 +52,7 @@ class GravidKravHTTPTests : SystemTestBase() {
 
     @Test
     fun `invalid json gives 400 Bad request`() = suspendableTest {
-        val responseExcepion = assertThrows<IllegalStateException> {
+        assertThrows<NegativeArraySizeException> {
             httpClient.post<HttpResponse> {
                 appUrl(kravGravidUrl)
                 contentType(ContentType.Application.Json)
@@ -67,6 +68,8 @@ class GravidKravHTTPTests : SystemTestBase() {
                 """.trimIndent()
             }
         }
+
+        assertTrue(false, "denne skal iallefall feile")
 
 //        assertThat(responseExcepion.response.status).isEqualTo(HttpStatusCode.BadRequest)
 //        val res = extractResponseBody(responseExcepion.response)

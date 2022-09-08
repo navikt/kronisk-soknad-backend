@@ -21,7 +21,7 @@ class KroniskKravHTTPTests : SystemTestBase() {
 
     @Test
     fun `invalid json gives 400 Bad request`() = suspendableTest {
-        val responseExcepion = assertThrows<ClientRequestException> {
+        val responseException = assertThrows<ClientRequestException> {
             httpClient.post {
                 appUrl(kravKroniskUrl)
                 contentType(ContentType.Application.Json)
@@ -42,9 +42,9 @@ class KroniskKravHTTPTests : SystemTestBase() {
             }
         }
 
-        assertThat(responseExcepion.response.status).isEqualTo(HttpStatusCode.BadRequest)
-        val res = extractResponseBody(responseExcepion.response)
-        assertThat(res.title).contains("Feil ved prosessering av JSON-dataene som ble oppgitt")
+        assertThat(responseException.response.status).isEqualTo(HttpStatusCode.BadRequest)
+        val res = extractResponseBody(responseException.response)
+        assertThat(res.title).contains("Feil ved prosessering av mottatt JSON-data.")
     }
 
     @Test

@@ -52,7 +52,7 @@ class GravidKravHTTPTests : SystemTestBase() {
 
     @Test
     fun `invalid json gives 400 Bad request`() = suspendableTest {
-        val responseExcepion = assertThrows<ClientRequestException> {
+        val responseException = assertThrows<ClientRequestException> {
             httpClient.post {
                 appUrl(kravGravidUrl)
                 contentType(ContentType.Application.Json)
@@ -71,9 +71,9 @@ class GravidKravHTTPTests : SystemTestBase() {
             }
         }
 
-        assertThat(responseExcepion.response.status).isEqualTo(HttpStatusCode.BadRequest)
-        val res = extractResponseBody(responseExcepion.response)
-        assertThat(res.title).contains("Feil ved prosessering av JSON-dataene som ble oppgitt")
+        assertThat(responseException.response.status).isEqualTo(HttpStatusCode.BadRequest)
+        val res = extractResponseBody(responseException.response)
+        assertThat(res.title).contains("Valideringen av input feilet")
     }
 
     @Test

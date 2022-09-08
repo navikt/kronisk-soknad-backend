@@ -48,6 +48,7 @@ private val common = module {
 
     single {
         HttpClient(Apache) {
+            expectSuccess = true
             install(ContentNegotiation) {
                 jackson {
                     configureCustom()

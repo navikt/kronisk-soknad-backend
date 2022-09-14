@@ -5,8 +5,6 @@ import io.ktor.server.config.ApplicationConfig
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbRepository
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbService
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.PostgresBakgrunnsjobbRepository
-import no.nav.helse.arbeidsgiver.web.auth.AltinnAuthorizer
-import no.nav.helse.arbeidsgiver.web.auth.DefaultAltinnAuthorizer
 import no.nav.helse.fritakagp.config.jdbcUrl
 import no.nav.helse.fritakagp.config.prop
 import no.nav.helse.fritakagp.datapakke.DatapakkePublisherJob
@@ -57,6 +55,7 @@ import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadKvitterin
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadKvitteringSenderDummy
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadPDFGenerator
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadProcessor
+import no.nav.helse.fritakagp.service.AltinnService
 import no.nav.helse.fritakagp.service.PdlService
 import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonKlient
 import org.koin.core.module.Module
@@ -103,12 +102,11 @@ fun localDevConfig(config: ApplicationConfig): Module = module {
     single { KroniskSoeknadKafkaProcessor(get(), get(), get()) }
     single { KroniskKravKafkaProcessor(get(), get(), get()) }
 
+    single { AltinnService(get()) }
     single { PdlService(get()) }
 
     single { BrukernotifikasjonProcessor(get(), get(), get(), get(), get(), get(), 4, "mock") }
     single { ArbeidsgiverNotifikasjonProcessor(get(), get(), get(), "https://mock.no", get()) }
-
-    single { DefaultAltinnAuthorizer(get()) } bind AltinnAuthorizer::class
 
     single { DatapakkePublisherJob(get(), get(), config.prop("datapakke.api_url"), config.prop("datapakke.id"), get()) }
     single { StatsRepoImpl(get()) } bind IStatsRepo::class

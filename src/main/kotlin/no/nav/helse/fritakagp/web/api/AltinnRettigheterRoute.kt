@@ -6,18 +6,18 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
 import io.ktor.server.routing.route
-import no.nav.helse.arbeidsgiver.integrasjoner.altinn.AltinnBrukteForLangTidException
-import no.nav.helse.arbeidsgiver.web.auth.AltinnOrganisationsRepository
 import no.nav.helse.fritakagp.web.auth.hentIdentitetsnummerFraLoginToken
+import no.nav.helsearbeidsgiver.altinn.AltinnBrukteForLangTidException
+import no.nav.helsearbeidsgiver.altinn.AltinnClient
 
-fun Route.altinnRoutes(authRepo: AltinnOrganisationsRepository) {
+fun Route.altinnRoutes(altinnClient: AltinnClient) {
     route("/arbeidsgivere") {
-        get("/") {
+        get {
             val id = hentIdentitetsnummerFraLoginToken(call.request)
             try {
-                val rettigheter = authRepo.hentOrgMedRettigheterForPerson(id)
-                call.respond(rettigheter)
-            } catch (ae: AltinnBrukteForLangTidException) {
+                altinnClient.hentRettighetOrganisasjoner(id)
+                    .let { call.respond(it) }
+            } catch (_: AltinnBrukteForLangTidException) {
                 call.respond(HttpStatusCode.ExpectationFailed, "Altinn brukte for lang tid på å svare, prøv igjen om litt")
             }
         }

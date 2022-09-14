@@ -14,7 +14,6 @@ import io.ktor.server.routing.post
 import io.ktor.server.routing.route
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbService
 import no.nav.helse.arbeidsgiver.integrasjoner.aareg.AaregArbeidsforholdClient
-import no.nav.helse.arbeidsgiver.web.auth.AltinnAuthorizer
 import no.nav.helse.fritakagp.KroniskKravMetrics
 import no.nav.helse.fritakagp.KroniskSoeknadMetrics
 import no.nav.helse.fritakagp.config.AppEnv
@@ -32,16 +31,17 @@ import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravProcessor
 import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravSlettProcessor
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadKvitteringProcessor
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadProcessor
+import no.nav.helse.fritakagp.service.AltinnService
 import no.nav.helse.fritakagp.service.PdlService
 import no.nav.helse.fritakagp.web.api.resreq.KroniskKravRequest
 import no.nav.helse.fritakagp.web.api.resreq.KroniskSoknadRequest
-import no.nav.helse.fritakagp.web.auth.authorize
 import no.nav.helse.fritakagp.web.auth.hentIdentitetsnummerFraLoginToken
 import java.time.LocalDateTime
 import java.util.UUID
 import javax.sql.DataSource
 
 fun Route.kroniskRoutes(
+    altinnService: AltinnService,
     breegClient: BrregClient,
     datasource: DataSource,
     kroniskSoeknadRepo: KroniskSoeknadRepository,
@@ -50,7 +50,6 @@ fun Route.kroniskRoutes(
     om: ObjectMapper,
     virusScanner: VirusScanner,
     bucket: BucketStorage,
-    authorizer: AltinnAuthorizer,
     belopBeregning: BeloepBeregning,
     aaregClient: AaregArbeidsforholdClient,
     pdlService: PdlService
@@ -110,7 +109,7 @@ fun Route.kroniskRoutes(
                 if (form == null) {
                     call.respond(HttpStatusCode.NotFound)
                 } else {
-                    authorize(authorizer, form.virksomhetsnummer)
+                    altinnService.authorize(this, form.virksomhetsnummer)
                     form.sendtAvNavn = form.sendtAvNavn ?: pdlService.finnNavn(innloggetFnr)
                     form.navn = form.navn ?: pdlService.finnNavn(form.identitetsnummer)
 
@@ -120,7 +119,7 @@ fun Route.kroniskRoutes(
 
             post {
                 val request = call.receive<KroniskKravRequest>()
-                authorize(authorizer, request.virksomhetsnummer)
+                altinnService.authorize(this, request.virksomhetsnummer)
                 val arbeidsforhold = aaregClient
                     .hentArbeidsforhold(request.identitetsnummer, UUID.randomUUID().toString())
                     .filter { it.arbeidsgiver.organisasjonsnummer == request.virksomhetsnummer }
@@ -162,7 +161,7 @@ fun Route.kroniskRoutes(
             patch("/{id}") {
                 val request = call.receive<KroniskKravRequest>()
 
-                authorize(authorizer, request.virksomhetsnummer)
+                altinnService.authorize(this, request.virksomhetsnummer)
 
                 val innloggetFnr = hentIdentitetsnummerFraLoginToken(call.request)
                 val sendtAvNavn = pdlService.finnNavn(innloggetFnr)
@@ -231,7 +230,7 @@ fun Route.kroniskRoutes(
                 if (form == null) {
                     call.respond(HttpStatusCode.NotFound)
                 } else {
-                    authorize(authorizer, form.virksomhetsnummer)
+                    altinnService.authorize(this, form.virksomhetsnummer)
                     form.status = KravStatus.SLETTET
                     form.slettetAv = innloggetFnr
                     form.slettetAvNavn = slettetAv

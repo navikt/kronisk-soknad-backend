@@ -4,17 +4,14 @@ import io.ktor.server.config.ApplicationConfig
 import no.nav.helse.arbeidsgiver.integrasjoner.OAuth2TokenProvider
 import no.nav.helse.arbeidsgiver.integrasjoner.aareg.AaregArbeidsforholdClient
 import no.nav.helse.arbeidsgiver.integrasjoner.aareg.AaregArbeidsforholdClientImpl
-import no.nav.helse.arbeidsgiver.integrasjoner.altinn.AltinnRestClient
 import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.DokarkivKlient
 import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.DokarkivKlientImpl
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OppgaveKlient
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OppgaveKlientImpl
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlClient
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlClientImpl
-import no.nav.helse.arbeidsgiver.web.auth.AltinnOrganisationsRepository
 import no.nav.helse.fritakagp.config.prop
 import no.nav.helse.fritakagp.integration.GrunnbeloepClient
-import no.nav.helse.fritakagp.integration.altinn.CachedAuthRepo
 import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.brreg.BrregClientImpl
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
@@ -36,6 +33,8 @@ import no.nav.helse.fritakagp.integration.oauth2.TokenResolver
 import no.nav.helse.fritakagp.integration.virusscan.ClamavVirusScannerImp
 import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
 import no.nav.helse.fritakagp.service.BehandlendeEnhetService
+import no.nav.helsearbeidsgiver.altinn.AltinnClient
+import no.nav.helsearbeidsgiver.altinn.CacheConfig
 import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonKlient
 import no.nav.security.token.support.client.core.oauth2.ClientCredentialsTokenClient
 import no.nav.security.token.support.client.core.oauth2.OAuth2AccessTokenService
@@ -45,6 +44,7 @@ import org.koin.core.module.Module
 import org.koin.core.scope.Scope
 import org.koin.dsl.bind
 import java.net.URL
+import kotlin.time.Duration.Companion.minutes
 
 private enum class AuthScope(val scope: String) {
     PROXY("proxyscope"),
@@ -55,16 +55,15 @@ private enum class AuthScope(val scope: String) {
 
 fun Module.externalSystemClients(config: ApplicationConfig) {
     single {
-        CachedAuthRepo(
-            AltinnRestClient(
-                config.prop("altinn.service_owner_api_url"),
-                config.prop("altinn.gw_api_key"),
-                config.prop("altinn.altinn_api_key"),
-                config.prop("altinn.service_id"),
-                get()
-            )
+        AltinnClient(
+            altinnBaseUrl = config.prop("altinn.service_owner_api_url"),
+            serviceCode = config.prop("altinn.service_id"),
+            apiGwApiKey = config.prop("altinn.gw_api_key"),
+            altinnApiKey = config.prop("altinn.altinn_api_key"),
+            httpClient = get(),
+            cacheConfig = CacheConfig(60.minutes, 100),
         )
-    } bind AltinnOrganisationsRepository::class
+    }
 
     single { GrunnbeloepClient(get()) }
 

@@ -16,7 +16,7 @@ import io.ktor.server.response.respond
 import no.nav.helse.arbeidsgiver.web.validation.Problem
 import no.nav.helse.arbeidsgiver.web.validation.ValidationProblem
 import no.nav.helse.arbeidsgiver.web.validation.ValidationProblemDetail
-import no.nav.helse.fritakagp.integration.altinn.ManglerAltinnRettigheterException
+import no.nav.helse.fritakagp.service.ManglerAltinnRettigheterException
 import no.nav.helse.fritakagp.web.dto.validation.getContextualMessage
 import no.nav.helsearbeidsgiver.utils.log.logger
 import org.valiktor.ConstraintViolationException

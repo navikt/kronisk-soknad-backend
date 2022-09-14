@@ -1,7 +1,7 @@
 package no.nav.helse.fritakagp.koin
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
+import io.mockk.every
+import io.mockk.mockk
 import no.nav.helse.arbeidsgiver.integrasjoner.AccessTokenProvider
 import no.nav.helse.arbeidsgiver.integrasjoner.aareg.AaregArbeidsforholdClient
 import no.nav.helse.arbeidsgiver.integrasjoner.aareg.Ansettelsesperiode
@@ -9,7 +9,6 @@ import no.nav.helse.arbeidsgiver.integrasjoner.aareg.Arbeidsforhold
 import no.nav.helse.arbeidsgiver.integrasjoner.aareg.Arbeidsgiver
 import no.nav.helse.arbeidsgiver.integrasjoner.aareg.Opplysningspliktig
 import no.nav.helse.arbeidsgiver.integrasjoner.aareg.Periode
-import no.nav.helse.arbeidsgiver.integrasjoner.altinn.AltinnOrganisasjon
 import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.DokarkivKlient
 import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.JournalpostRequest
 import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.JournalpostResponse
@@ -24,8 +23,6 @@ import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlHentFullPerson
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlHentPersonNavn
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlIdent
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlPersonNavnMetadata
-import no.nav.helse.arbeidsgiver.utils.loadFromResources
-import no.nav.helse.arbeidsgiver.web.auth.AltinnOrganisationsRepository
 import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.brreg.MockBrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
@@ -38,13 +35,21 @@ import no.nav.helse.fritakagp.integration.norg.Norg2Client
 import no.nav.helse.fritakagp.integration.virusscan.MockVirusScanner
 import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
 import no.nav.helse.fritakagp.service.BehandlendeEnhetService
+import no.nav.helsearbeidsgiver.altinn.AltinnClient
+import no.nav.helsearbeidsgiver.altinn.AltinnOrganisasjon
 import org.koin.core.module.Module
 import org.koin.dsl.bind
 import java.time.LocalDate
 import java.time.LocalDateTime
 
 fun Module.mockExternalDependecies() {
-    single { MockAltinnRepo(get()) } bind AltinnOrganisationsRepository::class
+
+    single {
+        mockk<AltinnClient>().also {
+            every { it.hentRettighetOrganisasjoner(any()) } returns altinnOrgs
+        }
+    }
+
     single { MockBrukernotifikasjonBeskjedSender() } bind BrukernotifikasjonBeskjedSender::class
     single {
         object : AccessTokenProvider {
@@ -202,8 +207,42 @@ fun Module.mockExternalDependecies() {
     single { BehandlendeEnhetService(get(), get()) }
 }
 
-class MockAltinnRepo(om: ObjectMapper) : AltinnOrganisationsRepository {
-    private val mockList = "altinn-mock/organisasjoner-med-rettighet.json".loadFromResources()
-    private val mockAcl = om.readValue<Set<AltinnOrganisasjon>>(mockList)
-    override fun hentOrgMedRettigheterForPerson(identitetsnummer: String): Set<AltinnOrganisasjon> = mockAcl
-}
+private val altinnOrgs = setOf(
+    AltinnOrganisasjon(
+        name = "HØNEFOSS OG ØLEN",
+        type = "Enterprise",
+        organizationNumber = "910020102",
+        organizationForm = "AS",
+        status = "Active",
+    ),
+    AltinnOrganisasjon(
+        name = "JØA OG SEL",
+        type = "Business",
+        organizationNumber = "910098896",
+        organizationForm = "BEDR",
+        parentOrganizationNumber = "911366940",
+        status = "Active",
+    ),
+    AltinnOrganisasjon(
+        name = "ELTRODE AS",
+        type = "Business",
+        organizationNumber = "917404437",
+        organizationForm = "BEDR",
+        parentOrganizationNumber = "917346380",
+        status = "Active",
+    ),
+    AltinnOrganisasjon(
+        name = "STADLANDET OG SINGSÅS",
+        type = "Enterprise",
+        organizationNumber = "911366940",
+        organizationForm = "AS",
+        status = "Active",
+    ),
+    AltinnOrganisasjon(
+        name = "SKIKKELIG GJØK",
+        type = "Enterprise",
+        organizationNumber = "947064649",
+        organizationForm = "AS",
+        status = "Active",
+    ),
+)

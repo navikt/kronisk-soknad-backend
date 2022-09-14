@@ -105,8 +105,8 @@ fun localDevConfig(config: ApplicationConfig): Module = module {
     single { AltinnService(get()) }
     single { PdlService(get()) }
 
-    single { BrukernotifikasjonProcessor(get(), get(), get(), get(), get(), get(), 4, config.getString("frontend_app_url")) }
-    single { ArbeidsgiverNotifikasjonProcessor(get(), get(), get(), config.getString("frontend_app_url"), get()) }
+    single { BrukernotifikasjonProcessor(get(), get(), get(), get(), get(), get(), 4, config.prop("frontend_app_url")) }
+    single { ArbeidsgiverNotifikasjonProcessor(get(), get(), get(), config.prop("frontend_app_url"), get()) }
 
     single { DatapakkePublisherJob(get(), get(), config.prop("datapakke.api_url"), config.prop("datapakke.id"), get()) }
     single { StatsRepoImpl(get()) } bind IStatsRepo::class

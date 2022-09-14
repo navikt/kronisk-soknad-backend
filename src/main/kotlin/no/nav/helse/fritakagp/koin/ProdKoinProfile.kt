@@ -135,8 +135,8 @@ fun prodConfig(config: ApplicationConfig): Module = module {
     single { KroniskSoeknadKafkaProcessor(get(), get(), get()) }
     single { KroniskKravKafkaProcessor(get(), get(), get()) }
 
-    single { BrukernotifikasjonProcessor(get(), get(), get(), get(), get(), get(), 4, config.getString("frontend_app_url")) }
-    single { ArbeidsgiverNotifikasjonProcessor(get(), get(), get(), config.getString("frontend_app_url"), get()) }
+    single { BrukernotifikasjonProcessor(get(), get(), get(), get(), get(), get(), 4, config.prop("frontend_app_url")) }
+    single { ArbeidsgiverNotifikasjonProcessor(get(), get(), get(), config.prop("frontend_app_url"), get()) }
 
     single { AltinnService(get()) }
     single { PdlService(get()) }

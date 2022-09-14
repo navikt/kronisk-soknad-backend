@@ -136,8 +136,8 @@ fun preprodConfig(config: ApplicationConfig): Module = module {
     single { KroniskSoeknadKafkaProcessor(get(), get(), get()) }
     single { KroniskKravKafkaProcessor(get(), get(), get()) }
 
-    single { BrukernotifikasjonProcessor(get(), get(), get(), get(), get(), get(), 3, "https://fritak-agp-frontend.dev.nav.no") }
-    single { ArbeidsgiverNotifikasjonProcessor(get(), get(), get(), "https://arbeidsgiver.dev.nav.no/fritak-agp", get()) }
+    single { BrukernotifikasjonProcessor(get(), get(), get(), get(), get(), get(), 3, config.getString("frontend_app_url")) }
+    single { ArbeidsgiverNotifikasjonProcessor(get(), get(), get(), config.getString("frontend_app_url"), get()) }
 
     single { AltinnService(get()) }
     single { PdlService(get()) }

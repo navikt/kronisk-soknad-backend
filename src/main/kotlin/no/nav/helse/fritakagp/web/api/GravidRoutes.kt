@@ -118,9 +118,7 @@ fun Route.gravidRoutes(
                 if (form == null) {
                     call.respond(HttpStatusCode.NotFound)
                 } else {
-                    if (form.identitetsnummer != innloggetFnr) {
-                        authorize(authorizer, form.virksomhetsnummer)
-                    }
+                    authorize(authorizer, form.virksomhetsnummer)
                     form.sendtAvNavn = form.sendtAvNavn ?: pdlService.finnNavn(innloggetFnr)
                     form.navn = form.navn ?: pdlService.finnNavn(form.identitetsnummer)
 

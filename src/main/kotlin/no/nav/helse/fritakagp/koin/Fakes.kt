@@ -1,6 +1,6 @@
 package no.nav.helse.fritakagp.koin
 
-import io.mockk.every
+import io.mockk.coEvery
 import io.mockk.mockk
 import no.nav.helse.arbeidsgiver.integrasjoner.AccessTokenProvider
 import no.nav.helse.arbeidsgiver.integrasjoner.aareg.AaregArbeidsforholdClient
@@ -46,7 +46,7 @@ fun Module.mockExternalDependecies() {
 
     single {
         mockk<AltinnClient>().also {
-            every { it.hentRettighetOrganisasjoner(any()) } returns altinnOrgs
+            coEvery { it.hentRettighetOrganisasjoner(any()) } returns altinnOrgs
         }
     }
 

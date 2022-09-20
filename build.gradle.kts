@@ -200,6 +200,7 @@ dependencies {
     implementation("org.apache.pdfbox:pdfbox:$pdfboxVersion")
     implementation("org.codehaus.janino:janino:$janinoVersion")
     implementation("org.flywaydb:flyway-core:$flywayVersion")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
     implementation("org.postgresql:postgresql:$postgresqlVersion")
     implementation("org.slf4j:slf4j-api:$slf4jVersion")
     implementation("org.valiktor:valiktor-core:$valiktorVersion")
@@ -210,7 +211,6 @@ dependencies {
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
     testImplementation("io.ktor:ktor-server-tests:$ktorVersion")
     testImplementation("org.assertj:assertj-core:$assertJVersion")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-params:$junitJupiterVersion")
 

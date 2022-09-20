@@ -55,11 +55,10 @@ private enum class AuthScope(val scope: String) {
 fun Module.externalSystemClients(config: ApplicationConfig) {
     single {
         AltinnClient(
-            altinnBaseUrl = config.prop("altinn.service_owner_api_url"),
+            url = config.prop("altinn.service_owner_api_url"),
             serviceCode = config.prop("altinn.service_id"),
             apiGwApiKey = config.prop("altinn.gw_api_key"),
             altinnApiKey = config.prop("altinn.altinn_api_key"),
-            httpClient = get(),
             cacheConfig = CacheConfig(60.minutes, 100),
         )
     }

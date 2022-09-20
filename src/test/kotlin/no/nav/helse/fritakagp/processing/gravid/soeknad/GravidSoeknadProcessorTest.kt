@@ -16,20 +16,14 @@ import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbRepository
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OPPGAVETYPE_FORDELINGSOPPGAVE
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OppgaveKlient
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OpprettOppgaveRequest
-import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlClient
-import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlHentFullPerson
-import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlHentFullPerson.PdlFullPersonliste
-import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlHentFullPerson.PdlGeografiskTilknytning.PdlGtType.UTLAND
-import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlHentFullPerson.PdlIdentResponse
-import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlHentPersonNavn
-import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlIdent
-import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlPersonNavnMetadata
 import no.nav.helse.fritakagp.db.GravidSoeknadRepository
 import no.nav.helse.fritakagp.domain.GravidSoeknad
 import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor.Jobbdata.SkjemaType
+import no.nav.helse.fritakagp.service.BehandlendeEnhetService
+import no.nav.helse.fritakagp.service.PdlService
 import no.nav.helsearbeidsgiver.dokarkiv.DokArkivClient
 import no.nav.helsearbeidsgiver.dokarkiv.domene.OpprettOgFerdigstillResponse
 import org.assertj.core.api.Assertions.assertThat
@@ -44,7 +38,7 @@ class GravidSoeknadProcessorTest {
     val joarkMock = mockk<DokArkivClient>(relaxed = true)
     val oppgaveMock = mockk<OppgaveKlient>(relaxed = true)
     val repositoryMock = mockk<GravidSoeknadRepository>(relaxed = true)
-    val pdlClientMock = mockk<PdlClient>(relaxed = true)
+    val pdlServiceMock = mockk<PdlService>(relaxed = true)
     val objectMapper = ObjectMapper().registerModule(KotlinModule())
     val pdfGeneratorMock = mockk<GravidSoeknadPDFGenerator>(relaxed = true)
     val bucketStorageMock = mockk<BucketStorage>(relaxed = true)
@@ -54,7 +48,7 @@ class GravidSoeknadProcessorTest {
         repositoryMock,
         joarkMock,
         oppgaveMock,
-        pdlClientMock,
+        pdlServiceMock,
         bakgrunnsjobbRepomock,
         pdfGeneratorMock,
         objectMapper,
@@ -78,21 +72,7 @@ class GravidSoeknadProcessorTest {
         objectMapper.registerModule(JavaTimeModule())
         every { repositoryMock.getById(soeknad.id) } returns soeknad
         every { bucketStorageMock.getDocAsString(any()) } returns null
-        every { pdlClientMock.personNavn(soeknad.sendtAv) } returns PdlHentPersonNavn.PdlPersonNavneliste(
-            listOf(
-                PdlHentPersonNavn.PdlPersonNavneliste.PdlPersonNavn(
-                    "Ola",
-                    "M",
-                    "Avsender",
-                    PdlPersonNavnMetadata("freg")
-                )
-            )
-        )
-        every { pdlClientMock.fullPerson(soeknad.identitetsnummer) } returns PdlHentFullPerson(
-            PdlFullPersonliste(emptyList(), emptyList(), emptyList(), emptyList(), emptyList(), emptyList(), emptyList()),
-            PdlIdentResponse(listOf(PdlIdent("aktør-id", PdlIdent.PdlIdentGruppe.AKTORID))),
-            PdlHentFullPerson.PdlGeografiskTilknytning(UTLAND, null, null, "SWE")
-        )
+        every { pdlServiceMock.hentAktoerId(soeknad.identitetsnummer) } returns "aktør-id"
         coEvery { joarkMock.opprettOgFerdigstillJournalpost(any(), any(), any(), any(), any(), any(), any()) } returns OpprettOgFerdigstillResponse(arkivReferanse, true, null, emptyList())
         coEvery { oppgaveMock.opprettOppgave(any(), any()) } returns gravidOpprettOppgaveResponse.copy(id = oppgaveId)
         coEvery { berregServiceMock.getVirksomhetsNavn(soeknad.virksomhetsnummer) } returns "Stark Industries"

@@ -111,6 +111,7 @@ sonarqube {
 }
 
 dependencies {
+    val altinnClientVersion: String by project
     val altinnCorrespondenceAgencyVersion: String by project
     val arbeidsgiverNotifikasjonKlientVersion: String by project
     val assertJVersion: String by project
@@ -134,18 +135,20 @@ dependencies {
     val kformatVersion: String by project
     val koinVersion: String by project
     val ktorVersion: String by project
-    val logback_version: String by project
     val logbackEncoderVersion: String by project
+    val logback_contrib_version: String by project
+    val logback_version: String by project
     val mockkVersion: String by project
     val mockOAuth2ServerVersion: String by project
+    // val navCommonLogVersion: String by project
     val pdfboxVersion: String by project
+    val pdlClientVersion: String by project
     val postgresqlVersion: String by project
     val prometheusVersion: String by project
     val slf4jVersion: String by project
     val tokenSupportVersion: String by project
     val utilsVersion: String by project
     val valiktorVersion: String by project
-    val altinnClientVersion: String by project
     val dokarkivKlientVersion: String by project
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
@@ -196,6 +199,7 @@ dependencies {
         exclude(group = "ch.qos.logback", module = "logback-classic")
         exclude(group = "org.slf4j", module = "slf4j-api")
     }
+    implementation("no.nav.helsearbeidsgiver:pdl-client:$pdlClientVersion")
     implementation("no.nav.security:token-client-core:$tokenSupportVersion")
     implementation("no.nav.security:token-validation-ktor-v2:$tokenSupportVersion")
     implementation("no.nav.helsearbeidsgiver:altinn-client:$altinnClientVersion")

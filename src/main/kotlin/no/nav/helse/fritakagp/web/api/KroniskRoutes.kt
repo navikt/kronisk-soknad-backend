@@ -72,8 +72,8 @@ fun Route.kroniskRoutes(
                     call.respond(HttpStatusCode.NotFound)
                 } else {
                     logger.info("KSG: Hent personinfo fra pdl.")
-                    form.sendtAvNavn = form.sendtAvNavn ?: pdlService.finnNavn(innloggetFnr)
-                    form.navn = form.navn ?: pdlService.finnNavn(form.identitetsnummer)
+                    form.sendtAvNavn = form.sendtAvNavn ?: pdlService.hentNavn(innloggetFnr)
+                    form.navn = form.navn ?: pdlService.hentNavn(form.identitetsnummer)
 
                     call.respond(HttpStatusCode.OK, form)
                 }
@@ -94,8 +94,8 @@ fun Route.kroniskRoutes(
                 val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
 
                 logger.info("KSP: Hent personinfo fra pdl.")
-                val sendtAvNavn = pdlService.finnNavn(innloggetFnr)
-                val navn = pdlService.finnNavn(request.identitetsnummer)
+                val sendtAvNavn = pdlService.hentNavn(innloggetFnr)
+                val navn = pdlService.hentNavn(request.identitetsnummer)
 
                 val soeknad = request.toDomain(innloggetFnr, sendtAvNavn, navn)
 
@@ -138,8 +138,8 @@ fun Route.kroniskRoutes(
                     }
 
                     logger.info("KKG: Hent personinfo fra pdl.")
-                    form.sendtAvNavn = form.sendtAvNavn ?: pdlService.finnNavn(innloggetFnr)
-                    form.navn = form.navn ?: pdlService.finnNavn(form.identitetsnummer)
+                    form.sendtAvNavn = form.sendtAvNavn ?: pdlService.hentNavn(innloggetFnr)
+                    form.navn = form.navn ?: pdlService.hentNavn(form.identitetsnummer)
 
                     call.respond(HttpStatusCode.OK, form)
                 }
@@ -161,8 +161,8 @@ fun Route.kroniskRoutes(
                 val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
 
                 logger.info("KKPo: Hent personinfo fra pdl.")
-                val sendtAvNavn = pdlService.finnNavn(innloggetFnr)
-                val navn = pdlService.finnNavn(request.identitetsnummer)
+                val sendtAvNavn = pdlService.hentNavn(innloggetFnr)
+                val navn = pdlService.hentNavn(request.identitetsnummer)
 
                 val krav = request.toDomain(innloggetFnr, sendtAvNavn, navn)
 
@@ -204,8 +204,8 @@ fun Route.kroniskRoutes(
                 authorize(authorizer, request.virksomhetsnummer)
 
                 val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
-                val sendtAvNavn = pdlService.finnNavn(innloggetFnr)
-                val navn = pdlService.finnNavn(request.identitetsnummer)
+                val sendtAvNavn = pdlService.hentNavn(innloggetFnr)
+                val navn = pdlService.hentNavn(request.identitetsnummer)
 
                 logger.info("KKPa: Hent arbeidsforhold fra aareg.")
                 val arbeidsforhold = aaregClient
@@ -276,7 +276,7 @@ fun Route.kroniskRoutes(
                 logger.info("KKD: Slett kronisk krav.")
 
                 val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
-                val slettetAv = pdlService.finnNavn(innloggetFnr)
+                val slettetAv = pdlService.hentNavn(innloggetFnr)
                 val kravId = UUID.fromString(call.parameters["id"])
                 val form = kroniskKravRepo.getById(kravId)
                     ?: return@delete call.respond(HttpStatusCode.NotFound)

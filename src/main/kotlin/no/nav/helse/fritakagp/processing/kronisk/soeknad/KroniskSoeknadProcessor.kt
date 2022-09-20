@@ -24,6 +24,7 @@ import no.nav.helsearbeidsgiver.dokarkiv.DokArkivClient
 import no.nav.helsearbeidsgiver.dokarkiv.domene.Avsender
 import no.nav.helsearbeidsgiver.dokarkiv.domene.DokumentVariant
 import no.nav.helsearbeidsgiver.dokarkiv.domene.GjelderPerson
+import no.nav.helse.fritakagp.service.PdlService
 import no.nav.helsearbeidsgiver.utils.log.logger
 import java.time.LocalDate
 import java.util.Base64
@@ -34,7 +35,7 @@ class KroniskSoeknadProcessor(
     private val dokarkivKlient: DokArkivClient,
     private val oppgaveKlient: OppgaveKlient,
     private val bakgrunnsjobbRepo: BakgrunnsjobbRepository,
-    private val pdlClient: PdlClient,
+    private val pdlService: PdlService,
     private val pdfGenerator: KroniskSoeknadPDFGenerator,
     private val om: ObjectMapper,
     private val bucketStorage: BucketStorage,
@@ -185,7 +186,7 @@ class KroniskSoeknadProcessor(
     }
 
     fun opprettOppgave(soeknad: KroniskSoeknad): String {
-        val aktoerId = pdlClient.fullPerson(soeknad.identitetsnummer)?.hentIdenter?.trekkUtIdent(PdlIdent.PdlIdentGruppe.AKTORID)
+        val aktoerId = pdlService.hentAktoerId(soeknad.identitetsnummer)
         requireNotNull(aktoerId) { "Fant ikke AktørID for fnr i ${soeknad.id}" }
 
         val request = OpprettOppgaveRequest(
@@ -205,7 +206,7 @@ class KroniskSoeknadProcessor(
     }
 
     fun opprettFordelingsOppgave(soeknad: KroniskSoeknad): String {
-        val aktoerId = pdlClient.fullPerson(soeknad.identitetsnummer)?.hentIdenter?.trekkUtIdent(PdlIdent.PdlIdentGruppe.AKTORID)
+        val aktoerId = pdlService.hentAktoerId(soeknad.identitetsnummer)
         requireNotNull(aktoerId) { "Fant ikke AktørID for fnr i ${soeknad.id}" }
 
         val request = OpprettOppgaveRequest(

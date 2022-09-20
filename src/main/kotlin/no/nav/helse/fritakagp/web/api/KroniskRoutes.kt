@@ -62,8 +62,8 @@ fun Route.kroniskRoutes(
                 if (form == null || form.identitetsnummer != innloggetFnr) {
                     call.respond(HttpStatusCode.NotFound)
                 } else {
-                    form.sendtAvNavn = form.sendtAvNavn ?: pdlService.finnNavn(innloggetFnr)
-                    form.navn = form.navn ?: pdlService.finnNavn(form.identitetsnummer)
+                    form.sendtAvNavn = form.sendtAvNavn ?: pdlService.hentNavn(innloggetFnr)
+                    form.navn = form.navn ?: pdlService.hentNavn(form.identitetsnummer)
 
                     call.respond(HttpStatusCode.OK, form)
                 }
@@ -77,8 +77,8 @@ fun Route.kroniskRoutes(
 
                 val innloggetFnr = hentIdentitetsnummerFraLoginToken(call.request)
 
-                val sendtAvNavn = pdlService.finnNavn(innloggetFnr)
-                val navn = pdlService.finnNavn(request.identitetsnummer)
+                val sendtAvNavn = pdlService.hentNavn(innloggetFnr)
+                val navn = pdlService.hentNavn(request.identitetsnummer)
 
                 val soeknad = request.toDomain(innloggetFnr, sendtAvNavn, navn)
                 processDocumentForGCPStorage(request.dokumentasjon, virusScanner, bucket, soeknad.id)
@@ -110,8 +110,8 @@ fun Route.kroniskRoutes(
                     call.respond(HttpStatusCode.NotFound)
                 } else {
                     altinnService.authorize(this, form.virksomhetsnummer)
-                    form.sendtAvNavn = form.sendtAvNavn ?: pdlService.finnNavn(innloggetFnr)
-                    form.navn = form.navn ?: pdlService.finnNavn(form.identitetsnummer)
+                    form.sendtAvNavn = form.sendtAvNavn ?: pdlService.hentNavn(innloggetFnr)
+                    form.navn = form.navn ?: pdlService.hentNavn(form.identitetsnummer)
 
                     call.respond(HttpStatusCode.OK, form)
                 }
@@ -127,8 +127,8 @@ fun Route.kroniskRoutes(
                 request.validate(arbeidsforhold)
 
                 val innloggetFnr = hentIdentitetsnummerFraLoginToken(call.request)
-                val sendtAvNavn = pdlService.finnNavn(innloggetFnr)
-                val navn = pdlService.finnNavn(request.identitetsnummer)
+                val sendtAvNavn = pdlService.hentNavn(innloggetFnr)
+                val navn = pdlService.hentNavn(request.identitetsnummer)
 
                 val krav = request.toDomain(innloggetFnr, sendtAvNavn, navn)
 
@@ -164,8 +164,8 @@ fun Route.kroniskRoutes(
                 altinnService.authorize(this, request.virksomhetsnummer)
 
                 val innloggetFnr = hentIdentitetsnummerFraLoginToken(call.request)
-                val sendtAvNavn = pdlService.finnNavn(innloggetFnr)
-                val navn = pdlService.finnNavn(request.identitetsnummer)
+                val sendtAvNavn = pdlService.hentNavn(innloggetFnr)
+                val navn = pdlService.hentNavn(request.identitetsnummer)
 
                 val arbeidsforhold = aaregClient
                     .hentArbeidsforhold(request.identitetsnummer, UUID.randomUUID().toString())
@@ -224,7 +224,7 @@ fun Route.kroniskRoutes(
 
             delete("/{id}") {
                 val innloggetFnr = hentIdentitetsnummerFraLoginToken(call.request)
-                val slettetAv = pdlService.finnNavn(innloggetFnr)
+                val slettetAv = pdlService.hentNavn(innloggetFnr)
                 val kravId = UUID.fromString(call.parameters["id"])
                 var form = kroniskKravRepo.getById(kravId)
                 if (form == null) {

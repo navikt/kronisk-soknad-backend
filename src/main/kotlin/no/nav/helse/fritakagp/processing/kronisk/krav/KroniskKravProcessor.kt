@@ -17,8 +17,6 @@ import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.Journalposttype
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OPPGAVETYPE_FORDELINGSOPPGAVE
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OppgaveKlient
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OpprettOppgaveRequest
-import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlClient
-import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlIdent
 import no.nav.helse.fritakagp.KroniskKravMetrics
 import no.nav.helse.fritakagp.db.KroniskKravRepository
 import no.nav.helse.fritakagp.domain.KroniskKrav
@@ -28,6 +26,7 @@ import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor.Jobbdata.SkjemaType
 import no.nav.helse.fritakagp.service.BehandlendeEnhetService
+import no.nav.helse.fritakagp.service.PdlService
 import no.nav.helsearbeidsgiver.utils.log.logger
 import java.time.LocalDate
 import java.util.Base64
@@ -37,7 +36,7 @@ class KroniskKravProcessor(
     private val kroniskKravRepo: KroniskKravRepository,
     private val dokarkivKlient: DokarkivKlient,
     private val oppgaveKlient: OppgaveKlient,
-    private val pdlClient: PdlClient,
+    private val pdlService: PdlService,
     private val bakgrunnsjobbRepo: BakgrunnsjobbRepository,
     private val pdfGenerator: KroniskKravPDFGenerator,
     private val om: ObjectMapper,
@@ -200,7 +199,7 @@ class KroniskKravProcessor(
     }
 
     fun opprettOppgave(krav: KroniskKrav): String {
-        val aktoerId = pdlClient.fullPerson(krav.identitetsnummer)?.hentIdenter?.trekkUtIdent(PdlIdent.PdlIdentGruppe.AKTORID)
+        val aktoerId = pdlService.hentAktoerId(krav.identitetsnummer)
         val enhetsNr = behandlendeEnhetService.hentBehandlendeEnhet(krav.identitetsnummer, krav.id.toString())
         requireNotNull(aktoerId) { "Fant ikke AktørID for fnr i ${krav.id}" }
         logger.info("Fant aktørid")
@@ -222,7 +221,7 @@ class KroniskKravProcessor(
     }
 
     fun opprettFordelingsOppgave(krav: KroniskKrav): String {
-        val aktoerId = pdlClient.fullPerson(krav.identitetsnummer)?.hentIdenter?.trekkUtIdent(PdlIdent.PdlIdentGruppe.AKTORID)
+        val aktoerId = pdlService.hentAktoerId(krav.identitetsnummer)
         val enhetsNr = behandlendeEnhetService.hentBehandlendeEnhet(krav.identitetsnummer, krav.id.toString())
         requireNotNull(aktoerId) { "Fant ikke AktørID for fnr i ${krav.id}" }
 

@@ -8,8 +8,6 @@ import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.DokarkivKlient
 import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.DokarkivKlientImpl
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OppgaveKlient
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OppgaveKlientImpl
-import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlClient
-import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlClientImpl
 import no.nav.helse.fritakagp.config.prop
 import no.nav.helse.fritakagp.integration.GrunnbeloepClient
 import no.nav.helse.fritakagp.integration.brreg.BrregClient
@@ -36,6 +34,7 @@ import no.nav.helse.fritakagp.service.BehandlendeEnhetService
 import no.nav.helsearbeidsgiver.altinn.AltinnClient
 import no.nav.helsearbeidsgiver.altinn.CacheConfig
 import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonKlient
+import no.nav.helsearbeidsgiver.pdl.PdlClient
 import no.nav.security.token.support.client.core.oauth2.ClientCredentialsTokenClient
 import no.nav.security.token.support.client.core.oauth2.OAuth2AccessTokenService
 import no.nav.security.token.support.client.core.oauth2.OnBehalfOfTokenClient
@@ -74,13 +73,12 @@ fun Module.externalSystemClients(config: ApplicationConfig) {
     } bind AaregArbeidsforholdClient::class
 
     single {
-        PdlClientImpl(
+        val accessTokenProvider = oAuth2TokenProvider(config, AuthScope.PROXY)
+        PdlClient(
             config.prop("pdl_url"),
-            oAuth2TokenProvider(config, AuthScope.PROXY),
-            get(),
-            get(),
+            accessTokenProvider::getToken,
         )
-    } bind PdlClient::class
+    }
 
     single {
         Norg2Client(

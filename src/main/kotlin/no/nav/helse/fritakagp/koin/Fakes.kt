@@ -18,11 +18,6 @@ import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OpprettOppgaveRequest
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OpprettOppgaveResponse
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.Prioritet
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.Status
-import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlClient
-import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlHentFullPerson
-import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlHentPersonNavn
-import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlIdent
-import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlPersonNavnMetadata
 import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.brreg.MockBrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
@@ -37,6 +32,11 @@ import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
 import no.nav.helse.fritakagp.service.BehandlendeEnhetService
 import no.nav.helsearbeidsgiver.altinn.AltinnClient
 import no.nav.helsearbeidsgiver.altinn.AltinnOrganisasjon
+import no.nav.helsearbeidsgiver.pdl.PdlClient
+import no.nav.helsearbeidsgiver.pdl.PdlHentFullPerson
+import no.nav.helsearbeidsgiver.pdl.PdlHentPersonNavn
+import no.nav.helsearbeidsgiver.pdl.PdlIdent
+import no.nav.helsearbeidsgiver.pdl.PdlPersonNavnMetadata
 import org.koin.core.module.Module
 import org.koin.dsl.bind
 import java.time.LocalDate
@@ -45,8 +45,8 @@ import java.time.LocalDateTime
 fun Module.mockExternalDependecies() {
 
     single {
-        mockk<AltinnClient>().also {
-            coEvery { it.hentRettighetOrganisasjoner(any()) } returns altinnOrgs
+        mockk<AltinnClient>() {
+            coEvery { hentRettighetOrganisasjoner(any()) } returns altinnOrgs
         }
     }
 
@@ -105,42 +105,20 @@ fun Module.mockExternalDependecies() {
     } bind DokarkivKlient::class
 
     single {
-        object : PdlClient {
-            override fun fullPerson(ident: String) =
-                PdlHentFullPerson(
-                    PdlHentFullPerson.PdlFullPersonliste(
-                        emptyList(),
-                        emptyList(),
-                        emptyList(),
-                        emptyList(),
-                        emptyList(),
-                        emptyList(),
-                        emptyList()
-                    ),
-
-                    PdlHentFullPerson.PdlIdentResponse(listOf(PdlIdent("aktør-id", PdlIdent.PdlIdentGruppe.AKTORID))),
-
-                    PdlHentFullPerson.PdlGeografiskTilknytning(
-                        PdlHentFullPerson.PdlGeografiskTilknytning.PdlGtType.UTLAND,
-                        null,
-                        null,
-                        "SWE"
-                    )
+        mockk<PdlClient> {
+            coEvery { personNavn(any()) } returns PdlHentPersonNavn.PdlPersonNavneliste(
+                listOf(
+                    PdlHentPersonNavn.PdlPersonNavneliste.PdlPersonNavn("Ola", "M", "Avsender", PdlPersonNavnMetadata("freg")),
                 )
+            )
 
-            override fun personNavn(ident: String) =
-                PdlHentPersonNavn.PdlPersonNavneliste(
-                    listOf(
-                        PdlHentPersonNavn.PdlPersonNavneliste.PdlPersonNavn(
-                            "Ola",
-                            "M",
-                            "Avsender",
-                            PdlPersonNavnMetadata("freg")
-                        )
-                    )
-                )
+            coEvery { fullPerson(any()) } returns PdlHentFullPerson(
+                PdlHentFullPerson.PdlFullPersonliste(emptyList(), emptyList(), emptyList(), emptyList(), emptyList(), emptyList(), emptyList()),
+                PdlHentFullPerson.PdlIdentResponse(listOf(PdlIdent("aktør-id", PdlIdent.PdlIdentGruppe.AKTORID))),
+                PdlHentFullPerson.PdlGeografiskTilknytning(PdlHentFullPerson.PdlGeografiskTilknytning.PdlGtType.UTLAND, null, null, "SWE"),
+            )
         }
-    } bind PdlClient::class
+    }
 
     single {
         object : OppgaveKlient {

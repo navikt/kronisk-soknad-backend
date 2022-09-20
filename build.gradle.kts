@@ -136,10 +136,11 @@ dependencies {
     val logbackEncoderVersion: String by project
     val logback_contrib_version: String by project
     val logback_version: String by project
-    val mockkVersion: String by project
     val mockOAuth2ServerVersion: String by project
+    val mockkVersion: String by project
     val navCommonLogVersion: String by project
     val pdfboxVersion: String by project
+    val pdlClientVersion: String by project
     val postgresqlVersion: String by project
     val prometheusVersion: String by project
     val slf4jVersion: String by project
@@ -185,8 +186,9 @@ dependencies {
     implementation("net.logstash.logback:logstash-logback-encoder:$logbackEncoderVersion")
     implementation("no.nav.common:log:$navCommonLogVersion")
     implementation("no.nav.helsearbeidsgiver:altinn-client:$altinnClientVersion")
-    implementation("no.nav.helsearbeidsgiver:helse-arbeidsgiver-felles-backend:$fellesBackendVersion")
     implementation("no.nav.helsearbeidsgiver:arbeidsgiver-notifikasjon-klient:$arbeidsgiverNotifikasjonKlientVersion")
+    implementation("no.nav.helsearbeidsgiver:helse-arbeidsgiver-felles-backend:$fellesBackendVersion")
+    implementation("no.nav.helsearbeidsgiver:pdl-client:$pdlClientVersion")
     implementation("no.nav.helsearbeidsgiver:utils:$utilsVersion")
     implementation("no.nav.security:mock-oauth2-server:$mockOAuth2ServerVersion")
     implementation("no.nav.security:token-client-core:$tokenSupportVersion")

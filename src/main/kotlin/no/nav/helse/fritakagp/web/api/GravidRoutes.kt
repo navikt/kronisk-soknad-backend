@@ -68,8 +68,8 @@ fun Route.gravidRoutes(
                 if (form == null || form.identitetsnummer != innloggetFnr) {
                     call.respond(HttpStatusCode.NotFound)
                 } else {
-                    form.sendtAvNavn = form.sendtAvNavn ?: pdlService.finnNavn(innloggetFnr)
-                    form.navn = form.navn ?: pdlService.finnNavn(form.identitetsnummer)
+                    form.sendtAvNavn = form.sendtAvNavn ?: pdlService.hentNavn(innloggetFnr)
+                    form.navn = form.navn ?: pdlService.hentNavn(form.identitetsnummer)
 
                     call.respond(HttpStatusCode.OK, form)
                 }
@@ -82,8 +82,8 @@ fun Route.gravidRoutes(
                 val isVirksomhet = if (application.environment.config.env() == AppEnv.PREPROD) true else breegClient.erVirksomhet(request.virksomhetsnummer)
                 request.validate(isVirksomhet)
 
-                val sendtAvNavn = pdlService.finnNavn(innloggetFnr)
-                val navn = pdlService.finnNavn(request.identitetsnummer)
+                val sendtAvNavn = pdlService.hentNavn(innloggetFnr)
+                val navn = pdlService.hentNavn(request.identitetsnummer)
 
                 val soeknad = request.toDomain(innloggetFnr, sendtAvNavn, navn)
 
@@ -116,8 +116,8 @@ fun Route.gravidRoutes(
                     call.respond(HttpStatusCode.NotFound)
                 } else {
                     altinnService.authorize(this, form.virksomhetsnummer)
-                    form.sendtAvNavn = form.sendtAvNavn ?: pdlService.finnNavn(innloggetFnr)
-                    form.navn = form.navn ?: pdlService.finnNavn(form.identitetsnummer)
+                    form.sendtAvNavn = form.sendtAvNavn ?: pdlService.hentNavn(innloggetFnr)
+                    form.navn = form.navn ?: pdlService.hentNavn(form.identitetsnummer)
 
                     call.respond(HttpStatusCode.OK, form)
                 }
@@ -133,8 +133,8 @@ fun Route.gravidRoutes(
                 request.validate(arbeidsforhold)
 
                 val innloggetFnr = hentIdentitetsnummerFraLoginToken(call.request)
-                val sendtAvNavn = pdlService.finnNavn(innloggetFnr)
-                val navn = pdlService.finnNavn(request.identitetsnummer)
+                val sendtAvNavn = pdlService.hentNavn(innloggetFnr)
+                val navn = pdlService.hentNavn(request.identitetsnummer)
 
                 val krav = request.toDomain(innloggetFnr, sendtAvNavn, navn)
                 belopBeregning.beregnBeløpGravid(krav)
@@ -169,8 +169,8 @@ fun Route.gravidRoutes(
                 altinnService.authorize(this, request.virksomhetsnummer)
 
                 val innloggetFnr = hentIdentitetsnummerFraLoginToken(call.request)
-                val sendtAvNavn = pdlService.finnNavn(innloggetFnr)
-                val navn = pdlService.finnNavn(request.identitetsnummer)
+                val sendtAvNavn = pdlService.hentNavn(innloggetFnr)
+                val navn = pdlService.hentNavn(request.identitetsnummer)
 
                 val arbeidsforhold = aaregClient
                     .hentArbeidsforhold(request.identitetsnummer, UUID.randomUUID().toString())
@@ -229,7 +229,7 @@ fun Route.gravidRoutes(
 
             delete("/{id}") {
                 val innloggetFnr = hentIdentitetsnummerFraLoginToken(call.request)
-                val slettetAv = pdlService.finnNavn(innloggetFnr)
+                val slettetAv = pdlService.hentNavn(innloggetFnr)
                 val kravId = UUID.fromString(call.parameters["id"])
                 val form = gravidKravRepo.getById(kravId)
                     ?: return@delete call.respond(HttpStatusCode.NotFound)

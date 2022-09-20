@@ -186,7 +186,7 @@ dependencies {
     implementation("no.nav.common:log:$navCommonLogVersion")
     implementation("no.nav.helsearbeidsgiver:altinn-client:$altinnClientVersion")
     implementation("no.nav.helsearbeidsgiver:helse-arbeidsgiver-felles-backend:$fellesBackendVersion")
-    implementation("no.nav.helsearbeidsgiver:helsearbeidsgiver-arbeidsgiver-notifikasjon-klient:$arbeidsgiverNotifikasjonKlientVersion")
+    implementation("no.nav.helsearbeidsgiver:arbeidsgiver-notifikasjon-klient:$arbeidsgiverNotifikasjonKlientVersion")
     implementation("no.nav.helsearbeidsgiver:utils:$utilsVersion")
     implementation("no.nav.security:mock-oauth2-server:$mockOAuth2ServerVersion")
     implementation("no.nav.security:token-client-core:$tokenSupportVersion")

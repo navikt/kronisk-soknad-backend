@@ -43,7 +43,6 @@ import no.nav.security.token.support.client.core.oauth2.TokenExchangeClient
 import org.koin.core.module.Module
 import org.koin.core.scope.Scope
 import org.koin.dsl.bind
-import java.net.URL
 import kotlin.time.Duration.Companion.minutes
 
 private enum class AuthScope(val scope: String) {
@@ -111,9 +110,8 @@ fun Module.externalSystemClients(config: ApplicationConfig) {
     single {
         val accessTokenProvider = oAuth2TokenProvider(config, AuthScope.ARBEIDSGIVER_NOTIFIKASJON)
         ArbeidsgiverNotifikasjonKlient(
-            url = URL(config.prop("arbeidsgiver_notifikasjon_api_url")),
-            httpClient = get(),
-            getAccessToken = accessTokenProvider::getToken,
+            config.prop("arbeidsgiver_notifikasjon_api_url"),
+            accessTokenProvider::getToken,
         )
     }
 

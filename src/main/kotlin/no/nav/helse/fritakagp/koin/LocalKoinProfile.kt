@@ -111,5 +111,5 @@ fun localDevConfig(config: ApplicationConfig): Module = module {
     single { DatapakkePublisherJob(get(), get(), config.prop("datapakke.api_url"), config.prop("datapakke.id"), get()) }
     single { StatsRepoImpl(get()) } bind IStatsRepo::class
 
-    single { ArbeidsgiverNotifikasjonKlient(URL(config.prop("arbeidsgiver_notifikasjon_api_url")), get()) { "fake token" } }
+    single { ArbeidsgiverNotifikasjonKlient(config.prop("arbeidsgiver_notifikasjon_api_url")) { "fake token" } }
 }

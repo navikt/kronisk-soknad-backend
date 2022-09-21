@@ -18,8 +18,6 @@ import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OpprettOppgaveRequest
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OpprettOppgaveResponse
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.Prioritet
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.Status
-import no.nav.helse.fritakagp.integration.brreg.BrregClient
-import no.nav.helse.fritakagp.integration.brreg.MockBrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.integration.gcp.MockBucketStorage
 import no.nav.helse.fritakagp.integration.kafka.BrukernotifikasjonBeskjedSender
@@ -32,6 +30,7 @@ import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
 import no.nav.helse.fritakagp.service.BehandlendeEnhetService
 import no.nav.helsearbeidsgiver.altinn.AltinnClient
 import no.nav.helsearbeidsgiver.altinn.AltinnOrganisasjon
+import no.nav.helsearbeidsgiver.brreg.BrregClient
 import no.nav.helsearbeidsgiver.pdl.PdlClient
 import no.nav.helsearbeidsgiver.pdl.PdlHentFullPerson
 import no.nav.helsearbeidsgiver.pdl.PdlHentPersonNavn
@@ -45,7 +44,7 @@ import java.time.LocalDateTime
 fun Module.mockExternalDependecies() {
 
     single {
-        mockk<AltinnClient>() {
+        mockk<AltinnClient> {
             coEvery { hentRettighetOrganisasjoner(any()) } returns altinnOrgs
         }
     }
@@ -141,9 +140,12 @@ fun Module.mockExternalDependecies() {
         }
     } bind OppgaveKlient::class
 
-    single { MockVirusScanner() } bind VirusScanner::class
-    single { MockBucketStorage() } bind BucketStorage::class
-    single { MockBrregClient() } bind BrregClient::class
+    single {
+        mockk<BrregClient> {
+            coEvery { hentVirksomhetNavnOrDefault(any()) } returns "Stark Industries"
+            coEvery { erVirksomhet(any()) } returns true
+        }
+    }
 
     single {
         object : Norg2Client(
@@ -183,6 +185,9 @@ fun Module.mockExternalDependecies() {
     } bind Norg2Client::class
 
     single { BehandlendeEnhetService(get(), get()) }
+
+    single { MockVirusScanner() } bind VirusScanner::class
+    single { MockBucketStorage() } bind BucketStorage::class
 }
 
 private val altinnOrgs = setOf(

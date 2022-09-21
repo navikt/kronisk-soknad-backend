@@ -10,8 +10,6 @@ import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OppgaveKlient
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OppgaveKlientImpl
 import no.nav.helse.fritakagp.config.prop
 import no.nav.helse.fritakagp.integration.GrunnbeloepClient
-import no.nav.helse.fritakagp.integration.brreg.BrregClient
-import no.nav.helse.fritakagp.integration.brreg.BrregClientImpl
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.integration.gcp.BucketStorageImpl
 import no.nav.helse.fritakagp.integration.kafka.BrukernotifikasjonBeskjedKafkaProducer
@@ -34,6 +32,7 @@ import no.nav.helse.fritakagp.service.BehandlendeEnhetService
 import no.nav.helsearbeidsgiver.altinn.AltinnClient
 import no.nav.helsearbeidsgiver.altinn.CacheConfig
 import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonKlient
+import no.nav.helsearbeidsgiver.brreg.BrregClient
 import no.nav.helsearbeidsgiver.pdl.PdlClient
 import no.nav.security.token.support.client.core.oauth2.ClientCredentialsTokenClient
 import no.nav.security.token.support.client.core.oauth2.OAuth2AccessTokenService
@@ -150,7 +149,8 @@ fun Module.externalSystemClients(config: ApplicationConfig) {
             config.prop("brukernotifikasjon.topic_name")
         )
     } bind BrukernotifikasjonBeskjedSender::class
-    single { BrregClientImpl(get(), config.prop("berreg_enhet_url")) } bind BrregClient::class
+
+    single { BrregClient(config.prop("berreg_enhet_url")) }
 
     single { BehandlendeEnhetService(get(), get()) }
 }

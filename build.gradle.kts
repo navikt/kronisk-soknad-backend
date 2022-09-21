@@ -113,6 +113,7 @@ dependencies {
     val altinnCorrespondenceAgencyVersion: String by project
     val arbeidsgiverNotifikasjonKlientVersion: String by project
     val assertJVersion: String by project
+    val brregClientVersion: String by project
     val brukernotifikasjonSchemasVersion: String by project
     val confluentVersion: String by project
     val coroutinesVersion: String by project
@@ -186,6 +187,7 @@ dependencies {
     implementation("net.logstash.logback:logstash-logback-encoder:$logbackEncoderVersion")
     implementation("no.nav.common:log:$navCommonLogVersion")
     implementation("no.nav.helsearbeidsgiver:altinn-client:$altinnClientVersion")
+    implementation("no.nav.helsearbeidsgiver:brreg-client:$brregClientVersion")
     implementation("no.nav.helsearbeidsgiver:arbeidsgiver-notifikasjon-klient:$arbeidsgiverNotifikasjonKlientVersion")
     implementation("no.nav.helsearbeidsgiver:helse-arbeidsgiver-felles-backend:$fellesBackendVersion")
     implementation("no.nav.helsearbeidsgiver:pdl-client:$pdlClientVersion")

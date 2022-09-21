@@ -22,7 +22,6 @@ import no.nav.helse.fritakagp.db.KroniskKravRepository
 import no.nav.helse.fritakagp.db.KroniskSoeknadRepository
 import no.nav.helse.fritakagp.domain.BeloepBeregning
 import no.nav.helse.fritakagp.domain.KravStatus
-import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
 import no.nav.helse.fritakagp.processing.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonProcessor
@@ -36,13 +35,14 @@ import no.nav.helse.fritakagp.service.PdlService
 import no.nav.helse.fritakagp.web.api.resreq.KroniskKravRequest
 import no.nav.helse.fritakagp.web.api.resreq.KroniskSoknadRequest
 import no.nav.helse.fritakagp.web.auth.hentIdentitetsnummerFraLoginToken
+import no.nav.helsearbeidsgiver.brreg.BrregClient
 import java.time.LocalDateTime
 import java.util.UUID
 import javax.sql.DataSource
 
 fun Route.kroniskRoutes(
     altinnService: AltinnService,
-    breegClient: BrregClient,
+    brregClient: BrregClient,
     datasource: DataSource,
     kroniskSoeknadRepo: KroniskSoeknadRepository,
     kroniskKravRepo: KroniskKravRepository,
@@ -72,7 +72,7 @@ fun Route.kroniskRoutes(
             post {
                 val request = call.receive<KroniskSoknadRequest>()
 
-                val isVirksomhet = if (application.environment.config.env() == AppEnv.PREPROD) true else breegClient.erVirksomhet(request.virksomhetsnummer)
+                val isVirksomhet = if (application.environment.config.env() == AppEnv.PREPROD) true else brregClient.erVirksomhet(request.virksomhetsnummer)
                 request.validate(isVirksomhet)
 
                 val innloggetFnr = hentIdentitetsnummerFraLoginToken(call.request)

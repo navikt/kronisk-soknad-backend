@@ -21,7 +21,6 @@ import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OppgaveKlient
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OpprettOppgaveRequest
 import no.nav.helse.fritakagp.db.KroniskKravRepository
 import no.nav.helse.fritakagp.domain.KroniskKrav
-import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketDocument
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.processing.BakgrunnsJobbUtils.emptyJob
@@ -30,6 +29,7 @@ import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonPr
 import no.nav.helse.fritakagp.service.BehandlendeEnhetService
 import no.nav.helse.fritakagp.service.GeografiskTilknytning
 import no.nav.helse.fritakagp.service.PdlService
+import no.nav.helsearbeidsgiver.brreg.BrregClient
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -47,7 +47,7 @@ class KroniskKravProcessorTest {
     val pdfGeneratorMock = mockk<KroniskKravPDFGenerator>(relaxed = true)
     val bucketStorageMock = mockk<BucketStorage>(relaxed = true)
     val bakgrunnsjobbRepomock = mockk<BakgrunnsjobbRepository>(relaxed = true)
-    val berregServiceMock = mockk<BrregClient>(relaxed = true)
+    val berregServiceMock = mockk<BrregClient>()
     val behandlendeEnhetService = mockk<BehandlendeEnhetService>(relaxed = true)
     val prosessor = KroniskKravProcessor(repositoryMock, joarkMock, oppgaveMock, pdlServiceMock, bakgrunnsjobbRepomock, pdfGeneratorMock, objectMapper, bucketStorageMock, berregServiceMock, behandlendeEnhetService)
     lateinit var krav: KroniskKrav
@@ -67,7 +67,7 @@ class KroniskKravProcessorTest {
         every { pdlServiceMock.hentGeografiskTilknytning(krav.identitetsnummer) } returns GeografiskTilknytning(diskresjonskode = null, geografiskTilknytning = "SWE")
         every { joarkMock.journalførDokument(any(), any(), any()) } returns JournalpostResponse(arkivReferanse, true, "M", null, emptyList())
         coEvery { oppgaveMock.opprettOppgave(any(), any()) } returns KroniskTestData.kroniskOpprettOppgaveResponse.copy(id = oppgaveId)
-        coEvery { berregServiceMock.getVirksomhetsNavn(krav.virksomhetsnummer) } returns "Stark Industries"
+        coEvery { berregServiceMock.hentVirksomhetNavnOrDefault(krav.virksomhetsnummer) } returns "Stark Industries"
     }
 
     @Test

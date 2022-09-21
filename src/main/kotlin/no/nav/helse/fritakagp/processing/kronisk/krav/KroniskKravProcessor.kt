@@ -21,12 +21,12 @@ import no.nav.helse.fritakagp.KroniskKravMetrics
 import no.nav.helse.fritakagp.db.KroniskKravRepository
 import no.nav.helse.fritakagp.domain.KroniskKrav
 import no.nav.helse.fritakagp.domain.generereKroniskKravBeskrivelse
-import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor.Jobbdata.SkjemaType
 import no.nav.helse.fritakagp.service.BehandlendeEnhetService
 import no.nav.helse.fritakagp.service.PdlService
+import no.nav.helsearbeidsgiver.brreg.BrregClient
 import no.nav.helsearbeidsgiver.utils.log.logger
 import java.time.LocalDate
 import java.util.Base64
@@ -65,10 +65,8 @@ class KroniskKravProcessor(
 
         try {
             if (krav.virksomhetsnavn == null) {
-                runBlocking {
-                    krav.virksomhetsnavn = brregClient.getVirksomhetsNavn(krav.virksomhetsnummer)
-                    logger.info("Slo opp virksomhet")
-                }
+                krav.virksomhetsnavn = runBlocking { brregClient.hentVirksomhetNavnOrDefault(krav.virksomhetsnummer) }
+                logger.info("Slo opp virksomhet")
             }
             if (krav.journalpostId == null) {
                 krav.journalpostId = journalfør(krav)

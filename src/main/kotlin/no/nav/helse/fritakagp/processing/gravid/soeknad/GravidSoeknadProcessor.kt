@@ -21,12 +21,12 @@ import no.nav.helse.fritakagp.GravidSoeknadMetrics
 import no.nav.helse.fritakagp.db.GravidSoeknadRepository
 import no.nav.helse.fritakagp.domain.GravidSoeknad
 import no.nav.helse.fritakagp.domain.generereGravidSoeknadBeskrivelse
-import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor.Jobbdata.SkjemaType.GravidSøknad
 import no.nav.helse.fritakagp.service.BehandlendeEnhetService
 import no.nav.helse.fritakagp.service.PdlService
+import no.nav.helsearbeidsgiver.brreg.BrregClient
 import no.nav.helsearbeidsgiver.utils.log.logger
 import java.time.LocalDate
 import java.util.Base64
@@ -66,9 +66,7 @@ class GravidSoeknadProcessor(
 
         try {
             if (soeknad.virksomhetsnavn == null) {
-                runBlocking {
-                    soeknad.virksomhetsnavn = brregClient.getVirksomhetsNavn(soeknad.virksomhetsnummer)
-                }
+                soeknad.virksomhetsnavn = runBlocking { brregClient.hentVirksomhetNavnOrDefault(soeknad.virksomhetsnummer) }
             }
             if (soeknad.journalpostId == null) {
                 soeknad.journalpostId = journalfør(soeknad)

@@ -23,7 +23,6 @@ import no.nav.helse.fritakagp.db.GravidSoeknadRepository
 import no.nav.helse.fritakagp.domain.BeloepBeregning
 import no.nav.helse.fritakagp.domain.KravStatus
 import no.nav.helse.fritakagp.domain.decodeBase64File
-import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
 import no.nav.helse.fritakagp.processing.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonProcessor
@@ -40,6 +39,7 @@ import no.nav.helse.fritakagp.web.api.resreq.validation.VirusCheckConstraint
 import no.nav.helse.fritakagp.web.api.resreq.validation.extractBase64Del
 import no.nav.helse.fritakagp.web.api.resreq.validation.extractFilExtDel
 import no.nav.helse.fritakagp.web.auth.hentIdentitetsnummerFraLoginToken
+import no.nav.helsearbeidsgiver.brreg.BrregClient
 import org.valiktor.ConstraintViolationException
 import org.valiktor.DefaultConstraintViolation
 import java.time.LocalDateTime
@@ -48,7 +48,7 @@ import javax.sql.DataSource
 
 fun Route.gravidRoutes(
     altinnService: AltinnService,
-    breegClient: BrregClient,
+    brregClient: BrregClient,
     datasource: DataSource,
     gravidSoeknadRepo: GravidSoeknadRepository,
     gravidKravRepo: GravidKravRepository,
@@ -79,7 +79,7 @@ fun Route.gravidRoutes(
                 val innloggetFnr = hentIdentitetsnummerFraLoginToken(call.request)
                 val request = call.receive<GravidSoknadRequest>()
 
-                val isVirksomhet = if (application.environment.config.env() == AppEnv.PREPROD) true else breegClient.erVirksomhet(request.virksomhetsnummer)
+                val isVirksomhet = if (application.environment.config.env() == AppEnv.PREPROD) true else brregClient.erVirksomhet(request.virksomhetsnummer)
                 request.validate(isVirksomhet)
 
                 val sendtAvNavn = pdlService.hentNavn(innloggetFnr)

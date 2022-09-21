@@ -22,13 +22,13 @@ import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OppgaveKlient
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OpprettOppgaveRequest
 import no.nav.helse.fritakagp.db.GravidSoeknadRepository
 import no.nav.helse.fritakagp.domain.GravidSoeknad
-import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketDocument
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor.Jobbdata.SkjemaType
 import no.nav.helse.fritakagp.service.BehandlendeEnhetService
 import no.nav.helse.fritakagp.service.PdlService
+import no.nav.helsearbeidsgiver.brreg.BrregClient
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -46,7 +46,7 @@ class GravidSoeknadProcessorTest {
     val pdfGeneratorMock = mockk<GravidSoeknadPDFGenerator>(relaxed = true)
     val bucketStorageMock = mockk<BucketStorage>(relaxed = true)
     val bakgrunnsjobbRepomock = mockk<BakgrunnsjobbRepository>(relaxed = true)
-    val berregServiceMock = mockk<BrregClient>(relaxed = true)
+    val berregClientMock = mockk<BrregClient>()
     val behandlendeEnhetService = mockk<BehandlendeEnhetService>(relaxed = true)
     val prosessor = GravidSoeknadProcessor(
         repositoryMock,
@@ -57,7 +57,7 @@ class GravidSoeknadProcessorTest {
         pdfGeneratorMock,
         objectMapper,
         bucketStorageMock,
-        berregServiceMock,
+        berregClientMock,
         behandlendeEnhetService
     )
 
@@ -86,7 +86,7 @@ class GravidSoeknadProcessorTest {
             emptyList()
         )
         coEvery { oppgaveMock.opprettOppgave(any(), any()) } returns gravidOpprettOppgaveResponse.copy(id = oppgaveId)
-        coEvery { berregServiceMock.getVirksomhetsNavn(soeknad.virksomhetsnummer) } returns "Stark Industries"
+        coEvery { berregClientMock.hentVirksomhetNavnOrDefault(soeknad.virksomhetsnummer) } returns "Stark Industries"
     }
 
     @Test
@@ -160,7 +160,7 @@ class GravidSoeknadProcessorTest {
         verify(exactly = 1) { joarkMock.journalførDokument(any(), true, any()) }
         coVerify(exactly = 1) { oppgaveMock.opprettOppgave(any(), any()) }
         verify(exactly = 1) { repositoryMock.update(soeknad) }
-        coVerify(exactly = 1) { berregServiceMock.getVirksomhetsNavn(soeknad.virksomhetsnummer) }
+        coVerify(exactly = 1) { berregClientMock.hentVirksomhetNavnOrDefault(soeknad.virksomhetsnummer) }
     }
 
     @Test

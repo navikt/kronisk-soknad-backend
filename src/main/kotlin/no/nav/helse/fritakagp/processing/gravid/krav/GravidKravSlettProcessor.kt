@@ -20,7 +20,6 @@ import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OpprettOppgaveRequest
 import no.nav.helse.fritakagp.db.GravidKravRepository
 import no.nav.helse.fritakagp.domain.GravidKrav
 import no.nav.helse.fritakagp.domain.generereSlettGravidKravBeskrivelse
-import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.service.BehandlendeEnhetService
 import no.nav.helse.fritakagp.service.PdlService
@@ -40,7 +39,6 @@ class GravidKravSlettProcessor(
     private val pdfGenerator: GravidKravPDFGenerator,
     private val om: ObjectMapper,
     private val bucketStorage: BucketStorage,
-    private val brregClient: BrregClient,
     private val behandlendeEnhetService: BehandlendeEnhetService,
     private val arbeidsgiverNotifikasjonKlient: ArbeidsgiverNotifikasjonKlient
 ) : BakgrunnsjobbProsesserer {

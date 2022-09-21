@@ -118,8 +118,8 @@ class GravidSoeknadProcessor(
                 bruker = Bruker(soeknad.identitetsnummer, IdType.FNR),
                 eksternReferanseId = soeknad.id.toString(),
                 avsenderMottaker = AvsenderMottaker(
-                    id = soeknad.sendtAv,
-                    idType = IdType.FNR,
+                    id = soeknad.virksomhetsnummer,
+                    idType = IdType.ORGNR,
                     navn = soeknad.virksomhetsnavn ?: "Ukjent arbeidsgiver"
                 ),
                 dokumenter = createDocuments(soeknad, journalfoeringsTittel),

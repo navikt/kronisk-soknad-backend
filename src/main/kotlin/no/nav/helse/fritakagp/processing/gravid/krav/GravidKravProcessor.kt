@@ -132,8 +132,8 @@ class GravidKravProcessor(
                 bruker = Bruker(krav.identitetsnummer, IdType.FNR),
                 eksternReferanseId = krav.id.toString(),
                 avsenderMottaker = AvsenderMottaker(
-                    id = krav.sendtAv,
-                    idType = IdType.FNR,
+                    id = krav.virksomhetsnummer,
+                    idType = IdType.ORGNR,
                     navn = krav.virksomhetsnavn ?: "Arbeidsgiver Ukjent"
                 ),
                 dokumenter = createDocuments(krav, journalfoeringsTittel),

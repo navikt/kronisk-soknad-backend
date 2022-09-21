@@ -24,7 +24,6 @@ import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.service.BehandlendeEnhetService
 import no.nav.helse.fritakagp.service.PdlService
 import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonKlient
-import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.hardDeleteSak
 import no.nav.helsearbeidsgiver.utils.log.logger
 import java.time.LocalDate
 import java.util.Base64
@@ -62,12 +61,9 @@ class GravidKravSlettProcessor(
         val krav = getOrThrow(jobb)
         logger.info("Sletter krav ${krav.id}")
         try {
-            journalførSletting(krav)
+            krav.sletteJournalpostId = journalførSletting(krav)
             krav.oppgaveId = opprettOppgave(krav)
         } finally {
-            krav.arbeidsgiverSakId?.let {
-                runBlocking { arbeidsgiverNotifikasjonKlient.hardDeleteSak(it) }
-            }
             updateAndLogOnFailure(krav)
         }
     }
@@ -103,14 +99,15 @@ class GravidKravSlettProcessor(
                 bruker = Bruker(krav.identitetsnummer, IdType.FNR),
                 eksternReferanseId = "${krav.id}-annul",
                 avsenderMottaker = AvsenderMottaker(
-                    id = krav.sendtAv,
-                    idType = IdType.FNR,
+                    id = krav.virksomhetsnummer,
+                    idType = IdType.ORGNR,
                     navn = krav.virksomhetsnavn ?: "Arbeidsgiver Ukjent"
                 ),
                 dokumenter = createDocuments(krav, journalfoeringsTittel),
                 datoMottatt = krav.opprettet.toLocalDate()
             ),
-            true, UUID.randomUUID().toString()
+            true,
+            UUID.randomUUID().toString()
 
         )
 
@@ -128,7 +125,7 @@ class GravidKravSlettProcessor(
             Dokument(
                 dokumentVarianter = listOf(
                     DokumentVariant(
-                        fysiskDokument = base64EnkodetPdf,
+                        fysiskDokument = base64EnkodetPdf
                     ),
                     DokumentVariant(
                         filtype = "JSON",
@@ -137,7 +134,7 @@ class GravidKravSlettProcessor(
                     )
                 ),
                 brevkode = dokumentasjonBrevkode,
-                tittel = journalfoeringsTittel,
+                tittel = journalfoeringsTittel
             )
         )
 
@@ -156,7 +153,7 @@ class GravidKravSlettProcessor(
                         )
                     ),
                     brevkode = GravidKravProcessor.dokumentasjonBrevkode,
-                    tittel = "Helsedokumentasjon",
+                    tittel = "Helsedokumentasjon"
                 )
             )
         }
@@ -165,7 +162,6 @@ class GravidKravSlettProcessor(
     }
 
     fun opprettOppgave(krav: GravidKrav): String {
-
         val aktoerId = pdlService.hentAktoerId(krav.identitetsnummer)
         requireNotNull(aktoerId) { "Fant ikke AktørID for fnr i ${krav.id}" }
         logger.info("Fant aktørid")

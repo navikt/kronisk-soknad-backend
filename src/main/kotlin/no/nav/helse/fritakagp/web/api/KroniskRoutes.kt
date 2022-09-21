@@ -12,6 +12,7 @@ import io.ktor.server.routing.get
 import io.ktor.server.routing.patch
 import io.ktor.server.routing.post
 import io.ktor.server.routing.route
+import kotlinx.coroutines.runBlocking
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbService
 import no.nav.helse.arbeidsgiver.integrasjoner.aareg.AaregArbeidsforholdClient
 import no.nav.helse.fritakagp.KroniskKravMetrics
@@ -35,6 +36,8 @@ import no.nav.helse.fritakagp.service.PdlService
 import no.nav.helse.fritakagp.web.api.resreq.KroniskKravRequest
 import no.nav.helse.fritakagp.web.api.resreq.KroniskSoknadRequest
 import no.nav.helse.fritakagp.web.auth.hentIdentitetsnummerFraLoginToken
+import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonKlient
+import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.hardDeleteSak
 import no.nav.helsearbeidsgiver.brreg.BrregClient
 import java.time.LocalDateTime
 import java.util.UUID
@@ -52,7 +55,8 @@ fun Route.kroniskRoutes(
     bucket: BucketStorage,
     belopBeregning: BeloepBeregning,
     aaregClient: AaregArbeidsforholdClient,
-    pdlService: PdlService
+    pdlService: PdlService,
+    arbeidsgiverNotifikasjonKlient: ArbeidsgiverNotifikasjonKlient
 ) {
     route("/kronisk") {
         route("/soeknad") {
@@ -226,25 +230,27 @@ fun Route.kroniskRoutes(
                 val innloggetFnr = hentIdentitetsnummerFraLoginToken(call.request)
                 val slettetAv = pdlService.hentNavn(innloggetFnr)
                 val kravId = UUID.fromString(call.parameters["id"])
-                var form = kroniskKravRepo.getById(kravId)
-                if (form == null) {
-                    call.respond(HttpStatusCode.NotFound)
-                } else {
-                    altinnService.authorize(this, form.virksomhetsnummer)
-                    form.status = KravStatus.SLETTET
-                    form.slettetAv = innloggetFnr
-                    form.slettetAvNavn = slettetAv
-                    form.endretDato = LocalDateTime.now()
-                    datasource.connection.use { connection ->
-                        kroniskKravRepo.update(form, connection)
-                        bakgunnsjobbService.opprettJobb<KroniskKravSlettProcessor>(
-                            maksAntallForsoek = 10,
-                            data = om.writeValueAsString(KroniskKravProcessor.JobbData(form.id)),
-                            connection = connection
-                        )
-                    }
-                    call.respond(HttpStatusCode.OK)
+                val form = kroniskKravRepo.getById(kravId)
+                    ?: return@delete call.respond(HttpStatusCode.NotFound)
+
+                altinnService.authorize(this, form.virksomhetsnummer)
+
+                form.arbeidsgiverSakId?.let {
+                    runBlocking { arbeidsgiverNotifikasjonKlient.hardDeleteSak(it) }
                 }
+                form.status = KravStatus.SLETTET
+                form.slettetAv = innloggetFnr
+                form.slettetAvNavn = slettetAv
+                form.endretDato = LocalDateTime.now()
+                datasource.connection.use { connection ->
+                    kroniskKravRepo.update(form, connection)
+                    bakgunnsjobbService.opprettJobb<KroniskKravSlettProcessor>(
+                        maksAntallForsoek = 10,
+                        data = om.writeValueAsString(KroniskKravProcessor.JobbData(form.id)),
+                        connection = connection
+                    )
+                }
+                call.respond(HttpStatusCode.OK)
             }
         }
     }

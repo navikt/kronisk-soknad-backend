@@ -84,7 +84,7 @@ fun prodConfig(config: ApplicationConfig): Module = module {
 
     single { KroniskSoeknadProcessor(get(), get(), get(), get(), get(), KroniskSoeknadPDFGenerator(), get(), get(), get(), get()) }
     single { KroniskKravProcessor(get(), get(), get(), get(), get(), KroniskKravPDFGenerator(), get(), get(), get(), get()) }
-    single { KroniskKravSlettProcessor(get(), get(), get(), get(), get(), KroniskKravPDFGenerator(), get(), get(), get(), get()) }
+    single { KroniskKravSlettProcessor(get(), get(), get(), get(), get(), KroniskKravPDFGenerator(), get(), get(), get()) }
 
     single { Clients.iCorrespondenceExternalBasic(config.prop("altinn_melding.altinn_endpoint")) }
 

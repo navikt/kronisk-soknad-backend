@@ -12,6 +12,7 @@ import io.ktor.server.routing.get
 import io.ktor.server.routing.patch
 import io.ktor.server.routing.post
 import io.ktor.server.routing.route
+import kotlinx.coroutines.runBlocking
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbService
 import no.nav.helse.arbeidsgiver.integrasjoner.aareg.AaregArbeidsforholdClient
 import no.nav.helse.fritakagp.GravidKravMetrics
@@ -39,6 +40,8 @@ import no.nav.helse.fritakagp.web.api.resreq.validation.VirusCheckConstraint
 import no.nav.helse.fritakagp.web.api.resreq.validation.extractBase64Del
 import no.nav.helse.fritakagp.web.api.resreq.validation.extractFilExtDel
 import no.nav.helse.fritakagp.web.auth.hentIdentitetsnummerFraLoginToken
+import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonKlient
+import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.hardDeleteSak
 import no.nav.helsearbeidsgiver.brreg.BrregClient
 import org.valiktor.ConstraintViolationException
 import org.valiktor.DefaultConstraintViolation
@@ -58,7 +61,8 @@ fun Route.gravidRoutes(
     bucket: BucketStorage,
     belopBeregning: BeloepBeregning,
     aaregClient: AaregArbeidsforholdClient,
-    pdlService: PdlService
+    pdlService: PdlService,
+    arbeidsgiverNotifikasjonKlient: ArbeidsgiverNotifikasjonKlient
 ) {
     route("/gravid") {
         route("/soeknad") {
@@ -236,6 +240,9 @@ fun Route.gravidRoutes(
 
                 altinnService.authorize(this, form.virksomhetsnummer)
 
+                form.arbeidsgiverSakId?.let {
+                    runBlocking { arbeidsgiverNotifikasjonKlient.hardDeleteSak(it) }
+                }
                 form.status = KravStatus.SLETTET
                 form.slettetAv = innloggetFnr
                 form.slettetAvNavn = slettetAv

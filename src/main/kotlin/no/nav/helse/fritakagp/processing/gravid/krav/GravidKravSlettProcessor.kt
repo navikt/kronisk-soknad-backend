@@ -64,7 +64,7 @@ class GravidKravSlettProcessor(
         val krav = getOrThrow(jobb)
         logger.info("Sletter krav ${krav.id}")
         try {
-            journalførSletting(krav)
+            krav.sletteJournalpostId = journalførSletting(krav)
             krav.oppgaveId = opprettOppgave(krav)
         } finally {
             updateAndLogOnFailure(krav)

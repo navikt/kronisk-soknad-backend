@@ -26,6 +26,7 @@ import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.service.BehandlendeEnhetService
 import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonKlient
+import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.hardDeleteSak
 import no.nav.helsearbeidsgiver.utils.log.logger
 import java.time.LocalDate
 import java.util.Base64
@@ -68,6 +69,9 @@ class GravidKravSlettProcessor(
             krav.oppgaveId = opprettOppgave(krav)
         } finally {
             updateAndLogOnFailure(krav)
+            krav.arbeidsgiverSakId?.let {
+                runBlocking { arbeidsgiverNotifikasjonKlient.hardDeleteSak(it) }
+            }
         }
     }
 

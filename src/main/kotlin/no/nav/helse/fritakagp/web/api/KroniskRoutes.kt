@@ -37,7 +37,7 @@ import no.nav.helse.fritakagp.web.api.resreq.KroniskSoknadRequest
 import no.nav.helse.fritakagp.web.auth.authorize
 import no.nav.helse.fritakagp.web.auth.hentIdentitetsnummerFraLoginToken
 import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonKlient
-import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.softDeleteSak
+import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.hardDeleteSak
 import java.time.LocalDateTime
 import java.util.UUID
 import javax.sql.DataSource
@@ -193,10 +193,6 @@ fun Route.kroniskRoutes(
                 kravTilSletting.endretDato = LocalDateTime.now()
 
                 // Sletter gammelt krav
-                kravTilSletting.arbeidsgiverSakId?.let {
-                    runBlocking { arbeidsgiverNotifikasjonKlient.softDeleteSak(it) }
-                }
-
                 datasource.connection.use { connection ->
                     kroniskKravRepo.update(kravTilSletting, connection)
                     bakgunnsjobbService.opprettJobb<KroniskKravSlettProcessor>(
@@ -239,7 +235,7 @@ fun Route.kroniskRoutes(
                 authorize(authorizer, form.virksomhetsnummer)
 
                 form.arbeidsgiverSakId?.let {
-                    runBlocking { arbeidsgiverNotifikasjonKlient.softDeleteSak(it) }
+                    runBlocking { arbeidsgiverNotifikasjonKlient.hardDeleteSak(it) }
                 }
                 form.status = KravStatus.SLETTET
                 form.slettetAv = innloggetFnr

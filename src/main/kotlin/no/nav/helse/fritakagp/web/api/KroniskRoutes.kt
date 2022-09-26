@@ -113,7 +113,9 @@ fun Route.kroniskRoutes(
                 if (form == null) {
                     call.respond(HttpStatusCode.NotFound)
                 } else {
-                    altinnService.authorize(this, form.virksomhetsnummer)
+                    if (form.identitetsnummer != innloggetFnr) {
+                        altinnService.authorize(this, form.virksomhetsnummer)
+                    }
                     form.sendtAvNavn = form.sendtAvNavn ?: pdlService.hentNavn(innloggetFnr)
                     form.navn = form.navn ?: pdlService.hentNavn(form.identitetsnummer)
 

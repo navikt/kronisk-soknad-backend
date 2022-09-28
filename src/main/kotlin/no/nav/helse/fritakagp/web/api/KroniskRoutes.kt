@@ -195,6 +195,10 @@ fun Route.kroniskRoutes(
                 kravTilSletting.endretDato = LocalDateTime.now()
 
                 // Sletter gammelt krav
+                kravTilSletting.arbeidsgiverSakId?.let {
+                    runBlocking { arbeidsgiverNotifikasjonKlient.hardDeleteSak(it) }
+                }
+
                 datasource.connection.use { connection ->
                     kroniskKravRepo.update(kravTilSletting, connection)
                     bakgunnsjobbService.opprettJobb<KroniskKravSlettProcessor>(

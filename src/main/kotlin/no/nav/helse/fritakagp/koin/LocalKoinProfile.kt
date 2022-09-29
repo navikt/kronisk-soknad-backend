@@ -84,7 +84,7 @@ fun localDevConfig(config: ApplicationConfig) = module {
     single { GravidKravSlettProcessor(get(), get(), get(), get(), get(), GravidKravPDFGenerator(), get(), get(), get(), get(), get()) }
     single { KroniskSoeknadProcessor(get(), get(), get(), get(), get(), KroniskSoeknadPDFGenerator(), get(), get(), get(), get()) }
     single { KroniskKravProcessor(get(), get(), get(), get(), get(), KroniskKravPDFGenerator(), get(), get(), get(), get()) }
-    single { KroniskKravSlettProcessor(get(), get(), get(), get(), get(), KroniskKravPDFGenerator(), get(), get(), get(), get()) }
+    single { KroniskKravSlettProcessor(get(), get(), get(), get(), get(), KroniskKravPDFGenerator(), get(), get(), get(), get(), get()) }
 
     single { GravidSoeknadKvitteringSenderDummy() } bind GravidSoeknadKvitteringSender::class
     single { GravidSoeknadKvitteringProcessor(get(), get(), get()) }

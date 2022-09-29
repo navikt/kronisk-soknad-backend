@@ -201,6 +201,10 @@ fun Route.gravidRoutes(
                 kravTilSletting.endretDato = LocalDateTime.now()
 
                 // Sletter gammelt krav
+                kravTilSletting.arbeidsgiverSakId?.let {
+                    runBlocking { arbeidsgiverNotifikasjonKlient.hardDeleteSak(it) }
+                }
+
                 datasource.connection.use { connection ->
                     gravidKravRepo.update(kravTilSletting, connection)
                     bakgunnsjobbService.opprettJobb<GravidKravSlettProcessor>(

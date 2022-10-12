@@ -45,8 +45,8 @@ class ArbeidsgiverNotifikasjonProcessor(
         logger.info("Opprettet sak i arbeidsgivernotifikasjon med ${sak.id} med ref $resultat")
     }
 
-    private fun genererTittel(navn: String?, identitetsnummer: String, skjemaType: String) =
-        "Fritak fra arbeidsgiverperioden - $skjemaType: $navn - f. ${identitetsnummer.take(6)}"
+    private fun genererTittel(navn: String?, identitetsnummer: String) =
+        "Fritak fra arbeidsgiverperioden: $navn - f. ${identitetsnummer.take(6)}"
 
     private fun updateSaksId(jobbData: JobbData, id: String) {
         if (jobbData.skjemaType == JobbData.SkjemaType.KroniskKrav) {
@@ -55,7 +55,8 @@ class ArbeidsgiverNotifikasjonProcessor(
             skjema.arbeidsgiverSakId = id
             kroniskKravRepo.update(skjema)
         } else {
-            val skjema = gravidKravRepo.getById(jobbData.skjemaId) ?: throw IllegalArgumentException("Fant ikke $jobbData")
+            val skjema = gravidKravRepo.getById(jobbData.skjemaId)
+                ?: throw IllegalArgumentException("Fant ikke $jobbData")
             skjema.arbeidsgiverSakId = id
             gravidKravRepo.update(skjema)
         }
@@ -68,7 +69,7 @@ class ArbeidsgiverNotifikasjonProcessor(
             return SakParametere(
                 skjema.id,
                 skjema.virksomhetsnummer,
-                genererTittel(skjema.navn, skjema.identitetsnummer, "kronisk sykdom"),
+                genererTittel(skjema.navn, skjema.identitetsnummer),
                 "$frontendAppBaseUrl/nb/kronisk/krav/${skjema.id}",
                 "P3Y"
             )
@@ -78,7 +79,7 @@ class ArbeidsgiverNotifikasjonProcessor(
             return SakParametere(
                 skjema.id,
                 skjema.virksomhetsnummer,
-                genererTittel(skjema.navn, skjema.identitetsnummer, "graviditet"),
+                genererTittel(skjema.navn, skjema.identitetsnummer),
                 "$frontendAppBaseUrl/nb/gravid/krav/${skjema.id}",
                 "P1Y"
             )

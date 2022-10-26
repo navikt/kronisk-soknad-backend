@@ -14,8 +14,6 @@ enum class GodkjenteFiletyper(val beskrivelse: String) {
     PDF("pdf")
 }
 
-val SOEKAND_BESKRIVELSE_DATE_FORMAT = DateTimeFormatter.ofPattern("dd.MM.yyyy")
-
 fun sladdFnr(fnr: String): String {
     return fnr.take(6) + "*****"
 }
@@ -29,7 +27,7 @@ fun generereGravidSoeknadBeskrivelse(soeknad: GravidSoeknad, desc: String): Stri
         appendLine(desc)
         appendLine("Mottatt: ${soeknad.opprettet.format(TIMESTAMP_FORMAT)}")
         appendLine("Person (FNR): ${soeknad.identitetsnummer}")
-        appendLine("Termindato: ${soeknad.termindato?.format(SOEKAND_BESKRIVELSE_DATE_FORMAT) ?: terminaDatoIkkeOppgitt}")
+        appendLine("Termindato: ${soeknad.termindato?.format(DATE_FORMAT) ?: terminaDatoIkkeOppgitt}")
         appendLine("Arbeidsgiver oppgitt i søknad: ${soeknad.virksomhetsnavn} (${soeknad.virksomhetsnummer}")
         appendLine("Har dere prøvd å tilrettelegge arbeidsdagen slik at den gravide kan jobbe til tross for helseplagene?")
         if (soeknad.tilrettelegge) {

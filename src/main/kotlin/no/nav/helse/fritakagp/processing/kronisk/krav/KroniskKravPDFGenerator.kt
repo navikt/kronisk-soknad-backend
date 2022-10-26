@@ -1,13 +1,15 @@
 package no.nav.helse.fritakagp.processing.kronisk.krav
 
 import no.nav.helse.fritakagp.domain.KroniskKrav
-import no.nav.helse.fritakagp.processing.gravid.krav.getPDFTimeStampFormat
+import no.nav.helse.fritakagp.domain.TIMESTAMP_FORMAT
 import org.apache.commons.lang3.text.WordUtils
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.pdmodel.PDPage
 import org.apache.pdfbox.pdmodel.PDPageContentStream
 import org.apache.pdfbox.pdmodel.font.PDType0Font
 import java.io.ByteArrayOutputStream
+import java.time.LocalDateTime
+import kotlin.math.roundToInt
 
 class KroniskKravPDFGenerator {
     private val FONT_SIZE = 11f
@@ -34,35 +36,39 @@ class KroniskKravPDFGenerator {
         val font = PDType0Font.load(doc, this::class.java.classLoader.getResource(FONT_NAME).openStream())
         var content = lagNySide(doc, font)
         content.setFont(font, FONT_SIZE + 4)
-        content.showText("Krav om refusjon av sykepenger i arbeidsgiverperioden")
+        content.showText(KroniskKrav.tittel)
         content.setFont(font, FONT_SIZE)
 
-        content.writeTextWrapped("Mottatt: ${getPDFTimeStampFormat().format(krav.opprettet)}", 4)
+        content.writeTextWrapped("Mottatt: ${krav.opprettet.format(TIMESTAMP_FORMAT)}", 4)
         content.writeTextWrapped("Sendt av: ${krav.sendtAvNavn}")
         content.writeTextWrapped("Person navn: ${krav.navn}")
         content.writeTextWrapped("Arbeidsgiver oppgitt i krav: ${krav.virksomhetsnavn} (${krav.virksomhetsnummer})")
         content.writeTextWrapped("Antall lønnsdager: ${krav.antallDager}")
         content.writeTextWrapped("Perioder", 2)
 
-        krav.perioder.withIndex().forEach { (index, periode) ->
-            // For hvert 4 nye krav, lag ny side
-            if (index != 0 && index % 4 == 0) {
-                content.endText()
-                content.close()
-                content = lagNySide(doc, font)
+        krav
+            .perioder
+            .sortedBy { it.fom }
+            .withIndex()
+            .forEach { (index, periode) ->
+                // For hvert 4 nye krav, lag ny side
+                if (index != 0 && index % 4 == 0) {
+                    content.endText()
+                    content.close()
+                    content = lagNySide(doc, font)
+                }
+                val gradering = (periode.gradering * 100).toString()
+                with(content) {
+                    writeTextWrapped("FOM: ${periode.fom}")
+                    writeTextWrapped("TOM: ${periode.tom}")
+                    writeTextWrapped("Sykmeldingsgrad: $gradering%")
+                    writeTextWrapped("Antall dager det kreves refusjon for: ${periode.antallDagerMedRefusjon}")
+                    writeTextWrapped("Beregnet månedsinntekt (NOK): ${periode.månedsinntekt.roundToInt()}")
+                    writeTextWrapped("Dagsats (NOK): ${periode.dagsats.roundToInt()}")
+                    writeTextWrapped("Beløp (NOK): ${periode.belop.roundToInt()}")
+                    writeTextWrapped("")
+                }
             }
-            val gradering = (periode.gradering * 100).toString()
-            with(content) {
-                writeTextWrapped("FOM: ${periode.fom}")
-                writeTextWrapped("TOM: ${periode.tom}")
-                writeTextWrapped("Sykmeldingsgrad: $gradering%")
-                writeTextWrapped("Antall dager det kreves refusjon for: ${periode.antallDagerMedRefusjon}")
-                writeTextWrapped("Beregnet månedsinntekt (NOK): ${periode.månedsinntekt}")
-                writeTextWrapped("Dagsats (NOK): ${periode.dagsats}")
-                writeTextWrapped("Beløp (NOK): ${periode.belop}")
-                writeTextWrapped("")
-            }
-        }
 
         content.endText()
         content.close()
@@ -78,10 +84,10 @@ class KroniskKravPDFGenerator {
         val font = PDType0Font.load(doc, this::class.java.classLoader.getResource(FONT_NAME).openStream())
         var content = lagNySide(doc, font)
         content.setFont(font, FONT_SIZE + 4)
-        content.showText("Annuller krav om refusjon av sykepenger i arbeidsgiverperioden")
+        content.showText("Annuller ${KroniskKrav.tittel}")
         content.setFont(font, FONT_SIZE)
 
-        content.writeTextWrapped("Annullering Mottatt: ${getPDFTimeStampFormat().format(krav.endretDato)}", 4)
+        content.writeTextWrapped("Annullering Mottatt: ${TIMESTAMP_FORMAT.format(krav.endretDato ?: LocalDateTime.now())}", 4)
         content.writeTextWrapped("Tidligere krav med JournalpostID: ${krav.journalpostId}")
         content.writeTextWrapped("Sendt av: ${krav.sendtAvNavn}")
         content.writeTextWrapped("Person navn: ${krav.navn}")
@@ -100,9 +106,9 @@ class KroniskKravPDFGenerator {
                 writeTextWrapped("TOM: ${periode.tom}")
                 writeTextWrapped("Sykmeldingsgrad: $gradering%")
                 writeTextWrapped("Antall dager det kreves refusjon for: ${periode.antallDagerMedRefusjon}")
-                writeTextWrapped("Beregnet månedsinntekt (NOK): ${periode.månedsinntekt}")
-                writeTextWrapped("Dagsats (NOK): ${periode.dagsats}")
-                writeTextWrapped("Beløp (NOK): ${periode.belop}")
+                writeTextWrapped("Beregnet månedsinntekt (NOK): ${periode.månedsinntekt.roundToInt()}")
+                writeTextWrapped("Dagsats (NOK): ${periode.dagsats.roundToInt()}")
+                writeTextWrapped("Beløp (NOK): ${periode.belop.roundToInt()}")
                 writeTextWrapped("")
             }
         }

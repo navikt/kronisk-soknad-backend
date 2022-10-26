@@ -34,7 +34,11 @@ data class GravidSoeknad(
     var oppgaveId: String? = null,
     // Må være null for tidligere verdier er lagret med null
     var sendtAvNavn: String? = null
-) : SimpleJsonbEntity
+) : SimpleJsonbEntity {
+    companion object {
+        const val tittel = "Søknad om fritak fra arbeidsgiverperioden - graviditet"
+    }
+}
 
 enum class Omplassering(val beskrivelse: String) {
     JA("Ja"),

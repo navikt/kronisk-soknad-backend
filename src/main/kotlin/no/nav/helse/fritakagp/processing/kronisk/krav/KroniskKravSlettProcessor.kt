@@ -42,12 +42,13 @@ class KroniskKravSlettProcessor(
     private val om: ObjectMapper,
     private val bucketStorage: BucketStorage,
     private val brregClient: BrregClient,
-    private val behandlendeEnhetService: BehandlendeEnhetService,
+    private val behandlendeEnhetService: BehandlendeEnhetService
 ) : BakgrunnsjobbProsesserer {
     companion object {
         val JOB_TYPE = "slett-kronisk-krav"
         val dokumentasjonBrevkode = "annuller_krav_om_fritak_fra_agp_dokumentasjon"
     }
+
     override val type: String get() = JOB_TYPE
 
     val digitalKravBehandingsType = "ae0121"
@@ -92,7 +93,7 @@ class KroniskKravSlettProcessor(
     }
 
     fun journalførSletting(krav: KroniskKrav): String {
-        val journalfoeringsTittel = "Annuller krav om fritak fra arbeidsgiverperioden - kronisk eller langvarig sykdom"
+        val journalfoeringsTittel = "Annuller ${KroniskKrav.tittel}"
         val response = dokarkivKlient.journalførDokument(
             JournalpostRequest(
                 tittel = journalfoeringsTittel,
@@ -108,7 +109,8 @@ class KroniskKravSlettProcessor(
                 dokumenter = createDocuments(krav, journalfoeringsTittel),
                 datoMottatt = krav.opprettet.toLocalDate()
             ),
-            true, UUID.randomUUID().toString()
+            true,
+            UUID.randomUUID().toString()
 
         )
 
@@ -126,7 +128,7 @@ class KroniskKravSlettProcessor(
             Dokument(
                 dokumentVarianter = listOf(
                     DokumentVariant(
-                        fysiskDokument = base64EnkodetPdf,
+                        fysiskDokument = base64EnkodetPdf
                     ),
                     DokumentVariant(
                         filtype = "JSON",
@@ -135,7 +137,7 @@ class KroniskKravSlettProcessor(
                     )
                 ),
                 brevkode = dokumentasjonBrevkode,
-                tittel = journalfoeringsTittel,
+                tittel = journalfoeringsTittel
             )
         )
 
@@ -154,7 +156,7 @@ class KroniskKravSlettProcessor(
                         )
                     ),
                     brevkode = KroniskKravProcessor.dokumentasjonBrevkode,
-                    tittel = "Helsedokumentasjon",
+                    tittel = "Helsedokumentasjon"
                 )
             )
         }
@@ -169,7 +171,7 @@ class KroniskKravSlettProcessor(
         val request = OpprettOppgaveRequest(
             aktoerId = aktoerId,
             journalpostId = krav.journalpostId,
-            beskrivelse = generereSlettKroniskKravBeskrivelse(krav, "Annullering av refusjonskrav ifbm sykdom i arbeidsgiverperioden med fritak fra arbeidsgiverperioden grunnet kronisk sykdom."),
+            beskrivelse = generereSlettKroniskKravBeskrivelse(krav, "Annullering av ${KroniskKrav.tittel}"),
             tema = "SYK",
             behandlingstype = digitalKravBehandingsType,
             oppgavetype = "BEH_REF",
@@ -189,7 +191,7 @@ class KroniskKravSlettProcessor(
         val request = OpprettOppgaveRequest(
             aktoerId = aktoerId,
             journalpostId = krav.journalpostId,
-            beskrivelse = generereSlettKroniskKravBeskrivelse(krav, "Fordelingsoppgave for annullering av refusjonskrav ifbm sykdom i aprbeidsgiverperioden med fritak fra arbeidsgiverperioden grunnet kronisk sykdom."),
+            beskrivelse = generereSlettKroniskKravBeskrivelse(krav, "Fordelingsoppgave for annullering av ${KroniskKrav.tittel}"),
             tema = "SYK",
             behandlingstype = digitalKravBehandingsType,
             oppgavetype = OPPGAVETYPE_FORDELINGSOPPGAVE,

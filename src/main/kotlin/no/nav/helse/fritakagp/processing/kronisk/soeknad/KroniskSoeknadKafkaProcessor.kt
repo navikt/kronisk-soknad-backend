@@ -17,6 +17,7 @@ class KroniskSoeknadKafkaProcessor(
     companion object {
         val JOB_TYPE = "kronisk-søknad-send-kafka"
     }
+
     override val type: String get() = JOB_TYPE
 
     private val logger = this.logger()

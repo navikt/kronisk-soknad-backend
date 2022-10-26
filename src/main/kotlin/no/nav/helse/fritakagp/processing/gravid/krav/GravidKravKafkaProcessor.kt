@@ -16,7 +16,10 @@ class GravidKravKafkaProcessor(
 ) : BakgrunnsjobbProsesserer {
     private val logger = this.logger()
 
-    companion object { val JOB_TYPE = "gravid-krav-send-kafka" }
+    companion object {
+        val JOB_TYPE = "gravid-krav-send-kafka"
+    }
+
     override val type: String get() = JOB_TYPE
 
     /**

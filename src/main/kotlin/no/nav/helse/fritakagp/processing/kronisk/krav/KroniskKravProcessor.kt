@@ -43,12 +43,13 @@ class KroniskKravProcessor(
     private val om: ObjectMapper,
     private val bucketStorage: BucketStorage,
     private val brregClient: BrregClient,
-    private val behandlendeEnhetService: BehandlendeEnhetService,
+    private val behandlendeEnhetService: BehandlendeEnhetService
 ) : BakgrunnsjobbProsesserer {
     companion object {
         val JOB_TYPE = "kronisk-krav-formidling"
         val dokumentasjonBrevkode = "krav_om_fritak_fra_agp_dokumentasjon"
     }
+
     override val type: String get() = JOB_TYPE
 
     val digitalKravBehandingsType = "ae0121"
@@ -128,11 +129,9 @@ class KroniskKravProcessor(
     }
 
     fun journalfør(krav: KroniskKrav): String {
-        val journalfoeringsTittel = "Krav om fritak fra arbeidsgiverperioden - kronisk eller langvarig sykdom"
-
         val response = dokarkivKlient.journalførDokument(
             JournalpostRequest(
-                tittel = journalfoeringsTittel,
+                tittel = KroniskKrav.tittel,
                 journalposttype = Journalposttype.INNGAAENDE,
                 kanal = "NAV_NO",
                 bruker = Bruker(krav.identitetsnummer, IdType.FNR),
@@ -142,11 +141,11 @@ class KroniskKravProcessor(
                     idType = IdType.ORGNR,
                     navn = krav.virksomhetsnavn ?: "Ukjent arbeidsgiver"
                 ),
-                dokumenter = createDocuments(krav, journalfoeringsTittel),
+                dokumenter = createDocuments(krav, KroniskKrav.tittel),
                 datoMottatt = krav.opprettet.toLocalDate()
             ),
-            true, UUID.randomUUID().toString()
-
+            true,
+            UUID.randomUUID().toString()
         )
 
         logger.info("Journalført ${krav.id} med ref ${response.journalpostId}")
@@ -163,7 +162,7 @@ class KroniskKravProcessor(
             Dokument(
                 dokumentVarianter = listOf(
                     DokumentVariant(
-                        fysiskDokument = base64EnkodetPdf,
+                        fysiskDokument = base64EnkodetPdf
                     ),
                     DokumentVariant(
                         filtype = "JSON",
@@ -172,7 +171,7 @@ class KroniskKravProcessor(
                     )
                 ),
                 brevkode = "krav_om_fritak_fra_agp_kronisk",
-                tittel = journalfoeringsTittel,
+                tittel = journalfoeringsTittel
             )
         )
 
@@ -191,7 +190,7 @@ class KroniskKravProcessor(
                         )
                     ),
                     brevkode = dokumentasjonBrevkode,
-                    tittel = "Helsedokumentasjon",
+                    tittel = "Helsedokumentasjon"
                 )
             )
         }
@@ -208,7 +207,7 @@ class KroniskKravProcessor(
             tildeltEnhetsnr = enhetsNr,
             aktoerId = aktoerId,
             journalpostId = krav.journalpostId,
-            beskrivelse = generereKroniskKravBeskrivelse(krav, "Krav om refusjon av arbeidsgiverperioden - kronisk eller langvarig sykdom"),
+            beskrivelse = generereKroniskKravBeskrivelse(krav, KroniskKrav.tittel),
             tema = "SYK",
             behandlingstype = digitalKravBehandingsType,
             oppgavetype = "BEH_REF",
@@ -230,7 +229,7 @@ class KroniskKravProcessor(
             tildeltEnhetsnr = enhetsNr,
             aktoerId = aktoerId,
             journalpostId = krav.journalpostId,
-            beskrivelse = generereKroniskKravBeskrivelse(krav, "Fordelingsoppgave for refusjonskrav ifbm sykdom i aprbeidsgiverperioden med fritak fra arbeidsgiverperioden grunnet kronisk sykdom."),
+            beskrivelse = generereKroniskKravBeskrivelse(krav, "Fordelingsoppgave for ${KroniskKrav.tittel}"),
             tema = "SYK",
             behandlingstype = digitalKravBehandingsType,
             oppgavetype = OPPGAVETYPE_FORDELINGSOPPGAVE,

@@ -16,6 +16,7 @@ class GravidKravKvitteringProcessor(
     companion object {
         val JOB_TYPE = "gravid-krav-altinn-kvittering"
     }
+
     override val type: String get() = JOB_TYPE
 
     override fun prosesser(jobb: Bakgrunnsjobb) {

@@ -2,7 +2,6 @@ package no.nav.helse.fritakagp.domain
 
 import de.m3y.kformat.Table
 import de.m3y.kformat.table
-import no.nav.helse.fritakagp.processing.gravid.krav.getPDFTimeStampFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Base64
@@ -14,17 +13,21 @@ fun decodeBase64File(datafile: String): ByteArray {
 enum class GodkjenteFiletyper(val beskrivelse: String) {
     PDF("pdf")
 }
+
 val SOEKAND_BESKRIVELSE_DATE_FORMAT = DateTimeFormatter.ofPattern("dd.MM.yyyy")
 
 fun sladdFnr(fnr: String): String {
     return fnr.take(6) + "*****"
 }
 
+val TIMESTAMP_FORMAT = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss")
+val DATE_FORMAT = DateTimeFormatter.ofPattern("dd.MM.yyyy")
+
 fun generereGravidSoeknadBeskrivelse(soeknad: GravidSoeknad, desc: String): String {
     val terminaDatoIkkeOppgitt = "Ikke oppgitt"
     return buildString {
         appendLine(desc)
-        appendLine("Mottatt: ${getPDFTimeStampFormat().format(soeknad.opprettet)}")
+        appendLine("Mottatt: ${soeknad.opprettet.format(TIMESTAMP_FORMAT)}")
         appendLine("Person (FNR): ${soeknad.identitetsnummer}")
         appendLine("Termindato: ${soeknad.termindato?.format(SOEKAND_BESKRIVELSE_DATE_FORMAT) ?: terminaDatoIkkeOppgitt}")
         appendLine("Arbeidsgiver oppgitt i søknad: ${soeknad.virksomhetsnavn} (${soeknad.virksomhetsnummer}")
@@ -44,10 +47,11 @@ fun generereGravidSoeknadBeskrivelse(soeknad: GravidSoeknad, desc: String): Stri
         }
     }
 }
+
 fun generereKroniskSoeknadBeskrivelse(soeknad: KroniskSoeknad, desc: String): String {
     return buildString {
         appendLine(desc)
-        appendLine("Mottatt: ${getPDFTimeStampFormat().format(soeknad.opprettet)}")
+        appendLine("Mottatt: ${soeknad.opprettet.format(TIMESTAMP_FORMAT)}")
         appendLine("Person (FNR): ${soeknad.identitetsnummer}")
         appendLine("Arbeidsgiver oppgitt i søknad: ${soeknad.virksomhetsnavn} (${soeknad.virksomhetsnummer})")
         if (soeknad.ikkeHistoriskFravaer) {
@@ -72,7 +76,7 @@ fun generereKroniskSoeknadBeskrivelse(soeknad: KroniskSoeknad, desc: String): St
 fun generereKroniskKravBeskrivelse(krav: KroniskKrav, desc: String): String {
     return buildString {
         appendLine(desc)
-        appendLine("Mottatt: ${getPDFTimeStampFormat().format(krav.opprettet)}")
+        appendLine("Mottatt: ${krav.opprettet.format(TIMESTAMP_FORMAT)}")
         appendLine("Person (FNR): ${krav.identitetsnummer}")
         appendLine("Arbeidsgiver oppgitt i krav: ${krav.virksomhetsnavn} (${krav.virksomhetsnummer})")
         appendLine("Antall lønnsdager: ${krav.antallDager}")
@@ -84,7 +88,7 @@ fun generereKroniskKravBeskrivelse(krav: KroniskKrav, desc: String): String {
 fun generereSlettKroniskKravBeskrivelse(krav: KroniskKrav, desc: String): String {
     return buildString {
         appendLine(desc)
-        appendLine("Annullering mottatt: ${getPDFTimeStampFormat().format(krav.endretDato ?: LocalDateTime.now())}")
+        appendLine("Annullering mottatt: ${TIMESTAMP_FORMAT.format(krav.endretDato ?: LocalDateTime.now())}")
         appendLine("Tidligere krav med JournalpostId: ${krav.journalpostId}")
         appendLine("Person (FNR): ${krav.identitetsnummer}")
         appendLine("Arbeidsgiver oppgitt i krav: ${krav.virksomhetsnavn} (${krav.virksomhetsnummer})")
@@ -96,7 +100,7 @@ fun generereSlettKroniskKravBeskrivelse(krav: KroniskKrav, desc: String): String
 fun generereGravidkKravBeskrivelse(krav: GravidKrav, desc: String): String {
     return buildString {
         appendLine(desc)
-        appendLine("Mottatt: ${getPDFTimeStampFormat().format(krav.opprettet)}")
+        appendLine("Mottatt: ${krav.opprettet.format(TIMESTAMP_FORMAT)}")
         appendLine("Person (FNR): ${krav.identitetsnummer}")
         appendLine("Arbeidsgiver oppgitt i krav: ${krav.virksomhetsnavn} (${krav.virksomhetsnummer})")
         appendLine("Antall lønnsdager: ${krav.antallDager}")
@@ -108,7 +112,7 @@ fun generereGravidkKravBeskrivelse(krav: GravidKrav, desc: String): String {
 fun generereSlettGravidKravBeskrivelse(krav: GravidKrav, desc: String): String {
     return buildString {
         appendLine(desc)
-        appendLine("Annullering mottatt: ${getPDFTimeStampFormat().format(krav.endretDato ?: LocalDateTime.now())}")
+        appendLine("Annullering mottatt: ${TIMESTAMP_FORMAT.format(krav.endretDato ?: LocalDateTime.now())}")
         appendLine("Tidligere krav med JournalpostId: ${krav.journalpostId}")
         appendLine("Person (FNR): ${krav.identitetsnummer}")
         appendLine("Arbeidsgiver oppgitt i krav: ${krav.virksomhetsnavn} (${krav.virksomhetsnummer})")

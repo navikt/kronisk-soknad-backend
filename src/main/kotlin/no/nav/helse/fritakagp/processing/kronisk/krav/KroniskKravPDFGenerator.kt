@@ -1,13 +1,14 @@
 package no.nav.helse.fritakagp.processing.kronisk.krav
 
 import no.nav.helse.fritakagp.domain.KroniskKrav
-import no.nav.helse.fritakagp.processing.gravid.krav.getPDFTimeStampFormat
+import no.nav.helse.fritakagp.domain.TIMESTAMP_FORMAT
 import org.apache.commons.lang3.text.WordUtils
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.pdmodel.PDPage
 import org.apache.pdfbox.pdmodel.PDPageContentStream
 import org.apache.pdfbox.pdmodel.font.PDType0Font
 import java.io.ByteArrayOutputStream
+import java.time.LocalDateTime
 
 class KroniskKravPDFGenerator {
     private val FONT_SIZE = 11f
@@ -37,7 +38,7 @@ class KroniskKravPDFGenerator {
         content.showText("Krav om refusjon av sykepenger i arbeidsgiverperioden")
         content.setFont(font, FONT_SIZE)
 
-        content.writeTextWrapped("Mottatt: ${getPDFTimeStampFormat().format(krav.opprettet)}", 4)
+        content.writeTextWrapped("Mottatt: ${krav.opprettet.format(TIMESTAMP_FORMAT)}", 4)
         content.writeTextWrapped("Sendt av: ${krav.sendtAvNavn}")
         content.writeTextWrapped("Person navn: ${krav.navn}")
         content.writeTextWrapped("Arbeidsgiver oppgitt i krav: ${krav.virksomhetsnavn} (${krav.virksomhetsnummer})")
@@ -81,7 +82,7 @@ class KroniskKravPDFGenerator {
         content.showText("Annuller krav om refusjon av sykepenger i arbeidsgiverperioden")
         content.setFont(font, FONT_SIZE)
 
-        content.writeTextWrapped("Annullering Mottatt: ${getPDFTimeStampFormat().format(krav.endretDato)}", 4)
+        content.writeTextWrapped("Annullering Mottatt: ${TIMESTAMP_FORMAT.format(krav.endretDato ?: LocalDateTime.now())}", 4)
         content.writeTextWrapped("Tidligere krav med JournalpostID: ${krav.journalpostId}")
         content.writeTextWrapped("Sendt av: ${krav.sendtAvNavn}")
         content.writeTextWrapped("Person navn: ${krav.navn}")

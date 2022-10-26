@@ -1,7 +1,7 @@
 package no.nav.helse.fritakagp.processing.kronisk.soeknad
 
 import no.nav.helse.fritakagp.domain.KroniskSoeknad
-import no.nav.helse.fritakagp.processing.gravid.krav.getPDFTimeStampFormat
+import no.nav.helse.fritakagp.domain.TIMESTAMP_FORMAT
 import org.apache.commons.lang3.text.WordUtils
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.pdmodel.PDPage
@@ -22,7 +22,7 @@ class KroniskSoeknadPDFGenerator {
         val doc = PDDocument()
         val font = PDType0Font.load(doc, this::class.java.classLoader.getResource(FONT_NAME).openStream())
 
-        var curPage = PDPage()
+        val curPage = PDPage()
         doc.addPage(curPage)
 
         val content = PDPageContentStream(doc, curPage)
@@ -35,7 +35,7 @@ class KroniskSoeknadPDFGenerator {
         content.showText("Søknad om sykepenger for kronisk sykdom")
         content.setFont(font, FONT_SIZE)
 
-        content.writeTextWrapped("Mottatt: ${getPDFTimeStampFormat().format(soeknad.opprettet)}", 4)
+        content.writeTextWrapped("Mottatt: ${soeknad.opprettet.format(TIMESTAMP_FORMAT)}", 4)
         content.writeTextWrapped("Sendt av: ${soeknad.sendtAvNavn}")
         content.writeTextWrapped("Person navn: ${soeknad.navn}")
         content.writeTextWrapped("Arbeidsgiver oppgitt i søknad: ${soeknad.virksomhetsnavn} (${soeknad.virksomhetsnummer})")
@@ -88,7 +88,6 @@ class KroniskSoeknadPDFGenerator {
 
     private fun PDPageContentStream.writeTextWrapped(text: String, spacing: Int = 1) {
         WordUtils.wrap(text, 100).split('\n').forEach {
-
             this.newLineAtOffset(0F, -LINE_HEIGHT * spacing)
             this.showText(it)
         }

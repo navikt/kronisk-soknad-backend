@@ -1,13 +1,14 @@
 package no.nav.helse.fritakagp.processing.gravid.soeknad
 
+import no.nav.helse.fritakagp.domain.DATE_FORMAT
 import no.nav.helse.fritakagp.domain.GravidSoeknad
+import no.nav.helse.fritakagp.domain.TIMESTAMP_FORMAT
 import org.apache.commons.lang3.text.WordUtils
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.pdmodel.PDPage
 import org.apache.pdfbox.pdmodel.PDPageContentStream
 import org.apache.pdfbox.pdmodel.font.PDType0Font
 import java.io.ByteArrayOutputStream
-import java.time.format.DateTimeFormatter
 
 class GravidSoeknadPDFGenerator {
     private val FONT_SIZE = 11f
@@ -38,7 +39,8 @@ class GravidSoeknadPDFGenerator {
         content.writeTextWrapped("Termindato: ${soeknad.termindato?.format(DATE_FORMAT) ?: terminaDatoIkkeOppgitt}")
         content.writeTextWrapped("Arbeidsgiver oppgitt i søknad: ${soeknad.virksomhetsnavn} (${soeknad.virksomhetsnummer})")
         content.writeTextWrapped(
-            "Har dere prøvd å tilrettelegge arbeidsdagen slik at den gravide kan jobbe til tross for helseplagene?", 2
+            "Har dere prøvd å tilrettelegge arbeidsdagen slik at den gravide kan jobbe til tross for helseplagene?",
+            2
         )
 
         if (soeknad.tilrettelegge) {
@@ -71,10 +73,5 @@ class GravidSoeknadPDFGenerator {
             this.newLineAtOffset(0F, -LINE_HEIGHT * spacing)
             this.showText(it)
         }
-    }
-
-    companion object {
-        val TIMESTAMP_FORMAT = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss")
-        val DATE_FORMAT = DateTimeFormatter.ofPattern("dd.MM.yyyy")
     }
 }

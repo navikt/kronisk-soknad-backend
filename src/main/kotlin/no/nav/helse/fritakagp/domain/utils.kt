@@ -20,6 +20,7 @@ fun sladdFnr(fnr: String): String {
 
 val TIMESTAMP_FORMAT = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss")
 val DATE_FORMAT = DateTimeFormatter.ofPattern("dd.MM.yyyy")
+val TIMESTAMP_FORMAT_MED_KL = DateTimeFormatter.ofPattern("dd.MM.yyyy 'kl.' HH:mm")
 
 fun generereGravidSoeknadBeskrivelse(soeknad: GravidSoeknad, desc: String): String {
     val terminaDatoIkkeOppgitt = "Ikke oppgitt"

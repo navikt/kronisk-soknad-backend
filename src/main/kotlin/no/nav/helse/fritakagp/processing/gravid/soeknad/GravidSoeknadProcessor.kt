@@ -112,11 +112,9 @@ class GravidSoeknadProcessor(
     }
 
     fun journalfør(soeknad: GravidSoeknad): String {
-        val journalfoeringsTittel = "Søknad om fritak fra arbeidsgiverperioden ifbm graviditet"
-
         val response = dokarkivKlient.journalførDokument(
             JournalpostRequest(
-                tittel = journalfoeringsTittel,
+                tittel = GravidSoeknad.tittel,
                 journalposttype = Journalposttype.INNGAAENDE,
                 kanal = "NAV_NO",
                 bruker = Bruker(soeknad.identitetsnummer, IdType.FNR),
@@ -126,7 +124,7 @@ class GravidSoeknadProcessor(
                     idType = IdType.ORGNR,
                     navn = soeknad.virksomhetsnavn ?: "Ukjent arbeidsgiver"
                 ),
-                dokumenter = createDocuments(soeknad, journalfoeringsTittel),
+                dokumenter = createDocuments(soeknad, GravidSoeknad.tittel),
                 datoMottatt = soeknad.opprettet.toLocalDate()
             ),
             true,
@@ -201,7 +199,7 @@ class GravidSoeknadProcessor(
         val request = OpprettOppgaveRequest(
             aktoerId = aktoerId,
             journalpostId = soeknad.journalpostId,
-            beskrivelse = generereGravidSoeknadBeskrivelse(soeknad, "Søknad om fritak fra arbeidsgiverperioden ifbm. graviditet"),
+            beskrivelse = generereGravidSoeknadBeskrivelse(soeknad, GravidSoeknad.tittel),
             tema = "SYK",
             behandlingstype = digitalSoeknadBehandingsType,
             oppgavetype = "BEH_SAK",
@@ -223,7 +221,7 @@ class GravidSoeknadProcessor(
         val request = OpprettOppgaveRequest(
             aktoerId = aktoerId,
             journalpostId = soeknad.journalpostId,
-            beskrivelse = generereGravidSoeknadBeskrivelse(soeknad, "Fordelingsoppgave for søknad om fritak fra arbeidsgiverperioden grunnet gravid sykdom."),
+            beskrivelse = generereGravidSoeknadBeskrivelse(soeknad, "Fordelingsoppgave for ${GravidSoeknad.tittel}"),
             tema = "SYK",
             behandlingstype = digitalSoeknadBehandingsType,
             oppgavetype = OPPGAVETYPE_FORDELINGSOPPGAVE,

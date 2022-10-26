@@ -49,6 +49,7 @@ class KroniskKravProcessor(
         val JOB_TYPE = "kronisk-krav-formidling"
         val dokumentasjonBrevkode = "krav_om_fritak_fra_agp_dokumentasjon"
     }
+
     override val type: String get() = JOB_TYPE
 
     val digitalKravBehandingsType = "ae0121"
@@ -128,11 +129,9 @@ class KroniskKravProcessor(
     }
 
     fun journalfør(krav: KroniskKrav): String {
-        val journalfoeringsTittel = "Krav om fritak fra arbeidsgiverperioden - kronisk eller langvarig sykdom"
-
         val response = dokarkivKlient.journalførDokument(
             JournalpostRequest(
-                tittel = journalfoeringsTittel,
+                tittel = KroniskKrav.tittel,
                 journalposttype = Journalposttype.INNGAAENDE,
                 kanal = "NAV_NO",
                 bruker = Bruker(krav.identitetsnummer, IdType.FNR),
@@ -142,7 +141,7 @@ class KroniskKravProcessor(
                     idType = IdType.ORGNR,
                     navn = krav.virksomhetsnavn ?: "Ukjent arbeidsgiver"
                 ),
-                dokumenter = createDocuments(krav, journalfoeringsTittel),
+                dokumenter = createDocuments(krav, KroniskKrav.tittel),
                 datoMottatt = krav.opprettet.toLocalDate()
             ),
             true,
@@ -208,7 +207,7 @@ class KroniskKravProcessor(
             tildeltEnhetsnr = enhetsNr,
             aktoerId = aktoerId,
             journalpostId = krav.journalpostId,
-            beskrivelse = generereKroniskKravBeskrivelse(krav, "Krav om refusjon av arbeidsgiverperioden - kronisk eller langvarig sykdom"),
+            beskrivelse = generereKroniskKravBeskrivelse(krav, KroniskKrav.tittel),
             tema = "SYK",
             behandlingstype = digitalKravBehandingsType,
             oppgavetype = "BEH_REF",
@@ -230,7 +229,7 @@ class KroniskKravProcessor(
             tildeltEnhetsnr = enhetsNr,
             aktoerId = aktoerId,
             journalpostId = krav.journalpostId,
-            beskrivelse = generereKroniskKravBeskrivelse(krav, "Fordelingsoppgave for refusjonskrav ifbm sykdom i aprbeidsgiverperioden med fritak fra arbeidsgiverperioden grunnet kronisk sykdom."),
+            beskrivelse = generereKroniskKravBeskrivelse(krav, "Fordelingsoppgave for ${KroniskKrav.tittel}"),
             tema = "SYK",
             behandlingstype = digitalKravBehandingsType,
             oppgavetype = OPPGAVETYPE_FORDELINGSOPPGAVE,

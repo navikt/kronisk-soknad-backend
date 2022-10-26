@@ -32,7 +32,7 @@ class KroniskSoeknadPDFGenerator {
         val startY = mediaBox.upperRightY - MARGIN_Y
         content.newLineAtOffset(startX, startY)
         content.setFont(font, FONT_SIZE + 4)
-        content.showText("Søknad om sykepenger for kronisk sykdom")
+        content.showText(KroniskSoeknad.tittel)
         content.setFont(font, FONT_SIZE)
 
         content.writeTextWrapped("Mottatt: ${soeknad.opprettet.format(TIMESTAMP_FORMAT)}", 4)

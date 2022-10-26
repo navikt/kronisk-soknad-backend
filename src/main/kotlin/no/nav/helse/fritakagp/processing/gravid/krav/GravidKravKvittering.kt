@@ -34,8 +34,10 @@ class GravidKravAltinnKvitteringSender(
     override fun send(kvittering: GravidKrav) {
         try {
             val receiptExternal = iCorrespondenceAgencyExternalBasic.insertCorrespondenceBasicV2(
-                username, password,
-                SYSTEM_USER_CODE, kvittering.id.toString(),
+                username,
+                password,
+                SYSTEM_USER_CODE,
+                kvittering.id.toString(),
                 mapKvitteringTilInsertCorrespondence(kvittering)
             )
             if (receiptExternal.receiptStatusCode != ReceiptStatusEnum.OK) {

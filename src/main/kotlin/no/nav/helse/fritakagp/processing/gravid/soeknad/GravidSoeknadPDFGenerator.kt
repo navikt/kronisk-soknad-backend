@@ -30,7 +30,7 @@ class GravidSoeknadPDFGenerator {
         val startY = mediaBox.upperRightY - MARGIN_Y
         content.newLineAtOffset(startX, startY)
         content.setFont(font, FONT_SIZE + 4)
-        content.showText("Søknad om Fritak fra arbeidsgiverperioden")
+        content.showText(GravidSoeknad.tittel)
         content.setFont(font, FONT_SIZE)
 
         content.writeTextWrapped("Mottatt: ${TIMESTAMP_FORMAT.format(soeknad.opprettet)}", 4)

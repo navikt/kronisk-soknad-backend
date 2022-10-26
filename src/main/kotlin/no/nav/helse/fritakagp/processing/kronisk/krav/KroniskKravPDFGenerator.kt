@@ -35,7 +35,7 @@ class KroniskKravPDFGenerator {
         val font = PDType0Font.load(doc, this::class.java.classLoader.getResource(FONT_NAME).openStream())
         var content = lagNySide(doc, font)
         content.setFont(font, FONT_SIZE + 4)
-        content.showText("Krav om refusjon av sykepenger i arbeidsgiverperioden")
+        content.showText(KroniskKrav.tittel)
         content.setFont(font, FONT_SIZE)
 
         content.writeTextWrapped("Mottatt: ${krav.opprettet.format(TIMESTAMP_FORMAT)}", 4)
@@ -83,7 +83,7 @@ class KroniskKravPDFGenerator {
         val font = PDType0Font.load(doc, this::class.java.classLoader.getResource(FONT_NAME).openStream())
         var content = lagNySide(doc, font)
         content.setFont(font, FONT_SIZE + 4)
-        content.showText("Annuller krav om refusjon av sykepenger i arbeidsgiverperioden")
+        content.showText("Annuller ${KroniskKrav.tittel}")
         content.setFont(font, FONT_SIZE)
 
         content.writeTextWrapped("Annullering Mottatt: ${TIMESTAMP_FORMAT.format(krav.endretDato ?: LocalDateTime.now())}", 4)

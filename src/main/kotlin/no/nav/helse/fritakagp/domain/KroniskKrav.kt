@@ -35,4 +35,8 @@ data class KroniskKrav(
     var endretDato: LocalDateTime? = null,
 
     var arbeidsgiverSakId: String? = null
-) : SimpleJsonbEntity
+) : SimpleJsonbEntity {
+    companion object {
+        const val tittel = "Krav om refusjon av arbeidsgiverperioden grunnet kronisk eller langvarig sykdom"
+    }
+}

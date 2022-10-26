@@ -126,10 +126,9 @@ class GravidKravProcessor(
     }
 
     fun journalfør(krav: GravidKrav): String {
-        val journalfoeringsTittel = "Krav om fritak fra arbeidsgiverperioden ifbm graviditet"
         val response = dokarkivKlient.journalførDokument(
             JournalpostRequest(
-                tittel = journalfoeringsTittel,
+                tittel = GravidKrav.tittel,
                 journalposttype = Journalposttype.INNGAAENDE,
                 kanal = "NAV_NO",
                 bruker = Bruker(krav.identitetsnummer, IdType.FNR),
@@ -139,7 +138,7 @@ class GravidKravProcessor(
                     idType = IdType.ORGNR,
                     navn = krav.virksomhetsnavn ?: "Arbeidsgiver Ukjent"
                 ),
-                dokumenter = createDocuments(krav, journalfoeringsTittel),
+                dokumenter = createDocuments(krav, GravidKrav.tittel),
                 datoMottatt = krav.opprettet.toLocalDate()
             ),
             true,
@@ -205,7 +204,7 @@ class GravidKravProcessor(
         val request = OpprettOppgaveRequest(
             aktoerId = aktoerId,
             journalpostId = krav.journalpostId,
-            beskrivelse = generereGravidkKravBeskrivelse(krav, "Krav om refusjon av arbeidsgiverperioden ifbm. graviditet"),
+            beskrivelse = generereGravidkKravBeskrivelse(krav, GravidKrav.tittel),
             tema = "SYK",
             behandlingstype = digitalKravBehandingsType,
             oppgavetype = "BEH_REF",

@@ -93,7 +93,7 @@ class GravidKravSlettProcessor(
     }
 
     fun journalførSletting(krav: GravidKrav): String {
-        val journalfoeringsTittel = "Annuller krav om fritak fra arbeidsgiverperioden ifbm graviditet"
+        val journalfoeringsTittel = "Annuller ${GravidKrav.tittel}"
         val response = dokarkivKlient.journalførDokument(
             JournalpostRequest(
                 tittel = journalfoeringsTittel,
@@ -171,7 +171,7 @@ class GravidKravSlettProcessor(
         val request = OpprettOppgaveRequest(
             aktoerId = aktoerId,
             journalpostId = krav.journalpostId,
-            beskrivelse = generereSlettGravidKravBeskrivelse(krav, "Annullering av refusjonskrav ifbm sykefravær i arbeidsgiverperioden med fritak fra arbeidsgiverperioden grunnet graviditet."),
+            beskrivelse = generereSlettGravidKravBeskrivelse(krav, "Annullering av ${GravidKrav.tittel}."),
             tema = "SYK",
             behandlingstype = digitalKravBehandingsType,
             oppgavetype = "BEH_REF",
@@ -191,7 +191,7 @@ class GravidKravSlettProcessor(
         val request = OpprettOppgaveRequest(
             aktoerId = aktoerId,
             journalpostId = krav.journalpostId,
-            beskrivelse = generereSlettGravidKravBeskrivelse(krav, "Fordelingsoppgave for annullering av refusjonskrav ifbm sykefravær i arbeidsgiverperioden med fritak fra arbeidsgiverperioden grunnet graviditet."),
+            beskrivelse = generereSlettGravidKravBeskrivelse(krav, "Fordelingsoppgave for annullering av ${GravidKrav.tittel}"),
             tema = "SYK",
             behandlingstype = digitalKravBehandingsType,
             oppgavetype = OPPGAVETYPE_FORDELINGSOPPGAVE,

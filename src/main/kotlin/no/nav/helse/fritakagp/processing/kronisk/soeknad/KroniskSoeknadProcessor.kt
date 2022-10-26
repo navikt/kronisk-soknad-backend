@@ -43,7 +43,7 @@ class KroniskSoeknadProcessor(
     private val om: ObjectMapper,
     private val bucketStorage: BucketStorage,
     private val brregClient: BrregClient,
-    private val behandlendeEnhetService: BehandlendeEnhetService,
+    private val behandlendeEnhetService: BehandlendeEnhetService
 ) : BakgrunnsjobbProsesserer {
     companion object {
         val dokumentasjonBrevkode = "soeknad_om_fritak_fra_agp_dokumentasjon"
@@ -142,8 +142,8 @@ class KroniskSoeknadProcessor(
                 dokumenter = createDocuments(soeknad, journalfoeringsTittel),
                 datoMottatt = soeknad.opprettet.toLocalDate()
             ),
-            true, UUID.randomUUID().toString()
-
+            true,
+            UUID.randomUUID().toString()
         )
 
         logger.debug("Journalført ${soeknad.id} med ref ${response.journalpostId}")
@@ -164,7 +164,7 @@ class KroniskSoeknadProcessor(
                     )
                 ),
                 brevkode = "soeknad_om_fritak_fra_agp_kronisk",
-                tittel = journalfoeringsTittel,
+                tittel = journalfoeringsTittel
             )
         )
 
@@ -183,7 +183,7 @@ class KroniskSoeknadProcessor(
                         )
                     ),
                     brevkode = dokumentasjonBrevkode,
-                    tittel = "Helsedokumentasjon",
+                    tittel = "Helsedokumentasjon"
                 )
             )
         }

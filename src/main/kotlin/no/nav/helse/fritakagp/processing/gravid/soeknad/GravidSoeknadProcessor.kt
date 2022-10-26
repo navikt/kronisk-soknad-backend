@@ -49,6 +49,7 @@ class GravidSoeknadProcessor(
         val JOB_TYPE = "gravid-søknad-formidling"
         val dokumentasjonBrevkode = "soeknad_om_fritak_fra_agp_dokumentasjon"
     }
+
     override val type: String get() = JOB_TYPE
 
     val digitalSoeknadBehandingsType = "ae0227"
@@ -128,8 +129,8 @@ class GravidSoeknadProcessor(
                 dokumenter = createDocuments(soeknad, journalfoeringsTittel),
                 datoMottatt = soeknad.opprettet.toLocalDate()
             ),
-            true, UUID.randomUUID().toString()
-
+            true,
+            UUID.randomUUID().toString()
         )
 
         logger.debug("Journalført ${soeknad.id} med ref ${response.journalpostId}")
@@ -166,7 +167,7 @@ class GravidSoeknadProcessor(
                     )
                 ),
                 brevkode = "soeknad_om_fritak_fra_agp_gravid",
-                tittel = journalfoeringsTittel,
+                tittel = journalfoeringsTittel
             )
         )
 
@@ -185,7 +186,7 @@ class GravidSoeknadProcessor(
                         )
                     ),
                     brevkode = dokumentasjonBrevkode,
-                    tittel = "Helsedokumentasjon",
+                    tittel = "Helsedokumentasjon"
                 )
             )
         }

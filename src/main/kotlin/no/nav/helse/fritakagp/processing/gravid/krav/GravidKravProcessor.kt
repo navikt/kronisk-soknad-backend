@@ -142,8 +142,8 @@ class GravidKravProcessor(
                 dokumenter = createDocuments(krav, journalfoeringsTittel),
                 datoMottatt = krav.opprettet.toLocalDate()
             ),
-            true, UUID.randomUUID().toString()
-
+            true,
+            UUID.randomUUID().toString()
         )
 
         logger.debug("Journalført ${krav.id} med ref ${response.journalpostId}")
@@ -170,7 +170,7 @@ class GravidKravProcessor(
                     )
                 ),
                 brevkode = "krav_om_fritak_fra_agp_gravid",
-                tittel = journalfoeringsTittel,
+                tittel = journalfoeringsTittel
             )
         )
 
@@ -185,11 +185,11 @@ class GravidKravProcessor(
                         DokumentVariant(
                             filtype = "JSON",
                             fysiskDokument = jsonOrginalDokument,
-                            variantFormat = "ORIGINAL",
+                            variantFormat = "ORIGINAL"
                         )
                     ),
                     brevkode = dokumentasjonBrevkode,
-                    tittel = "Helsedokumentasjon",
+                    tittel = "Helsedokumentasjon"
                 )
             )
         }

@@ -45,25 +45,29 @@ class KroniskKravPDFGenerator {
         content.writeTextWrapped("Antall lønnsdager: ${krav.antallDager}")
         content.writeTextWrapped("Perioder", 2)
 
-        krav.perioder.withIndex().forEach { (index, periode) ->
-            // For hvert 4 nye krav, lag ny side
-            if (index != 0 && index % 4 == 0) {
-                content.endText()
-                content.close()
-                content = lagNySide(doc, font)
+        krav
+            .perioder
+            .sortedBy { it.fom }
+            .withIndex()
+            .forEach { (index, periode) ->
+                // For hvert 4 nye krav, lag ny side
+                if (index != 0 && index % 4 == 0) {
+                    content.endText()
+                    content.close()
+                    content = lagNySide(doc, font)
+                }
+                val gradering = (periode.gradering * 100).toString()
+                with(content) {
+                    writeTextWrapped("FOM: ${periode.fom}")
+                    writeTextWrapped("TOM: ${periode.tom}")
+                    writeTextWrapped("Sykmeldingsgrad: $gradering%")
+                    writeTextWrapped("Antall dager det kreves refusjon for: ${periode.antallDagerMedRefusjon}")
+                    writeTextWrapped("Beregnet månedsinntekt (NOK): ${periode.månedsinntekt}")
+                    writeTextWrapped("Dagsats (NOK): ${periode.dagsats}")
+                    writeTextWrapped("Beløp (NOK): ${periode.belop}")
+                    writeTextWrapped("")
+                }
             }
-            val gradering = (periode.gradering * 100).toString()
-            with(content) {
-                writeTextWrapped("FOM: ${periode.fom}")
-                writeTextWrapped("TOM: ${periode.tom}")
-                writeTextWrapped("Sykmeldingsgrad: $gradering%")
-                writeTextWrapped("Antall dager det kreves refusjon for: ${periode.antallDagerMedRefusjon}")
-                writeTextWrapped("Beregnet månedsinntekt (NOK): ${periode.månedsinntekt}")
-                writeTextWrapped("Dagsats (NOK): ${periode.dagsats}")
-                writeTextWrapped("Beløp (NOK): ${periode.belop}")
-                writeTextWrapped("")
-            }
-        }
 
         content.endText()
         content.close()

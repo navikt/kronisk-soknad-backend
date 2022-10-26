@@ -123,7 +123,7 @@ fun generereSlettGravidKravBeskrivelse(krav: GravidKrav, desc: String): String {
 fun genererePeriodeTable(perioder: List<Arbeidsgiverperiode>): String {
     return table {
         header("FOM", "TOM", "Sykmeldingsgrad", "kreves refusjon for", "Beregnet månedsinntekt (NOK)", "Dagsats (NOK)", "Beløp (NOK)")
-        for (p in perioder) {
+        for (p in perioder.sortedBy { it.fom }) {
             val gradering = (p.gradering * 100).toString() + "%"
             row(
                 p.fom.atStartOfDay(),

@@ -5,6 +5,7 @@ import de.m3y.kformat.table
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Base64
+import kotlin.math.roundToInt
 
 fun decodeBase64File(datafile: String): ByteArray {
     return Base64.getDecoder().decode(datafile)
@@ -130,7 +131,7 @@ fun genererePeriodeTable(perioder: List<Arbeidsgiverperiode>): String {
                 p.tom.atStartOfDay(),
                 gradering,
                 p.antallDagerMedRefusjon,
-                p.månedsinntekt.toString(),
+                p.månedsinntekt.roundToInt().toString(),
                 p.dagsats.toString(),
                 p.belop.toString()
             )

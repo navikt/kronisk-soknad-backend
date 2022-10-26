@@ -10,6 +10,7 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream
 import org.apache.pdfbox.pdmodel.font.PDType0Font
 import java.io.ByteArrayOutputStream
 import java.time.LocalDateTime
+import kotlin.math.roundToInt
 
 class GravidKravPDFGenerator {
     private val FONT_SIZE = 11f
@@ -62,9 +63,9 @@ class GravidKravPDFGenerator {
                     writeTextWrapped("TOM: ${periode.tom.format(DATE_FORMAT)}")
                     writeTextWrapped("Sykmeldingsgrad: $gradering%")
                     writeTextWrapped("Antall dager det kreves refusjon for: ${periode.antallDagerMedRefusjon}")
-                    writeTextWrapped("Beregnet månedsinntekt (NOK): ${periode.månedsinntekt}")
-                    writeTextWrapped("Dagsats (NOK): ${periode.dagsats}")
-                    writeTextWrapped("Beløp (NOK): ${periode.belop}")
+                    writeTextWrapped("Beregnet månedsinntekt (NOK): ${periode.månedsinntekt.roundToInt()}")
+                    writeTextWrapped("Dagsats (NOK): ${periode.dagsats.roundToInt()}")
+                    writeTextWrapped("Beløp (NOK): ${periode.belop.roundToInt()}")
                     writeTextWrapped("")
                 }
             }
@@ -105,9 +106,9 @@ class GravidKravPDFGenerator {
                 writeTextWrapped("TOM: ${periode.tom.format(DATE_FORMAT)}")
                 writeTextWrapped("Sykmeldingsgrad: $gradering%")
                 writeTextWrapped("Antall dager det kreves refusjon for: ${periode.antallDagerMedRefusjon}")
-                writeTextWrapped("Beregnet månedsinntekt (NOK): ${periode.månedsinntekt}")
-                writeTextWrapped("Dagsats (NOK): ${periode.dagsats}")
-                writeTextWrapped("Beløp (NOK): ${periode.belop}")
+                writeTextWrapped("Beregnet månedsinntekt (NOK): ${periode.månedsinntekt.roundToInt()}")
+                writeTextWrapped("Dagsats (NOK): ${periode.dagsats.roundToInt()}")
+                writeTextWrapped("Beløp (NOK): ${periode.belop.roundToInt()}")
                 writeTextWrapped("")
             }
         }

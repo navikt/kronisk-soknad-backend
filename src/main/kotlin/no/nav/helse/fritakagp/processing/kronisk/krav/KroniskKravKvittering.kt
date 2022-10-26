@@ -10,6 +10,7 @@ import no.nav.helse.fritakagp.domain.sladdFnr
 import no.nav.helse.fritakagp.domain.TIMESTAMP_FORMAT_MED_KL
 import no.nav.helse.fritakagp.domain.Arbeidsgiverperiode
 import no.nav.helse.fritakagp.domain.DATE_FORMAT
+import kotlin.math.roundToInt
 
 interface KroniskKravKvitteringSender {
     fun send(kvittering: KroniskKrav)
@@ -124,7 +125,7 @@ fun lagePeriod(periode: Arbeidsgiverperiode): String {
                 <td style="text-align:center">$gradering</td>
                 <td style="text-align:center">${periode.antallDagerMedRefusjon}</td>
                 <td style="text-align:center">${periode.månedsinntekt}</td>
-                <td style="text-align:center">${periode.dagsats}</td>
-                <td style="text-align:center">${periode.belop}</td>
+                <td style="text-align:center">${periode.dagsats.roundToInt()}</td>
+                <td style="text-align:center">${periode.belop.roundToInt()}</td>
             </tr>"""
 }

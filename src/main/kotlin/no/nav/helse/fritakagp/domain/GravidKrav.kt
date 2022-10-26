@@ -37,7 +37,7 @@ data class GravidKrav(
     var arbeidsgiverSakId: String? = null
 ) : SimpleJsonbEntity {
     companion object {
-        const val tittel = "Krav om refusjon av arbeidsgiverperioden - gravididet"
+        const val tittel = "Krav om refusjon av arbeidsgiverperioden - graviditet"
     }
 }
 

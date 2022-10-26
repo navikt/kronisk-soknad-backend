@@ -37,6 +37,6 @@ data class KroniskKrav(
     var arbeidsgiverSakId: String? = null
 ) : SimpleJsonbEntity {
     companion object {
-        const val tittel = "Krav om refusjon av arbeidsgiverperioden grunnet kronisk eller langvarig sykdom"
+        const val tittel = "Krav om refusjon av arbeidsgiverperioden - kronisk eller langvarig sykdom"
     }
 }

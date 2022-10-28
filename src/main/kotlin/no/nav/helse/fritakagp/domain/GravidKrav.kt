@@ -34,7 +34,8 @@ data class GravidKrav(
     var aarsakEndring: String? = null,
     var endretDato: LocalDateTime? = null,
 
-    var arbeidsgiverSakId: String? = null
+    var arbeidsgiverSakId: String? = null,
+    var referansenummer: Int? = null
 ) : SimpleJsonbEntity {
     companion object {
         const val tittel = "Krav om refusjon av arbeidsgiverperioden - graviditet"

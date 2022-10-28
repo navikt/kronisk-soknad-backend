@@ -21,6 +21,7 @@ import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlClient
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlIdent
 import no.nav.helse.fritakagp.KroniskSoeknadMetrics
 import no.nav.helse.fritakagp.db.KroniskSoeknadRepository
+import no.nav.helse.fritakagp.db.ReferanseRepository
 import no.nav.helse.fritakagp.domain.KroniskSoeknad
 import no.nav.helse.fritakagp.domain.generereKroniskSoeknadBeskrivelse
 import no.nav.helse.fritakagp.integration.brreg.BrregClient
@@ -43,7 +44,7 @@ class KroniskSoeknadProcessor(
     private val om: ObjectMapper,
     private val bucketStorage: BucketStorage,
     private val brregClient: BrregClient,
-    private val behandlendeEnhetService: BehandlendeEnhetService
+    private val referanseRepository: ReferanseRepository
 ) : BakgrunnsjobbProsesserer {
     companion object {
         val dokumentasjonBrevkode = "soeknad_om_fritak_fra_agp_dokumentasjon"
@@ -64,6 +65,9 @@ class KroniskSoeknadProcessor(
         val soeknad = getSoeknadOrThrow(jobb)
 
         try {
+            if (soeknad.referansenummer == null) {
+                soeknad.referansenummer = referanseRepository.getOrInsertReferanse(soeknad.id)
+            }
             if (soeknad.virksomhetsnavn == null) {
                 runBlocking {
                     soeknad.virksomhetsnavn = brregClient.getVirksomhetsNavn(soeknad.virksomhetsnummer)

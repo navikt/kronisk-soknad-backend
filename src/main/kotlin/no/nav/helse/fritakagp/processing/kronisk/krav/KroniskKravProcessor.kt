@@ -21,6 +21,7 @@ import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlClient
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlIdent
 import no.nav.helse.fritakagp.KroniskKravMetrics
 import no.nav.helse.fritakagp.db.KroniskKravRepository
+import no.nav.helse.fritakagp.db.ReferanseRepository
 import no.nav.helse.fritakagp.domain.KroniskKrav
 import no.nav.helse.fritakagp.domain.generereKroniskKravBeskrivelse
 import no.nav.helse.fritakagp.integration.brreg.BrregClient
@@ -43,7 +44,8 @@ class KroniskKravProcessor(
     private val om: ObjectMapper,
     private val bucketStorage: BucketStorage,
     private val brregClient: BrregClient,
-    private val behandlendeEnhetService: BehandlendeEnhetService
+    private val behandlendeEnhetService: BehandlendeEnhetService,
+    private val referanseRepository: ReferanseRepository
 ) : BakgrunnsjobbProsesserer {
     companion object {
         val JOB_TYPE = "kronisk-krav-formidling"
@@ -66,6 +68,9 @@ class KroniskKravProcessor(
         logger.info("Prosesserer krav ${krav.id}")
 
         try {
+            if (krav.referansenummer == null) {
+                krav.referansenummer = referanseRepository.getOrInsertReferanse(krav.id)
+            }
             if (krav.virksomhetsnavn == null) {
                 runBlocking {
                     krav.virksomhetsnavn = brregClient.getVirksomhetsNavn(krav.virksomhetsnummer)

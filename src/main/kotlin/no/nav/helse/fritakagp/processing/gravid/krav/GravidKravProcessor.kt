@@ -21,6 +21,7 @@ import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlClient
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlIdent
 import no.nav.helse.fritakagp.GravidKravMetrics
 import no.nav.helse.fritakagp.db.GravidKravRepository
+import no.nav.helse.fritakagp.db.ReferanseRepository
 import no.nav.helse.fritakagp.domain.GravidKrav
 import no.nav.helse.fritakagp.domain.generereGravidkKravBeskrivelse
 import no.nav.helse.fritakagp.integration.brreg.BrregClient
@@ -43,8 +44,7 @@ class GravidKravProcessor(
     private val om: ObjectMapper,
     private val bucketStorage: BucketStorage,
     private val brregClient: BrregClient,
-    private val behandlendeEnhetService: BehandlendeEnhetService
-
+    private val referanseRepository: ReferanseRepository
 ) : BakgrunnsjobbProsesserer {
     companion object {
         val JOB_TYPE = "gravid-krav-formidling"
@@ -66,6 +66,9 @@ class GravidKravProcessor(
         val krav = getOrThrow(jobb)
 
         try {
+            if (krav.referansenummer == null) {
+                krav.referansenummer = referanseRepository.getOrInsertReferanse(krav.id)
+            }
             if (krav.virksomhetsnavn == null) {
                 runBlocking {
                     krav.virksomhetsnavn = brregClient.getVirksomhetsNavn(krav.virksomhetsnummer)

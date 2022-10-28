@@ -29,6 +29,7 @@ import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlHentPersonNavn
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlIdent
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlPersonNavnMetadata
 import no.nav.helse.fritakagp.db.GravidSoeknadRepository
+import no.nav.helse.fritakagp.db.ReferanseRepository
 import no.nav.helse.fritakagp.domain.GravidSoeknad
 import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketDocument
@@ -54,7 +55,7 @@ class GravidSoeknadProcessorTest {
     val bucketStorageMock = mockk<BucketStorage>(relaxed = true)
     val bakgrunnsjobbRepomock = mockk<BakgrunnsjobbRepository>(relaxed = true)
     val berregServiceMock = mockk<BrregClient>(relaxed = true)
-    val behandlendeEnhetService = mockk<BehandlendeEnhetService>(relaxed = true)
+    val referanseRepository = mockk<ReferanseRepository>(relaxed = true)
     val prosessor = GravidSoeknadProcessor(
         repositoryMock,
         joarkMock,
@@ -65,7 +66,7 @@ class GravidSoeknadProcessorTest {
         objectMapper,
         bucketStorageMock,
         berregServiceMock,
-        behandlendeEnhetService
+        referanseRepository
     )
 
     lateinit var soeknad: GravidSoeknad
@@ -204,7 +205,6 @@ class GravidSoeknadProcessorTest {
 
     @Test
     fun `Ved feil i oppgave skal joarkref lagres, og det skal det kastes exception oppover`() {
-
         coEvery { oppgaveMock.opprettOppgave(any(), any()) } throws IOException()
 
         assertThrows<IOException> { prosessor.prosesser(jobb) }

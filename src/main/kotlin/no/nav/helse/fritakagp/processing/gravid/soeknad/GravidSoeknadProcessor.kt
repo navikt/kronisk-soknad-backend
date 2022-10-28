@@ -21,6 +21,7 @@ import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlClient
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlIdent
 import no.nav.helse.fritakagp.GravidSoeknadMetrics
 import no.nav.helse.fritakagp.db.GravidSoeknadRepository
+import no.nav.helse.fritakagp.db.ReferanseRepository
 import no.nav.helse.fritakagp.domain.GravidSoeknad
 import no.nav.helse.fritakagp.domain.generereGravidSoeknadBeskrivelse
 import no.nav.helse.fritakagp.integration.brreg.BrregClient
@@ -43,7 +44,7 @@ class GravidSoeknadProcessor(
     private val om: ObjectMapper,
     private val bucketStorage: BucketStorage,
     private val brregClient: BrregClient,
-    private val behandlendeEnhetService: BehandlendeEnhetService
+    private val referanseRepository: ReferanseRepository
 ) : BakgrunnsjobbProsesserer {
     companion object {
         val JOB_TYPE = "gravid-søknad-formidling"
@@ -67,6 +68,9 @@ class GravidSoeknadProcessor(
         requireNotNull(soeknad, { "Jobben indikerte en søknad med id ${jobb.data} men den kunne ikke finnes" })
 
         try {
+            if (soeknad.referansenummer == null) {
+                soeknad.referansenummer = referanseRepository.getOrInsertReferanse(soeknad.id)
+            }
             if (soeknad.virksomhetsnavn == null) {
                 runBlocking {
                     soeknad.virksomhetsnavn = brregClient.getVirksomhetsNavn(soeknad.virksomhetsnummer)

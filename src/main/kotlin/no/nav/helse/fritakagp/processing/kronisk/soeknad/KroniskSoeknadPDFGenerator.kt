@@ -36,6 +36,7 @@ class KroniskSoeknadPDFGenerator {
         content.setFont(font, FONT_SIZE)
 
         content.writeTextWrapped("Mottatt: ${soeknad.opprettet.format(TIMESTAMP_FORMAT)}", 4)
+        content.writeTextWrapped("Referansenummer: ${soeknad.referansenummer}")
         content.writeTextWrapped("Sendt av: ${soeknad.sendtAvNavn}")
         content.writeTextWrapped("Person navn: ${soeknad.navn}")
         content.writeTextWrapped("Arbeidsgiver oppgitt i søknad: ${soeknad.virksomhetsnavn} (${soeknad.virksomhetsnummer})")

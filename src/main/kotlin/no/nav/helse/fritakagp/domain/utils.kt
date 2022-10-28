@@ -28,6 +28,7 @@ fun generereGravidSoeknadBeskrivelse(soeknad: GravidSoeknad, desc: String): Stri
     return buildString {
         appendLine(desc)
         appendLine("Mottatt: ${soeknad.opprettet.format(TIMESTAMP_FORMAT)}")
+        appendLine("Referansenummer: ${soeknad.referansenummer}")
         appendLine("Person (FNR): ${soeknad.identitetsnummer}")
         appendLine("Termindato: ${soeknad.termindato?.format(DATE_FORMAT) ?: terminaDatoIkkeOppgitt}")
         appendLine("Arbeidsgiver oppgitt i søknad: ${soeknad.virksomhetsnavn} (${soeknad.virksomhetsnummer})")
@@ -52,6 +53,7 @@ fun generereKroniskSoeknadBeskrivelse(soeknad: KroniskSoeknad, desc: String): St
     return buildString {
         appendLine(desc)
         appendLine("Mottatt: ${soeknad.opprettet.format(TIMESTAMP_FORMAT)}")
+        appendLine("Referansenummer: ${soeknad.referansenummer}")
         appendLine("Person (FNR): ${soeknad.identitetsnummer}")
         appendLine("Arbeidsgiver oppgitt i søknad: ${soeknad.virksomhetsnavn} (${soeknad.virksomhetsnummer})")
         if (soeknad.ikkeHistoriskFravaer) {
@@ -77,6 +79,7 @@ fun generereKroniskKravBeskrivelse(krav: KroniskKrav, desc: String): String {
     return buildString {
         appendLine(desc)
         appendLine("Mottatt: ${krav.opprettet.format(TIMESTAMP_FORMAT)}")
+        appendLine("Referansenummer: ${krav.referansenummer}")
         appendLine("Person (FNR): ${krav.identitetsnummer}")
         appendLine("Arbeidsgiver oppgitt i krav: ${krav.virksomhetsnavn} (${krav.virksomhetsnummer})")
         appendLine("Antall lønnsdager: ${krav.antallDager}")
@@ -101,6 +104,7 @@ fun generereGravidkKravBeskrivelse(krav: GravidKrav, desc: String): String {
     return buildString {
         appendLine(desc)
         appendLine("Mottatt: ${krav.opprettet.format(TIMESTAMP_FORMAT)}")
+        appendLine("Referansenummer: ${krav.referansenummer}")
         appendLine("Person (FNR): ${krav.identitetsnummer}")
         appendLine("Arbeidsgiver oppgitt i krav: ${krav.virksomhetsnavn} (${krav.virksomhetsnummer})")
         appendLine("Antall lønnsdager: ${krav.antallDager}")

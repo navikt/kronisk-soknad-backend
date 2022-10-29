@@ -33,7 +33,8 @@ data class GravidSoeknad(
      */
     var oppgaveId: String? = null,
     // Må være null for tidligere verdier er lagret med null
-    var sendtAvNavn: String? = null
+    var sendtAvNavn: String? = null,
+    var referansenummer: Int? = null
 ) : SimpleJsonbEntity {
     companion object {
         const val tittel = "Søknad om fritak fra arbeidsgiverperioden - graviditet"

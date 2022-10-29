@@ -42,7 +42,7 @@ class GravidSoeknadHTTPTests : SystemTestBase() {
             loggedInAs(GravidTestData.soeknadGravid.identitetsnummer)
         }
 
-        assertThat(accessGrantedForm).isEqualTo(GravidTestData.soeknadGravid)
+        assertThat(accessGrantedForm).isEqualToIgnoringGivenFields(GravidTestData.soeknadGravid, "referansenummer")
     }
 
     @Test

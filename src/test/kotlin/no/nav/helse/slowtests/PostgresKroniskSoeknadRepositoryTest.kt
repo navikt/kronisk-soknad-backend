@@ -34,6 +34,7 @@ class PostgresKroniskSoeknadRepositoryTest : SystemTestBase() {
     fun `finnerDataIDb`() {
         val soeknadKroniskResult = repo.getById(testSoeknad.id)
         assertThat(soeknadKroniskResult).isEqualToIgnoringGivenFields(testSoeknad, "referansenummer")
+        assertThat(soeknadKroniskResult!!.referansenummer).isNotNull
     }
 
     @Test

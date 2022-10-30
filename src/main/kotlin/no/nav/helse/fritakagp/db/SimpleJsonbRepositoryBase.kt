@@ -40,7 +40,7 @@ abstract class SimpleJsonbRepositoryBase<T : SimpleJsonbEntity>(
     private val saveStatement = "INSERT INTO $tableName (data) VALUES (?::json);"
     private val updateStatement = "UPDATE $tableName SET data = ?::json WHERE data ->> 'id' = ?"
     private val deleteStatement = """DELETE FROM $tableName WHERE data ->> 'id' = ?"""
-    private val getNextReferanseStatement = "SELECT nextval('referanse_seq')"
+    private val getNesteReferanseStatement = "SELECT nextval('referanse_seq')"
 
     override fun getById(id: UUID): T? {
         ds.connection.use {
@@ -59,12 +59,10 @@ abstract class SimpleJsonbRepositoryBase<T : SimpleJsonbEntity>(
     }
 
     override fun insert(entity: T, connection: Connection): T {
-        val referansenummer = getNextReferanse(connection)
-        val entityMedReferansenummer = mapper
-            .readValue(mapper.writeValueAsString(entity), ObjectNode::class.java).apply {
-                put("referansenummer", referansenummer)
-            }
-        val json = mapper.writeValueAsString(entityMedReferansenummer)
+        val referansenummer = getNesteReferanse(connection)
+        val json = mapper.convertValue(entity, ObjectNode::class.java).apply {
+            put("referansenummer", referansenummer)
+        }.let { mapper.writeValueAsString(it) }
 
         connection.prepareStatement(saveStatement).apply {
             setString(1, json)
@@ -72,8 +70,8 @@ abstract class SimpleJsonbRepositoryBase<T : SimpleJsonbEntity>(
         return entity
     }
 
-    private fun getNextReferanse(connection: Connection): Int? {
-        val res = connection.prepareStatement(getNextReferanseStatement).executeQuery()
+    private fun getNesteReferanse(connection: Connection): Int? {
+        val res = connection.prepareStatement(getNesteReferanseStatement).executeQuery()
         if (res.next()) {
             return res.getInt(1)
         }

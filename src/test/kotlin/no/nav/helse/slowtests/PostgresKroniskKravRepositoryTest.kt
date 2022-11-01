@@ -33,7 +33,8 @@ class PostgresKroniskKravRepositoryTest : SystemTestBase() {
     @Test
     fun `test getById`() {
         val soeknadKroniskResult = repo.getById(testKrav.id)
-        assertThat(soeknadKroniskResult).isEqualTo(testKrav)
+        assertThat(soeknadKroniskResult).isEqualToIgnoringGivenFields(testKrav, "referansenummer")
+        assertThat(soeknadKroniskResult!!.referansenummer).isNotNull
     }
 
     @Test

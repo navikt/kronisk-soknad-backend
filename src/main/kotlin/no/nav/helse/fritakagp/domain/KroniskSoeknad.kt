@@ -32,7 +32,8 @@ data class KroniskSoeknad(
      */
     var oppgaveId: String? = null,
     // Må være null for tidligere verdier er lagret med null
-    var sendtAvNavn: String? = null
+    var sendtAvNavn: String? = null,
+    var referansenummer: Int? = null
 ) : SimpleJsonbEntity {
     companion object {
         const val tittel = "Søknad om refusjon av arbeidsgiverperioden - kronisk eller langvarig sykdom"

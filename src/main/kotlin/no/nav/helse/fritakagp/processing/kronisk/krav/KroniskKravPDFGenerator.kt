@@ -40,6 +40,7 @@ class KroniskKravPDFGenerator {
         content.setFont(font, FONT_SIZE)
 
         content.writeTextWrapped("Mottatt: ${krav.opprettet.format(TIMESTAMP_FORMAT)}", 4)
+        content.writeTextWrapped("Referansenummer: ${krav.referansenummer}")
         content.writeTextWrapped("Sendt av: ${krav.sendtAvNavn}")
         content.writeTextWrapped("Person navn: ${krav.navn}")
         content.writeTextWrapped("Arbeidsgiver oppgitt i krav: ${krav.virksomhetsnavn} (${krav.virksomhetsnummer})")

@@ -207,9 +207,11 @@ class KroniskKravProcessor(
             tildeltEnhetsnr = enhetsNr,
             aktoerId = aktoerId,
             journalpostId = krav.journalpostId,
+            // TODO: Erstatt med json av kravet
             beskrivelse = generereKroniskKravBeskrivelse(krav, KroniskKrav.tittel),
             tema = "SYK",
             behandlingstype = digitalKravBehandingsType,
+            // TODO: Erstatt med BEH_ROB
             oppgavetype = "BEH_REF",
             behandlingstema = fritakAGPBehandingsTema,
             aktivDato = LocalDate.now(),

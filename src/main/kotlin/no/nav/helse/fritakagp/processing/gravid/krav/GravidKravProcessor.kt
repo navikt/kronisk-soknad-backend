@@ -204,7 +204,7 @@ class GravidKravProcessor(
         val request = OpprettOppgaveRequest(
             aktoerId = aktoerId,
             journalpostId = krav.journalpostId,
-            beskrivelse = om.writeValueAsString(krav.KravForOppgave()),
+            beskrivelse = om.writeValueAsString(krav.toKravForOppgave()),
             tema = "SYK",
             behandlingstype = digitalKravBehandingsType,
             oppgavetype = "BEH_ROB",

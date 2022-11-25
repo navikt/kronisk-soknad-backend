@@ -37,7 +37,7 @@ data class KroniskKrav(
     var arbeidsgiverSakId: String? = null,
     var referansenummer: Int? = null
 ) : SimpleJsonbEntity {
-    fun KravForOppgave(): KravForOppgave {
+    fun toKravForOppgave(): KravForOppgave {
         return KravForOppgave(
             KravType.KRONISK,
             id = id,

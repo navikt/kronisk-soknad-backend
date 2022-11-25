@@ -1,7 +1,7 @@
 package no.nav.helse.fritakagp.domain
 
 import java.time.LocalDateTime
-import java.util.*
+import java.util.UUID
 
 data class KravForOppgave(
     val kravType: KravType,

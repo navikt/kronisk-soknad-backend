@@ -38,7 +38,7 @@ data class GravidKrav(
     var referansenummer: Int? = null
 ) : SimpleJsonbEntity {
 
-    fun KravForOppgave(): KravForOppgave {
+    fun toKravForOppgave(): KravForOppgave {
         return KravForOppgave(
             KravType.GRAVID,
             id = id,

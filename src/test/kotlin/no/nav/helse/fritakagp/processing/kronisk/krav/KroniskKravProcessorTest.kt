@@ -1,8 +1,6 @@
 package no.nav.helse.fritakagp.processing.kronisk.krav
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.KotlinModule
+import com.fasterxml.jackson.databind.node.ObjectNode
 import io.mockk.CapturingSlot
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -27,11 +25,13 @@ import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlHentFullPerson.PdlIdentRes
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlHentPersonNavn
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlIdent
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlPersonNavnMetadata
+import no.nav.helse.arbeidsgiver.utils.loadFromResources
 import no.nav.helse.fritakagp.db.KroniskKravRepository
 import no.nav.helse.fritakagp.domain.KroniskKrav
 import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketDocument
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
+import no.nav.helse.fritakagp.koin.customObjectMapper
 import no.nav.helse.fritakagp.processing.BakgrunnsJobbUtils.emptyJob
 import no.nav.helse.fritakagp.processing.BakgrunnsJobbUtils.testJob
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
@@ -41,7 +41,9 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.io.IOException
-import java.util.Base64
+import java.util.*
+import kotlin.test.assertEquals
+import kotlin.test.fail
 
 class KroniskKravProcessorTest {
 
@@ -49,7 +51,7 @@ class KroniskKravProcessorTest {
     val oppgaveMock = mockk<OppgaveKlient>(relaxed = true)
     val repositoryMock = mockk<KroniskKravRepository>(relaxed = true)
     val pdlClientMock = mockk<PdlClient>(relaxed = true)
-    val objectMapper = ObjectMapper().registerModule(KotlinModule())
+    val objectMapper = customObjectMapper()
     val pdfGeneratorMock = mockk<KroniskKravPDFGenerator>(relaxed = true)
     val bucketStorageMock = mockk<BucketStorage>(relaxed = true)
     val bakgrunnsjobbRepomock = mockk<BakgrunnsjobbRepository>(relaxed = true)
@@ -64,7 +66,6 @@ class KroniskKravProcessorTest {
 
     @BeforeEach
     fun setup() {
-        objectMapper.registerModule(JavaTimeModule())
         krav = KroniskTestData.kroniskKrav.copy()
         jobb = testJob(objectMapper.writeValueAsString(KroniskKravProcessor.JobbData(krav.id)))
         every { repositoryMock.getById(krav.id) } returns krav
@@ -139,13 +140,26 @@ class KroniskKravProcessorTest {
 
     @Test
     fun `skal journalføre, opprette oppgave og oppdatere søknaden i databasen`() {
+        val forventetJson = "kroniskKravRobotBeskrivelse.json".loadFromResources()
+
         prosessor.prosesser(jobb)
 
         assertThat(krav.journalpostId).isEqualTo(arkivReferanse)
         assertThat(krav.oppgaveId).isEqualTo(oppgaveId.toString())
 
         verify(exactly = 1) { joarkMock.journalførDokument(any(), true, any()) }
-        coVerify(exactly = 1) { oppgaveMock.opprettOppgave(any(), any()) }
+        coVerify(exactly = 1) {
+            oppgaveMock.opprettOppgave(
+                withArg {
+                    assertEquals("BEH_ROB", it.oppgavetype)
+                    if (!forventetJson.jsonEquals(it.beskrivelse!!, "id", "opprettet")) {
+                        println("expected json to be equal, was not: \nexpectedJson=$forventetJson \nactualJson=${it.beskrivelse}")
+                        fail()
+                    }
+                },
+                any()
+            )
+        }
         verify(exactly = 1) { repositoryMock.update(krav) }
     }
 
@@ -169,7 +183,6 @@ class KroniskKravProcessorTest {
 
     @Test
     fun `Ved feil i oppgave skal joarkref lagres, og det skal det kastes exception oppover`() {
-
         coEvery { oppgaveMock.opprettOppgave(any(), any()) } throws IOException()
 
         assertThrows<IOException> { prosessor.prosesser(jobb) }
@@ -180,5 +193,15 @@ class KroniskKravProcessorTest {
         verify(exactly = 1) { joarkMock.journalførDokument(any(), true, any()) }
         coVerify(exactly = 1) { oppgaveMock.opprettOppgave(any(), any()) }
         verify(exactly = 1) { repositoryMock.update(krav) }
+    }
+
+    fun String.readToObjectNode(): ObjectNode =
+        objectMapper.readTree(this) as ObjectNode
+
+    fun String.jsonEquals(other: String, vararg excluding: String): Boolean {
+        val excludingList = excluding.toList()
+        return this.readToObjectNode().remove(excludingList).equals(
+            other.readToObjectNode().remove(excludingList)
+        )
     }
 }

@@ -204,12 +204,10 @@ class GravidKravProcessor(
         val request = OpprettOppgaveRequest(
             aktoerId = aktoerId,
             journalpostId = krav.journalpostId,
-            // TODO: Erstatt med json av kravet
-            beskrivelse = generereGravidkKravBeskrivelse(krav, GravidKrav.tittel),
+            beskrivelse = om.writeValueAsString(krav.KravForOppgave()),
             tema = "SYK",
             behandlingstype = digitalKravBehandingsType,
-            // TODO: Erstatt med BEH_ROB
-            oppgavetype = "BEH_REF",
+            oppgavetype = "BEH_ROB",
             behandlingstema = fritakAGPBehandingsTema,
             aktivDato = LocalDate.now(),
             fristFerdigstillelse = LocalDate.now().plusDays(7),

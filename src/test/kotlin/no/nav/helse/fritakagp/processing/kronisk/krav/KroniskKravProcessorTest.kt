@@ -1,6 +1,5 @@
 package no.nav.helse.fritakagp.processing.kronisk.krav
 
-import com.fasterxml.jackson.databind.node.ObjectNode
 import io.mockk.CapturingSlot
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -31,17 +30,19 @@ import no.nav.helse.fritakagp.domain.KroniskKrav
 import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketDocument
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
+import no.nav.helse.fritakagp.jsonEquals
 import no.nav.helse.fritakagp.koin.customObjectMapper
 import no.nav.helse.fritakagp.processing.BakgrunnsJobbUtils.emptyJob
 import no.nav.helse.fritakagp.processing.BakgrunnsJobbUtils.testJob
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
+import no.nav.helse.fritakagp.readToObjectNode
 import no.nav.helse.fritakagp.service.BehandlendeEnhetService
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.io.IOException
-import java.util.*
+import java.util.Base64
 import kotlin.test.assertEquals
 import kotlin.test.fail
 
@@ -152,11 +153,11 @@ class KroniskKravProcessorTest {
             oppgaveMock.opprettOppgave(
                 withArg {
                     assertEquals("BEH_ROB", it.oppgavetype)
-                    if (!forventetJson.jsonEquals(it.beskrivelse!!, "id", "opprettet")) {
+                    if (!forventetJson.jsonEquals(objectMapper, it.beskrivelse!!, "id", "opprettet")) {
                         println("expected json to be equal, was not: \nexpectedJson=$forventetJson \nactualJson=${it.beskrivelse}")
                         fail()
                     }
-                    if (!forventetJson.readToObjectNode()["kravType"].toString().equals("\"KRONISK\"")) {
+                    if (!forventetJson.readToObjectNode(objectMapper)["kravType"].toString().equals("\"KRONISK\"")) {
                         println("expected json to contain kravType = KRONISK, was not")
                         fail()
                     }
@@ -197,15 +198,5 @@ class KroniskKravProcessorTest {
         verify(exactly = 1) { joarkMock.journalførDokument(any(), true, any()) }
         coVerify(exactly = 1) { oppgaveMock.opprettOppgave(any(), any()) }
         verify(exactly = 1) { repositoryMock.update(krav) }
-    }
-
-    fun String.readToObjectNode(): ObjectNode =
-        objectMapper.readTree(this) as ObjectNode
-
-    fun String.jsonEquals(other: String, vararg excluding: String): Boolean {
-        val excludingList = excluding.toList()
-        return this.readToObjectNode().remove(excludingList).equals(
-            other.readToObjectNode().remove(excludingList)
-        )
     }
 }

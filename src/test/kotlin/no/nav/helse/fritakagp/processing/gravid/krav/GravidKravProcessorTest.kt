@@ -1,7 +1,6 @@
 package no.nav.helse.fritakagp.processing.gravid.krav
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import io.mockk.CapturingSlot
@@ -34,7 +33,9 @@ import no.nav.helse.fritakagp.domain.GravidKrav
 import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketDocument
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
+import no.nav.helse.fritakagp.jsonEquals
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
+import no.nav.helse.fritakagp.readToObjectNode
 import no.nav.helse.fritakagp.service.BehandlendeEnhetService
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
@@ -153,11 +154,11 @@ class GravidKravProcessorTest {
             oppgaveMock.opprettOppgave(
                 withArg {
                     assertEquals("BEH_ROB", it.oppgavetype)
-                    if (!forventetJson.jsonEquals(it.beskrivelse!!, "id", "opprettet")) {
+                    if (!forventetJson.jsonEquals(objectMapper, it.beskrivelse!!, "id", "opprettet")) {
                         println("expected json to be equal, was not: \nexpectedJson=$forventetJson \nactualJson=${it.beskrivelse}")
                         fail()
                     }
-                    if (!forventetJson.readToObjectNode()["kravType"].toString().equals("\"GRAVID\"")) {
+                    if (!forventetJson.readToObjectNode(objectMapper)["kravType"].toString().equals("\"GRAVID\"")) {
                         println("expected json to contain kravType = GRAVID, was not")
                         fail()
                     }
@@ -199,15 +200,5 @@ class GravidKravProcessorTest {
         verify(exactly = 1) { joarkMock.journalførDokument(any(), true, any()) }
         coVerify(exactly = 1) { oppgaveMock.opprettOppgave(any(), any()) }
         verify(exactly = 1) { repositoryMock.update(krav) }
-    }
-
-    fun String.readToObjectNode(): ObjectNode =
-        objectMapper.readTree(this) as ObjectNode
-
-    fun String.jsonEquals(other: String, vararg excluding: String): Boolean {
-        val excludingList = excluding.toList()
-        return this.readToObjectNode().remove(excludingList).equals(
-            other.readToObjectNode().remove(excludingList)
-        )
     }
 }

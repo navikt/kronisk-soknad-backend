@@ -1,6 +1,7 @@
 package no.nav.helse.fritakagp.processing.gravid.krav
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import io.mockk.CapturingSlot
@@ -27,6 +28,7 @@ import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlHentFullPerson.PdlIdentRes
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlHentPersonNavn
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlIdent
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlPersonNavnMetadata
+import no.nav.helse.arbeidsgiver.utils.loadFromResources
 import no.nav.helse.fritakagp.db.GravidKravRepository
 import no.nav.helse.fritakagp.domain.GravidKrav
 import no.nav.helse.fritakagp.integration.brreg.BrregClient
@@ -40,6 +42,8 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.io.IOException
 import java.util.Base64
+import kotlin.test.assertEquals
+import kotlin.test.fail
 
 class GravidKravProcessorTest {
 
@@ -136,13 +140,32 @@ class GravidKravProcessorTest {
 
     @Test
     fun `skal journalføre, opprette oppgave og oppdatere søknaden i databasen`() {
+        val forventetJson = "gravidKravRobotBeskrivelse.json".loadFromResources()
+
         prosessor.prosesser(jobb)
 
         assertThat(krav.journalpostId).isEqualTo(arkivReferanse)
         assertThat(krav.oppgaveId).isEqualTo(oppgaveId.toString())
 
         verify(exactly = 1) { joarkMock.journalførDokument(any(), true, any()) }
-        coVerify(exactly = 1) { oppgaveMock.opprettOppgave(any(), any()) }
+
+        coVerify(exactly = 1) {
+            oppgaveMock.opprettOppgave(
+                withArg {
+                    assertEquals("BEH_ROB", it.oppgavetype)
+                    if (!forventetJson.jsonEquals(it.beskrivelse!!, "id", "opprettet")) {
+                        println("expected json to be equal, was not: \nexpectedJson=$forventetJson \nactualJson=${it.beskrivelse}")
+                        fail()
+                    }
+                    if (!forventetJson.readToObjectNode()["kravType"].toString().equals("\"GRAVID\"")) {
+                        println("expected json to contain kravType = GRAVID, was not")
+                        fail()
+                    }
+                },
+                any()
+            )
+        }
+
         verify(exactly = 1) { repositoryMock.update(krav) }
     }
 
@@ -166,7 +189,6 @@ class GravidKravProcessorTest {
 
     @Test
     fun `Ved feil i oppgave skal joarkref lagres, og det skal det kastes exception oppover`() {
-
         coEvery { oppgaveMock.opprettOppgave(any(), any()) } throws IOException()
 
         assertThrows<IOException> { prosessor.prosesser(jobb) }
@@ -177,5 +199,15 @@ class GravidKravProcessorTest {
         verify(exactly = 1) { joarkMock.journalførDokument(any(), true, any()) }
         coVerify(exactly = 1) { oppgaveMock.opprettOppgave(any(), any()) }
         verify(exactly = 1) { repositoryMock.update(krav) }
+    }
+
+    fun String.readToObjectNode(): ObjectNode =
+        objectMapper.readTree(this) as ObjectNode
+
+    fun String.jsonEquals(other: String, vararg excluding: String): Boolean {
+        val excludingList = excluding.toList()
+        return this.readToObjectNode().remove(excludingList).equals(
+            other.readToObjectNode().remove(excludingList)
+        )
     }
 }

@@ -1,0 +1,46 @@
+{
+  "kravType": "GRAVID",
+  "id": "954a2c7c-a605-40ae-8d5d-b1a961b2478f",
+  "opprettet": [
+    2022,
+    11,
+    29,
+    13,
+    21,
+    13,
+    556106000
+  ],
+  "sendtAv": "20015001543",
+  "virksomhetsnummer": "917404437",
+  "identitetsnummer": "20015001543",
+  "navn": "Personliga Person",
+  "perioder": [
+    {
+      "fom": [
+        2020,
+        1,
+        5
+      ],
+      "tom": [
+        2020,
+        1,
+        10
+      ],
+      "antallDagerMedRefusjon": 5,
+      "månedsinntekt": 2590.8,
+      "gradering": 1.0,
+      "dagsats": 0.0,
+      "belop": 0.0
+    }
+  ],
+  "harVedlegg": false,
+  "kontrollDager": null,
+  "antallDager": 4,
+  "journalpostId": "12345",
+  "oppgaveId": null,
+  "virksomhetsnavn": "Stark Industries",
+  "sendtAvNavn": "Ola M Avsender",
+  "status": "OPPRETTET",
+  "arbeidsgiverSakId": null,
+  "referansenummer": null
+}

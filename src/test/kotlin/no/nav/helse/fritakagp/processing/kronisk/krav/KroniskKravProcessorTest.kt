@@ -156,6 +156,10 @@ class KroniskKravProcessorTest {
                         println("expected json to be equal, was not: \nexpectedJson=$forventetJson \nactualJson=${it.beskrivelse}")
                         fail()
                     }
+                    if (!forventetJson.readToObjectNode()["kravType"].toString().equals("\"KRONISK\"")) {
+                        println("expected json to contain kravType = KRONISK, was not")
+                        fail()
+                    }
                 },
                 any()
             )

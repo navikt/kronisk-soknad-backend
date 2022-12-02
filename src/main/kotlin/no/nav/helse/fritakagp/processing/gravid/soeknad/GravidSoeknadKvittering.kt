@@ -6,10 +6,10 @@ import no.altinn.schemas.services.serviceengine.correspondence._2010._10.InsertC
 import no.altinn.services.serviceengine.correspondence._2009._10.ICorrespondenceAgencyExternalBasic
 import no.altinn.services.serviceengine.correspondence._2009._10.ICorrespondenceAgencyExternalBasicInsertCorrespondenceBasicV2AltinnFaultFaultFaultMessage
 import no.nav.helse.fritakagp.domain.GravidSoeknad
+import no.nav.helse.fritakagp.domain.sladdFnr
+import no.nav.helse.fritakagp.domain.TIMESTAMP_FORMAT_MED_KL
 import no.nav.helse.fritakagp.domain.Omplassering
 import no.nav.helse.fritakagp.domain.Tiltak
-import no.nav.helse.fritakagp.domain.sladdFnr
-import java.time.format.DateTimeFormatter
 
 interface GravidSoeknadKvitteringSender {
     fun send(kvittering: GravidSoeknad)
@@ -35,8 +35,10 @@ class GravidSoeknadAltinnKvitteringSender(
     override fun send(kvittering: GravidSoeknad) {
         try {
             val receiptExternal = iCorrespondenceAgencyExternalBasic.insertCorrespondenceBasicV2(
-                username, password,
-                SYSTEM_USER_CODE, kvittering.id.toString(),
+                username,
+                password,
+                SYSTEM_USER_CODE,
+                kvittering.id.toString(),
                 mapKvitteringTilInsertCorrespondence(kvittering)
             )
             if (receiptExternal.receiptStatusCode != ReceiptStatusEnum.OK) {
@@ -48,7 +50,6 @@ class GravidSoeknadAltinnKvitteringSender(
     }
 
     fun mapKvitteringTilInsertCorrespondence(kvittering: GravidSoeknad): InsertCorrespondenceV2 {
-        val dateTimeFormatterMedKl = DateTimeFormatter.ofPattern("dd.MM.yyyy 'kl.' HH:mm")
         val sladdetFnr = sladdFnr(kvittering.identitetsnummer)
         val tittel = "$sladdetFnr - Kvittering for mottatt søknad om fritak fra arbeidsgiverperioden grunnet graviditet"
 
@@ -61,7 +62,7 @@ class GravidSoeknadAltinnKvitteringSender(
                <div class="melding">
             <p>Kvittering for mottatt søknad om fritak fra arbeidsgiverperioden grunnet risiko for høyt sykefravær knyttet til graviditet.</p>
             <p>Virksomhetsnummer: ${kvittering.virksomhetsnummer}</p>
-            <p>${kvittering.opprettet.format(dateTimeFormatterMedKl)}</p>
+            <p>${kvittering.opprettet.format(TIMESTAMP_FORMAT_MED_KL)}</p>
             <p>Søknaden vil bli behandlet fortløpende. Ved behov vil NAV innhente ytterligere dokumentasjon.
              Har dere spørsmål, ring NAVs arbeidsgivertelefon 55 55 33 36.</p>
             <p>Dere har innrapportert følgende:</p>
@@ -69,9 +70,9 @@ class GravidSoeknadAltinnKvitteringSender(
                 <li>Navn: ${kvittering.navn}</li>
                 <li>Dokumentasjon vedlagt: ${jaEllerNei(kvittering.harVedlegg)}</li>
                 <li>Forsøkt tilrettelegging: ${jaEllerNei(kvittering.tilrettelegge)}</li>
-                <li>Tiltak:${ lagreTiltak(kvittering.tiltak) } </li>
+                <li>Tiltak:${lagreTiltak(kvittering.tiltak)} </li>
                 <li>Forsøkt omplassering: ${lagreOmplasseringStr(kvittering)}</li>
-                <li>Mottatt: ${kvittering.opprettet.format(dateTimeFormatterMedKl)}</li>
+                <li>Mottatt: ${kvittering.opprettet.format(TIMESTAMP_FORMAT_MED_KL)}</li>
                 <li>Innrapportert av: ${kvittering.sendtAvNavn}</li>
             </ul>
                </div>
@@ -93,16 +94,18 @@ class GravidSoeknadAltinnKvitteringSender(
             .withServiceEdition("1")
             .withContent(meldingsInnhold)
     }
+
     fun jaEllerNei(verdi: Boolean) = if (verdi) "Ja" else "Nei"
     fun lagreOmplasseringStr(kvittering: GravidSoeknad): String {
-        return if (kvittering.omplassering != null)
-            if (kvittering.omplassering == Omplassering.IKKE_MULIG)
+        return if (kvittering.omplassering != null) {
+            if (kvittering.omplassering == Omplassering.IKKE_MULIG) {
                 """
                     ${kvittering.omplassering.beskrivelse} fordi  ${kvittering.omplasseringAarsak?.beskrivelse}
                 """
-            else
+            } else {
                 kvittering.omplassering.beskrivelse
-        else ""
+            }
+        } else ""
     }
 
     fun lagreTiltak(tiltak: List<Tiltak>?): String {
@@ -112,8 +115,9 @@ class GravidSoeknadAltinnKvitteringSender(
             for (t in tiltak)
                 ret += "<li>${t.beskrivelse}</li>"
             ret += "</ul>"
-        } else
+        } else {
             ret = "Ingen tiltak"
+        }
 
         return ret
     }

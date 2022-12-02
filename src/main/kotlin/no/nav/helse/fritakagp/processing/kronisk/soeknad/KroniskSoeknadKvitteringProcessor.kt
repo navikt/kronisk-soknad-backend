@@ -17,6 +17,7 @@ class KroniskSoeknadKvitteringProcessor(
     companion object {
         val JOB_TYPE = "kronisk-søknad-altinn-kvittering"
     }
+
     override val type: String get() = JOB_TYPE
 
     override fun prosesser(jobb: Bakgrunnsjobb) {

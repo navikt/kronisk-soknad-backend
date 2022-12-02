@@ -49,6 +49,7 @@ class GravidSoeknadProcessor(
         val JOB_TYPE = "gravid-søknad-formidling"
         val dokumentasjonBrevkode = "soeknad_om_fritak_fra_agp_dokumentasjon"
     }
+
     override val type: String get() = JOB_TYPE
 
     val digitalSoeknadBehandingsType = "ae0227"
@@ -111,25 +112,23 @@ class GravidSoeknadProcessor(
     }
 
     fun journalfør(soeknad: GravidSoeknad): String {
-        val journalfoeringsTittel = "Søknad om fritak fra arbeidsgiverperioden ifbm graviditet"
-
         val response = dokarkivKlient.journalførDokument(
             JournalpostRequest(
-                tittel = journalfoeringsTittel,
+                tittel = GravidSoeknad.tittel,
                 journalposttype = Journalposttype.INNGAAENDE,
                 kanal = "NAV_NO",
                 bruker = Bruker(soeknad.identitetsnummer, IdType.FNR),
                 eksternReferanseId = soeknad.id.toString(),
                 avsenderMottaker = AvsenderMottaker(
-                    id = soeknad.sendtAv,
-                    idType = IdType.FNR,
+                    id = soeknad.virksomhetsnummer,
+                    idType = IdType.ORGNR,
                     navn = soeknad.virksomhetsnavn ?: "Ukjent arbeidsgiver"
                 ),
-                dokumenter = createDocuments(soeknad, journalfoeringsTittel),
+                dokumenter = createDocuments(soeknad, GravidSoeknad.tittel),
                 datoMottatt = soeknad.opprettet.toLocalDate()
             ),
-            true, UUID.randomUUID().toString()
-
+            true,
+            UUID.randomUUID().toString()
         )
 
         logger.debug("Journalført ${soeknad.id} med ref ${response.journalpostId}")
@@ -166,7 +165,7 @@ class GravidSoeknadProcessor(
                     )
                 ),
                 brevkode = "soeknad_om_fritak_fra_agp_gravid",
-                tittel = journalfoeringsTittel,
+                tittel = journalfoeringsTittel
             )
         )
 
@@ -185,7 +184,7 @@ class GravidSoeknadProcessor(
                         )
                     ),
                     brevkode = dokumentasjonBrevkode,
-                    tittel = "Helsedokumentasjon",
+                    tittel = "Helsedokumentasjon"
                 )
             )
         }
@@ -200,7 +199,7 @@ class GravidSoeknadProcessor(
         val request = OpprettOppgaveRequest(
             aktoerId = aktoerId,
             journalpostId = soeknad.journalpostId,
-            beskrivelse = generereGravidSoeknadBeskrivelse(soeknad, "Søknad om fritak fra arbeidsgiverperioden ifbm. graviditet"),
+            beskrivelse = generereGravidSoeknadBeskrivelse(soeknad, GravidSoeknad.tittel),
             tema = "SYK",
             behandlingstype = digitalSoeknadBehandingsType,
             oppgavetype = "BEH_SAK",
@@ -222,7 +221,7 @@ class GravidSoeknadProcessor(
         val request = OpprettOppgaveRequest(
             aktoerId = aktoerId,
             journalpostId = soeknad.journalpostId,
-            beskrivelse = generereGravidSoeknadBeskrivelse(soeknad, "Fordelingsoppgave for søknad om fritak fra arbeidsgiverperioden grunnet gravid sykdom."),
+            beskrivelse = generereGravidSoeknadBeskrivelse(soeknad, "Fordelingsoppgave for ${GravidSoeknad.tittel}"),
             tema = "SYK",
             behandlingstype = digitalSoeknadBehandingsType,
             oppgavetype = OPPGAVETYPE_FORDELINGSOPPGAVE,

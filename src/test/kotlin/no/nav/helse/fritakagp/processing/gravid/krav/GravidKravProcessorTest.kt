@@ -153,7 +153,7 @@ class GravidKravProcessorTest {
         coVerify(exactly = 1) {
             oppgaveMock.opprettOppgave(
                 withArg {
-                    assertEquals("BEH_ROB", it.oppgavetype)
+                    assertEquals("ROB_BEH", it.oppgavetype)
                     if (!forventetJson.jsonEquals(objectMapper, it.beskrivelse!!, "id", "opprettet")) {
                         println("expected json to be equal, was not: \nexpectedJson=$forventetJson \nactualJson=${it.beskrivelse}")
                         fail()

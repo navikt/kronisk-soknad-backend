@@ -210,7 +210,7 @@ class KroniskKravProcessor(
             beskrivelse = om.writeValueAsString(krav.toKravForOppgave()),
             tema = "SYK",
             behandlingstype = digitalKravBehandingsType,
-            oppgavetype = "BEH_ROB",
+            oppgavetype = "ROB_BEH",
             behandlingstema = fritakAGPBehandingsTema,
             aktivDato = LocalDate.now(),
             fristFerdigstillelse = LocalDate.now().plusDays(7),

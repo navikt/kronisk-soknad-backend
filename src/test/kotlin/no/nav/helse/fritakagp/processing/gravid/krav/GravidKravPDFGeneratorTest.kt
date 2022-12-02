@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test
 import java.awt.Desktop
 import java.nio.file.Files
 import java.time.LocalDateTime
+import kotlin.math.roundToInt
 
 class GravidKravPDFGeneratorTest {
 
@@ -23,6 +24,7 @@ class GravidKravPDFGeneratorTest {
 
         assertThat(pdfText).contains(krav.navn)
         assertThat(pdfText).contains(krav.virksomhetsnummer)
+        assertThat(pdfText).contains(krav.perioder.first().månedsinntekt.roundToInt().toString())
         assertThat(antallSider).isEqualTo(1)
     }
 

@@ -1,6 +1,7 @@
 package no.nav.helse.slowtests.kafka
 
 import no.nav.helse.fritakagp.integration.kafka.consumerFakeConfig
+import no.nav.helsearbeidsgiver.utils.log.logger
 import org.apache.kafka.clients.admin.AdminClient
 import org.apache.kafka.clients.admin.KafkaAdminClient
 import org.apache.kafka.clients.admin.NewTopic
@@ -8,9 +9,8 @@ import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.common.TopicPartition
 import org.apache.kafka.common.errors.TopicExistsException
 import org.apache.kafka.common.serialization.StringDeserializer
-import org.slf4j.LoggerFactory
 import java.time.Duration
-import java.util.*
+import java.util.Collections
 import java.util.concurrent.TimeUnit
 
 class KafkaAdminForTests {
@@ -54,16 +54,16 @@ class SoeknadsmeldingKafkaConsumer(props: MutableMap<String, Any>, private val t
         KafkaConsumer(props, StringDeserializer(), StringDeserializer())
     private val topicPartition = TopicPartition(topicName, 0)
 
-    private val log = LoggerFactory.getLogger(this::class.java)
+    private val logger = this.logger()
 
     init {
         consumer.assign(Collections.singletonList(topicPartition))
 
         Runtime.getRuntime().addShutdownHook(
             Thread {
-                log.debug("Got shutdown message, closing Kafka connection...")
+                logger.debug("Got shutdown message, closing Kafka connection...")
                 consumer.close()
-                log.debug("Kafka connection closed")
+                logger.debug("Kafka connection closed")
             }
         )
     }
@@ -81,7 +81,7 @@ class SoeknadsmeldingKafkaConsumer(props: MutableMap<String, Any>, private val t
             lastThrown = null
             currentBatch = payloads
 
-            log.debug("Fikk ${kafkaMessages.count()} meldinger med offsets ${kafkaMessages.map { it.offset() }.joinToString(", ")}")
+            logger.debug("Fikk ${kafkaMessages.count()} meldinger med offsets ${kafkaMessages.map { it.offset() }.joinToString(", ")}")
             return payloads
         } catch (e: Exception) {
             lastThrown = e

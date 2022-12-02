@@ -6,7 +6,14 @@ import kotlinx.coroutines.runBlocking
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.Bakgrunnsjobb
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbProsesserer
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbRepository
-import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.*
+import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.AvsenderMottaker
+import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.Bruker
+import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.DokarkivKlient
+import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.Dokument
+import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.DokumentVariant
+import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.IdType
+import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.JournalpostRequest
+import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.Journalposttype
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OPPGAVETYPE_FORDELINGSOPPGAVE
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OppgaveKlient
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OpprettOppgaveRequest
@@ -16,14 +23,15 @@ import no.nav.helse.fritakagp.KroniskSoeknadMetrics
 import no.nav.helse.fritakagp.db.KroniskSoeknadRepository
 import no.nav.helse.fritakagp.domain.KroniskSoeknad
 import no.nav.helse.fritakagp.domain.generereKroniskSoeknadBeskrivelse
+import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor.Jobbdata.SkjemaType
-import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.service.BehandlendeEnhetService
-import org.slf4j.LoggerFactory
+import no.nav.helsearbeidsgiver.utils.log.logger
 import java.time.LocalDate
-import java.util.*
+import java.util.Base64
+import java.util.UUID
 
 class KroniskSoeknadProcessor(
     private val kroniskSoeknadRepo: KroniskSoeknadRepository,
@@ -35,17 +43,18 @@ class KroniskSoeknadProcessor(
     private val om: ObjectMapper,
     private val bucketStorage: BucketStorage,
     private val brregClient: BrregClient,
-    private val behandlendeEnhetService: BehandlendeEnhetService,
+    private val behandlendeEnhetService: BehandlendeEnhetService
 ) : BakgrunnsjobbProsesserer {
     companion object {
         val dokumentasjonBrevkode = "soeknad_om_fritak_fra_agp_dokumentasjon"
     }
+
     override val type: String get() = "kronisk-søknad-formidling"
 
     val digitalSoeknadBehandingsType = "ae0227"
     val fritakAGPBehandingsTema = "ab0338"
 
-    val log = LoggerFactory.getLogger(KroniskSoeknadProcessor::class.java)
+    private val logger = this.logger()
 
     /**
      * Prosesserer en kronisksøknad; journalfører søknaden og oppretter en oppgave for saksbehandler.
@@ -97,7 +106,7 @@ class KroniskSoeknadProcessor(
     override fun stoppet(jobb: Bakgrunnsjobb) {
         val soeknad = getSoeknadOrThrow(jobb)
         val oppgaveId = opprettFordelingsOppgave(soeknad)
-        log.warn("Jobben ${jobb.uuid} feilet permanenet og resulterte i fordelignsoppgave $oppgaveId")
+        logger.warn("Jobben ${jobb.uuid} feilet permanenet og resulterte i fordelignsoppgave $oppgaveId")
     }
 
     private fun getSoeknadOrThrow(jobb: Bakgrunnsjobb): KroniskSoeknad {
@@ -111,34 +120,32 @@ class KroniskSoeknadProcessor(
         try {
             kroniskSoeknadRepo.update(soeknad)
         } catch (e: Exception) {
-            log.error("Feilet i å lagre ${soeknad.id} etter at en ekstern operasjon har blitt utført. JournalpostID: ${soeknad.journalpostId} OppgaveID: ${soeknad.oppgaveId}")
+            logger.error("Feilet i å lagre ${soeknad.id} etter at en ekstern operasjon har blitt utført. JournalpostID: ${soeknad.journalpostId} OppgaveID: ${soeknad.oppgaveId}")
             throw e
         }
     }
 
     fun journalfør(soeknad: KroniskSoeknad): String {
-        val journalfoeringsTittel = "Søknad om fritak fra arbeidsgiverperioden ifbm kronisk lidelse"
-
         val response = dokarkivKlient.journalførDokument(
             JournalpostRequest(
-                tittel = journalfoeringsTittel,
+                tittel = KroniskSoeknad.tittel,
                 journalposttype = Journalposttype.INNGAAENDE,
                 kanal = "NAV_NO",
                 bruker = Bruker(soeknad.identitetsnummer, IdType.FNR),
                 eksternReferanseId = soeknad.id.toString(),
                 avsenderMottaker = AvsenderMottaker(
-                    id = soeknad.sendtAv,
-                    idType = IdType.FNR,
+                    id = soeknad.virksomhetsnummer,
+                    idType = IdType.ORGNR,
                     navn = soeknad.virksomhetsnavn ?: "Ukjent arbeidsgiver"
                 ),
-                dokumenter = createDocuments(soeknad, journalfoeringsTittel),
+                dokumenter = createDocuments(soeknad, KroniskSoeknad.tittel),
                 datoMottatt = soeknad.opprettet.toLocalDate()
             ),
-            true, UUID.randomUUID().toString()
-
+            true,
+            UUID.randomUUID().toString()
         )
 
-        log.debug("Journalført ${soeknad.id} med ref ${response.journalpostId}")
+        logger.debug("Journalført ${soeknad.id} med ref ${response.journalpostId}")
         return response.journalpostId
     }
 
@@ -156,7 +163,7 @@ class KroniskSoeknadProcessor(
                     )
                 ),
                 brevkode = "soeknad_om_fritak_fra_agp_kronisk",
-                tittel = journalfoeringsTittel,
+                tittel = journalfoeringsTittel
             )
         )
 
@@ -175,7 +182,7 @@ class KroniskSoeknadProcessor(
                         )
                     ),
                     brevkode = dokumentasjonBrevkode,
-                    tittel = "Helsedokumentasjon",
+                    tittel = "Helsedokumentasjon"
                 )
             )
         }
@@ -190,7 +197,7 @@ class KroniskSoeknadProcessor(
         val request = OpprettOppgaveRequest(
             aktoerId = aktoerId,
             journalpostId = soeknad.journalpostId,
-            beskrivelse = generereKroniskSoeknadBeskrivelse(soeknad, "Søknad om fritak fra arbeidsgiverperioden ifbm kronisk lidelse"),
+            beskrivelse = generereKroniskSoeknadBeskrivelse(soeknad, KroniskSoeknad.tittel),
             tema = "SYK",
             behandlingstype = digitalSoeknadBehandingsType,
             oppgavetype = "BEH_SAK",
@@ -210,7 +217,7 @@ class KroniskSoeknadProcessor(
         val request = OpprettOppgaveRequest(
             aktoerId = aktoerId,
             journalpostId = soeknad.journalpostId,
-            beskrivelse = generereKroniskSoeknadBeskrivelse(soeknad, "Fordelingsoppgave for søknad om fritak fra arbeidsgiverperioden grunnet kronisk sykdom."),
+            beskrivelse = generereKroniskSoeknadBeskrivelse(soeknad, "Fordelingsoppgave for ${KroniskSoeknad.tittel}"),
             tema = "SYK",
             behandlingstype = digitalSoeknadBehandingsType,
             oppgavetype = OPPGAVETYPE_FORDELINGSOPPGAVE,

@@ -1,10 +1,11 @@
 package no.nav.helse.slowtests.systemtests.api
 
-import io.ktor.client.features.*
-import io.ktor.client.request.*
-import io.ktor.client.statement.*
-import io.ktor.http.*
-import io.ktor.util.*
+import io.ktor.client.features.ClientRequestException
+import io.ktor.client.request.post
+import io.ktor.client.statement.HttpResponse
+import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.contentType
 import no.nav.helse.GravidTestData
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test

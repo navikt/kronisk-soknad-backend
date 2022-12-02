@@ -5,7 +5,7 @@ import no.nav.helse.arbeidsgiver.bakgrunnsjobb.Bakgrunnsjobb
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbProsesserer
 import no.nav.helse.fritakagp.KroniskKravMetrics
 import no.nav.helse.fritakagp.db.KroniskKravRepository
-import java.util.*
+import java.util.UUID
 
 class KroniskKravKvitteringProcessor(
     private val kroniskKravKvitteringSender: KroniskKravKvitteringSender,
@@ -16,6 +16,7 @@ class KroniskKravKvitteringProcessor(
     companion object {
         val JOB_TYPE = "kronisk-krav-altinn-kvittering"
     }
+
     override val type: String get() = JOB_TYPE
 
     override fun prosesser(jobb: Bakgrunnsjobb) {

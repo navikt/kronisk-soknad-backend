@@ -1,4 +1,4 @@
-package no.nav.helse.fritakagp.processing.kronisk.krav
+package no.nav.helse.fritakagp.processing.gravid.krav
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
@@ -19,57 +19,61 @@ import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OppgaveKlient
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OpprettOppgaveRequest
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlClient
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlIdent
-import no.nav.helse.fritakagp.db.KroniskKravRepository
-import no.nav.helse.fritakagp.domain.KroniskKrav
-import no.nav.helse.fritakagp.domain.generereSlettKroniskKravBeskrivelse
+import no.nav.helse.fritakagp.db.GravidKravRepository
+import no.nav.helse.fritakagp.domain.GravidKrav
+import no.nav.helse.fritakagp.domain.generereSlettGravidKravBeskrivelse
 import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.service.BehandlendeEnhetService
-import org.slf4j.LoggerFactory
+import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonKlient
+import no.nav.helsearbeidsgiver.utils.log.logger
 import java.time.LocalDate
-import java.util.*
+import java.util.Base64
+import java.util.UUID
 
-class SlettKroniskKravProcessor(
-    private val kroniskKravRepo: KroniskKravRepository,
+class GravidKravSlettProcessor(
+    private val gravidKravRepo: GravidKravRepository,
     private val dokarkivKlient: DokarkivKlient,
     private val oppgaveKlient: OppgaveKlient,
     private val pdlClient: PdlClient,
     private val bakgrunnsjobbRepo: BakgrunnsjobbRepository,
-    private val pdfGenerator: KroniskKravPDFGenerator,
+    private val pdfGenerator: GravidKravPDFGenerator,
     private val om: ObjectMapper,
     private val bucketStorage: BucketStorage,
     private val brregClient: BrregClient,
-    private val behandlendeEnhetService: BehandlendeEnhetService
+    private val behandlendeEnhetService: BehandlendeEnhetService,
+    private val arbeidsgiverNotifikasjonKlient: ArbeidsgiverNotifikasjonKlient
 ) : BakgrunnsjobbProsesserer {
     companion object {
-        val JOB_TYPE = "slett-kronisk-krav"
-        val dokumentasjonBrevkode = "annuller_krav_om_fritak_fra_agp_dokumentasjon"
+        val JOB_TYPE = "slett-gravid-krav"
+        val dokumentasjonBrevkode = "annuler_krav_om_fritak_fra_agp_dokumentasjon"
     }
+
     override val type: String get() = JOB_TYPE
 
     val digitalKravBehandingsType = "ae0121"
     val fritakAGPBehandingsTema = "ab0200"
 
-    val log = LoggerFactory.getLogger(SlettKroniskKravProcessor::class.java)
+    private val logger = this.logger()
 
     /**
-     * Prosesserer sletting av kroniskkrav; journalfører og oppretter en oppgave for saksbehandler.
+     * Prosesserer sletting av  gravidkrav; journalfører og oppretter en oppgave for saksbehandler.
      * Jobbdataene forventes å være en UUID for et krav som skal prosesseres.
      */
     override fun prosesser(jobb: Bakgrunnsjobb) {
         val krav = getOrThrow(jobb)
-        log.info("Sletter krav ${krav.id}")
+        logger.info("Sletter krav ${krav.id}")
         try {
             krav.sletteJournalpostId = journalførSletting(krav)
-            krav.sletteOppgaveId = opprettOppgave(krav)
+            krav.oppgaveId = opprettOppgave(krav)
         } finally {
             updateAndLogOnFailure(krav)
         }
     }
 
-    private fun getOrThrow(jobb: Bakgrunnsjobb): KroniskKrav {
-        val jobbData = om.readValue<KroniskKravProcessor.JobbData>(jobb.data)
-        val krav = kroniskKravRepo.getById(jobbData.id)
+    private fun getOrThrow(jobb: Bakgrunnsjobb): GravidKrav {
+        val jobbData = om.readValue<GravidKravProcessor.JobbData>(jobb.data)
+        val krav = gravidKravRepo.getById(jobbData.id)
         requireNotNull(krav, { "Jobben indikerte et krav med id ${jobb.data} men den kunne ikke finnes" })
         return krav
     }
@@ -77,19 +81,19 @@ class SlettKroniskKravProcessor(
     override fun stoppet(jobb: Bakgrunnsjobb) {
         val krav = getOrThrow(jobb)
         val oppgaveId = opprettFordelingsOppgave(krav)
-        log.warn("Jobben ${jobb.uuid} feilet permanenet og resulterte i fordelignsoppgave $oppgaveId")
+        logger.warn("Jobben ${jobb.uuid} feilet permanenet og resulterte i fordelignsoppgave $oppgaveId")
     }
 
-    private fun updateAndLogOnFailure(krav: KroniskKrav) {
+    private fun updateAndLogOnFailure(krav: GravidKrav) {
         try {
-            kroniskKravRepo.update(krav)
+            gravidKravRepo.update(krav)
         } catch (e: Exception) {
             throw RuntimeException("Feilet i å oppdatere slettet krav ${krav.id} etter at en ekstern operasjon har blitt utført. JournalpostID: ${krav.journalpostId} OppgaveID: ${krav.oppgaveId}", e)
         }
     }
 
-    fun journalførSletting(krav: KroniskKrav): String {
-        val journalfoeringsTittel = "Annuller krav om fritak fra arbeidsgiverperioden - kronisk eller langvarig sykdom"
+    fun journalførSletting(krav: GravidKrav): String {
+        val journalfoeringsTittel = "Annuller ${GravidKrav.tittel}"
         val response = dokarkivKlient.journalførDokument(
             JournalpostRequest(
                 tittel = journalfoeringsTittel,
@@ -98,23 +102,24 @@ class SlettKroniskKravProcessor(
                 bruker = Bruker(krav.identitetsnummer, IdType.FNR),
                 eksternReferanseId = "${krav.id}-annul",
                 avsenderMottaker = AvsenderMottaker(
-                    id = krav.sendtAv,
-                    idType = IdType.FNR,
+                    id = krav.virksomhetsnummer,
+                    idType = IdType.ORGNR,
                     navn = krav.virksomhetsnavn ?: "Arbeidsgiver Ukjent"
                 ),
                 dokumenter = createDocuments(krav, journalfoeringsTittel),
                 datoMottatt = krav.opprettet.toLocalDate()
             ),
-            true, UUID.randomUUID().toString()
+            true,
+            UUID.randomUUID().toString()
 
         )
 
-        log.debug("Journalført ${krav.id} med ref ${response.journalpostId}")
+        logger.debug("Journalført ${krav.id} med ref ${response.journalpostId}")
         return response.journalpostId
     }
 
     private fun createDocuments(
-        krav: KroniskKrav,
+        krav: GravidKrav,
         journalfoeringsTittel: String
     ): List<Dokument> {
         val base64EnkodetPdf = Base64.getEncoder().encodeToString(pdfGenerator.lagSlettingPDF(krav))
@@ -123,7 +128,7 @@ class SlettKroniskKravProcessor(
             Dokument(
                 dokumentVarianter = listOf(
                     DokumentVariant(
-                        fysiskDokument = base64EnkodetPdf,
+                        fysiskDokument = base64EnkodetPdf
                     ),
                     DokumentVariant(
                         filtype = "JSON",
@@ -132,7 +137,7 @@ class SlettKroniskKravProcessor(
                     )
                 ),
                 brevkode = dokumentasjonBrevkode,
-                tittel = journalfoeringsTittel,
+                tittel = journalfoeringsTittel
             )
         )
 
@@ -150,8 +155,8 @@ class SlettKroniskKravProcessor(
                             variantFormat = "ORIGINAL"
                         )
                     ),
-                    brevkode = KroniskKravProcessor.dokumentasjonBrevkode,
-                    tittel = "Helsedokumentasjon",
+                    brevkode = GravidKravProcessor.dokumentasjonBrevkode,
+                    tittel = "Helsedokumentasjon"
                 )
             )
         }
@@ -159,14 +164,14 @@ class SlettKroniskKravProcessor(
         return dokumentListe
     }
 
-    fun opprettOppgave(krav: KroniskKrav): String {
+    fun opprettOppgave(krav: GravidKrav): String {
         val aktoerId = pdlClient.fullPerson(krav.identitetsnummer)?.hentIdenter?.trekkUtIdent(PdlIdent.PdlIdentGruppe.AKTORID)
         requireNotNull(aktoerId) { "Fant ikke AktørID for fnr i ${krav.id}" }
-        log.info("Fant aktørid")
+        logger.info("Fant aktørid")
         val request = OpprettOppgaveRequest(
             aktoerId = aktoerId,
             journalpostId = krav.journalpostId,
-            beskrivelse = generereSlettKroniskKravBeskrivelse(krav, "Annullering av refusjonskrav ifbm sykdom i arbeidsgiverperioden med fritak fra arbeidsgiverperioden grunnet kronisk sykdom."),
+            beskrivelse = generereSlettGravidKravBeskrivelse(krav, "Annullering av ${GravidKrav.tittel}."),
             tema = "SYK",
             behandlingstype = digitalKravBehandingsType,
             oppgavetype = "BEH_REF",
@@ -179,14 +184,14 @@ class SlettKroniskKravProcessor(
         return runBlocking { oppgaveKlient.opprettOppgave(request, UUID.randomUUID().toString()).id.toString() }
     }
 
-    fun opprettFordelingsOppgave(krav: KroniskKrav): String {
+    fun opprettFordelingsOppgave(krav: GravidKrav): String {
         val aktoerId = pdlClient.fullPerson(krav.identitetsnummer)?.hentIdenter?.trekkUtIdent(PdlIdent.PdlIdentGruppe.AKTORID)
         requireNotNull(aktoerId) { "Fant ikke AktørID for fnr i ${krav.id}" }
 
         val request = OpprettOppgaveRequest(
             aktoerId = aktoerId,
             journalpostId = krav.journalpostId,
-            beskrivelse = generereSlettKroniskKravBeskrivelse(krav, "Fordelingsoppgave for annullering av refusjonskrav ifbm sykdom i aprbeidsgiverperioden med fritak fra arbeidsgiverperioden grunnet kronisk sykdom."),
+            beskrivelse = generereSlettGravidKravBeskrivelse(krav, "Fordelingsoppgave for annullering av ${GravidKrav.tittel}"),
             tema = "SYK",
             behandlingstype = digitalKravBehandingsType,
             oppgavetype = OPPGAVETYPE_FORDELINGSOPPGAVE,

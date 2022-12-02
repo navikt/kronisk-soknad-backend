@@ -6,7 +6,14 @@ import kotlinx.coroutines.runBlocking
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.Bakgrunnsjobb
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbProsesserer
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbRepository
-import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.*
+import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.AvsenderMottaker
+import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.Bruker
+import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.DokarkivKlient
+import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.Dokument
+import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.DokumentVariant
+import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.IdType
+import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.JournalpostRequest
+import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.Journalposttype
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OPPGAVETYPE_FORDELINGSOPPGAVE
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OppgaveKlient
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OpprettOppgaveRequest
@@ -21,9 +28,10 @@ import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor.Jobbdata.SkjemaType
 import no.nav.helse.fritakagp.service.BehandlendeEnhetService
-import org.slf4j.LoggerFactory
+import no.nav.helsearbeidsgiver.utils.log.logger
 import java.time.LocalDate
-import java.util.*
+import java.util.Base64
+import java.util.UUID
 
 class GravidKravProcessor(
     private val gravidKravRepo: GravidKravRepository,
@@ -48,7 +56,7 @@ class GravidKravProcessor(
     val digitalKravBehandingsType = "ae0121"
     val fritakAGPBehandingsTema = "ab0200"
 
-    val log = LoggerFactory.getLogger(GravidKravProcessor::class.java)
+    private val logger = this.logger()
 
     /**
      * Prosesserer et gravidkrav; journalfører kravet og oppretter en oppgave for saksbehandler.
@@ -106,7 +114,7 @@ class GravidKravProcessor(
     override fun stoppet(jobb: Bakgrunnsjobb) {
         val krav = getOrThrow(jobb)
         val oppgaveId = opprettFordelingsOppgave(krav)
-        log.warn("Jobben ${jobb.uuid} feilet permanenet og resulterte i fordelignsoppgave $oppgaveId")
+        logger.warn("Jobben ${jobb.uuid} feilet permanenet og resulterte i fordelignsoppgave $oppgaveId")
     }
 
     private fun updateAndLogOnFailure(krav: GravidKrav) {
@@ -118,27 +126,26 @@ class GravidKravProcessor(
     }
 
     fun journalfør(krav: GravidKrav): String {
-        val journalfoeringsTittel = "Krav om fritak fra arbeidsgiverperioden ifbm graviditet"
         val response = dokarkivKlient.journalførDokument(
             JournalpostRequest(
-                tittel = journalfoeringsTittel,
+                tittel = GravidKrav.tittel,
                 journalposttype = Journalposttype.INNGAAENDE,
                 kanal = "NAV_NO",
                 bruker = Bruker(krav.identitetsnummer, IdType.FNR),
                 eksternReferanseId = krav.id.toString(),
                 avsenderMottaker = AvsenderMottaker(
-                    id = krav.sendtAv,
-                    idType = IdType.FNR,
+                    id = krav.virksomhetsnummer,
+                    idType = IdType.ORGNR,
                     navn = krav.virksomhetsnavn ?: "Arbeidsgiver Ukjent"
                 ),
-                dokumenter = createDocuments(krav, journalfoeringsTittel),
+                dokumenter = createDocuments(krav, GravidKrav.tittel),
                 datoMottatt = krav.opprettet.toLocalDate()
             ),
-            true, UUID.randomUUID().toString()
-
+            true,
+            UUID.randomUUID().toString()
         )
 
-        log.debug("Journalført ${krav.id} med ref ${response.journalpostId}")
+        logger.debug("Journalført ${krav.id} med ref ${response.journalpostId}")
         return response.journalpostId
     }
 
@@ -162,7 +169,7 @@ class GravidKravProcessor(
                     )
                 ),
                 brevkode = "krav_om_fritak_fra_agp_gravid",
-                tittel = journalfoeringsTittel,
+                tittel = journalfoeringsTittel
             )
         )
 
@@ -177,11 +184,11 @@ class GravidKravProcessor(
                         DokumentVariant(
                             filtype = "JSON",
                             fysiskDokument = jsonOrginalDokument,
-                            variantFormat = "ORIGINAL",
+                            variantFormat = "ORIGINAL"
                         )
                     ),
                     brevkode = dokumentasjonBrevkode,
-                    tittel = "Helsedokumentasjon",
+                    tittel = "Helsedokumentasjon"
                 )
             )
         }
@@ -197,7 +204,7 @@ class GravidKravProcessor(
         val request = OpprettOppgaveRequest(
             aktoerId = aktoerId,
             journalpostId = krav.journalpostId,
-            beskrivelse = generereGravidkKravBeskrivelse(krav, "Krav om refusjon av arbeidsgiverperioden ifbm. graviditet"),
+            beskrivelse = generereGravidkKravBeskrivelse(krav, GravidKrav.tittel),
             tema = "SYK",
             behandlingstype = digitalKravBehandingsType,
             oppgavetype = "BEH_REF",

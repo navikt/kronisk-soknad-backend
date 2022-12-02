@@ -1,8 +1,9 @@
 package no.nav.helse.fritakagp.db
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.node.ObjectNode
 import java.sql.Connection
-import java.util.*
+import java.util.UUID
 import javax.sql.DataSource
 
 interface SimpleJsonbEntity {
@@ -11,7 +12,6 @@ interface SimpleJsonbEntity {
 
 interface SimpleJsonbRepository<T : SimpleJsonbEntity> {
     fun getById(id: UUID): T?
-    fun getAllForVirksomhet(virksomhetsnummer: String): List<T?>
 
     fun insert(soeknad: T): T
     fun insert(soeknad: T, connection: Connection): T
@@ -37,26 +37,10 @@ abstract class SimpleJsonbRepositoryBase<T : SimpleJsonbEntity>(
 ) : SimpleJsonbRepository<T> {
 
     private val getByIdStatement = """SELECT * FROM $tableName WHERE data ->> 'id' = ?"""
-    private val getAllForVirksomhetStatement = """SELECT * FROM $tableName WHERE data ->> 'virksomhetsnummer' = ?"""
     private val saveStatement = "INSERT INTO $tableName (data) VALUES (?::json);"
     private val updateStatement = "UPDATE $tableName SET data = ?::json WHERE data ->> 'id' = ?"
     private val deleteStatement = """DELETE FROM $tableName WHERE data ->> 'id' = ?"""
-
-    override fun getAllForVirksomhet(virksomhetsnummer: String): List<T?> {
-        ds.connection.use {
-            val existingList = ArrayList<T>()
-            val res = it.prepareStatement(getAllForVirksomhetStatement).apply {
-                setString(1, virksomhetsnummer)
-            }.executeQuery()
-
-            while (res.next()) {
-                val sg = mapper.readValue(res.getString("data"), clazz)
-                existingList.add(sg)
-            }
-
-            return existingList
-        }
-    }
+    private val getNesteReferanseStatement = "SELECT nextval('referanse_seq')"
 
     override fun getById(id: UUID): T? {
         ds.connection.use {
@@ -75,11 +59,23 @@ abstract class SimpleJsonbRepositoryBase<T : SimpleJsonbEntity>(
     }
 
     override fun insert(entity: T, connection: Connection): T {
-        val json = mapper.writeValueAsString(entity)
+        val referansenummer = getNesteReferanse(connection)
+        val json = mapper.convertValue(entity, ObjectNode::class.java).apply {
+            put("referansenummer", referansenummer)
+        }.let { mapper.writeValueAsString(it) }
+
         connection.prepareStatement(saveStatement).apply {
             setString(1, json)
         }.executeUpdate()
         return entity
+    }
+
+    private fun getNesteReferanse(connection: Connection): Int? {
+        val res = connection.prepareStatement(getNesteReferanseStatement).executeQuery()
+        if (res.next()) {
+            return res.getInt(1)
+        }
+        return null
     }
 
     override fun insert(entity: T): T {

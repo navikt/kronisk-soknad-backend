@@ -2,7 +2,7 @@ package no.nav.helse.fritakagp.domain
 
 import no.nav.helse.fritakagp.db.SimpleJsonbEntity
 import java.time.LocalDateTime
-import java.util.*
+import java.util.UUID
 
 data class KroniskKrav(
     override val id: UUID = UUID.randomUUID(),
@@ -32,5 +32,12 @@ data class KroniskKrav(
 
     var status: KravStatus = KravStatus.OPPRETTET,
     var aarsakEndring: String? = null,
-    var endretDato: LocalDateTime? = null
-) : SimpleJsonbEntity
+    var endretDato: LocalDateTime? = null,
+
+    var arbeidsgiverSakId: String? = null,
+    var referansenummer: Int? = null
+) : SimpleJsonbEntity {
+    companion object {
+        const val tittel = "Krav om refusjon av arbeidsgiverperioden - kronisk eller langvarig sykdom"
+    }
+}

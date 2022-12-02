@@ -1,7 +1,10 @@
 package no.nav.helse.fritakagp.web.api
 
-import io.ktor.http.content.*
-import io.ktor.routing.*
+import io.ktor.http.content.defaultResource
+import io.ktor.http.content.resources
+import io.ktor.http.content.static
+import io.ktor.routing.Route
+import io.ktor.routing.route
 
 fun Route.swaggerRoutes(base: String) {
 

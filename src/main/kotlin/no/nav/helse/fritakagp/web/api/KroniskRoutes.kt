@@ -1,27 +1,34 @@
 package no.nav.helse.fritakagp.web.api
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import io.ktor.application.*
-import io.ktor.http.*
-import io.ktor.request.*
-import io.ktor.response.*
-import io.ktor.routing.*
+import io.ktor.application.application
+import io.ktor.application.call
+import io.ktor.http.HttpStatusCode
+import io.ktor.request.receive
+import io.ktor.response.respond
+import io.ktor.routing.Route
+import io.ktor.routing.delete
+import io.ktor.routing.get
+import io.ktor.routing.patch
+import io.ktor.routing.post
+import io.ktor.routing.route
+import kotlinx.coroutines.runBlocking
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbService
 import no.nav.helse.arbeidsgiver.integrasjoner.aareg.AaregArbeidsforholdClient
 import no.nav.helse.arbeidsgiver.web.auth.AltinnAuthorizer
-import no.nav.helse.arbeidsgiver.web.validation.OrganisasjonsnummerValidator
 import no.nav.helse.fritakagp.KroniskKravMetrics
 import no.nav.helse.fritakagp.KroniskSoeknadMetrics
 import no.nav.helse.fritakagp.db.KroniskKravRepository
 import no.nav.helse.fritakagp.db.KroniskSoeknadRepository
-import no.nav.helse.fritakagp.domain.BeløpBeregning
+import no.nav.helse.fritakagp.domain.BeloepBeregning
 import no.nav.helse.fritakagp.domain.KravStatus
 import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
+import no.nav.helse.fritakagp.processing.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravKvitteringProcessor
 import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravProcessor
-import no.nav.helse.fritakagp.processing.kronisk.krav.SlettKroniskKravProcessor
+import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravSlettProcessor
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadKvitteringProcessor
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadProcessor
 import no.nav.helse.fritakagp.service.PdlService
@@ -29,8 +36,10 @@ import no.nav.helse.fritakagp.web.api.resreq.KroniskKravRequest
 import no.nav.helse.fritakagp.web.api.resreq.KroniskSoknadRequest
 import no.nav.helse.fritakagp.web.auth.authorize
 import no.nav.helse.fritakagp.web.auth.hentIdentitetsnummerFraLoginToken
+import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonKlient
+import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.hardDeleteSak
 import java.time.LocalDateTime
-import java.util.*
+import java.util.UUID
 import javax.sql.DataSource
 
 fun Route.kroniskRoutes(
@@ -43,9 +52,10 @@ fun Route.kroniskRoutes(
     virusScanner: VirusScanner,
     bucket: BucketStorage,
     authorizer: AltinnAuthorizer,
-    belopBeregning: BeløpBeregning,
+    belopBeregning: BeloepBeregning,
     aaregClient: AaregArbeidsforholdClient,
-    pdlService: PdlService
+    pdlService: PdlService,
+    arbeidsgiverNotifikasjonKlient: ArbeidsgiverNotifikasjonKlient
 ) {
     route("/kronisk") {
         route("/soeknad") {
@@ -96,21 +106,15 @@ fun Route.kroniskRoutes(
         }
 
         route("/krav") {
-            get("/virksomhet/{virksomhetsnummer}") {
-                val virksomhetsnummer = requireNotNull(call.parameters["virksomhetsnummer"])
-                authorize(authorizer, virksomhetsnummer)
-
-                val kroniskKrav = kroniskKravRepo.getAllForVirksomhet(virksomhetsnummer)
-
-                call.respond(HttpStatusCode.OK, kroniskKrav)
-            }
-
             get("/{id}") {
                 val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
                 val form = kroniskKravRepo.getById(UUID.fromString(call.parameters["id"]))
-                if (form == null || form.identitetsnummer != innloggetFnr) {
+                if (form == null) {
                     call.respond(HttpStatusCode.NotFound)
                 } else {
+                    if (form.identitetsnummer != innloggetFnr) {
+                        authorize(authorizer, form.virksomhetsnummer)
+                    }
                     form.sendtAvNavn = form.sendtAvNavn ?: pdlService.finnNavn(innloggetFnr)
                     form.navn = form.navn ?: pdlService.finnNavn(form.identitetsnummer)
 
@@ -148,35 +152,110 @@ fun Route.kroniskRoutes(
                         data = om.writeValueAsString(KroniskKravKvitteringProcessor.Jobbdata(krav.id)),
                         connection = connection
                     )
+                    bakgunnsjobbService.opprettJobb<ArbeidsgiverNotifikasjonProcessor>(
+                        maksAntallForsoek = 10,
+                        data = om.writeValueAsString(ArbeidsgiverNotifikasjonProcessor.JobbData(krav.id, ArbeidsgiverNotifikasjonProcessor.JobbData.SkjemaType.KroniskKrav)),
+                        connection = connection
+                    )
                 }
 
                 call.respond(HttpStatusCode.Created, krav)
                 KroniskKravMetrics.tellMottatt()
             }
 
+            patch("/{id}") {
+                val request = call.receive<KroniskKravRequest>()
+
+                authorize(authorizer, request.virksomhetsnummer)
+
+                val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
+                val sendtAvNavn = pdlService.finnNavn(innloggetFnr)
+                val navn = pdlService.finnNavn(request.identitetsnummer)
+
+                val arbeidsforhold = aaregClient
+                    .hentArbeidsforhold(request.identitetsnummer, UUID.randomUUID().toString())
+                    .filter { it.arbeidsgiver.organisasjonsnummer == request.virksomhetsnummer }
+
+                request.validate(arbeidsforhold)
+
+                val kravId = UUID.fromString(call.parameters["id"])
+                val kravTilSletting = kroniskKravRepo.getById(kravId)
+                    ?: return@patch call.respond(HttpStatusCode.NotFound)
+
+                if (kravTilSletting.virksomhetsnummer != request.virksomhetsnummer) {
+                    return@patch call.respond(HttpStatusCode.Forbidden)
+                }
+
+                val kravTilOppdatering = request.toDomain(innloggetFnr, sendtAvNavn, navn)
+                belopBeregning.beregnBeløpKronisk(kravTilOppdatering)
+
+                kravTilSletting.status = KravStatus.ENDRET
+                kravTilSletting.slettetAv = innloggetFnr
+                kravTilSletting.slettetAvNavn = sendtAvNavn
+                kravTilSletting.endretDato = LocalDateTime.now()
+
+                // Sletter gammelt krav
+                kravTilSletting.arbeidsgiverSakId?.let {
+                    runBlocking { arbeidsgiverNotifikasjonKlient.hardDeleteSak(it) }
+                }
+
+                datasource.connection.use { connection ->
+                    kroniskKravRepo.update(kravTilSletting, connection)
+                    bakgunnsjobbService.opprettJobb<KroniskKravSlettProcessor>(
+                        maksAntallForsoek = 10,
+                        data = om.writeValueAsString(KroniskKravProcessor.JobbData(kravTilSletting.id)),
+                        connection = connection
+                    )
+                }
+
+                // Oppretter nytt krav
+                datasource.connection.use { connection ->
+                    kroniskKravRepo.insert(kravTilOppdatering, connection)
+                    bakgunnsjobbService.opprettJobb<KroniskKravProcessor>(
+                        maksAntallForsoek = 10,
+                        data = om.writeValueAsString(KroniskKravProcessor.JobbData(kravTilOppdatering.id)),
+                        connection = connection
+                    )
+                    bakgunnsjobbService.opprettJobb<KroniskKravKvitteringProcessor>(
+                        maksAntallForsoek = 10,
+                        data = om.writeValueAsString(KroniskKravKvitteringProcessor.Jobbdata(kravTilOppdatering.id)),
+                        connection = connection
+                    )
+                    bakgunnsjobbService.opprettJobb<ArbeidsgiverNotifikasjonProcessor>(
+                        maksAntallForsoek = 10,
+                        data = om.writeValueAsString(ArbeidsgiverNotifikasjonProcessor.JobbData(kravTilOppdatering.id, ArbeidsgiverNotifikasjonProcessor.JobbData.SkjemaType.KroniskKrav)),
+                        connection = connection
+                    )
+                }
+
+                call.respond(HttpStatusCode.OK, kravTilOppdatering)
+            }
+
             delete("/{id}") {
                 val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
                 val slettetAv = pdlService.finnNavn(innloggetFnr)
                 val kravId = UUID.fromString(call.parameters["id"])
-                var form = kroniskKravRepo.getById(kravId)
-                if (form == null) {
-                    call.respond(HttpStatusCode.NotFound)
-                } else {
-                    authorize(authorizer, form.virksomhetsnummer)
-                    form.status = KravStatus.SLETTET
-                    form.slettetAv = innloggetFnr
-                    form.slettetAvNavn = slettetAv
-                    form.endretDato = LocalDateTime.now()
-                    datasource.connection.use { connection ->
-                        kroniskKravRepo.update(form, connection)
-                        bakgunnsjobbService.opprettJobb<SlettKroniskKravProcessor>(
-                            maksAntallForsoek = 10,
-                            data = om.writeValueAsString(KroniskKravProcessor.JobbData(form.id)),
-                            connection = connection
-                        )
-                    }
-                    call.respond(HttpStatusCode.OK)
+                val form = kroniskKravRepo.getById(kravId)
+                    ?: return@delete call.respond(HttpStatusCode.NotFound)
+
+                authorize(authorizer, form.virksomhetsnummer)
+
+                form.arbeidsgiverSakId?.let {
+                    runBlocking { arbeidsgiverNotifikasjonKlient.hardDeleteSak(it) }
                 }
+                form.status = KravStatus.SLETTET
+                form.slettetAv = innloggetFnr
+                form.slettetAvNavn = slettetAv
+                form.endretDato = LocalDateTime.now()
+                datasource.connection.use { connection ->
+                    kroniskKravRepo.update(form, connection)
+                    bakgunnsjobbService.opprettJobb<KroniskKravSlettProcessor>(
+                        maksAntallForsoek = 10,
+                        data = om.writeValueAsString(KroniskKravProcessor.JobbData(form.id)),
+                        connection = connection
+                    )
+                }
+                call.respond(HttpStatusCode.OK)
             }
         }
     }

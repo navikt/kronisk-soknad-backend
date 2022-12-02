@@ -5,7 +5,7 @@ import no.nav.helse.arbeidsgiver.bakgrunnsjobb.Bakgrunnsjobb
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbProsesserer
 import no.nav.helse.fritakagp.GravidSoeknadMetrics
 import no.nav.helse.fritakagp.db.GravidSoeknadRepository
-import java.util.*
+import java.util.UUID
 
 class GravidSoeknadKvitteringProcessor(
     private val gravidSoeknadKvitteringSender: GravidSoeknadKvitteringSender,
@@ -16,6 +16,7 @@ class GravidSoeknadKvitteringProcessor(
     companion object {
         val JOB_TYPE = "gravid-søknad-altinn-kvittering"
     }
+
     override val type: String get() = JOB_TYPE
 
     override fun prosesser(jobb: Bakgrunnsjobb) {

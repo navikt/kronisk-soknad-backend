@@ -6,7 +6,14 @@ import kotlinx.coroutines.runBlocking
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.Bakgrunnsjobb
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbProsesserer
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbRepository
-import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.*
+import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.AvsenderMottaker
+import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.Bruker
+import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.DokarkivKlient
+import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.Dokument
+import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.DokumentVariant
+import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.IdType
+import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.JournalpostRequest
+import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.Journalposttype
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OPPGAVETYPE_FORDELINGSOPPGAVE
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OppgaveKlient
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OpprettOppgaveRequest
@@ -21,9 +28,10 @@ import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor.Jobbdata.SkjemaType.GravidSøknad
 import no.nav.helse.fritakagp.service.BehandlendeEnhetService
-import org.slf4j.LoggerFactory
+import no.nav.helsearbeidsgiver.utils.log.logger
 import java.time.LocalDate
-import java.util.*
+import java.util.Base64
+import java.util.UUID
 
 class GravidSoeknadProcessor(
     private val gravidSoeknadRepo: GravidSoeknadRepository,
@@ -41,12 +49,13 @@ class GravidSoeknadProcessor(
         val JOB_TYPE = "gravid-søknad-formidling"
         val dokumentasjonBrevkode = "soeknad_om_fritak_fra_agp_dokumentasjon"
     }
+
     override val type: String get() = JOB_TYPE
 
     val digitalSoeknadBehandingsType = "ae0227"
     val fritakAGPBehandingsTema = "ab0338"
 
-    val log = LoggerFactory.getLogger(GravidSoeknadProcessor::class.java)
+    private val logger = this.logger()
 
     /**
      * Prosesserer en gravidsøknad; journalfører søknaden og oppretter en oppgave for saksbehandler.
@@ -103,28 +112,26 @@ class GravidSoeknadProcessor(
     }
 
     fun journalfør(soeknad: GravidSoeknad): String {
-        val journalfoeringsTittel = "Søknad om fritak fra arbeidsgiverperioden ifbm graviditet"
-
         val response = dokarkivKlient.journalførDokument(
             JournalpostRequest(
-                tittel = journalfoeringsTittel,
+                tittel = GravidSoeknad.tittel,
                 journalposttype = Journalposttype.INNGAAENDE,
                 kanal = "NAV_NO",
                 bruker = Bruker(soeknad.identitetsnummer, IdType.FNR),
                 eksternReferanseId = soeknad.id.toString(),
                 avsenderMottaker = AvsenderMottaker(
-                    id = soeknad.sendtAv,
-                    idType = IdType.FNR,
+                    id = soeknad.virksomhetsnummer,
+                    idType = IdType.ORGNR,
                     navn = soeknad.virksomhetsnavn ?: "Ukjent arbeidsgiver"
                 ),
-                dokumenter = createDocuments(soeknad, journalfoeringsTittel),
+                dokumenter = createDocuments(soeknad, GravidSoeknad.tittel),
                 datoMottatt = soeknad.opprettet.toLocalDate()
             ),
-            true, UUID.randomUUID().toString()
-
+            true,
+            UUID.randomUUID().toString()
         )
 
-        log.debug("Journalført ${soeknad.id} med ref ${response.journalpostId}")
+        logger.debug("Journalført ${soeknad.id} med ref ${response.journalpostId}")
         return response.journalpostId
     }
 
@@ -134,7 +141,7 @@ class GravidSoeknadProcessor(
     override fun stoppet(jobb: Bakgrunnsjobb) {
         val soeknad = getSoeknadOrThrow(jobb)
         val oppgaveId = opprettFordelingsOppgave(soeknad)
-        log.warn("Jobben ${jobb.uuid} feilet permanenet og resulterte i fordelignsoppgave $oppgaveId")
+        logger.warn("Jobben ${jobb.uuid} feilet permanenet og resulterte i fordelignsoppgave $oppgaveId")
     }
 
     private fun getSoeknadOrThrow(jobb: Bakgrunnsjobb): GravidSoeknad {
@@ -158,7 +165,7 @@ class GravidSoeknadProcessor(
                     )
                 ),
                 brevkode = "soeknad_om_fritak_fra_agp_gravid",
-                tittel = journalfoeringsTittel,
+                tittel = journalfoeringsTittel
             )
         )
 
@@ -177,7 +184,7 @@ class GravidSoeknadProcessor(
                         )
                     ),
                     brevkode = dokumentasjonBrevkode,
-                    tittel = "Helsedokumentasjon",
+                    tittel = "Helsedokumentasjon"
                 )
             )
         }
@@ -192,7 +199,7 @@ class GravidSoeknadProcessor(
         val request = OpprettOppgaveRequest(
             aktoerId = aktoerId,
             journalpostId = soeknad.journalpostId,
-            beskrivelse = generereGravidSoeknadBeskrivelse(soeknad, "Søknad om fritak fra arbeidsgiverperioden ifbm. graviditet"),
+            beskrivelse = generereGravidSoeknadBeskrivelse(soeknad, GravidSoeknad.tittel),
             tema = "SYK",
             behandlingstype = digitalSoeknadBehandingsType,
             oppgavetype = "BEH_SAK",
@@ -214,7 +221,7 @@ class GravidSoeknadProcessor(
         val request = OpprettOppgaveRequest(
             aktoerId = aktoerId,
             journalpostId = soeknad.journalpostId,
-            beskrivelse = generereGravidSoeknadBeskrivelse(soeknad, "Fordelingsoppgave for søknad om fritak fra arbeidsgiverperioden grunnet gravid sykdom."),
+            beskrivelse = generereGravidSoeknadBeskrivelse(soeknad, "Fordelingsoppgave for ${GravidSoeknad.tittel}"),
             tema = "SYK",
             behandlingstype = digitalSoeknadBehandingsType,
             oppgavetype = OPPGAVETYPE_FORDELINGSOPPGAVE,

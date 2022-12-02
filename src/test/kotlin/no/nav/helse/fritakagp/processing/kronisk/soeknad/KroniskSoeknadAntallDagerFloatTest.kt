@@ -2,12 +2,12 @@ package no.nav.helse.fritakagp.processing.kronisk.soeknad
 
 import no.nav.helse.KroniskTestData
 import no.nav.helse.fritakagp.domain.FravaerData
+import no.nav.helse.fritakagp.domain.generereKroniskSoeknadBeskrivelse
 import no.nav.helse.toYearMonthString
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
-import kotlin.test.assertEquals
-import no.nav.helse.fritakagp.domain.generereKroniskSoeknadBeskrivelse
 import kotlin.test.assertContains
+import kotlin.test.assertEquals
 
 class KroniskSoeknadAntallDagerFloatTest {
 

@@ -3,7 +3,7 @@ package no.nav.helse.fritakagp.domain
 import no.nav.helse.fritakagp.db.SimpleJsonbEntity
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.util.*
+import java.util.UUID
 
 data class GravidSoeknad(
     override val id: UUID = UUID.randomUUID(),
@@ -33,8 +33,13 @@ data class GravidSoeknad(
      */
     var oppgaveId: String? = null,
     // Må være null for tidligere verdier er lagret med null
-    var sendtAvNavn: String? = null
-) : SimpleJsonbEntity
+    var sendtAvNavn: String? = null,
+    var referansenummer: Int? = null
+) : SimpleJsonbEntity {
+    companion object {
+        const val tittel = "Søknad om fritak fra arbeidsgiverperioden - graviditet"
+    }
+}
 
 enum class Omplassering(val beskrivelse: String) {
     JA("Ja"),

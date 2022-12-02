@@ -2,25 +2,29 @@ package no.nav.helse.fritakagp.web.api
 
 import com.fasterxml.jackson.databind.JsonMappingException
 import com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException
-import io.ktor.application.*
-import io.ktor.features.*
-import io.ktor.http.*
-import io.ktor.response.*
+import io.ktor.application.Application
+import io.ktor.application.ApplicationCall
+import io.ktor.application.call
+import io.ktor.application.install
+import io.ktor.features.ParameterConversionException
+import io.ktor.features.StatusPages
+import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpStatusCode
+import io.ktor.response.respond
 import no.nav.helse.arbeidsgiver.web.validation.Problem
 import no.nav.helse.arbeidsgiver.web.validation.ValidationProblem
 import no.nav.helse.arbeidsgiver.web.validation.ValidationProblemDetail
 import no.nav.helse.fritakagp.integration.altinn.ManglerAltinnRettigheterException
 import no.nav.helse.fritakagp.web.dto.validation.getContextualMessage
-import org.slf4j.LoggerFactory
+import no.nav.helsearbeidsgiver.utils.log.logger
 import org.valiktor.ConstraintViolationException
 import java.lang.reflect.InvocationTargetException
 import java.net.URI
-import java.util.*
-import javax.ws.rs.ForbiddenException
+import java.util.UUID
 
 fun Application.configureExceptionHandling() {
     install(StatusPages) {
-        val logger = LoggerFactory.getLogger("StatusPages")
+        val logger = "StatusPages".logger()
 
         suspend fun handleUnexpectedException(call: ApplicationCall, cause: Throwable) {
             val errorId = UUID.randomUUID()

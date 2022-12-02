@@ -6,7 +6,14 @@ import kotlinx.coroutines.runBlocking
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.Bakgrunnsjobb
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbProsesserer
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbRepository
-import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.*
+import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.AvsenderMottaker
+import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.Bruker
+import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.DokarkivKlient
+import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.Dokument
+import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.DokumentVariant
+import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.IdType
+import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.JournalpostRequest
+import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.Journalposttype
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OPPGAVETYPE_FORDELINGSOPPGAVE
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OppgaveKlient
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OpprettOppgaveRequest
@@ -21,9 +28,10 @@ import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor.Jobbdata.SkjemaType
 import no.nav.helse.fritakagp.service.BehandlendeEnhetService
-import org.slf4j.LoggerFactory
+import no.nav.helsearbeidsgiver.utils.log.logger
 import java.time.LocalDate
-import java.util.*
+import java.util.Base64
+import java.util.UUID
 
 class KroniskKravProcessor(
     private val kroniskKravRepo: KroniskKravRepository,
@@ -35,18 +43,19 @@ class KroniskKravProcessor(
     private val om: ObjectMapper,
     private val bucketStorage: BucketStorage,
     private val brregClient: BrregClient,
-    private val behandlendeEnhetService: BehandlendeEnhetService,
+    private val behandlendeEnhetService: BehandlendeEnhetService
 ) : BakgrunnsjobbProsesserer {
     companion object {
         val JOB_TYPE = "kronisk-krav-formidling"
         val dokumentasjonBrevkode = "krav_om_fritak_fra_agp_dokumentasjon"
     }
+
     override val type: String get() = JOB_TYPE
 
     val digitalKravBehandingsType = "ae0121"
     val fritakAGPBehandingsTema = "ab0200"
 
-    val log = LoggerFactory.getLogger(KroniskKravProcessor::class.java)
+    private val logger = this.logger()
 
     /**
      * Prosesserer et kroniskkrav; journalfører kravet og oppretter en oppgave for saksbehandler.
@@ -54,13 +63,13 @@ class KroniskKravProcessor(
      */
     override fun prosesser(jobb: Bakgrunnsjobb) {
         val krav = getOrThrow(jobb)
-        log.info("Prosesserer krav ${krav.id}")
+        logger.info("Prosesserer krav ${krav.id}")
 
         try {
             if (krav.virksomhetsnavn == null) {
                 runBlocking {
                     krav.virksomhetsnavn = brregClient.getVirksomhetsNavn(krav.virksomhetsnummer)
-                    log.info("Slo opp virksomhet")
+                    logger.info("Slo opp virksomhet")
                 }
             }
             if (krav.journalpostId == null) {
@@ -69,11 +78,11 @@ class KroniskKravProcessor(
             }
 
             bucketStorage.deleteDoc(krav.id)
-            log.info("Slettet eventuelle vedlegg")
+            logger.info("Slettet eventuelle vedlegg")
 
             if (krav.oppgaveId == null) {
                 krav.oppgaveId = opprettOppgave(krav)
-                log.info("Oppgave opprettet med id ${krav.oppgaveId}")
+                logger.info("Oppgave opprettet med id ${krav.oppgaveId}")
                 KroniskKravMetrics.tellOppgaveOpprettet()
             }
             bakgrunnsjobbRepo.save(
@@ -108,7 +117,7 @@ class KroniskKravProcessor(
     override fun stoppet(jobb: Bakgrunnsjobb) {
         val krav = getOrThrow(jobb)
         val oppgaveId = opprettFordelingsOppgave(krav)
-        log.warn("Jobben ${jobb.uuid} feilet permanenet og resulterte i fordelignsoppgave $oppgaveId")
+        logger.warn("Jobben ${jobb.uuid} feilet permanenet og resulterte i fordelignsoppgave $oppgaveId")
     }
 
     private fun updateAndLogOnFailure(krav: KroniskKrav) {
@@ -120,28 +129,26 @@ class KroniskKravProcessor(
     }
 
     fun journalfør(krav: KroniskKrav): String {
-        val journalfoeringsTittel = "Krav om fritak fra arbeidsgiverperioden - kronisk eller langvarig sykdom"
-
         val response = dokarkivKlient.journalførDokument(
             JournalpostRequest(
-                tittel = journalfoeringsTittel,
+                tittel = KroniskKrav.tittel,
                 journalposttype = Journalposttype.INNGAAENDE,
                 kanal = "NAV_NO",
                 bruker = Bruker(krav.identitetsnummer, IdType.FNR),
                 eksternReferanseId = krav.id.toString(),
                 avsenderMottaker = AvsenderMottaker(
-                    id = krav.sendtAv,
-                    idType = IdType.FNR,
+                    id = krav.virksomhetsnummer,
+                    idType = IdType.ORGNR,
                     navn = krav.virksomhetsnavn ?: "Ukjent arbeidsgiver"
                 ),
-                dokumenter = createDocuments(krav, journalfoeringsTittel),
+                dokumenter = createDocuments(krav, KroniskKrav.tittel),
                 datoMottatt = krav.opprettet.toLocalDate()
             ),
-            true, UUID.randomUUID().toString()
-
+            true,
+            UUID.randomUUID().toString()
         )
 
-        log.info("Journalført ${krav.id} med ref ${response.journalpostId}")
+        logger.info("Journalført ${krav.id} med ref ${response.journalpostId}")
         return response.journalpostId
     }
 
@@ -155,7 +162,7 @@ class KroniskKravProcessor(
             Dokument(
                 dokumentVarianter = listOf(
                     DokumentVariant(
-                        fysiskDokument = base64EnkodetPdf,
+                        fysiskDokument = base64EnkodetPdf
                     ),
                     DokumentVariant(
                         filtype = "JSON",
@@ -164,7 +171,7 @@ class KroniskKravProcessor(
                     )
                 ),
                 brevkode = "krav_om_fritak_fra_agp_kronisk",
-                tittel = journalfoeringsTittel,
+                tittel = journalfoeringsTittel
             )
         )
 
@@ -183,7 +190,7 @@ class KroniskKravProcessor(
                         )
                     ),
                     brevkode = dokumentasjonBrevkode,
-                    tittel = "Helsedokumentasjon",
+                    tittel = "Helsedokumentasjon"
                 )
             )
         }
@@ -195,12 +202,12 @@ class KroniskKravProcessor(
         val aktoerId = pdlClient.fullPerson(krav.identitetsnummer)?.hentIdenter?.trekkUtIdent(PdlIdent.PdlIdentGruppe.AKTORID)
         val enhetsNr = behandlendeEnhetService.hentBehandlendeEnhet(krav.identitetsnummer, krav.id.toString())
         requireNotNull(aktoerId) { "Fant ikke AktørID for fnr i ${krav.id}" }
-        log.info("Fant aktørid")
+        logger.info("Fant aktørid")
         val request = OpprettOppgaveRequest(
             tildeltEnhetsnr = enhetsNr,
             aktoerId = aktoerId,
             journalpostId = krav.journalpostId,
-            beskrivelse = generereKroniskKravBeskrivelse(krav, "Krav om refusjon av arbeidsgiverperioden - kronisk eller langvarig sykdom"),
+            beskrivelse = generereKroniskKravBeskrivelse(krav, KroniskKrav.tittel),
             tema = "SYK",
             behandlingstype = digitalKravBehandingsType,
             oppgavetype = "BEH_REF",
@@ -222,7 +229,7 @@ class KroniskKravProcessor(
             tildeltEnhetsnr = enhetsNr,
             aktoerId = aktoerId,
             journalpostId = krav.journalpostId,
-            beskrivelse = generereKroniskKravBeskrivelse(krav, "Fordelingsoppgave for refusjonskrav ifbm sykdom i aprbeidsgiverperioden med fritak fra arbeidsgiverperioden grunnet kronisk sykdom."),
+            beskrivelse = generereKroniskKravBeskrivelse(krav, "Fordelingsoppgave for ${KroniskKrav.tittel}"),
             tema = "SYK",
             behandlingstype = digitalKravBehandingsType,
             oppgavetype = OPPGAVETYPE_FORDELINGSOPPGAVE,

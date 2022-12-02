@@ -13,11 +13,11 @@ import no.nav.helse.fritakagp.db.GravidSoeknadRepository
 import no.nav.helse.fritakagp.db.KroniskKravRepository
 import no.nav.helse.fritakagp.db.KroniskSoeknadRepository
 import no.nav.helse.fritakagp.integration.kafka.BrukernotifikasjonBeskjedSender
-import org.slf4j.LoggerFactory
+import no.nav.helsearbeidsgiver.utils.log.logger
 import java.net.URL
 import java.time.LocalDateTime
 import java.time.ZoneId
-import java.util.*
+import java.util.UUID
 
 class BrukernotifikasjonProcessor(
     private val gravidKravRepo: GravidKravRepository,
@@ -30,7 +30,7 @@ class BrukernotifikasjonProcessor(
     private val frontendAppBaseUrl: String = "https://arbeidsgiver.nav.no/fritak-agp"
 ) : BakgrunnsjobbProsesserer {
 
-    val log = LoggerFactory.getLogger(BrukernotifikasjonProcessor::class.java)
+    private val logger = this.logger()
 
     companion object {
         val JOB_TYPE = "brukernotifikasjon"
@@ -38,7 +38,7 @@ class BrukernotifikasjonProcessor(
     override val type: String get() = JOB_TYPE
 
     override fun prosesser(jobb: Bakgrunnsjobb) {
-        log.info("Prosesserer ${jobb.uuid} med type ${jobb.type}")
+        logger.info("Prosesserer ${jobb.uuid} med type ${jobb.type}")
         val jobbData = om.readValue<Jobbdata>(jobb.data)
         val beskjed = map(jobbData)
         val uuid = UUID.randomUUID().toString()

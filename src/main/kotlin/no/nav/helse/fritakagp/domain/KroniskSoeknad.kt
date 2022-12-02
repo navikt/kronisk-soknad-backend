@@ -3,7 +3,7 @@ package no.nav.helse.fritakagp.domain
 import no.nav.helse.fritakagp.db.SimpleJsonbEntity
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.util.*
+import java.util.UUID
 
 data class KroniskSoeknad(
     override val id: UUID = UUID.randomUUID(),
@@ -32,8 +32,13 @@ data class KroniskSoeknad(
      */
     var oppgaveId: String? = null,
     // Må være null for tidligere verdier er lagret med null
-    var sendtAvNavn: String? = null
-) : SimpleJsonbEntity
+    var sendtAvNavn: String? = null,
+    var referansenummer: Int? = null
+) : SimpleJsonbEntity {
+    companion object {
+        const val tittel = "Søknad om refusjon av arbeidsgiverperioden - kronisk eller langvarig sykdom"
+    }
+}
 
 data class FravaerData(
     val yearMonth: String,

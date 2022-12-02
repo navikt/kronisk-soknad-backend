@@ -6,8 +6,8 @@ import no.altinn.schemas.services.serviceengine.correspondence._2010._10.InsertC
 import no.altinn.services.serviceengine.correspondence._2009._10.ICorrespondenceAgencyExternalBasic
 import no.altinn.services.serviceengine.correspondence._2009._10.ICorrespondenceAgencyExternalBasicInsertCorrespondenceBasicV2AltinnFaultFaultFaultMessage
 import no.nav.helse.fritakagp.domain.KroniskSoeknad
+import no.nav.helse.fritakagp.domain.TIMESTAMP_FORMAT_MED_KL
 import no.nav.helse.fritakagp.domain.sladdFnr
-import java.time.format.DateTimeFormatter
 
 interface KroniskSoeknadKvitteringSender {
     fun send(kvittering: KroniskSoeknad)
@@ -33,8 +33,10 @@ class KroniskSoeknadAltinnKvitteringSender(
     override fun send(kvittering: KroniskSoeknad) {
         try {
             val receiptExternal = iCorrespondenceAgencyExternalBasic.insertCorrespondenceBasicV2(
-                username, password,
-                SYSTEM_USER_CODE, kvittering.id.toString(),
+                username,
+                password,
+                SYSTEM_USER_CODE,
+                kvittering.id.toString(),
                 mapKvitteringTilInsertCorrespondence(kvittering)
             )
             if (receiptExternal.receiptStatusCode != ReceiptStatusEnum.OK) {
@@ -46,7 +48,6 @@ class KroniskSoeknadAltinnKvitteringSender(
     }
 
     fun mapKvitteringTilInsertCorrespondence(kvittering: KroniskSoeknad): InsertCorrespondenceV2 {
-        val dateTimeFormatterMedKl = DateTimeFormatter.ofPattern("dd.MM.yyyy 'kl.' HH:mm")
         val sladdetFnr = sladdFnr(kvittering.identitetsnummer)
         val tittel = "$sladdetFnr - Kvittering for mottatt søknad om fritak fra arbeidsgiverperioden grunnet kronisk sykdom"
 
@@ -59,14 +60,14 @@ class KroniskSoeknadAltinnKvitteringSender(
                <div class="melding">
             <p>Kvittering for mottatt søknad om fritak fra arbeidsgiverperioden grunnet risiko for høyt sykefravær knyttet til kronisk sykdom.</p>
             <p>Virksomhetsnummer: ${kvittering.virksomhetsnummer}</p>
-            <p>${kvittering.opprettet.format(dateTimeFormatterMedKl)}</p>
+            <p>${kvittering.opprettet.format(TIMESTAMP_FORMAT_MED_KL)}</p>
             <p>Søknaden vil bli behandlet fortløpende. Ved behov vil NAV innhente ytterligere dokumentasjon.
              Har dere spørsmål, ring NAVs arbeidsgivertelefon 55 55 33 36.</p>
             <p>Dere har innrapportert følgende:</p>
             <ul>
                 <li>Navn: ${kvittering.navn} </li>
                 <li>Dokumentasjon vedlagt: ${if (kvittering.harVedlegg) "Ja" else "Nei"} </li>
-                <li>Mottatt:  ${kvittering.opprettet.format(dateTimeFormatterMedKl)}  </li>
+                <li>Mottatt:  ${kvittering.opprettet.format(TIMESTAMP_FORMAT_MED_KL)}  </li>
                 <li>Innrapportert av: ${kvittering.sendtAvNavn}</li>
             </ul>
                </div>

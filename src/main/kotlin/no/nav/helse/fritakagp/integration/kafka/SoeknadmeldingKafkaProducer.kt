@@ -3,14 +3,12 @@ package no.nav.helse.fritakagp.integration.kafka
 import com.fasterxml.jackson.databind.ObjectMapper
 import no.nav.helse.fritakagp.domain.GravidSoeknad
 import no.nav.helse.fritakagp.domain.KroniskSoeknad
-import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.clients.producer.RecordMetadata
-import org.apache.kafka.common.header.internals.RecordHeader
-import org.apache.kafka.common.serialization.StringSerializer
-import java.util.concurrent.TimeUnit
 import org.apache.kafka.common.errors.AuthenticationException
+import org.apache.kafka.common.header.internals.RecordHeader
 import java.util.concurrent.ExecutionException
+import java.util.concurrent.TimeUnit
 
 interface SoeknadmeldingSender {
     fun sendMessage(melding: KroniskSoeknad): RecordMetadata?

@@ -122,7 +122,6 @@ dependencies {
     val jacksonModuleKotlinVersion: String by project
     val jacksonVersion: String by project
     val janinoVersion: String by project
-    val javafakerVersion: String by project
     val javaxActivationVersion: String by project
     val javaxWsRsApiVersion: String by project
     val jaxwsToolsVersion: String by project
@@ -153,7 +152,6 @@ dependencies {
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jacksonVersion")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonModuleKotlinVersion")
-    implementation("com.github.javafaker:javafaker:$javafakerVersion") // flytt denne til test når generatorene ikke er nødvendige i prod-koden lenger
     implementation("com.github.navikt:brukernotifikasjon-schemas:$brukernotifikasjonSchemasVersion")
     implementation("com.github.tomakehurst:wiremock-standalone:$wiremockStandaloneVersion")
     implementation("com.google.cloud:google-cloud-storage:$gcpStorageVersion")

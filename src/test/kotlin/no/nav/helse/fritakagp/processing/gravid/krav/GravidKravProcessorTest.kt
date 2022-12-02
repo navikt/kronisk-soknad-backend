@@ -63,12 +63,11 @@ class GravidKravProcessorTest {
 
     private val oppgaveId = 9999
     private val arkivReferanse = "12345"
-    private var jobb = emptyJob()//Bakgrunnsjobb(data = "", type = "test")
+    private var jobb = emptyJob()
 
     @BeforeEach
     fun setup() {
         krav = GravidTestData.gravidKrav.copy()
-        //jobb = Bakgrunnsjobb(data = objectMapper.writeValueAsString(GravidKravProcessor.JobbData(krav.id)), type = "test")
         jobb = testJob(objectMapper.writeValueAsString(GravidKravProcessor.JobbData(krav.id)))
         every { repositoryMock.getById(krav.id) } returns krav
         every { bucketStorageMock.getDocAsString(any()) } returns null

@@ -31,7 +31,7 @@ import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketDocument
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.jsonEquals
-import no.nav.helse.fritakagp.koin.customObjectMapper
+import no.nav.helse.fritakagp.customObjectMapper
 import no.nav.helse.fritakagp.processing.BakgrunnsJobbUtils.emptyJob
 import no.nav.helse.fritakagp.processing.BakgrunnsJobbUtils.testJob
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor

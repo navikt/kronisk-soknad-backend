@@ -1,4 +1,4 @@
-package no.nav.helse.fritakagp.koin
+package no.nav.helse.fritakagp
 
 import com.fasterxml.jackson.core.util.DefaultIndenter
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter

@@ -13,6 +13,7 @@ import io.ktor.client.features.json.JsonFeature
 import io.ktor.config.ApplicationConfig
 import io.ktor.http.ContentType
 import no.nav.helse.arbeidsgiver.kubernetes.KubernetesProbeManager
+import no.nav.helse.fritakagp.customObjectMapper
 import org.koin.core.module.Module
 import org.koin.dsl.module
 

@@ -1,8 +1,5 @@
 package no.nav.helse.fritakagp.processing.gravid.krav
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.KotlinModule
 import io.mockk.CapturingSlot
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -28,12 +25,15 @@ import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlHentPersonNavn
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlIdent
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlPersonNavnMetadata
 import no.nav.helse.arbeidsgiver.utils.loadFromResources
+import no.nav.helse.fritakagp.customObjectMapper
 import no.nav.helse.fritakagp.db.GravidKravRepository
 import no.nav.helse.fritakagp.domain.GravidKrav
 import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketDocument
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.jsonEquals
+import no.nav.helse.fritakagp.processing.BakgrunnsJobbUtils.emptyJob
+import no.nav.helse.fritakagp.processing.BakgrunnsJobbUtils.testJob
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
 import no.nav.helse.fritakagp.readToObjectNode
 import no.nav.helse.fritakagp.service.BehandlendeEnhetService
@@ -42,7 +42,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.io.IOException
-import java.util.Base64
+import java.util.*
 import kotlin.test.assertEquals
 import kotlin.test.fail
 
@@ -52,7 +52,7 @@ class GravidKravProcessorTest {
     val oppgaveMock = mockk<OppgaveKlient>(relaxed = true)
     val repositoryMock = mockk<GravidKravRepository>(relaxed = true)
     val pdlClientMock = mockk<PdlClient>(relaxed = true)
-    val objectMapper = ObjectMapper().registerModule(KotlinModule())
+    val objectMapper = customObjectMapper()
     val pdfGeneratorMock = mockk<GravidKravPDFGenerator>(relaxed = true)
     val bucketStorageMock = mockk<BucketStorage>(relaxed = true)
     val bakgrunnsjobbRepomock = mockk<BakgrunnsjobbRepository>(relaxed = true)
@@ -63,13 +63,13 @@ class GravidKravProcessorTest {
 
     private val oppgaveId = 9999
     private val arkivReferanse = "12345"
-    private var jobb = Bakgrunnsjobb(data = "", type = "test")
+    private var jobb = emptyJob()//Bakgrunnsjobb(data = "", type = "test")
 
     @BeforeEach
     fun setup() {
         krav = GravidTestData.gravidKrav.copy()
-        jobb = Bakgrunnsjobb(data = objectMapper.writeValueAsString(GravidKravProcessor.JobbData(krav.id)), type = "test")
-        objectMapper.registerModule(JavaTimeModule())
+        //jobb = Bakgrunnsjobb(data = objectMapper.writeValueAsString(GravidKravProcessor.JobbData(krav.id)), type = "test")
+        jobb = testJob(objectMapper.writeValueAsString(GravidKravProcessor.JobbData(krav.id)))
         every { repositoryMock.getById(krav.id) } returns krav
         every { bucketStorageMock.getDocAsString(any()) } returns null
         every { pdlClientMock.personNavn(krav.sendtAv) } returns PdlHentPersonNavn.PdlPersonNavneliste(

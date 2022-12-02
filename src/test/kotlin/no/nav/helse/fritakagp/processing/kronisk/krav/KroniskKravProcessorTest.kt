@@ -157,7 +157,7 @@ class KroniskKravProcessorTest {
                         println("expected json to be equal, was not: \nexpectedJson=$forventetJson \nactualJson=${it.beskrivelse}")
                         fail()
                     }
-                    if (!forventetJson.readToObjectNode(objectMapper)["kravType"].toString().equals("\"KRONISK\"")) {
+                    if (!forventetJson.readToObjectNode(objectMapper)["kravType"].asText().equals("KRONISK")) {
                         println("expected json to contain kravType = KRONISK, was not")
                         fail()
                     }

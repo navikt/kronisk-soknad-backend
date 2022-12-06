@@ -58,13 +58,8 @@ open class SystemTestBase : KoinTest {
     fun before() {
         if (app == null) {
             app = FritakAgpApplication(port = testServerPort)
-            app!!.start()
             Thread.sleep(200)
         }
-    }
-
-    @AfterAll
-    fun after() {
     }
 
     /**
@@ -92,7 +87,6 @@ open class SystemTestBase : KoinTest {
     fun suspendableTest(block: suspend CoroutineScope.() -> Unit) {
         runBlocking {
             block()
-            Unit
         }
     }
 

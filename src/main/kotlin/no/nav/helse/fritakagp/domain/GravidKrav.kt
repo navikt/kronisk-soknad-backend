@@ -37,6 +37,29 @@ data class GravidKrav(
     var arbeidsgiverSakId: String? = null,
     var referansenummer: Int? = null
 ) : SimpleJsonbEntity {
+
+    fun toKravForOppgave(): KravForOppgave {
+        return KravForOppgave(
+            KravType.GRAVID,
+            id = id,
+            opprettet = opprettet,
+            sendtAv = sendtAv,
+            virksomhetsnummer = virksomhetsnummer,
+            identitetsnummer = identitetsnummer,
+            navn = navn,
+            perioder = perioder,
+            harVedlegg = harVedlegg,
+            kontrollDager = kontrollDager,
+            antallDager = antallDager,
+            journalpostId = journalpostId,
+            oppgaveId = oppgaveId,
+            virksomhetsnavn = virksomhetsnavn,
+            sendtAvNavn = sendtAvNavn,
+            status = status,
+            arbeidsgiverSakId = arbeidsgiverSakId,
+            referansenummer = referansenummer
+        )
+    }
     companion object {
         const val tittel = "Krav om refusjon av arbeidsgiverperioden - graviditet"
     }

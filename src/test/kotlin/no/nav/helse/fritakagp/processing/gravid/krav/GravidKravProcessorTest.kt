@@ -42,7 +42,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.io.IOException
-import java.util.*
+import java.util.Base64
 import kotlin.test.assertEquals
 import kotlin.test.fail
 
@@ -58,7 +58,7 @@ class GravidKravProcessorTest {
     val bakgrunnsjobbRepomock = mockk<BakgrunnsjobbRepository>(relaxed = true)
     val berregServiceMock = mockk<BrregClient>(relaxed = true)
     val behandlendeEnhetService = mockk<BehandlendeEnhetService>(relaxed = true)
-    val prosessor = GravidKravProcessor(repositoryMock, joarkMock, oppgaveMock, pdlClientMock, bakgrunnsjobbRepomock, pdfGeneratorMock, objectMapper, bucketStorageMock, berregServiceMock, behandlendeEnhetService)
+    val prosessor = GravidKravProcessor(repositoryMock, joarkMock, oppgaveMock, pdlClientMock, bakgrunnsjobbRepomock, pdfGeneratorMock, objectMapper, bucketStorageMock, berregServiceMock, behandlendeEnhetService, robotiseringToggle = true)
     lateinit var krav: GravidKrav
 
     private val oppgaveId = 9999

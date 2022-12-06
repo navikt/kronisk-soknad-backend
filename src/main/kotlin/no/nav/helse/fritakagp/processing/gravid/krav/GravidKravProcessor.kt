@@ -22,6 +22,7 @@ import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlIdent
 import no.nav.helse.fritakagp.GravidKravMetrics
 import no.nav.helse.fritakagp.db.GravidKravRepository
 import no.nav.helse.fritakagp.domain.GravidKrav
+import no.nav.helse.fritakagp.domain.KroniskKrav
 import no.nav.helse.fritakagp.domain.generereGravidkKravBeskrivelse
 import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
@@ -30,8 +31,7 @@ import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonPr
 import no.nav.helse.fritakagp.service.BehandlendeEnhetService
 import no.nav.helsearbeidsgiver.utils.log.logger
 import java.time.LocalDate
-import java.util.Base64
-import java.util.UUID
+import java.util.*
 
 class GravidKravProcessor(
     private val gravidKravRepo: GravidKravRepository,
@@ -43,7 +43,8 @@ class GravidKravProcessor(
     private val om: ObjectMapper,
     private val bucketStorage: BucketStorage,
     private val brregClient: BrregClient,
-    private val behandlendeEnhetService: BehandlendeEnhetService
+    private val behandlendeEnhetService: BehandlendeEnhetService,
+    private val robotiseringToggle: Boolean = false
 
 ) : BakgrunnsjobbProsesserer {
     companion object {
@@ -201,13 +202,16 @@ class GravidKravProcessor(
         requireNotNull(aktoerId) { "Fant ikke AktørID for fnr i ${krav.id}" }
         krav.oppgaveId
         oppgaveKlient
+
+        val beskrivelse =  if (robotiseringToggle) om.writeValueAsString(krav.toKravForOppgave()) else generereGravidkKravBeskrivelse(krav, KroniskKrav.tittel)
+        val oppgaveType = if (robotiseringToggle) "ROB_BEH" else "BEH_REF"
         val request = OpprettOppgaveRequest(
             aktoerId = aktoerId,
             journalpostId = krav.journalpostId,
-            beskrivelse = om.writeValueAsString(krav.toKravForOppgave()),
+            beskrivelse = beskrivelse,
             tema = "SYK",
             behandlingstype = digitalKravBehandingsType,
-            oppgavetype = "ROB_BEH",
+            oppgavetype = oppgaveType,
             behandlingstema = fritakAGPBehandingsTema,
             aktivDato = LocalDate.now(),
             fristFerdigstillelse = LocalDate.now().plusDays(7),

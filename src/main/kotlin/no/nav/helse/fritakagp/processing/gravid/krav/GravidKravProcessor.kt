@@ -204,7 +204,7 @@ class GravidKravProcessor(
         krav.oppgaveId
         oppgaveKlient
 
-        val beskrivelse =  if (robotiseringToggle) om.writeValueAsString(krav.toKravForOppgave()) else generereGravidkKravBeskrivelse(krav, KroniskKrav.tittel)
+        val beskrivelse = if (robotiseringToggle) om.writeValueAsString(krav.toKravForOppgave()) else generereGravidkKravBeskrivelse(krav, KroniskKrav.tittel)
         val oppgaveType = if (robotiseringToggle) "ROB_BEH" else "BEH_REF"
         val request = OpprettOppgaveRequest(
             aktoerId = aktoerId,

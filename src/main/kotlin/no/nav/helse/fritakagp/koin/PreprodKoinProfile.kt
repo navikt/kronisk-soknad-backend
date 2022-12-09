@@ -88,14 +88,14 @@ fun preprodConfig(config: ApplicationConfig): Module = module {
     single { KroniskKravProcessor(get(), get(), get(), get(), get(), KroniskKravPDFGenerator(), get(), get(), get(), get(), robotiseringToggle = true) }
     single { KroniskKravSlettProcessor(get(), get(), get(), get(), get(), KroniskKravPDFGenerator(), get(), get(), get(), get()) }
 
-    single { Clients.iCorrespondenceExternalBasic(env.altinnEndpoint) }
+    single { Clients.iCorrespondenceExternalBasic(env.altinnMeldingEndpoint) }
 
     single {
         GravidSoeknadAltinnKvitteringSender(
-            env.altinnServiceId,
+            env.altinnMeldingServiceId,
             get(),
-            env.altinnUsername,
-            env.altinnPassword
+            env.altinnMeldingUsername,
+            env.altinnMeldingPassword
         )
     } bind GravidSoeknadKvitteringSender::class
 
@@ -103,10 +103,10 @@ fun preprodConfig(config: ApplicationConfig): Module = module {
 
     single {
         GravidKravAltinnKvitteringSender(
-            env.altinnServiceId,
+            env.altinnMeldingServiceId,
             get(),
-            env.altinnUsername,
-            env.altinnPassword
+            env.altinnMeldingUsername,
+            env.altinnMeldingPassword
         )
     } bind GravidKravKvitteringSender::class
 
@@ -114,20 +114,20 @@ fun preprodConfig(config: ApplicationConfig): Module = module {
 
     single {
         KroniskSoeknadAltinnKvitteringSender(
-            env.altinnServiceId,
+            env.altinnMeldingServiceId,
             get(),
-            env.altinnUsername,
-            env.altinnPassword
+            env.altinnMeldingUsername,
+            env.altinnMeldingPassword
         )
     } bind KroniskSoeknadKvitteringSender::class
     single { KroniskSoeknadKvitteringProcessor(get(), get(), get()) }
 
     single {
         KroniskKravAltinnKvitteringSender(
-            env.altinnServiceId,
+            env.altinnMeldingServiceId,
             get(),
-            env.altinnUsername,
-            env.altinnPassword
+            env.altinnMeldingUsername,
+            env.altinnMeldingPassword
         )
     } bind KroniskKravKvitteringSender::class
     single { KroniskKravKvitteringProcessor(get(), get(), get()) }

@@ -14,10 +14,10 @@ class Env(val config: ApplicationConfig) {
     val databaseUsername = "database.username".prop()
     val databasePassword = "database.password".prop()
 
-    val altinnEndpoint = "altinn_melding.altinn_endpoint".prop()
-    val altinnServiceId = "altinn_melding.service_id".prop()
-    val altinnUsername = "altinn_melding.username".prop()
-    val altinnPassword = "altinn_melding.password".prop()
+    val altinnMeldingEndpoint = "altinn_melding.altinn_endpoint".prop()
+    val altinnMeldingServiceId = "altinn_melding.service_id".prop()
+    val altinnMeldingUsername = "altinn_melding.username".prop()
+    val altinnMeldingPassword = "altinn_melding.password".prop()
 
     val frontendUrl = "frontend_app_url".prop()
 

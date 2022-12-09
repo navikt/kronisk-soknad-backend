@@ -11,9 +11,6 @@ import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbService
 import no.nav.helse.arbeidsgiver.kubernetes.KubernetesProbeManager
 import no.nav.helse.arbeidsgiver.kubernetes.LivenessComponent
 import no.nav.helse.arbeidsgiver.kubernetes.ReadynessComponent
-import no.nav.helse.arbeidsgiver.system.AppEnv
-import no.nav.helse.arbeidsgiver.system.getEnvironment
-import no.nav.helse.arbeidsgiver.system.getString
 import no.nav.helse.fritakagp.koin.selectModuleBasedOnProfile
 import no.nav.helse.fritakagp.processing.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
@@ -44,32 +41,36 @@ import org.koin.core.context.stopKoin
 
 class FritakAgpApplication(val port: Int = 8080) : KoinComponent {
     private val logger = this.logger()
-    private var webserver: NettyApplicationEngine? = null
-    private var appConfig: HoconApplicationConfig = HoconApplicationConfig(ConfigFactory.load())
-    private val runtimeEnvironment = appConfig.getEnvironment()
+    private val appConfig = HoconApplicationConfig(ConfigFactory.load())
+    private val env = Env(appConfig)
 
-    fun start() {
-        if (runtimeEnvironment == AppEnv.PREPROD || runtimeEnvironment == AppEnv.PROD) {
+    private val webserver: NettyApplicationEngine
+
+    init {
+        if (env.appEnv in listOf(AppEnv.PREPROD, AppEnv.PROD)) {
             logger.info("Sover i 30s i påvente av SQL proxy sidecar")
             Thread.sleep(30000)
         }
 
-        startKoin { modules(selectModuleBasedOnProfile(appConfig)) }
+        startKoin { modules(selectModuleBasedOnProfile(env, appConfig)) }
         migrateDatabase()
 
         configAndStartBackgroundWorker()
         autoDetectProbeableComponents()
-        configAndStartWebserver()
+
+        webserver = createWebserver().also {
+            it.start(wait = false)
+        }
     }
 
     fun shutdown() {
-        webserver?.stop(1000, 1000)
+        webserver.stop(1000, 1000)
         get<BakgrunnsjobbService>().stop()
         stopKoin()
     }
 
-    private fun configAndStartWebserver() {
-        webserver = embeddedServer(
+    private fun createWebserver(): NettyApplicationEngine =
+        embeddedServer(
             Netty,
             applicationEngineEnvironment {
                 config = appConfig
@@ -78,7 +79,7 @@ class FritakAgpApplication(val port: Int = 8080) : KoinComponent {
                 }
 
                 module {
-                    if (runtimeEnvironment != AppEnv.PROD) {
+                    if (env.appEnv != AppEnv.PROD) {
                         localCookieDispenser(config)
                     }
 
@@ -88,11 +89,8 @@ class FritakAgpApplication(val port: Int = 8080) : KoinComponent {
             }
         )
 
-        webserver!!.start(wait = false)
-    }
-
     private fun configAndStartBackgroundWorker() {
-        if (appConfig.getString("run_background_workers") == "true") {
+        if (env.appShouldRunBackgroundWorkers) {
             get<BakgrunnsjobbService>().apply {
                 registrer(get<GravidSoeknadProcessor>())
                 registrer(get<GravidSoeknadKafkaProcessor>())
@@ -152,7 +150,6 @@ fun main() {
     }
 
     val application = FritakAgpApplication()
-    application.start()
 
     Runtime.getRuntime().addShutdownHook(
         Thread {

@@ -5,9 +5,9 @@ import io.ktor.config.ApplicationConfig
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbRepository
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbService
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.PostgresBakgrunnsjobbRepository
-import no.nav.helse.arbeidsgiver.system.getString
 import no.nav.helse.arbeidsgiver.web.auth.AltinnAuthorizer
 import no.nav.helse.arbeidsgiver.web.auth.DefaultAltinnAuthorizer
+import no.nav.helse.fritakagp.Env
 import no.nav.helse.fritakagp.datapakke.DatapakkePublisherJob
 import no.nav.helse.fritakagp.db.GravidKravRepository
 import no.nav.helse.fritakagp.db.GravidSoeknadRepository
@@ -56,25 +56,30 @@ import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadKvitterin
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadKvitteringSenderDummy
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadPDFGenerator
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadProcessor
+import no.nav.helse.fritakagp.prop
 import no.nav.helse.fritakagp.service.PdlService
 import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonKlient
+import org.koin.core.module.Module
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import java.net.URL
 import javax.sql.DataSource
 
-fun localDevConfig(config: ApplicationConfig) = module {
+fun localConfig(config: ApplicationConfig): Module = module {
+    val env = Env(config)
+
     mockExternalDependecies()
+
     single { GrunnbeloepClient(get()) }
     single { BeloepBeregning(get()) }
-    single { HikariDataSource(createHikariConfig(config.getjdbcUrlFromProperties(), config.getString("database.username"), config.getString("database.password"))) } bind DataSource::class
+    single { HikariDataSource(createHikariConfig(env.databaseUrl, env.databaseUsername, env.databasePassword)) } bind DataSource::class
     single { PostgresGravidSoeknadRepository(get(), get()) } bind GravidSoeknadRepository::class
     single { PostgresGravidKravRepository(get(), get()) } bind GravidKravRepository::class
     single { PostgresKroniskSoeknadRepository(get(), get()) } bind KroniskSoeknadRepository::class
     single { PostgresKroniskKravRepository(get(), get()) } bind KroniskKravRepository::class
 
-    single { SoeknadmeldingKafkaProducer(localCommonKafkaProps(), config.getString("kafka_soeknad_topic_name"), get(), StringKafkaProducerFactory()) } bind SoeknadmeldingSender::class
-    single { KravmeldingKafkaProducer(localCommonKafkaProps(), config.getString("kafka_krav_topic_name"), get(), StringKafkaProducerFactory()) } bind KravmeldingSender::class
+    single { SoeknadmeldingKafkaProducer(localCommonKafkaProps(), config.prop("kafka_soeknad_topic_name"), get(), StringKafkaProducerFactory()) } bind SoeknadmeldingSender::class
+    single { KravmeldingKafkaProducer(localCommonKafkaProps(), config.prop("kafka_krav_topic_name"), get(), StringKafkaProducerFactory()) } bind KravmeldingSender::class
 
     single { PostgresBakgrunnsjobbRepository(get()) } bind BakgrunnsjobbRepository::class
     single { BakgrunnsjobbService(get()) }
@@ -103,13 +108,13 @@ fun localDevConfig(config: ApplicationConfig) = module {
 
     single { PdlService(get()) }
 
-    single { BrukernotifikasjonProcessor(get(), get(), get(), get(), get(), get(), 4, config.getString("frontend_app_url")) }
-    single { ArbeidsgiverNotifikasjonProcessor(get(), get(), get(), config.getString("frontend_app_url"), get()) }
+    single { BrukernotifikasjonProcessor(get(), get(), get(), get(), get(), get(), 4, env.frontendUrl) }
+    single { ArbeidsgiverNotifikasjonProcessor(get(), get(), get(), env.frontendUrl, get()) }
 
     single { DefaultAltinnAuthorizer(get()) } bind AltinnAuthorizer::class
 
-    single { DatapakkePublisherJob(get(), get(), config.getString("datapakke.api_url"), config.getString("datapakke.id"), get()) }
+    single { DatapakkePublisherJob(get(), get(), env.datapakkeUrl, env.datapakkeId, get()) }
     single { StatsRepoImpl(get()) } bind IStatsRepo::class
 
-    single { ArbeidsgiverNotifikasjonKlient(URL(config.getString("arbeidsgiver_notifikasjon_api_url")), get(), get()) }
+    single { ArbeidsgiverNotifikasjonKlient(URL(config.prop("arbeidsgiver_notifikasjon_api_url")), get(), get()) }
 }

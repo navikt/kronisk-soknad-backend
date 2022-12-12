@@ -88,7 +88,7 @@ fun preprodConfig(config: ApplicationConfig): Module = module {
     single { KroniskKravProcessor(get(), get(), get(), get(), get(), KroniskKravPDFGenerator(), get(), get(), get(), get(), robotiseringToggle = true) }
     single { KroniskKravSlettProcessor(get(), get(), get(), get(), get(), KroniskKravPDFGenerator(), get(), get(), get(), get()) }
 
-    single { Clients.iCorrespondenceExternalBasic(env.altinnMeldingEndpoint) }
+    single { Clients.iCorrespondenceExternalBasic(env.altinnMeldingUrl) }
 
     single {
         GravidSoeknadAltinnKvitteringSender(

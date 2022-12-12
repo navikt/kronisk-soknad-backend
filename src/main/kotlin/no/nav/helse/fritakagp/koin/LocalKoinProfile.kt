@@ -56,7 +56,6 @@ import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadKvitterin
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadKvitteringSenderDummy
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadPDFGenerator
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadProcessor
-import no.nav.helse.fritakagp.prop
 import no.nav.helse.fritakagp.service.PdlService
 import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonKlient
 import org.koin.core.module.Module
@@ -78,8 +77,8 @@ fun localConfig(config: ApplicationConfig): Module = module {
     single { PostgresKroniskSoeknadRepository(get(), get()) } bind KroniskSoeknadRepository::class
     single { PostgresKroniskKravRepository(get(), get()) } bind KroniskKravRepository::class
 
-    single { SoeknadmeldingKafkaProducer(localCommonKafkaProps(), config.prop("kafka_soeknad_topic_name"), get(), StringKafkaProducerFactory()) } bind SoeknadmeldingSender::class
-    single { KravmeldingKafkaProducer(localCommonKafkaProps(), config.prop("kafka_krav_topic_name"), get(), StringKafkaProducerFactory()) } bind KravmeldingSender::class
+    single { SoeknadmeldingKafkaProducer(localCommonKafkaProps(), env.kafkaTopicNameSoeknad, get(), StringKafkaProducerFactory()) } bind SoeknadmeldingSender::class
+    single { KravmeldingKafkaProducer(localCommonKafkaProps(), env.kafkaTopicNameKrav, get(), StringKafkaProducerFactory()) } bind KravmeldingSender::class
 
     single { PostgresBakgrunnsjobbRepository(get()) } bind BakgrunnsjobbRepository::class
     single { BakgrunnsjobbService(get()) }
@@ -116,5 +115,5 @@ fun localConfig(config: ApplicationConfig): Module = module {
     single { DatapakkePublisherJob(get(), get(), env.datapakkeUrl, env.datapakkeId, get()) }
     single { StatsRepoImpl(get()) } bind IStatsRepo::class
 
-    single { ArbeidsgiverNotifikasjonKlient(URL(config.prop("arbeidsgiver_notifikasjon_api_url")), get(), get()) }
+    single { ArbeidsgiverNotifikasjonKlient(URL(env.arbeidsgiverNotifikasjonUrl), get(), get()) }
 }

@@ -1,12 +1,5 @@
 package no.nav.helse.slowtests.systemtests.api
 
-import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.databind.MapperFeature
-import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.KotlinModule
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.ktor.client.HttpClient
 import io.ktor.client.call.receive
 import io.ktor.client.request.HttpRequestBuilder
@@ -20,6 +13,7 @@ import io.ktor.http.setCookie
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.runBlocking
 import no.nav.helse.fritakagp.FritakAgpApplication
+import no.nav.helse.fritakagp.customObjectMapper
 import no.nav.helse.fritakagp.web.api.resreq.Problem
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
@@ -39,15 +33,7 @@ import org.koin.test.inject
 open class SystemTestBase : KoinTest {
 
     val httpClient by inject<HttpClient>()
-    val objectMapper = jacksonObjectMapper()
-        .configure(SerializationFeature.INDENT_OUTPUT, true)
-        .registerModule(KotlinModule())
-        .registerModule(Jdk8Module())
-        .registerModule(JavaTimeModule())
-        .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-        .configure(SerializationFeature.INDENT_OUTPUT, true)
-        .configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
-        .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+    val objectMapper = customObjectMapper(false)
 
     companion object {
         val testServerPort = 8989

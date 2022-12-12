@@ -42,7 +42,7 @@ class Env(val config: ApplicationConfig) {
 
     val arbeidsgiverNotifikasjonUrl = "arbeidsgiver_notifikasjon_api_url".prop()
 
-    val brregUrl = "brreg_enhet_url".prop() // TODO rename i app.config
+    val brregUrl = "brreg_enhet_url".prop()
 
     val clamAvUrl = "clamav_url".prop()
 

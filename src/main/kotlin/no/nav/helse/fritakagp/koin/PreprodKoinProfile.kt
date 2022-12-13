@@ -1,7 +1,6 @@
 package no.nav.helse.fritakagp.koin
 
 import com.zaxxer.hikari.HikariDataSource
-import io.ktor.config.ApplicationConfig
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbRepository
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbService
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.PostgresBakgrunnsjobbRepository
@@ -57,10 +56,8 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import javax.sql.DataSource
 
-fun preprodConfig(config: ApplicationConfig): Module = module {
-    val env = Env(config)
-
-    externalSystemClients(config)
+fun preprodConfig(env: Env.Preprod): Module = module {
+    externalSystemClients(env)
 
     single {
         HikariDataSource(

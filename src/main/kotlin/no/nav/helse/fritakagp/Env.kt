@@ -2,12 +2,25 @@ package no.nav.helse.fritakagp
 
 import io.ktor.config.ApplicationConfig
 
-class Env(val config: ApplicationConfig) {
-    val appEnv = when ("koin.profile".prop()) {
-        "PROD" -> AppEnv.PROD
-        "PREPROD" -> AppEnv.PREPROD
-        else -> AppEnv.LOCAL
+fun readEnv(config: ApplicationConfig): Env =
+    when (config.prop("koin.profile")) {
+        "PROD" -> Env::Prod
+        "PREPROD" -> Env::Preprod
+        else -> Env::Local
     }
+        .invoke(config)
+
+sealed class Env private constructor(
+    private val config: ApplicationConfig
+) {
+    class Prod(config: ApplicationConfig) : Auth(config)
+    class Preprod(config: ApplicationConfig) : Auth(config)
+    class Local(config: ApplicationConfig) : Env(config)
+
+    sealed class Auth(config: ApplicationConfig) : Env(config) {
+        val oauth2 = EnvOauth2(config)
+    }
+
     val appShouldRunBackgroundWorkers = "run_background_workers".prop() == "true"
 
     val frontendUrl = "frontend_app_url".prop()
@@ -55,11 +68,37 @@ class Env(val config: ApplicationConfig) {
     val pdlUrl = "pdl_url".prop()
 
     private fun String.prop(): String =
-        config.property(this).getString()
+        config.prop(this)
 }
 
-enum class AppEnv {
-    PROD,
-    PREPROD,
-    LOCAL
+class EnvOauth2(mainConfig: ApplicationConfig) {
+    private val oauth2Config = "no.nav.security.jwt.client.registration.clients".let(mainConfig::configList)
+        .first {
+            it.prop("client_name") == "azure_ad"
+        }
+
+    val tokenEndpointUrl = "token_endpoint_url".prop()
+    val wellKnownUrl = "well_known_url".prop()
+    val grantType = "grant_type".prop()
+
+    val authClientId = "authentication.client_id".prop()
+    val authClientAuthMethod = "authentication.client_auth_method".prop()
+    val authClientSecret = "authentication.client_secret".prop()
+
+    val scopeProxy = "proxyscope".prop()
+    val scopeOppgave = "oppgavescope".prop()
+    val scopeDokarkiv = "dokarkivscope".prop()
+    val scopeArbeidsgivernotifikasjon = "arbeidsgivernotifikasjonscope".prop()
+
+    // TODO disse finnes ikke i application.conf, tester uten dem
+//    val resourceUrl = "resource_url".prop()
+//    val authenticationClientJwk = "authentication.client_jwk".prop() // fjernet
+//    val tokenExchangeAudience = "token-exchange.audience".prop() // fjernet
+//    val tokenExchangeResource = "token-exchange.resource".prop()
+
+    private fun String.prop(): String =
+        oauth2Config.prop(this)
 }
+
+private fun ApplicationConfig.prop(key: String): String =
+    property(key).getString()

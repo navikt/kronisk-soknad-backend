@@ -90,12 +90,6 @@ class EnvOauth2(mainConfig: ApplicationConfig) {
     val scopeDokarkiv = "dokarkivscope".prop()
     val scopeArbeidsgivernotifikasjon = "arbeidsgivernotifikasjonscope".prop()
 
-    // TODO disse finnes ikke i application.conf, tester uten dem
-//    val resourceUrl = "resource_url".prop()
-//    val authenticationClientJwk = "authentication.client_jwk".prop() // fjernet
-//    val tokenExchangeAudience = "token-exchange.audience".prop() // fjernet
-//    val tokenExchangeResource = "token-exchange.resource".prop()
-
     private fun String.prop(): String =
         oauth2Config.prop(this)
 }

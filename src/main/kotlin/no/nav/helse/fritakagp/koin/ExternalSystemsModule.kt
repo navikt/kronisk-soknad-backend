@@ -178,8 +178,7 @@ private fun EnvOauth2.clientConfig(scope: String): ClientProperties =
         scope.split(","),
         authProps(),
         null,
-//        ClientProperties.TokenExchangeProperties("", null)
-        null // TODO tester med null istedenfor "tom" token exchange
+        null
     )
 
 private fun EnvOauth2.authProps(): ClientAuthenticationProperties =

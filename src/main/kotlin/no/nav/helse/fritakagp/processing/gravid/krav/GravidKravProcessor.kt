@@ -31,6 +31,7 @@ import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonPr
 import no.nav.helse.fritakagp.service.BehandlendeEnhetService
 import no.nav.helsearbeidsgiver.utils.log.logger
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.util.Base64
 import java.util.UUID
 
@@ -45,7 +46,8 @@ class GravidKravProcessor(
     private val bucketStorage: BucketStorage,
     private val brregClient: BrregClient,
     private val behandlendeEnhetService: BehandlendeEnhetService,
-    private val robotiseringToggle: Boolean = false
+    private val robotiseringToggle: Boolean = false,
+    private val robotiseringDato: LocalDateTime = LocalDateTime.of(2022, 12, 1, 12, 0)
 
 ) : BakgrunnsjobbProsesserer {
     companion object {
@@ -204,8 +206,8 @@ class GravidKravProcessor(
         krav.oppgaveId
         oppgaveKlient
 
-        val beskrivelse = if (robotiseringToggle) om.writeValueAsString(krav.toKravForOppgave()) else generereGravidkKravBeskrivelse(krav, KroniskKrav.tittel)
-        val oppgaveType = if (robotiseringToggle) "ROB_BEH" else "BEH_REF"
+        val beskrivelse = if (robotiseringToggle && krav.opprettet.isBefore(robotiseringDato)) om.writeValueAsString(krav.toKravForOppgave()) else generereGravidkKravBeskrivelse(krav, KroniskKrav.tittel)
+        val oppgaveType = if (robotiseringToggle && krav.opprettet.isBefore(robotiseringDato)) "ROB_BEH" else "BEH_REF"
         val request = OpprettOppgaveRequest(
             aktoerId = aktoerId,
             journalpostId = krav.journalpostId,

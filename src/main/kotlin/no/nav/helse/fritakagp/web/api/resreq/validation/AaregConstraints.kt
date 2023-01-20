@@ -14,11 +14,11 @@ fun <E> Validator<E>.Property<LocalDate?>.måHaAktivtArbeidsforhold(agp: Arbeids
         val ansattPerioder = slåSammenPerioder(aaregData.map { it.ansettelsesperiode.periode })
         return@validate ansattPerioder.any { ansPeriode ->
             (ansPeriode.tom == null || agp.tom.isBefore(ansPeriode.tom) || agp.tom == ansPeriode.tom) &&
-                ansPeriode.fom!!.isBefore(agp.fom)
+                (ansPeriode.fom!!.isBefore(agp.fom) || ansPeriode.fom!!.isEqual(agp.fom))
         } ||
             aaregData.map { it.ansettelsesperiode.periode }.any { ansPeriode ->
                 (ansPeriode.tom == null || agp.tom.isBefore(ansPeriode.tom) || agp.tom == ansPeriode.tom) &&
-                    ansPeriode.fom!!.isBefore(agp.fom)
+                    (ansPeriode.fom!!.isBefore(agp.fom) || ansPeriode.fom!!.isEqual(agp.fom))
             }
     }
 

@@ -12,15 +12,16 @@ val MAKS_DAGER_OPPHOLD = 3L
 fun <E> Validator<E>.Property<LocalDate?>.måHaAktivtArbeidsforhold(agp: Arbeidsgiverperiode, aaregData: List<Arbeidsforhold>) =
     this.validate(ArbeidsforholdConstraint()) {
         val ansattPerioder = slåSammenPerioder(aaregData.map { it.ansettelsesperiode.periode })
-        return@validate ansattPerioder.any { ansPeriode ->
-            (ansPeriode.tom == null || agp.tom.isBefore(ansPeriode.tom) || agp.tom == ansPeriode.tom) &&
-                (ansPeriode.fom!!.isBefore(agp.fom) || ansPeriode.fom!!.isEqual(agp.fom))
-        } ||
-            aaregData.map { it.ansettelsesperiode.periode }.any { ansPeriode ->
-                (ansPeriode.tom == null || agp.tom.isBefore(ansPeriode.tom) || agp.tom == ansPeriode.tom) &&
-                    (ansPeriode.fom!!.isBefore(agp.fom) || ansPeriode.fom!!.isEqual(agp.fom))
-            }
+        return@validate agp.innenforArbeidsforhold(ansattPerioder) ||
+            agp.innenforArbeidsforhold(aaregData.map { it.ansettelsesperiode.periode })
     }
+
+fun Arbeidsgiverperiode.innenforArbeidsforhold(ansattPerioder: List<AaregPeriode>): Boolean {
+    return ansattPerioder.any { ansPeriode ->
+        (ansPeriode.tom == null || this.tom.isBefore(ansPeriode.tom) || this.tom == ansPeriode.tom) &&
+            (ansPeriode.fom!!.isBefore(this.fom) || ansPeriode.fom!!.isEqual(this.fom))
+    }
+}
 
 fun slåSammenPerioder(list: List<AaregPeriode>): List<AaregPeriode> {
     if (list.size < 2) return list

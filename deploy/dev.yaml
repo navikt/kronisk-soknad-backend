@@ -81,7 +81,7 @@ spec:
     - name: ALTINN_ENDPOINT
       value: https://tt02.altinn.no/ServiceEngineExternal/CorrespondenceAgencyExternalBasic.svc
     - name: CLAM_AV_URL
-      value: http://clamav.clamav.svc.cluster.local/scan
+      value: http://clamav.nais-system/scan
     - name: GCP_PRJ_ID
       value: helsearbeidsgiver-dev-6d06
     - name: GCP_BUCKET_NAME

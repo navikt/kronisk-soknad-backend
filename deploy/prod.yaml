@@ -60,7 +60,7 @@ spec:
           namespace: helsearbeidsgiver
           cluster: prod-fss
         - application: clamav
-          namespace: clamav
+          namespace: nais-system
 
   envFrom:
     # servicebrukerens passord som er  hentet fra vault og lagt inn slik: https://doc.nais.io/security/secrets/kubernetes-secrets/
@@ -76,7 +76,7 @@ spec:
     - name: ALTINN_ENDPOINT
       value: https://www.altinn.no/ServiceEngineExternal/CorrespondenceAgencyExternalBasic.svc
     - name: CLAM_AV_URL
-      value: http://clamav.clamav.svc.cluster.local/scan
+      value: http://clamav.nais-system/scan
     - name: GCP_PRJ_ID
       value: helsearbeidsgiver-prod-8a1c
     - name: GCP_BUCKET_NAME

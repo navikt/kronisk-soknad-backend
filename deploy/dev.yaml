@@ -60,7 +60,7 @@ spec:
           namespace: helsearbeidsgiver
           cluster: dev-fss
         - application: clamav
-          namespace: clamav
+          namespace: nais-system
 
   envFrom:
     # servicebrukerens passord som er  hentet fra vault og lagt inn slik: https://doc.nais.io/security/secrets/kubernetes-secrets/
@@ -125,7 +125,7 @@ spec:
           #retentionPeriodDays: 30
           # lifecycleCondition:
           # age: 7
-          # createdBefore: 2020-01-01
+        # createdBefore: 2020-01-01
         # numNewerVersions: 2
         #  withState: ANY
 

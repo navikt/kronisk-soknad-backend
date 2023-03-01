@@ -84,8 +84,8 @@ class OpprettRobotOppgaveGravidProcessor(
             behandlingstype = digitalKravBehandingsType,
             oppgavetype = oppgaveType,
             behandlingstema = fritakAGPBehandingsTema,
-            aktivDato = LocalDate.now(),
-            fristFerdigstillelse = LocalDate.now().plusDays(7),
+            aktivDato = krav.opprettet.toLocalDate(),
+            fristFerdigstillelse = krav.opprettet.toLocalDate().plusDays(7),
             prioritet = "NORM"
         )
 

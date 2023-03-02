@@ -1,5 +1,6 @@
 package no.nav.helse.fritakagp.processing.kronisk.krav
 
+import no.nav.helse.fritakagp.domain.DATE_FORMAT
 import no.nav.helse.fritakagp.domain.KroniskKrav
 import no.nav.helse.fritakagp.domain.TIMESTAMP_FORMAT
 import org.apache.commons.lang3.text.WordUtils
@@ -60,8 +61,8 @@ class KroniskKravPDFGenerator {
                 }
                 val gradering = (periode.gradering * 100).toString()
                 with(content) {
-                    writeTextWrapped("FOM: ${periode.fom}")
-                    writeTextWrapped("TOM: ${periode.tom}")
+                    writeTextWrapped("FOM: ${periode.fom.format(DATE_FORMAT)}")
+                    writeTextWrapped("TOM: ${periode.tom.format(DATE_FORMAT)}")
                     writeTextWrapped("Sykmeldingsgrad: $gradering%")
                     writeTextWrapped("Antall dager det kreves refusjon for: ${periode.antallDagerMedRefusjon}")
                     writeTextWrapped("Beregnet månedsinntekt (NOK): ${periode.månedsinntekt.roundToInt()}")
@@ -103,8 +104,8 @@ class KroniskKravPDFGenerator {
             }
             val gradering = (periode.gradering * 100).toString()
             with(content) {
-                writeTextWrapped("FOM: ${periode.fom}")
-                writeTextWrapped("TOM: ${periode.tom}")
+                writeTextWrapped("FOM: ${periode.fom.format(DATE_FORMAT)}")
+                writeTextWrapped("TOM: ${periode.tom.format(DATE_FORMAT)}")
                 writeTextWrapped("Sykmeldingsgrad: $gradering%")
                 writeTextWrapped("Antall dager det kreves refusjon for: ${periode.antallDagerMedRefusjon}")
                 writeTextWrapped("Beregnet månedsinntekt (NOK): ${periode.månedsinntekt.roundToInt()}")

@@ -53,7 +53,6 @@ spec:
         - host: tt02.altinn.no
         - host: kafka-schema-registry.nais-q.adeo.no
         - host: data.brreg.no
-        - host: ag-notifikasjon-produsent-api.intern.dev.nav.no
 
       rules:
         - application: helsearbeidsgiver-proxy
@@ -61,6 +60,8 @@ spec:
           cluster: dev-fss
         - application: clamav
           namespace: nais-system
+        - application: notifikasjon-produsent-api
+          namespace: fager
 
   envFrom:
     # servicebrukerens passord som er  hentet fra vault og lagt inn slik: https://doc.nais.io/security/secrets/kubernetes-secrets/
@@ -107,7 +108,7 @@ spec:
     - name: NORG2_URL
       value: https://helsearbeidsgiver-proxy.dev-fss-pub.nais.io/norg
     - name: ARBEIDSGIVER_NOTIFIKASJON_API_URL
-      value: https://ag-notifikasjon-produsent-api.intern.dev.nav.no/api/graphql
+      value: http://notifikasjon-produsent-api.fager/api/graphql
     - name: ARBEIDSGIVER_NOTIFIKASJON_SCOPE
       value: "api://dev-gcp.fager.notifikasjon-produsent-api/.default"
     - name: FRONTEND_URL

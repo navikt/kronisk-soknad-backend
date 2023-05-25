@@ -88,7 +88,7 @@ class KroniskSoeknadProcessor(
                 Bakgrunnsjobb(
                     maksAntallForsoek = 10,
                     data = om.writeValueAsString(KroniskSoeknadKafkaProcessor.JobbData(soeknad.id)),
-                    type = KroniskSoeknadKafkaProcessor.JOB_TYPE,
+                    type = KroniskSoeknadKafkaProcessor.JOB_TYPE
                 )
             )
             bakgrunnsjobbRepo.save(
@@ -143,10 +143,10 @@ class KroniskSoeknadProcessor(
                         navn = soeknad.virksomhetsnavn ?: "Ukjent arbeidsgiver",
                     ),
                     dokumenter = createDocuments(soeknad, KroniskSoeknad.tittel),
-                    datoMottatt = soeknad.opprettet.toLocalDate(),
+                    datoMottatt = soeknad.opprettet.toLocalDate()
                 ),
                 true,
-                UUID.randomUUID().toString(),
+                UUID.randomUUID().toString()
             )
             logger.debug("Journalført ${soeknad.id} med ref ${response.journalpostId}")
             return response.journalpostId
@@ -176,8 +176,8 @@ class KroniskSoeknadProcessor(
                     ),
                 ),
                 brevkode = "soeknad_om_fritak_fra_agp_kronisk",
-                tittel = journalfoeringsTittel,
-            ),
+                tittel = journalfoeringsTittel
+            )
         )
 
         bucketStorage.getDocAsString(soeknad.id)?.let {

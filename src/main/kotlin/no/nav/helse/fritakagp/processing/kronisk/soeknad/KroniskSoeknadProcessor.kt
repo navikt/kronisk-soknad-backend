@@ -164,7 +164,7 @@ class KroniskSoeknadProcessor(
 
     private fun createDocuments(
         soeknad: KroniskSoeknad,
-        journalfoeringsTittel: String,
+        journalfoeringsTittel: String
     ): List<Dokument> {
         val base64EnkodetPdf = Base64.getEncoder().encodeToString(pdfGenerator.lagPDF(soeknad))
         val jsonOrginalDokument = Base64.getEncoder().encodeToString(om.writeValueAsBytes(soeknad))
@@ -172,8 +172,8 @@ class KroniskSoeknadProcessor(
             Dokument(
                 dokumentVarianter = listOf(
                     DokumentVariant(
-                        fysiskDokument = base64EnkodetPdf,
-                    ),
+                        fysiskDokument = base64EnkodetPdf
+                    )
                 ),
                 brevkode = "soeknad_om_fritak_fra_agp_kronisk",
                 tittel = journalfoeringsTittel

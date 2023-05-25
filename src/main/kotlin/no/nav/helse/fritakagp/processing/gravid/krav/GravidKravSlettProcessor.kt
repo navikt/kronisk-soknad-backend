@@ -24,6 +24,7 @@ import no.nav.helse.fritakagp.domain.GravidKrav
 import no.nav.helse.fritakagp.domain.generereSlettGravidKravBeskrivelse
 import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
+import no.nav.helse.fritakagp.journalførDokumentNy
 import no.nav.helse.fritakagp.service.BehandlendeEnhetService
 import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonKlient
 import no.nav.helsearbeidsgiver.utils.log.logger
@@ -94,7 +95,7 @@ class GravidKravSlettProcessor(
 
     fun journalførSletting(krav: GravidKrav): String {
         val journalfoeringsTittel = "Annuller ${GravidKrav.tittel}"
-        val response = dokarkivKlient.journalførDokument(
+        val journalpostId = dokarkivKlient.journalførDokumentNy(
             JournalpostRequest(
                 tittel = journalfoeringsTittel,
                 journalposttype = Journalposttype.INNGAAENDE,
@@ -110,12 +111,14 @@ class GravidKravSlettProcessor(
                 datoMottatt = krav.opprettet.toLocalDate()
             ),
             true,
-            UUID.randomUUID().toString()
+            UUID.randomUUID().toString(),
+            om,
+            logger
 
         )
 
-        logger.debug("Journalført ${krav.id} med ref ${response.journalpostId}")
-        return response.journalpostId
+        logger.debug("Journalført ${krav.id} med ref $journalpostId")
+        return journalpostId
     }
 
     private fun createDocuments(

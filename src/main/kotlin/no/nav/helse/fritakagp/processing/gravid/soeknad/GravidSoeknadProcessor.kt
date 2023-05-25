@@ -25,6 +25,7 @@ import no.nav.helse.fritakagp.domain.GravidSoeknad
 import no.nav.helse.fritakagp.domain.generereGravidSoeknadBeskrivelse
 import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
+import no.nav.helse.fritakagp.journalførDokumentNy
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor.Jobbdata.SkjemaType.GravidSøknad
 import no.nav.helse.fritakagp.service.BehandlendeEnhetService
@@ -112,7 +113,7 @@ class GravidSoeknadProcessor(
     }
 
     fun journalfør(soeknad: GravidSoeknad): String {
-        val response = dokarkivKlient.journalførDokument(
+        val journalpostId = dokarkivKlient.journalførDokumentNy(
             JournalpostRequest(
                 tittel = GravidSoeknad.tittel,
                 journalposttype = Journalposttype.INNGAAENDE,
@@ -128,11 +129,13 @@ class GravidSoeknadProcessor(
                 datoMottatt = soeknad.opprettet.toLocalDate()
             ),
             true,
-            UUID.randomUUID().toString()
+            UUID.randomUUID().toString(),
+            om,
+            logger
         )
 
-        logger.debug("Journalført ${soeknad.id} med ref ${response.journalpostId}")
-        return response.journalpostId
+        logger.debug("Journalført ${soeknad.id} med ref $journalpostId")
+        return journalpostId
     }
 
     /**

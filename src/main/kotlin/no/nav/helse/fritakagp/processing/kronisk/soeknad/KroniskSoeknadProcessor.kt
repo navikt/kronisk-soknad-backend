@@ -28,6 +28,7 @@ import no.nav.helse.fritakagp.domain.KroniskSoeknad
 import no.nav.helse.fritakagp.domain.generereKroniskSoeknadBeskrivelse
 import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
+import no.nav.helse.fritakagp.journalførDokumentNy
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor.Jobbdata.SkjemaType
 import no.nav.helse.fritakagp.service.BehandlendeEnhetService
@@ -129,9 +130,8 @@ class KroniskSoeknadProcessor(
     }
 
     fun journalfør(soeknad: KroniskSoeknad): String {
-        try {
-            val response = dokarkivKlient.journalførDokument(
-                JournalpostRequest(
+        val journalpostId = dokarkivKlient.journalførDokumentNy(
+            JournalpostRequest(
                     tittel = KroniskSoeknad.tittel,
                     journalposttype = Journalposttype.INNGAAENDE,
                     kanal = "NAV_NO",
@@ -146,20 +146,14 @@ class KroniskSoeknadProcessor(
                     datoMottatt = soeknad.opprettet.toLocalDate()
                 ),
                 true,
-                UUID.randomUUID().toString()
-            )
-            logger.debug("Journalført ${soeknad.id} med ref ${response.journalpostId}")
-            return response.journalpostId
-        } catch (e: ClientRequestException) {
-            if (e.response.status == HttpStatusCode.Conflict) {
-                val journalpostId = runBlocking { om.readTree(e.response.readText()).get("journalpostId").asText() }
-                if (!journalpostId.isNullOrEmpty()) {
-                    logger.info("Fikk 409 konflikt ved journalføring av kronisk-søknad(id=${soeknad.id}), Returnerer journalpostId($journalpostId) likevel.")
-                    return journalpostId
-                }
-            }
-            throw e
-        }
+                UUID.randomUUID().toString(),
+                om,
+                logger
+        )
+
+        logger.debug("Journalført ${soeknad.id} med ref $journalpostId")
+        return journalpostId
+
     }
 
     private fun createDocuments(

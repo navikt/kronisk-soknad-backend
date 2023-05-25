@@ -2,6 +2,9 @@ package no.nav.helse.fritakagp.processing.gravid.krav
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import io.ktor.client.features.ClientRequestException
+import io.ktor.client.statement.readText
+import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.runBlocking
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.Bakgrunnsjobb
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbProsesserer
@@ -26,6 +29,7 @@ import no.nav.helse.fritakagp.domain.KroniskKrav
 import no.nav.helse.fritakagp.domain.generereGravidkKravBeskrivelse
 import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
+import no.nav.helse.fritakagp.journalførDokumentNy
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor.Jobbdata.SkjemaType
 import no.nav.helse.fritakagp.service.BehandlendeEnhetService
@@ -128,7 +132,7 @@ class GravidKravProcessor(
     }
 
     fun journalfør(krav: GravidKrav): String {
-        val response = dokarkivKlient.journalførDokument(
+        val journalpostId = dokarkivKlient.journalførDokumentNy(
             JournalpostRequest(
                 tittel = GravidKrav.tittel,
                 journalposttype = Journalposttype.INNGAAENDE,
@@ -144,11 +148,13 @@ class GravidKravProcessor(
                 datoMottatt = krav.opprettet.toLocalDate()
             ),
             true,
-            UUID.randomUUID().toString()
+            UUID.randomUUID().toString(),
+            om,
+            logger
         )
 
-        logger.debug("Journalført ${krav.id} med ref ${response.journalpostId}")
-        return response.journalpostId
+        logger.debug("Journalført ${krav.id} med ref $journalpostId")
+        return journalpostId
     }
 
     private fun createDocuments(

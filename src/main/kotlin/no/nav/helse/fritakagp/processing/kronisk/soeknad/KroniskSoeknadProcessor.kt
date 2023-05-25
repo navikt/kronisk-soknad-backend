@@ -5,7 +5,6 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import io.ktor.client.features.ClientRequestException
 import io.ktor.client.statement.readText
 import io.ktor.http.HttpStatusCode
-import io.ktor.utils.io.readUTF8Line
 import kotlinx.coroutines.runBlocking
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.Bakgrunnsjobb
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbProsesserer
@@ -47,7 +46,7 @@ class KroniskSoeknadProcessor(
     private val om: ObjectMapper,
     private val bucketStorage: BucketStorage,
     private val brregClient: BrregClient,
-    private val behandlendeEnhetService: BehandlendeEnhetService,
+    private val behandlendeEnhetService: BehandlendeEnhetService
 ) : BakgrunnsjobbProsesserer {
     companion object {
         val dokumentasjonBrevkode = "soeknad_om_fritak_fra_agp_dokumentasjon"
@@ -90,14 +89,14 @@ class KroniskSoeknadProcessor(
                     maksAntallForsoek = 10,
                     data = om.writeValueAsString(KroniskSoeknadKafkaProcessor.JobbData(soeknad.id)),
                     type = KroniskSoeknadKafkaProcessor.JOB_TYPE,
-                ),
+                )
             )
             bakgrunnsjobbRepo.save(
                 Bakgrunnsjobb(
                     maksAntallForsoek = 10,
                     data = om.writeValueAsString(BrukernotifikasjonProcessor.Jobbdata(soeknad.id, SkjemaType.KroniskSøknad)),
-                    type = BrukernotifikasjonProcessor.JOB_TYPE,
-                ),
+                    type = BrukernotifikasjonProcessor.JOB_TYPE
+                )
             )
         } finally {
             updateAndLogOnFailure(soeknad)
@@ -192,12 +191,12 @@ class KroniskSoeknadProcessor(
                         DokumentVariant(
                             variantFormat = "ORIGINAL",
                             fysiskDokument = jsonOrginalDokument,
-                            filtype = "JSON",
-                        ),
+                            filtype = "JSON"
+                        )
                     ),
                     brevkode = dokumentasjonBrevkode,
-                    tittel = "Helsedokumentasjon",
-                ),
+                    tittel = "Helsedokumentasjon"
+                )
             )
         }
 
@@ -218,7 +217,7 @@ class KroniskSoeknadProcessor(
             behandlingstema = fritakAGPBehandingsTema,
             aktivDato = LocalDate.now(),
             fristFerdigstillelse = LocalDate.now().plusDays(7),
-            prioritet = "NORM",
+            prioritet = "NORM"
         )
 
         return runBlocking { oppgaveKlient.opprettOppgave(request, UUID.randomUUID().toString()).id.toString() }
@@ -238,7 +237,7 @@ class KroniskSoeknadProcessor(
             behandlingstema = fritakAGPBehandingsTema,
             aktivDato = LocalDate.now(),
             fristFerdigstillelse = LocalDate.now().plusDays(7),
-            prioritet = "NORM",
+            prioritet = "NORM"
         )
 
         return runBlocking { oppgaveKlient.opprettOppgave(request, UUID.randomUUID().toString()).id.toString() }

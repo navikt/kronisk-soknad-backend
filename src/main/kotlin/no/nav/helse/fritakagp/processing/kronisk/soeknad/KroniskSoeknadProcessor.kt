@@ -2,6 +2,10 @@ package no.nav.helse.fritakagp.processing.kronisk.soeknad
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import io.ktor.client.features.ClientRequestException
+import io.ktor.client.statement.readText
+import io.ktor.http.HttpStatusCode
+import io.ktor.utils.io.readUTF8Line
 import kotlinx.coroutines.runBlocking
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.Bakgrunnsjobb
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbProsesserer
@@ -43,7 +47,7 @@ class KroniskSoeknadProcessor(
     private val om: ObjectMapper,
     private val bucketStorage: BucketStorage,
     private val brregClient: BrregClient,
-    private val behandlendeEnhetService: BehandlendeEnhetService
+    private val behandlendeEnhetService: BehandlendeEnhetService,
 ) : BakgrunnsjobbProsesserer {
     companion object {
         val dokumentasjonBrevkode = "soeknad_om_fritak_fra_agp_dokumentasjon"
@@ -85,15 +89,15 @@ class KroniskSoeknadProcessor(
                 Bakgrunnsjobb(
                     maksAntallForsoek = 10,
                     data = om.writeValueAsString(KroniskSoeknadKafkaProcessor.JobbData(soeknad.id)),
-                    type = KroniskSoeknadKafkaProcessor.JOB_TYPE
-                )
+                    type = KroniskSoeknadKafkaProcessor.JOB_TYPE,
+                ),
             )
             bakgrunnsjobbRepo.save(
                 Bakgrunnsjobb(
                     maksAntallForsoek = 10,
                     data = om.writeValueAsString(BrukernotifikasjonProcessor.Jobbdata(soeknad.id, SkjemaType.KroniskSøknad)),
-                    type = BrukernotifikasjonProcessor.JOB_TYPE
-                )
+                    type = BrukernotifikasjonProcessor.JOB_TYPE,
+                ),
             )
         } finally {
             updateAndLogOnFailure(soeknad)
@@ -126,32 +130,42 @@ class KroniskSoeknadProcessor(
     }
 
     fun journalfør(soeknad: KroniskSoeknad): String {
-        val response = dokarkivKlient.journalførDokument(
-            JournalpostRequest(
-                tittel = KroniskSoeknad.tittel,
-                journalposttype = Journalposttype.INNGAAENDE,
-                kanal = "NAV_NO",
-                bruker = Bruker(soeknad.identitetsnummer, IdType.FNR),
-                eksternReferanseId = soeknad.id.toString(),
-                avsenderMottaker = AvsenderMottaker(
-                    id = soeknad.virksomhetsnummer,
-                    idType = IdType.ORGNR,
-                    navn = soeknad.virksomhetsnavn ?: "Ukjent arbeidsgiver"
+        try {
+            val response = dokarkivKlient.journalførDokument(
+                JournalpostRequest(
+                    tittel = KroniskSoeknad.tittel,
+                    journalposttype = Journalposttype.INNGAAENDE,
+                    kanal = "NAV_NO",
+                    bruker = Bruker(soeknad.identitetsnummer, IdType.FNR),
+                    eksternReferanseId = soeknad.id.toString(),
+                    avsenderMottaker = AvsenderMottaker(
+                        id = soeknad.virksomhetsnummer,
+                        idType = IdType.ORGNR,
+                        navn = soeknad.virksomhetsnavn ?: "Ukjent arbeidsgiver",
+                    ),
+                    dokumenter = createDocuments(soeknad, KroniskSoeknad.tittel),
+                    datoMottatt = soeknad.opprettet.toLocalDate(),
                 ),
-                dokumenter = createDocuments(soeknad, KroniskSoeknad.tittel),
-                datoMottatt = soeknad.opprettet.toLocalDate()
-            ),
-            true,
-            UUID.randomUUID().toString()
-        )
-
-        logger.debug("Journalført ${soeknad.id} med ref ${response.journalpostId}")
-        return response.journalpostId
+                true,
+                UUID.randomUUID().toString(),
+            )
+            logger.debug("Journalført ${soeknad.id} med ref ${response.journalpostId}")
+            return response.journalpostId
+        } catch (e: ClientRequestException) {
+            if (e.response.status == HttpStatusCode.Conflict) {
+                val journalpostId = runBlocking { om.readTree(e.response.readText()).get("journalpostId").asText() }
+                if (!journalpostId.isNullOrEmpty()) {
+                    logger.info("Fikk 409 konflikt ved journalføring av kronisk-søknad(id=${soeknad.id}), Returnerer journalpostId($journalpostId) likevel.")
+                    return journalpostId
+                }
+            }
+            throw e
+        }
     }
 
     private fun createDocuments(
         soeknad: KroniskSoeknad,
-        journalfoeringsTittel: String
+        journalfoeringsTittel: String,
     ): List<Dokument> {
         val base64EnkodetPdf = Base64.getEncoder().encodeToString(pdfGenerator.lagPDF(soeknad))
         val jsonOrginalDokument = Base64.getEncoder().encodeToString(om.writeValueAsBytes(soeknad))
@@ -159,12 +173,12 @@ class KroniskSoeknadProcessor(
             Dokument(
                 dokumentVarianter = listOf(
                     DokumentVariant(
-                        fysiskDokument = base64EnkodetPdf
-                    )
+                        fysiskDokument = base64EnkodetPdf,
+                    ),
                 ),
                 brevkode = "soeknad_om_fritak_fra_agp_kronisk",
-                tittel = journalfoeringsTittel
-            )
+                tittel = journalfoeringsTittel,
+            ),
         )
 
         bucketStorage.getDocAsString(soeknad.id)?.let {
@@ -173,17 +187,17 @@ class KroniskSoeknadProcessor(
                     dokumentVarianter = listOf(
                         DokumentVariant(
                             fysiskDokument = it.base64Data,
-                            filtype = if (it.extension == "jpg") "JPEG" else it.extension.uppercase()
+                            filtype = if (it.extension == "jpg") "JPEG" else it.extension.uppercase(),
                         ),
                         DokumentVariant(
                             variantFormat = "ORIGINAL",
                             fysiskDokument = jsonOrginalDokument,
-                            filtype = "JSON"
-                        )
+                            filtype = "JSON",
+                        ),
                     ),
                     brevkode = dokumentasjonBrevkode,
-                    tittel = "Helsedokumentasjon"
-                )
+                    tittel = "Helsedokumentasjon",
+                ),
             )
         }
 
@@ -204,7 +218,7 @@ class KroniskSoeknadProcessor(
             behandlingstema = fritakAGPBehandingsTema,
             aktivDato = LocalDate.now(),
             fristFerdigstillelse = LocalDate.now().plusDays(7),
-            prioritet = "NORM"
+            prioritet = "NORM",
         )
 
         return runBlocking { oppgaveKlient.opprettOppgave(request, UUID.randomUUID().toString()).id.toString() }
@@ -224,7 +238,7 @@ class KroniskSoeknadProcessor(
             behandlingstema = fritakAGPBehandingsTema,
             aktivDato = LocalDate.now(),
             fristFerdigstillelse = LocalDate.now().plusDays(7),
-            prioritet = "NORM"
+            prioritet = "NORM",
         )
 
         return runBlocking { oppgaveKlient.opprettOppgave(request, UUID.randomUUID().toString()).id.toString() }

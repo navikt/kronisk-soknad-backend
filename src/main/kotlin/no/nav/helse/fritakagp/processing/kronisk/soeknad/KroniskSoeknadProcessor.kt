@@ -144,11 +144,11 @@ class KroniskSoeknadProcessor(
                 ),
                 dokumenter = createDocuments(soeknad, KroniskSoeknad.tittel),
                 datoMottatt = soeknad.opprettet.toLocalDate()
-                ),
-                true,
-                UUID.randomUUID().toString(),
-                om,
-                logger
+            ),
+            true,
+            UUID.randomUUID().toString(),
+            om,
+            logger
         )
 
         logger.debug("Journalført ${soeknad.id} med ref $journalpostId")

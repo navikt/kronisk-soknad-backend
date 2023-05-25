@@ -132,18 +132,18 @@ class KroniskSoeknadProcessor(
     fun journalfør(soeknad: KroniskSoeknad): String {
         val journalpostId = dokarkivKlient.journalførDokumentNy(
             JournalpostRequest(
-                    tittel = KroniskSoeknad.tittel,
-                    journalposttype = Journalposttype.INNGAAENDE,
-                    kanal = "NAV_NO",
-                    bruker = Bruker(soeknad.identitetsnummer, IdType.FNR),
-                    eksternReferanseId = soeknad.id.toString(),
-                    avsenderMottaker = AvsenderMottaker(
-                        id = soeknad.virksomhetsnummer,
-                        idType = IdType.ORGNR,
-                        navn = soeknad.virksomhetsnavn ?: "Ukjent arbeidsgiver",
-                    ),
-                    dokumenter = createDocuments(soeknad, KroniskSoeknad.tittel),
-                    datoMottatt = soeknad.opprettet.toLocalDate()
+                tittel = KroniskSoeknad.tittel,
+                journalposttype = Journalposttype.INNGAAENDE,
+                kanal = "NAV_NO",
+                bruker = Bruker(soeknad.identitetsnummer, IdType.FNR),
+                eksternReferanseId = soeknad.id.toString(),
+                avsenderMottaker = AvsenderMottaker(
+                    id = soeknad.virksomhetsnummer,
+                    idType = IdType.ORGNR,
+                    navn = soeknad.virksomhetsnavn ?: "Ukjent arbeidsgiver",
+                ),
+                dokumenter = createDocuments(soeknad, KroniskSoeknad.tittel),
+                datoMottatt = soeknad.opprettet.toLocalDate()
                 ),
                 true,
                 UUID.randomUUID().toString(),
@@ -153,7 +153,6 @@ class KroniskSoeknadProcessor(
 
         logger.debug("Journalført ${soeknad.id} med ref $journalpostId")
         return journalpostId
-
     }
 
     private fun createDocuments(

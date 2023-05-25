@@ -2,6 +2,9 @@ package no.nav.helse.fritakagp.processing.kronisk.soeknad
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import io.ktor.client.features.ClientRequestException
+import io.ktor.client.statement.readText
+import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.runBlocking
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.Bakgrunnsjobb
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbProsesserer
@@ -126,27 +129,37 @@ class KroniskSoeknadProcessor(
     }
 
     fun journalfør(soeknad: KroniskSoeknad): String {
-        val response = dokarkivKlient.journalførDokument(
-            JournalpostRequest(
-                tittel = KroniskSoeknad.tittel,
-                journalposttype = Journalposttype.INNGAAENDE,
-                kanal = "NAV_NO",
-                bruker = Bruker(soeknad.identitetsnummer, IdType.FNR),
-                eksternReferanseId = soeknad.id.toString(),
-                avsenderMottaker = AvsenderMottaker(
-                    id = soeknad.virksomhetsnummer,
-                    idType = IdType.ORGNR,
-                    navn = soeknad.virksomhetsnavn ?: "Ukjent arbeidsgiver"
+        try {
+            val response = dokarkivKlient.journalførDokument(
+                JournalpostRequest(
+                    tittel = KroniskSoeknad.tittel,
+                    journalposttype = Journalposttype.INNGAAENDE,
+                    kanal = "NAV_NO",
+                    bruker = Bruker(soeknad.identitetsnummer, IdType.FNR),
+                    eksternReferanseId = soeknad.id.toString(),
+                    avsenderMottaker = AvsenderMottaker(
+                        id = soeknad.virksomhetsnummer,
+                        idType = IdType.ORGNR,
+                        navn = soeknad.virksomhetsnavn ?: "Ukjent arbeidsgiver",
+                    ),
+                    dokumenter = createDocuments(soeknad, KroniskSoeknad.tittel),
+                    datoMottatt = soeknad.opprettet.toLocalDate()
                 ),
-                dokumenter = createDocuments(soeknad, KroniskSoeknad.tittel),
-                datoMottatt = soeknad.opprettet.toLocalDate()
-            ),
-            true,
-            UUID.randomUUID().toString()
-        )
-
-        logger.debug("Journalført ${soeknad.id} med ref ${response.journalpostId}")
-        return response.journalpostId
+                true,
+                UUID.randomUUID().toString()
+            )
+            logger.debug("Journalført ${soeknad.id} med ref ${response.journalpostId}")
+            return response.journalpostId
+        } catch (e: ClientRequestException) {
+            if (e.response.status == HttpStatusCode.Conflict) {
+                val journalpostId = runBlocking { om.readTree(e.response.readText()).get("journalpostId").asText() }
+                if (!journalpostId.isNullOrEmpty()) {
+                    logger.info("Fikk 409 konflikt ved journalføring av kronisk-søknad(id=${soeknad.id}), Returnerer journalpostId($journalpostId) likevel.")
+                    return journalpostId
+                }
+            }
+            throw e
+        }
     }
 
     private fun createDocuments(

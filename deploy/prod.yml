@@ -1,0 +1,47 @@
+context: prod
+accessOutbound:
+  external:
+    - kafka-schema-registry.nais.adeo.no
+    - dokarkiv.prod-fss-pub.nais.io
+    - helsearbeidsgiver-proxy.prod-fss-pub.nais.io
+    - oppgave.prod-fss-pub.nais.io
+    - ag-notifikasjon-produsent-api.intern.nav.no
+    - api-gw.oera.no
+    - www.altinn.no
+    - data.brreg.no
+    - g.nav.no
+env:
+    # TODO ikke i dev
+  - name: KTOR_APPLICATION_BASEPATH
+    value: /fritak-agp-api
+  - name: ARBEIDSGIVER_NOTIFIKASJON_SCOPE
+    value: api://prod-gcp.fager.notifikasjon-produsent-api/.default
+  - name: DOKARKIV_SCOPE
+    value: api://prod-fss.teamdokumenthandtering.dokarkiv/.default
+  - name: OPPGAVE_SCOPE
+    value: api://prod-fss.oppgavehandtering.oppgave/.default
+  - name: PROXY_SCOPE
+    value: api://prod-fss.helsearbeidsgiver.helsearbeidsgiver-proxy/.default
+    # TODO ikke i dev
+  - name: AAREG_URL
+    value: https://helsearbeidsgiver-proxy.prod-fss-pub.nais.io/aareg-arbeidsforhold
+  - name: ARBEIDSGIVER_NOTIFIKASJON_API_URL
+    value: https://ag-notifikasjon-produsent-api.intern.nav.no/api/graphql
+  - name: DOKARKIV_URL
+    value: https://dokarkiv.prod-fss-pub.nais.io
+  - name: NORG2_URL
+    value: https://helsearbeidsgiver-proxy.prod-fss-pub.nais.io/norg
+  - name: OPPGAVEBEHANDLING_URL
+    value: https://oppgave.prod-fss-pub.nais.io/api/v1/oppgaver
+  - name: PDL_URL
+    value: https://helsearbeidsgiver-proxy.prod-fss-pub.nais.io/pdl
+  - name: ALTINN_SERVICE_OWNER_GW_URL
+    value: https://api-gw.oera.no/ekstern/altinn/api/serviceowner
+  - name: ALTINN_ENDPOINT
+    value: https://www.altinn.no/ServiceEngineExternal/CorrespondenceAgencyExternalBasic.svc
+  - name: ENHETSREGISTERET
+    value: https://data.brreg.no/enhetsregisteret/api/underenheter
+  - name: DATAPAKKE_API_URL
+    value: https://datakatalog-api.intern.nav.no/v1/datapackage
+  - name: DATAPAKKE_ID
+    value: a4570c9e9521df726e1050ebcd917b9a

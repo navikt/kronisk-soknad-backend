@@ -1,7 +1,6 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val mainClassFritakAgp = "no.nav.helse.fritakagp.AppKt"
-val githubPassword: String by project
 
 plugins {
     application
@@ -27,6 +26,8 @@ java {
 }
 
 repositories {
+    val githubPassword: String by project
+
     mavenCentral()
     google()
     maven(url = "https://packages.confluent.io/maven/")
@@ -36,11 +37,11 @@ repositories {
         }
     }
     maven {
+        setUrl("https://maven.pkg.github.com/navikt/*")
         credentials {
             username = "x-access-token"
             password = githubPassword
         }
-        setUrl("https://maven.pkg.github.com/navikt/*")
     }
 }
 

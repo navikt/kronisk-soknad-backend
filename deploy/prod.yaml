@@ -54,6 +54,8 @@ spec:
         - host: dokarkiv.prod-fss-pub.nais.io
         - host: oppgave.prod-fss-pub.nais.io
         - host: ag-notifikasjon-produsent-api.intern.nav.no
+        - host: api-gw.oera.no
+        - host: g.nav.no
 
       rules:
         - application: helsearbeidsgiver-proxy

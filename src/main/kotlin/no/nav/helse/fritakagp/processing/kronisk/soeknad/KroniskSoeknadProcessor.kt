@@ -25,7 +25,7 @@ import no.nav.helse.fritakagp.domain.KroniskSoeknad
 import no.nav.helse.fritakagp.domain.generereKroniskSoeknadBeskrivelse
 import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
-import no.nav.helse.fritakagp.journalførDokumentNy
+import no.nav.helse.fritakagp.journalførOgFerdigstillDokument
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor.Jobbdata.SkjemaType
 import no.nav.helse.fritakagp.service.BehandlendeEnhetService
@@ -127,7 +127,7 @@ class KroniskSoeknadProcessor(
     }
 
     fun journalfør(soeknad: KroniskSoeknad): String {
-        val journalpostId = dokarkivKlient.journalførDokumentNy(
+        val journalpostId = dokarkivKlient.journalførOgFerdigstillDokument(
             JournalpostRequest(
                 tittel = KroniskSoeknad.tittel,
                 journalposttype = Journalposttype.INNGAAENDE,

@@ -26,7 +26,7 @@ import no.nav.helse.fritakagp.domain.KroniskKrav
 import no.nav.helse.fritakagp.domain.generereGravidkKravBeskrivelse
 import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
-import no.nav.helse.fritakagp.journalførDokumentNy
+import no.nav.helse.fritakagp.journalførOgFerdigstillDokument
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor.Jobbdata.SkjemaType
 import no.nav.helse.fritakagp.service.BehandlendeEnhetService
@@ -129,7 +129,7 @@ class GravidKravProcessor(
     }
 
     fun journalfør(krav: GravidKrav): String {
-        val journalpostId = dokarkivKlient.journalførDokumentNy(
+        val journalpostId = dokarkivKlient.journalførOgFerdigstillDokument(
             JournalpostRequest(
                 tittel = GravidKrav.tittel,
                 journalposttype = Journalposttype.INNGAAENDE,

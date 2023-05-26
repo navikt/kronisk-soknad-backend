@@ -9,7 +9,7 @@ import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.DokarkivKlient
 import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.JournalpostRequest
 import org.slf4j.Logger
 
-fun DokarkivKlient.journalførDokumentNy(
+fun DokarkivKlient.journalførOgFerdigstillDokument(
     journalpost: JournalpostRequest,
     callId: String,
     om: ObjectMapper,

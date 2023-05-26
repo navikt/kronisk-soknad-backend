@@ -24,7 +24,7 @@ import no.nav.helse.fritakagp.domain.KroniskKrav
 import no.nav.helse.fritakagp.domain.generereSlettKroniskKravBeskrivelse
 import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
-import no.nav.helse.fritakagp.journalførDokumentNy
+import no.nav.helse.fritakagp.journalførOgFerdigstillDokument
 import no.nav.helse.fritakagp.service.BehandlendeEnhetService
 import no.nav.helsearbeidsgiver.utils.log.logger
 import java.time.LocalDate
@@ -93,7 +93,7 @@ class KroniskKravSlettProcessor(
 
     fun journalførSletting(krav: KroniskKrav): String {
         val journalfoeringsTittel = "Annuller ${KroniskKrav.tittel}"
-        val journalpostId = dokarkivKlient.journalførDokumentNy(
+        val journalpostId = dokarkivKlient.journalførOgFerdigstillDokument(
             JournalpostRequest(
                 tittel = journalfoeringsTittel,
                 journalposttype = Journalposttype.INNGAAENDE,

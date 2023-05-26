@@ -15,13 +15,13 @@ fun DokarkivKlient.journalførOgFerdigstillDokument(
     om: ObjectMapper,
     logger: Logger
 ): String {
-    try {
-        return this.journalførDokument(journalpost, true, callId).journalpostId
+    return try {
+        this.journalførDokument(journalpost, true, callId).journalpostId
     } catch (e: ClientRequestException) {
         if (e.response.status == HttpStatusCode.Conflict) {
-            val journalpostId = runBlocking { om.readTree(e.response.readText()).get("journalpostId").asText() }
+            val journalpostId = runBlocking { e.response.readText().let(om::readTree).get("journalpostId").asText() }
             if (!journalpostId.isNullOrEmpty()) {
-                logger.info("Fikk 409 konflikt ved journalføring med referanse(id=${journalpost.eksternReferanseId}) og tittel(${journalpost.tittel}, Returnerer journalpostId($journalpostId) likevel.")
+                logger.info("Fikk 409 Conflict ved journalføring med referanse(id=${journalpost.eksternReferanseId}) og tittel (${journalpost.tittel}. Bruker eksisterende journalpostId ($journalpostId) fra respons.")
                 return journalpostId
             }
         }

@@ -25,7 +25,7 @@ env:
   - name: KOIN_PROFILE
     value: PREPROD
   - name: RUN_BACKGROUND_WORKERS
-    value: "false"
+    value: false
   - name: GCP_PRJ_ID
     value: helsearbeidsgiver-dev-6d06
   - name: GCP_BUCKET_NAME

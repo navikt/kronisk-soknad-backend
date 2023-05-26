@@ -23,7 +23,7 @@ env:
   - name: KOIN_PROFILE
     value: PROD
   - name: RUN_BACKGROUND_WORKERS
-    value: "true"
+    value: true
     # TODO ikke i dev
   - name: KTOR_APPLICATION_BASEPATH
     value: /fritak-agp-api

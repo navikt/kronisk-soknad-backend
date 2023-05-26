@@ -97,5 +97,5 @@ spec:
       value: http://clamav.nais-system/scan
     {{#each env as |var|}}
     - name: {{ var.name }}
-      value: {{ var.value }}
+      value: "{{ var.value }}"
     {{/each}}

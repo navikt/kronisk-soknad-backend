@@ -128,7 +128,6 @@ class GravidSoeknadProcessor(
                 dokumenter = createDocuments(soeknad, GravidSoeknad.tittel),
                 datoMottatt = soeknad.opprettet.toLocalDate()
             ),
-            true,
             UUID.randomUUID().toString(),
             om,
             logger

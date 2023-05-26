@@ -11,13 +11,12 @@ import org.slf4j.Logger
 
 fun DokarkivKlient.journalførDokumentNy(
     journalpost: JournalpostRequest,
-    forsoekFerdigstill: Boolean,
     callId: String,
     om: ObjectMapper,
     logger: Logger
 ): String {
     try {
-        return this.journalførDokument(journalpost, forsoekFerdigstill, callId).journalpostId
+        return this.journalførDokument(journalpost, true, callId).journalpostId
     } catch (e: ClientRequestException) {
         if (e.response.status == HttpStatusCode.Conflict) {
             val journalpostId = runBlocking { om.readTree(e.response.readText()).get("journalpostId").asText() }

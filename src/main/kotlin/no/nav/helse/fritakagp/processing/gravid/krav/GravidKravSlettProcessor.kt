@@ -110,7 +110,6 @@ class GravidKravSlettProcessor(
                 dokumenter = createDocuments(krav, journalfoeringsTittel),
                 datoMottatt = krav.opprettet.toLocalDate()
             ),
-            true,
             UUID.randomUUID().toString(),
             om,
             logger

@@ -2,9 +2,6 @@ package no.nav.helse.fritakagp.processing.gravid.krav
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import io.ktor.client.features.ClientRequestException
-import io.ktor.client.statement.readText
-import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.runBlocking
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.Bakgrunnsjobb
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbProsesserer
@@ -147,7 +144,6 @@ class GravidKravProcessor(
                 dokumenter = createDocuments(krav, GravidKrav.tittel),
                 datoMottatt = krav.opprettet.toLocalDate()
             ),
-            true,
             UUID.randomUUID().toString(),
             om,
             logger

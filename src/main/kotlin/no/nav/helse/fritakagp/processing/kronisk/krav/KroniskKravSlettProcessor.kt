@@ -26,8 +26,6 @@ import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.journalførDokumentNy
 import no.nav.helse.fritakagp.service.BehandlendeEnhetService
-import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonKlient
-import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.hardDeleteSak
 import no.nav.helsearbeidsgiver.utils.log.logger
 import java.time.LocalDate
 import java.util.Base64
@@ -110,7 +108,6 @@ class KroniskKravSlettProcessor(
                 dokumenter = createDocuments(krav, journalfoeringsTittel),
                 datoMottatt = krav.opprettet.toLocalDate()
             ),
-            true,
             UUID.randomUUID().toString(),
             om,
             logger

@@ -135,7 +135,7 @@ class GravidKravProcessor(
                 journalposttype = Journalposttype.INNGAAENDE,
                 kanal = "NAV_NO",
                 bruker = Bruker(krav.identitetsnummer, IdType.FNR),
-                eksternReferanseId = krav.id.toString(),
+                eksternReferanseId = "fritakagp-gravid-krav-${krav.id}",
                 avsenderMottaker = AvsenderMottaker(
                     id = krav.virksomhetsnummer,
                     idType = IdType.ORGNR,

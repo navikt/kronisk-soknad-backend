@@ -137,7 +137,7 @@ class KroniskKravProcessor(
                 journalposttype = Journalposttype.INNGAAENDE,
                 kanal = "NAV_NO",
                 bruker = Bruker(krav.identitetsnummer, IdType.FNR),
-                eksternReferanseId = krav.id.toString(),
+                eksternReferanseId = "fritakagp-kronisk-krav-${krav.id}",
                 avsenderMottaker = AvsenderMottaker(
                     id = krav.virksomhetsnummer,
                     idType = IdType.ORGNR,

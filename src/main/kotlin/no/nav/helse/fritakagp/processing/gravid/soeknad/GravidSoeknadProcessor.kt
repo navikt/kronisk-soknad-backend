@@ -119,7 +119,7 @@ class GravidSoeknadProcessor(
                 journalposttype = Journalposttype.INNGAAENDE,
                 kanal = "NAV_NO",
                 bruker = Bruker(soeknad.identitetsnummer, IdType.FNR),
-                eksternReferanseId = soeknad.id.toString(),
+                eksternReferanseId = "fritakagp-gravid-soeknad-${soeknad.id}",
                 avsenderMottaker = AvsenderMottaker(
                     id = soeknad.virksomhetsnummer,
                     idType = IdType.ORGNR,

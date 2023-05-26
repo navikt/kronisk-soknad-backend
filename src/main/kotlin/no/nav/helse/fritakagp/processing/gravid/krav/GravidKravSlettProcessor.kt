@@ -101,7 +101,7 @@ class GravidKravSlettProcessor(
                 journalposttype = Journalposttype.INNGAAENDE,
                 kanal = "NAV_NO",
                 bruker = Bruker(krav.identitetsnummer, IdType.FNR),
-                eksternReferanseId = "${krav.id}-annul",
+                eksternReferanseId = "fritakagp-gravid-krav-${krav.id}-annul",
                 avsenderMottaker = AvsenderMottaker(
                     id = krav.virksomhetsnummer,
                     idType = IdType.ORGNR,

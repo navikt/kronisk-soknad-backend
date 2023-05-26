@@ -50,13 +50,18 @@ spec:
         databases:
           - name: fritakagp-db
             diskAutoresize: true
+    {{#if bucketName}}
     buckets:
-      - name: helse-arbeidsgiver-fritakagb-bucket{{#if(eq context "prod")}}-prod{{/if}}
+      - name: {{ bucketName }}
         uniformBucketLevelAccess: true
+    {{/if}}
 
+  {{#if ingresses}}
   ingresses:
-    - https://fritakagp-api.intern{{#if(eq context "dev")}}.dev{{/if}}.nav.no
-    - https://arbeidsgiver{{#if(eq context "dev")}}.intern.dev{{/if}}.nav.no/fritak-agp-api
+    {{#each ingresses as |ingress|}}
+    - {{ ingress }}
+    {{/each}}
+  {{/if}}
 
   accessPolicy:
     outbound:
@@ -71,7 +76,7 @@ spec:
           namespace: {{ app.namespace }}
         {{/each}}
 
-      {{#if external}}
+      {{#if accessOutbound.external}}
       external:
         {{#each accessOutbound.external as |host|}}
         - host: {{ host }}
@@ -79,26 +84,15 @@ spec:
       {{/if}}
 
   envFrom:
-    # servicebrukerens passord som er  hentet fra vault og lagt inn slik: https://doc.nais.io/security/secrets/kubernetes-secrets/
-    - secret: service-user-password{{#if(eq context "prod")}}-prod{{/if}}
-    - secret: altinn-user-password{{#if(eq context "prod")}}-prod{{/if}}
-    - secret: altinn-api-gw-keys{{#if(eq context "prod")}}-prod{{/if}}
+    {{#each envFrom as |secret|}}
+    - secret: {{ secret }}
+    {{/each}}
     # tilgjengeliggjør LOGINSERVICE_IDPORTEN_DISCOVERY_URL og LOGINSERVICE_IDPORTEN_AUDIENCE
     - configmap: loginservice-idporten
 
   env:
-    - name: KOIN_PROFILE
-      value: {{#if(eq context "prod")}}PROD{{else}}PREPROD{{/if}}
-    - name: RUN_BACKGROUND_WORKERS
-      value: {{#if(eq context "prod")}}true{{else}}false{{/if}}
-    - name: GCP_PRJ_ID
-      value: helsearbeidsgiver-{{#if(eq context "prod")}}prod-8a1c{{else}}dev-6d06{{/if}}
-    - name: GCP_BUCKET_NAME
-      value: helse-arbeidsgiver-fritakagb-bucket{{#if(eq context "prod")}}-prod{{/if}}
     - name: KAFKA_BESKJED_TOPIC_NAME
       value: min-side.aapen-brukernotifikasjon-beskjed-v1
-    - name: FRONTEND_URL
-      value: https://arbeidsgiver{{#if(eq context "dev")}}.intern.dev{{/if}}.nav.no/fritak-agp
     - name: CLAM_AV_URL
       value: http://clamav.nais-system/scan
     {{#each env as |var|}}

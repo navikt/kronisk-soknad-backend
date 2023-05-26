@@ -1,4 +1,8 @@
 context: prod
+bucketName: helse-arbeidsgiver-fritakagb-bucket-prod
+ingresses:
+  - https://fritakagp-api.intern.nav.no
+  - https://arbeidsgiver.nav.no/fritak-agp-api
 accessOutbound:
   external:
     - kafka-schema-registry.nais.adeo.no
@@ -10,10 +14,23 @@ accessOutbound:
     - www.altinn.no
     - data.brreg.no
     - g.nav.no
+envFrom:
+  # servicebrukerens passord som er  hentet fra vault og lagt inn slik: https://doc.nais.io/security/secrets/kubernetes-secrets/
+  - service-user-password-prod
+  - altinn-user-password-prod
+  - altinn-api-gw-keys-prod
 env:
+  - name: KOIN_PROFILE
+    value: PROD
+  - name: RUN_BACKGROUND_WORKERS
+    value: "true"
     # TODO ikke i dev
   - name: KTOR_APPLICATION_BASEPATH
     value: /fritak-agp-api
+  - name: GCP_PRJ_ID
+    value: helsearbeidsgiver-prod-8a1c
+  - name: GCP_BUCKET_NAME
+    value: helse-arbeidsgiver-fritakagb-bucket-prod
   - name: ARBEIDSGIVER_NOTIFIKASJON_SCOPE
     value: api://prod-gcp.fager.notifikasjon-produsent-api/.default
   - name: DOKARKIV_SCOPE
@@ -23,6 +40,8 @@ env:
   - name: PROXY_SCOPE
     value: api://prod-fss.helsearbeidsgiver.helsearbeidsgiver-proxy/.default
     # TODO ikke i dev
+  - name: FRONTEND_URL
+    value: https://arbeidsgiver.nav.no/fritak-agp
   - name: AAREG_URL
     value: https://helsearbeidsgiver-proxy.prod-fss-pub.nais.io/aareg-arbeidsforhold
   - name: ARBEIDSGIVER_NOTIFIKASJON_API_URL

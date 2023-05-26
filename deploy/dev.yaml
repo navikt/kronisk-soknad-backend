@@ -54,6 +54,7 @@ spec:
         - host: kafka-schema-registry.nais-q.adeo.no
         - host: data.brreg.no
         - host: api-gw-q1.oera.no
+        - host: g.nav.no
 
       rules:
         - application: helsearbeidsgiver-proxy

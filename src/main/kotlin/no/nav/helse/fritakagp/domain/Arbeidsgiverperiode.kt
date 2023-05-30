@@ -37,6 +37,7 @@ data class ArbeidsgiverperiodeNy(
     private var _tom: LocalDate? = null,
     @JsonInclude(JsonInclude.Include.NON_NULL)
     var perioder: List<Periode>?,
+    val oppgaveId : String? = null
 ){
 
     init {
@@ -53,16 +54,18 @@ data class ArbeidsgiverperiodeNy(
     @get:JsonInclude(JsonInclude.Include.NON_NULL)
     val tom get() = this._tom
 
-    fun tilArbeidsgiverperideLegacy(): List<Arbeidsgiverperiode>? {
-        return perioder?.map { Arbeidsgiverperiode(
-            fom = it.fom,
-            tom = it.tom,
-            antallDagerMedRefusjon = felter.antallDagerMedRefusjon,
-            månedsinntekt =  felter.månedsinntekt,
-        ).also {
-            it.belop = felter.belop
-            it.dagsats = felter.dagsats
-        } }?.toList()
+    fun tilArbeidsgiverperideLegacy(): List<Arbeidsgiverperiode> {
+        return perioder!!.map {
+            Arbeidsgiverperiode(
+                fom = it.fom,
+                tom = it.tom,
+                antallDagerMedRefusjon = felter.antallDagerMedRefusjon,
+                månedsinntekt = felter.månedsinntekt,
+            ).also {
+                it.belop = felter.belop
+                it.dagsats = felter.dagsats
+            }
+        }.toList()
     }
 
 }
@@ -71,4 +74,3 @@ data class Periode(
     val fom: LocalDate,
     val tom: LocalDate,
 )
-

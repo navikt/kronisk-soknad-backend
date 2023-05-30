@@ -17,10 +17,11 @@ interface CustomConstraint : Constraint {
 }
 
 class RefusjonsdagerKanIkkeOverstigePeriodelengdenConstraint : CustomConstraint
-fun <E> Validator<E>.Property<Int>.refusjonsDagerIkkeOverstigerPeriodelengdeB(perioder: List<Periode>) =
+
+fun <E> Validator<E>.Property<Iterable<Periode>?>.refusjonsDagerIkkeOverstigerPeriodelengde(antallDagerMedRefusjon: Int) =
     this.validate(RefusjonsdagerKanIkkeOverstigePeriodelengdenConstraint()) {
-        val antallDager = perioder.map { ChronoUnit.DAYS.between(it.fom, it.tom.plusDays(1)) }.sum()
-        return@validate it != null && antallDager >= it
+        val antallDager = it?.map { ChronoUnit.DAYS.between(it.fom, it.tom.plusDays(1)) }?.sum() ?: 0
+        return@validate it != null && antallDager >= antallDagerMedRefusjon
     }
 
 class MåVæreVirksomhetContraint : CustomConstraint

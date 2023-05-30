@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonUnwrapped
 import java.time.LocalDate
 
-class AgpFelter(
+data class AgpFelter(
     val antallDagerMedRefusjon: Int,
     val månedsinntekt: Double,
     val gradering: Double = 1.0,
@@ -26,20 +26,23 @@ data class Arbeidsgiverperiode(
 }
 
 // Ny model
+// _fom og _tom kan antageligvis slettes etter 6 måneder hvis sletting av gamle data fungerer
 //@JsonDeserialize(using = ArbeidsgiverperiodeConversions.Deserializer::class)
 data class ArbeidsgiverperiodeNy(
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonProperty("fom")
-    private val _fom: LocalDate? = null,
+    private var _fom: LocalDate? = null,
     @JsonProperty("tom")
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private val _tom: LocalDate? = null,
+    private var _tom: LocalDate? = null,
     @JsonInclude(JsonInclude.Include.NON_NULL)
     var perioder: List<Periode>?,
 ){
 
     init {
         if (perioder.isNullOrEmpty()) perioder  = listOf(Periode(_fom!!, _tom!!))
+        _fom = null
+        _tom = null
     }
     @JsonUnwrapped
     lateinit var felter: AgpFelter

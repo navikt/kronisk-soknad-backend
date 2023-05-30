@@ -1,9 +1,11 @@
 package no.nav.helse.fritakagp.web.api.resreq.validation
 
+import no.nav.helse.fritakagp.domain.AgpFelter
 import no.nav.helse.fritakagp.domain.Arbeidsgiverperiode
 import no.nav.helse.fritakagp.domain.FravaerData
 import no.nav.helse.fritakagp.domain.GodkjenteFiletyper
 import no.nav.helse.fritakagp.domain.KroniskSoeknad
+import no.nav.helse.fritakagp.domain.Periode
 import org.valiktor.Constraint
 import org.valiktor.Validator
 import java.time.LocalDate
@@ -15,9 +17,10 @@ interface CustomConstraint : Constraint {
 }
 
 class RefusjonsdagerKanIkkeOverstigePeriodelengdenConstraint : CustomConstraint
-fun <E> Validator<E>.Property<Int?>.refusjonsDagerIkkeOverstigerPeriodelengde(ap: Arbeidsgiverperiode) =
+fun <E> Validator<E>.Property<Int>.refusjonsDagerIkkeOverstigerPeriodelengdeB(perioder: List<Periode>) =
     this.validate(RefusjonsdagerKanIkkeOverstigePeriodelengdenConstraint()) {
-        return@validate ChronoUnit.DAYS.between(ap.fom, ap.tom.plusDays(1)) >= it!!
+        val antallDager = perioder.map { ChronoUnit.DAYS.between(it.fom, it.tom.plusDays(1)) }.sum()
+        return@validate it != null && antallDager >= it
     }
 
 class MåVæreVirksomhetContraint : CustomConstraint

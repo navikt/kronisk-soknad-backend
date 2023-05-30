@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import java.time.LocalDate
 
-data class AgpFelter(
+class AgpFelter(
     val antallDagerMedRefusjon: Int,
     val månedsinntekt: Double,
     val gradering: Double = 1.0,
@@ -40,21 +40,40 @@ data class ArbeidsgiverperiodeLegacy(
     val felter: AgpFelter
 )
 
-
 // Ny model
-@JsonDeserialize(using = ArbeidsgiverperiodeConversions.Deserializer::class)
+//@JsonDeserialize(using = ArbeidsgiverperiodeConversions.Deserializer::class)
 data class ArbeidsgiverperiodeNy(
-    val perioder: List<Periode>,
-    @field:JsonUnwrapped
-    var felter: AgpFelter
-)
+    //@field:JsonUnwrapped
+    val periode: Periode?,
+    val perioder: List<Periode>?,
+){
 
+    @JsonUnwrapped
+    lateinit var felter: AgpFelter
+}
+
+@JsonDeserialize(using = ArbeidsgiverperiodeConversions.Deserializer::class)
 data class Periode(
     val fom: LocalDate,
     val tom: LocalDate,
 )
 object ArbeidsgiverperiodeConversions {
-    object Deserializer : JsonDeserializer<ArbeidsgiverperiodeNy>() {
+    object Deserializer : JsonDeserializer<Periode>() {
+        override fun deserialize(parser: JsonParser, ctxt: DeserializationContext): Periode? {
+            val node = parser.readValueAsTree<JsonNode>()
+            val fom = if(node.get("fom").isMissingNode || node.get("fom").isNull) null
+            else {
+                node.get("fom")
+            }?.let { LocalDate.parse(it.asText()) } ?: return null
+
+            val tom = if(node.get("tom").isMissingNode || node.get("tom").isNull) null
+            else {
+                node.get("tom")
+            }?.let { LocalDate.parse(it.asText()) } ?: return null
+            return Periode(fom, tom)
+        }
+    }
+    /*object DeserializerB : JsonDeserializer<ArbeidsgiverperiodeNy>() {
         override fun deserialize(parser: JsonParser, ctxt: DeserializationContext): ArbeidsgiverperiodeNy {
             val node = parser.readValueAsTree<JsonNode>()
 
@@ -85,7 +104,7 @@ object ArbeidsgiverperiodeConversions {
                 val tom = node.get("tom").asText().let { LocalDate.parse(it) }
                 listOf(Periode(fom, tom))
             }
-            return ArbeidsgiverperiodeNy(perioder, felter)
+            return ArbeidsgiverperiodeNy(perioder)
         }
-    }
+    }*/
 }

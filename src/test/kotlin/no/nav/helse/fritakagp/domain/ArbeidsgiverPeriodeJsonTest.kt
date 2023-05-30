@@ -4,8 +4,6 @@ import no.nav.helse.fritakagp.customObjectMapper
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Disabled
-
 
 class ArbeidsgiverPeriodeJsonTest{
 
@@ -15,8 +13,6 @@ class ArbeidsgiverPeriodeJsonTest{
         fom = LocalDate.of(2022, 4, 1),
         tom = LocalDate.of(2022, 4, 16)
     )
-
-
 
     val testStringLegacy: String = "{\n" +
         "  \"fom\" : \"2022-04-01\",\n" +
@@ -57,25 +53,22 @@ class ArbeidsgiverPeriodeJsonTest{
     fun testJsonBegge(){
         val resultatBegge =  om.readValue(testStringBegge, ArbeidsgiverperiodeNy::class.java)
         assertThat(resultatBegge.perioder?.size).isEqualTo(1)
-        assertThat(resultatBegge.periode?.fom).isEqualTo(periode.fom)
-        assertThat(resultatBegge.periode?.tom).isEqualTo(periode.tom)
+        assertThat(resultatBegge.perioder?.get(0)).isEqualTo(periode)
     }
     @Test
     fun testJsonNy(){
         val resultatNy =  om.readValue(testStringNew, ArbeidsgiverperiodeNy::class.java)
         assertThat(resultatNy.perioder?.size).isEqualTo(1)
-        assertThat(resultatNy?.periode).isNull()
+        assertThat(resultatNy.perioder?.get(0)).isEqualTo(periode)
     }
     @Test
     fun testJsonLegacy(){
         val resultatLegacy =  om.readValue(testStringLegacy, ArbeidsgiverperiodeNy::class.java)
-        assertThat(resultatLegacy.perioder).isNull()
-        assertThat(resultatLegacy.periode?.fom).isEqualTo(periode.fom)
-        assertThat(resultatLegacy.periode?.tom).isEqualTo(periode.tom)
+        assertThat(resultatLegacy.perioder?.size).isEqualTo(1)
+        assertThat(resultatLegacy.perioder?.get(0)).isEqualTo(periode)
     }
 
     @Test
-    @Disabled
     fun testSerialization(){
         val om = customObjectMapper()
 
@@ -84,21 +77,21 @@ class ArbeidsgiverPeriodeJsonTest{
             3000.0,
         )
 
+        val testPeriodeLegacy = ArbeidsgiverperiodeNy(
+            _fom = periode.fom,
+            _tom = periode.tom,
+            perioder = null,
+        ).also {  it.felter = felter }
 
-        val testPeriodeLegacy = ArbeidsgiverperiodeLegacy(
-            periode = periode,
-            felter = felter
-        )
-
-        /*val testPeriodeNy = ArbeidsgiverperiodeNy(
+        val testPeriodeNy = ArbeidsgiverperiodeNy(
             perioder = listOf(periode),
-        ).also { it.felter =   felter}
+        ).also { it.felter = felter}
 
         //println(om.writeValueAsString(testPeriode))
         val tmpString = om.writeValueAsString(testPeriodeNy)
         println(tmpString)
         val resultStringLegacy = om.writeValueAsString(testPeriodeLegacy)
-        println(resultStringLegacy)*/
+        println(resultStringLegacy)
 
     }
 

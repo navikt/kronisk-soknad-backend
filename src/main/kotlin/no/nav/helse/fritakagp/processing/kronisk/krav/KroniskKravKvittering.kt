@@ -9,6 +9,7 @@ import no.nav.helse.fritakagp.domain.KroniskKrav
 import no.nav.helse.fritakagp.domain.sladdFnr
 import no.nav.helse.fritakagp.domain.TIMESTAMP_FORMAT_MED_KL
 import no.nav.helse.fritakagp.domain.Arbeidsgiverperiode
+import no.nav.helse.fritakagp.domain.ArbeidsgiverperiodeNy
 import no.nav.helse.fritakagp.domain.DATE_FORMAT
 import kotlin.math.roundToInt
 
@@ -96,7 +97,7 @@ class KroniskKravAltinnKvitteringSender(
     }
 }
 
-fun lagrePerioder(perioder: List<Arbeidsgiverperiode>): String {
+fun lagrePerioder(perioder: List<ArbeidsgiverperiodeNy>): String {
     val head = """
             <table style="width:50%">
               <tr>
@@ -117,15 +118,15 @@ fun lagrePerioder(perioder: List<Arbeidsgiverperiode>): String {
     return head + rader + tail
 }
 
-fun lagePeriod(periode: Arbeidsgiverperiode): String {
-    val gradering = (periode.gradering * 100).toString() + "%"
+fun lagePeriod(periode: ArbeidsgiverperiodeNy): String {
+    val gradering = (periode.felter.gradering * 100).toString() + "%"
     return """<tr>
-                <td style="text-align:center">${periode.fom.format(DATE_FORMAT)}</td>
-                <td style="text-align:center">${periode.tom.format(DATE_FORMAT)}</td>
+                <td style="text-align:center">${periode.fraOgMed().format(DATE_FORMAT)}</td>
+                <td style="text-align:center">${periode.tilOgMed().format(DATE_FORMAT)}</td>
                 <td style="text-align:center">$gradering</td>
-                <td style="text-align:center">${periode.antallDagerMedRefusjon}</td>
-                <td style="text-align:center">${periode.månedsinntekt}</td>
-                <td style="text-align:center">${periode.dagsats.roundToInt()}</td>
-                <td style="text-align:center">${periode.belop.roundToInt()}</td>
+                <td style="text-align:center">${periode.felter.antallDagerMedRefusjon}</td>
+                <td style="text-align:center">${periode.felter.månedsinntekt}</td>
+                <td style="text-align:center">${periode.felter.dagsats.roundToInt()}</td>
+                <td style="text-align:center">${periode.felter.belop.roundToInt()}</td>
             </tr>"""
 }

@@ -39,27 +39,27 @@ data class GravidKrav(
 ) : SimpleJsonbEntity {
 
     fun toKravForOppgave(): List<KravForOppgave> {
-            return perioder.map{
-                KravForOppgave(
-                    KravType.GRAVID,
-                    id = id,
-                    opprettet = opprettet,
-                    sendtAv = sendtAv,
-                    virksomhetsnummer = virksomhetsnummer,
-                    identitetsnummer = identitetsnummer,
-                    navn = navn,
-                    perioder = it.tilArbeidsgiverperideLegacy(),
-                    harVedlegg = harVedlegg,
-                    kontrollDager = kontrollDager,
-                    antallDager = antallDager,
-                    journalpostId = journalpostId,
-                    oppgaveId = it.oppgaveId,
-                    virksomhetsnavn = virksomhetsnavn,
-                    sendtAvNavn = sendtAvNavn,
-                    status = status,
-                    arbeidsgiverSakId = arbeidsgiverSakId,
-                    referansenummer = referansenummer
-                )
+        return perioder.map {
+            KravForOppgave(
+                KravType.GRAVID,
+                id = id,
+                opprettet = opprettet,
+                sendtAv = sendtAv,
+                virksomhetsnummer = virksomhetsnummer,
+                identitetsnummer = identitetsnummer,
+                navn = navn,
+                perioder = it.tilArbeidsgiverperideLegacy(),
+                harVedlegg = harVedlegg,
+                kontrollDager = kontrollDager,
+                antallDager = antallDager,
+                journalpostId = journalpostId,
+                oppgaveId = it.oppgaveId,
+                virksomhetsnavn = virksomhetsnavn,
+                sendtAvNavn = sendtAvNavn,
+                status = status,
+                arbeidsgiverSakId = arbeidsgiverSakId,
+                referansenummer = referansenummer
+            )
         }
     }
     companion object {

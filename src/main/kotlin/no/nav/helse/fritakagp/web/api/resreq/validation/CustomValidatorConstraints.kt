@@ -31,12 +31,10 @@ class MåVæreVirksomhetContraint : CustomConstraint
 fun <E> Validator<E>.Property<String?>.isVirksomhet(erVirksomhet: Boolean) =
     this.validate(MåVæreVirksomhetContraint()) { erVirksomhet }
 
-fun <E> Validator<E>.Property<List<ArbeidsgiverperiodeNy>?>.oppholdOverstiger16dager() =
+fun <E> Validator<E>.Property<Iterable<ArbeidsgiverperiodeNy>?>.oppholdOverstiger16dager() =
     this.validate(MåVæreVirksomhetContraint()) {
         val sortedArbeidsgiverperiodeNy: List<ArbeidsgiverperiodeNy> = it!!.sortedBy {
-            it.perioder?.minOf {
-                it.fom
-            }
+            it.fraOgMed()
         }.toList()
         val validationResult =
             sortedArbeidsgiverperiodeNy.zipWithNext { a, b ->

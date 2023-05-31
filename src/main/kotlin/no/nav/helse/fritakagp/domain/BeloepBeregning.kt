@@ -11,15 +11,15 @@ class BeloepBeregning(
 
     fun beregnBeløpGravid(krav: GravidKrav) = beregnPeriodeData(krav.perioder, krav.antallDager)
 
-    private fun beregnPeriodeData(perioder: List<Arbeidsgiverperiode>, antallDager: Int) {
+    private fun beregnPeriodeData(perioder: List<ArbeidsgiverperiodeNy>, antallDager: Int) {
         perioder.forEach {
-            val seksG = grunnbeloepClient.hentGrunnbeløp(it.fom).grunnbeløp * 6.0
-            val arslonn = it.månedsinntekt * 12
-            it.dagsats = if (arslonn < seksG)
+            val seksG = grunnbeloepClient.hentGrunnbeløp(it.fraOgMed()).grunnbeløp * 6.0
+            val arslonn = it.felter.månedsinntekt * 12
+            it.felter.dagsats = if (arslonn < seksG)
                 round2DigitDecimal(arslonn / antallDager)
             else
                 round2DigitDecimal(seksG / antallDager)
-            it.belop = round2DigitDecimal(it.dagsats * it.antallDagerMedRefusjon * it.gradering)
+            it.felter.belop = round2DigitDecimal(it.felter.dagsats * it.felter.antallDagerMedRefusjon * it.felter.gradering)
         }
     }
 

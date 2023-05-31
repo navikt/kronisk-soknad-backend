@@ -98,12 +98,12 @@ data class KroniskKravRequest(
             validate(KroniskKravRequest::virksomhetsnummer).isValidOrganisasjonsnummer()
             validate(KroniskKravRequest::bekreftet).isTrue()
             validate(KroniskKravRequest::perioder).validateForEach {
-                validate(ArbeidsgiverperiodeNy::perioder).validateForEach{
+                validate(ArbeidsgiverperiodeNy::perioder).validateForEach {
                     validate(Periode::fom).datoerHarRiktigRekkefolge(it.tom)
                     validate(Periode::fom).måHaAktivtArbeidsforhold(it, aktuelleArbeidsforhold)
                 }
                 validate(ArbeidsgiverperiodeNy::perioder).refusjonsDagerIkkeOverstigerPeriodelengde(it.felter.antallDagerMedRefusjon)
-                validate(ArbeidsgiverperiodeNy::felter).validate{
+                validate(ArbeidsgiverperiodeNy::felter).validate {
                     validate(AgpFelter::gradering).isLessThanOrEqualTo(1.0)
                     validate(AgpFelter::gradering).isGreaterThanOrEqualTo(0.2)
                     validate(AgpFelter::månedsinntekt).maanedsInntektErMellomNullOgTiMil()

@@ -27,7 +27,7 @@ data class Arbeidsgiverperiode(
 
 // Ny model
 // _fom og _tom kan antageligvis slettes etter 6 måneder hvis sletting av gamle data fungerer
-//@JsonDeserialize(using = ArbeidsgiverperiodeConversions.Deserializer::class)
+// @JsonDeserialize(using = ArbeidsgiverperiodeConversions.Deserializer::class)
 data class ArbeidsgiverperiodeNy(
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonProperty("fom")
@@ -36,17 +36,17 @@ data class ArbeidsgiverperiodeNy(
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private var _tom: LocalDate? = null,
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    var perioder: List<Periode>?,
-    val oppgaveId : String? = null
-){
+    var perioder: List<Periode>? = null,
+    val oppgaveId: String? = null
+) {
+    @JsonUnwrapped
+    lateinit var felter: AgpFelter
 
     init {
-        if (perioder.isNullOrEmpty()) perioder  = listOf(Periode(_fom!!, _tom!!))
+        if (perioder.isNullOrEmpty()) perioder = listOf(Periode(_fom!!, _tom!!))
         _fom = null
         _tom = null
     }
-    @JsonUnwrapped
-    lateinit var felter: AgpFelter
 
     @get:JsonInclude(JsonInclude.Include.NON_NULL)
 
@@ -68,6 +68,10 @@ data class ArbeidsgiverperiodeNy(
         }.toList()
     }
 
+    fun fraOgMed(): LocalDate = perioder!!.minOf { it.fom }
+
+    // @TODO midlertidig bruker vi siste periode TOM som TOM. Kanskje vi bør reevaluere dette
+    fun tilOgMed(): LocalDate = perioder!!.maxOf { it.tom }
 }
 
 data class Periode(

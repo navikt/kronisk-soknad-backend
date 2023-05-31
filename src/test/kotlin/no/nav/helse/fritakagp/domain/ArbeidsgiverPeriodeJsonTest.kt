@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test
 import java.time.LocalDate
 import org.assertj.core.api.Assertions.assertThat
 
-class ArbeidsgiverPeriodeJsonTest{
+class ArbeidsgiverPeriodeJsonTest {
 
     val om = customObjectMapper()
 
@@ -50,26 +50,26 @@ class ArbeidsgiverPeriodeJsonTest{
         "  \"belop\" : 0.0\n" +
         "}".trimIndent()
     @Test
-    fun testJsonBegge(){
-        val resultatBegge =  om.readValue(testStringBegge, ArbeidsgiverperiodeNy::class.java)
+    fun testJsonBegge() {
+        val resultatBegge = om.readValue(testStringBegge, ArbeidsgiverperiodeNy::class.java)
         assertThat(resultatBegge.perioder?.size).isEqualTo(1)
         assertThat(resultatBegge.perioder?.get(0)).isEqualTo(periode)
     }
     @Test
-    fun testJsonNy(){
-        val resultatNy =  om.readValue(testStringNew, ArbeidsgiverperiodeNy::class.java)
+    fun testJsonNy() {
+        val resultatNy = om.readValue(testStringNew, ArbeidsgiverperiodeNy::class.java)
         assertThat(resultatNy.perioder?.size).isEqualTo(1)
         assertThat(resultatNy.perioder?.get(0)).isEqualTo(periode)
     }
     @Test
-    fun testJsonLegacy(){
-        val resultatLegacy =  om.readValue(testStringLegacy, ArbeidsgiverperiodeNy::class.java)
+    fun testJsonLegacy() {
+        val resultatLegacy = om.readValue(testStringLegacy, ArbeidsgiverperiodeNy::class.java)
         assertThat(resultatLegacy.perioder?.size).isEqualTo(1)
         assertThat(resultatLegacy.perioder?.get(0)).isEqualTo(periode)
     }
 
     @Test
-    fun testSerialization(){
+    fun testSerialization() {
         val om = customObjectMapper()
 
         val felter = AgpFelter(
@@ -81,19 +81,16 @@ class ArbeidsgiverPeriodeJsonTest{
             _fom = periode.fom,
             _tom = periode.tom,
             perioder = null,
-        ).also {  it.felter = felter }
+        ).also { it.felter = felter }
 
         val testPeriodeNy = ArbeidsgiverperiodeNy(
             perioder = listOf(periode),
-        ).also { it.felter = felter}
+        ).also { it.felter = felter }
 
-        //println(om.writeValueAsString(testPeriode))
+        // println(om.writeValueAsString(testPeriode))
         val tmpString = om.writeValueAsString(testPeriodeNy)
         println(tmpString)
         val resultStringLegacy = om.writeValueAsString(testPeriodeLegacy)
         println(resultStringLegacy)
-
     }
-
-
 }

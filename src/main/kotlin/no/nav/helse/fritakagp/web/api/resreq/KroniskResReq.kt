@@ -102,7 +102,6 @@ data class KroniskKravRequest(
                     validate(Periode::fom).datoerHarRiktigRekkefolge(it.tom)
                     validate(Periode::fom).måHaAktivtArbeidsforhold(it, aktuelleArbeidsforhold)
                 }
-
                 validate(ArbeidsgiverperiodeNy::perioder).refusjonsDagerIkkeOverstigerPeriodelengde(it.felter.antallDagerMedRefusjon)
                 validate(ArbeidsgiverperiodeNy::felter).validate{
                     validate(AgpFelter::gradering).isLessThanOrEqualTo(1.0)

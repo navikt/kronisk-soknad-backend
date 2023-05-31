@@ -23,7 +23,7 @@ spec:
     periodSeconds: 5
     failureThreshold: 10
   ingresses:
-    - https://fritakagp.intern.dev.nav.no
+    - https://fritakagp-api.intern.dev.nav.no
     - https://arbeidsgiver.intern.dev.nav.no/fritak-agp-api
   prometheus:
     enabled: true
@@ -115,6 +115,8 @@ spec:
       value: "api://dev-gcp.fager.notifikasjon-produsent-api/.default"
     - name: FRONTEND_URL
       value: https://arbeidsgiver.intern.dev.nav.no/fritak-agp
+    - name: KTOR_APPLICATION_BASEPATH
+      value: /fritak-agp-api
 
   gcp:
     sqlInstances:

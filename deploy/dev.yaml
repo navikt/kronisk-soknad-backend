@@ -24,7 +24,6 @@ spec:
     failureThreshold: 10
   ingresses:
     - https://fritakagp-api.intern.dev.nav.no
-    - https://arbeidsgiver.intern.dev.nav.no/fritak-agp-api
   prometheus:
     enabled: true
   replicas:

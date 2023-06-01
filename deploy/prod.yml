@@ -23,7 +23,6 @@ env:
     value: PROD
   - name: RUN_BACKGROUND_WORKERS
     value: true
-    # TODO ikke i dev
   - name: KTOR_APPLICATION_BASEPATH
     value: /fritak-agp-api
   - name: GCP_PRJ_ID
@@ -38,9 +37,9 @@ env:
     value: api://prod-fss.oppgavehandtering.oppgave/.default
   - name: PROXY_SCOPE
     value: api://prod-fss.helsearbeidsgiver.helsearbeidsgiver-proxy/.default
-    # TODO ikke i dev
   - name: FRONTEND_URL
     value: https://arbeidsgiver.nav.no/fritak-agp
+    # TODO ikke i dev
   - name: AAREG_URL
     value: https://helsearbeidsgiver-proxy.prod-fss-pub.nais.io/aareg-arbeidsforhold
   - name: ARBEIDSGIVER_NOTIFIKASJON_API_URL

@@ -206,7 +206,7 @@ class KroniskKravProcessor(
         val enhetsNr = behandlendeEnhetService.hentBehandlendeEnhet(krav.identitetsnummer, krav.id.toString())
         requireNotNull(aktoerId) { "Fant ikke AktørID for fnr i ${krav.id}" }
         logger.info("Fant aktørid")
-        val beskrivelse = if (robotiseringToggle) om.writeValueAsString(krav.toKravForOppgave()) else generereKroniskKravBeskrivelse(krav, KroniskKrav.tittel)
+        val beskrivelse = if (robotiseringToggle) om.writeValueAsString(krav.toKravListeForOppgave()[0]) else generereKroniskKravBeskrivelse(krav, KroniskKrav.tittel)
         val oppgaveType = if (robotiseringToggle) "ROB_BEH" else "BEH_REF"
         val request = OpprettOppgaveRequest(
             tildeltEnhetsnr = enhetsNr,

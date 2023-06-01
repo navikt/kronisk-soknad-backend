@@ -7,9 +7,11 @@ import io.ktor.client.statement.HttpResponse
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
+import no.nav.helse.AgpTestData
 import no.nav.helse.KroniskTestData
 import no.nav.helse.fritakagp.domain.Arbeidsgiverperiode
 import no.nav.helse.fritakagp.domain.KroniskKrav
+import no.nav.helse.fritakagp.domain.Periode
 import no.nav.helse.fritakagp.web.api.resreq.ValidationProblem
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -96,24 +98,31 @@ class KroniskKravHTTPTests : SystemTestBase() {
                 loggedInAs("123456789")
                 body = KroniskTestData.kroniskKravRequestInValid.copy(
                     perioder = listOf(
-                        Arbeidsgiverperiode(
-                            LocalDate.of(2020, 2, 1),
-                            LocalDate.of(2020, 1, 31),
-                            29,
-                            månedsinntekt = 34000000.0
-                        ),
-                        Arbeidsgiverperiode(
-                            LocalDate.of(2020, 2, 3),
-                            LocalDate.of(2020, 1, 31),
-                            23,
-                            månedsinntekt = -30.0
-                        ),
-                        Arbeidsgiverperiode(
-                            LocalDate.of(2020, 1, 5),
-                            LocalDate.of(2020, 1, 14),
-                            12,
-                            månedsinntekt = 2590.8,
-                        )
+                        AgpTestData.arbeidsgiverperiode.copy(
+                            perioder = listOf(
+                                Periode(
+                                    LocalDate.of(2020, 2, 1),
+                                    LocalDate.of(2020, 1, 31)
+                                )
+                            )
+                        ).also { it.felter = it.felter.copy(antallDagerMedRefusjon = 29, månedsinntekt = 34000000.0) },
+                        AgpTestData.arbeidsgiverperiode.copy(
+                            perioder = listOf(
+                                Periode(
+                                    LocalDate.of(2020, 2, 3),
+                                    LocalDate.of(2020, 1, 31)
+                                )
+                            )
+                        ).also { it.felter = it.felter.copy(antallDagerMedRefusjon = 23, månedsinntekt = -30.0) },
+
+                        AgpTestData.arbeidsgiverperiode.copy(
+                            perioder = listOf(
+                                Periode(
+                                    LocalDate.of(2020, 1, 5),
+                                    LocalDate.of(2020, 1, 14)
+                                )
+                            )
+                        ).also { it.felter = it.felter.copy(antallDagerMedRefusjon = 12) }
                     )
                 )
             }

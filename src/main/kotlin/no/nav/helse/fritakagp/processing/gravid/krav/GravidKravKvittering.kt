@@ -34,11 +34,7 @@ class GravidKravAltinnKvitteringSender(
     override fun send(kvittering: GravidKrav) {
         try {
             val receiptExternal = iCorrespondenceAgencyExternalBasic.insertCorrespondenceBasicV2(
-                username,
-                password,
-                SYSTEM_USER_CODE,
-                kvittering.id.toString(),
-                mapKvitteringTilInsertCorrespondence(kvittering)
+                username, password, SYSTEM_USER_CODE, kvittering.id.toString(), mapKvitteringTilInsertCorrespondence(kvittering, altinnTjenesteKode)
             )
             if (receiptExternal.receiptStatusCode != ReceiptStatusEnum.OK) {
                 throw RuntimeException("Fikk uventet statuskode fra Altinn: ${receiptExternal.receiptStatusCode} ${receiptExternal.receiptText}")
@@ -47,49 +43,41 @@ class GravidKravAltinnKvitteringSender(
             throw RuntimeException("Feil fra altinn: ${e.faultInfo}", e)
         }
     }
-
-    fun mapKvitteringTilInsertCorrespondence(kvittering: GravidKrav): InsertCorrespondenceV2 {
-        val sladdetFnr = sladdFnr(kvittering.identitetsnummer)
-        val tittel = "$sladdetFnr - Kvittering for mottatt refusjonskrav fra arbeidsgiverperioden grunnet graviditet"
-
-        val innhold = """
-        <html>
-           <head>
-               <meta charset="UTF-8">
-           </head>
-           <body>
-               <div class="melding">
-            <p>Kvittering for mottatt krav om fritak fra arbeidsgiverperioden grunnet risiko for høyt sykefravær knyttet til graviditet.</p>
-            <p>Virksomhetsnummer: ${kvittering.virksomhetsnummer}</p>
-            <p>${kvittering.opprettet.format(TIMESTAMP_FORMAT_MED_KL)}</p>
-            <p>Kravet vil bli behandlet fortløpende. Ved behov vil NAV innhente ytterligere dokumentasjon.
-             Har dere spørsmål, ring NAVs arbeidsgivertelefon 55 55 33 36.</p>
-            <p>Dere har innrapportert følgende:</p>
-            <ul>
-                <li>Navn: ${kvittering.navn}</li>
-                <li>Dokumentasjon vedlagt: ${if (kvittering.harVedlegg) "Ja" else "Nei"}</li>
-                <li>Mottatt: ${kvittering.opprettet.format(TIMESTAMP_FORMAT_MED_KL)}</li>
-                <li>Innrapportert av: ${kvittering.sendtAvNavn}</li>
-                <li>Perioder: </li>
-                <ul> ${lagrePerioder(kvittering.perioder)}</ul>
-            </ul>
-               </div>
-           </body>
-        </html>
-        """.trimIndent()
-
-        val meldingsInnhold = ExternalContentV2()
-            .withLanguageCode("1044")
-            .withMessageTitle(tittel)
-            .withMessageBody(innhold)
-            .withMessageSummary("Kvittering for krav om refusjon av arbeidsgiverperioden ifbm graviditetsrelatert fravær")
-
-        return InsertCorrespondenceV2()
-            .withAllowForwarding(false)
-            .withReportee(kvittering.virksomhetsnummer)
-            .withMessageSender("NAV (Arbeids- og velferdsetaten)")
-            .withServiceCode(altinnTjenesteKode)
-            .withServiceEdition("1")
-            .withContent(meldingsInnhold)
-    }
 }
+
+fun mapKvitteringTilInsertCorrespondence(kvittering: GravidKrav, altinnTjenesteKode: String): InsertCorrespondenceV2 {
+    val sladdetFnr = sladdFnr(kvittering.identitetsnummer)
+    val tittel = "$sladdetFnr - Kvittering for mottatt refusjonskrav fra arbeidsgiverperioden grunnet graviditet"
+
+    val innhold = lagInnhold(kvittering)
+
+    val meldingsInnhold = ExternalContentV2().withLanguageCode("1044").withMessageTitle(tittel).withMessageBody(innhold).withMessageSummary("Kvittering for krav om refusjon av arbeidsgiverperioden ifbm graviditetsrelatert fravær")
+
+    return InsertCorrespondenceV2().withAllowForwarding(false).withReportee(kvittering.virksomhetsnummer).withMessageSender("NAV (Arbeids- og velferdsetaten)").withServiceCode(altinnTjenesteKode).withServiceEdition("1").withContent(meldingsInnhold)
+}
+
+fun lagInnhold(kvittering: GravidKrav) = """
+    <html>
+       <head>
+           <meta charset="UTF-8">
+       </head>
+       <body>
+           <div class="melding">
+        <p>Kvittering for mottatt krav om fritak fra arbeidsgiverperioden grunnet risiko for høyt sykefravær knyttet til graviditet.</p>
+        <p>Virksomhetsnummer: ${kvittering.virksomhetsnummer}</p>
+        <p>${kvittering.opprettet.format(TIMESTAMP_FORMAT_MED_KL)}</p>
+        <p>Kravet vil bli behandlet fortløpende. Ved behov vil NAV innhente ytterligere dokumentasjon.
+         Har dere spørsmål, ring NAVs arbeidsgivertelefon 55 55 33 36.</p>
+        <p>Dere har innrapportert følgende:</p>
+        <ul>
+            <li>Navn: ${kvittering.navn}</li>
+            <li>Dokumentasjon vedlagt: ${if (kvittering.harVedlegg) "Ja" else "Nei"}</li>
+            <li>Mottatt: ${kvittering.opprettet.format(TIMESTAMP_FORMAT_MED_KL)}</li>
+            <li>Innrapportert av: ${kvittering.sendtAvNavn}</li>
+            <li>Perioder: </li>
+            <ul> ${lagrePerioder(kvittering.perioder)}</ul>
+        </ul>
+           </div>
+       </body>
+    </html>
+""".trimIndent()

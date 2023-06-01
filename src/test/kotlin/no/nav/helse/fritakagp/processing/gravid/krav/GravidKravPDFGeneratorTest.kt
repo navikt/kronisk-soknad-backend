@@ -24,7 +24,7 @@ class GravidKravPDFGeneratorTest {
 
         assertThat(pdfText).contains(krav.navn)
         assertThat(pdfText).contains(krav.virksomhetsnummer)
-        assertThat(pdfText).contains(krav.perioder.first().månedsinntekt.roundToInt().toString())
+        assertThat(pdfText).contains(krav.perioder.first().felter.månedsinntekt.roundToInt().toString())
         assertThat(antallSider).isEqualTo(1)
     }
 

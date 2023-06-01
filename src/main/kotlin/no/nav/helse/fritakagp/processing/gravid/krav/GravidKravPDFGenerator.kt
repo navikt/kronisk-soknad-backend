@@ -58,15 +58,15 @@ class GravidKravPDFGenerator {
                     content.close()
                     content = lagNySide(doc, font)
                 }
-                val gradering = (periode.gradering * 100).toString()
+                val gradering = (periode.felter.gradering * 100).toString()
                 with(content) {
-                    writeTextWrapped("FOM: ${periode.fom.format(DATE_FORMAT)}")
-                    writeTextWrapped("TOM: ${periode.tom.format(DATE_FORMAT)}")
+                    writeTextWrapped("FOM: ${periode.fraOgMed().format(DATE_FORMAT)}")
+                    writeTextWrapped("TOM: ${periode.tilOgMed().format(DATE_FORMAT)}")
                     writeTextWrapped("Sykmeldingsgrad: $gradering%")
-                    writeTextWrapped("Antall dager det kreves refusjon for: ${periode.antallDagerMedRefusjon}")
-                    writeTextWrapped("Beregnet månedsinntekt (NOK): ${periode.månedsinntekt.roundToInt()}")
-                    writeTextWrapped("Dagsats (NOK): ${periode.dagsats.roundToInt()}")
-                    writeTextWrapped("Beløp (NOK): ${periode.belop.roundToInt()}")
+                    writeTextWrapped("Antall dager det kreves refusjon for: ${periode.felter.antallDagerMedRefusjon}")
+                    writeTextWrapped("Beregnet månedsinntekt (NOK): ${periode.felter.månedsinntekt.roundToInt()}")
+                    writeTextWrapped("Dagsats (NOK): ${periode.felter.dagsats.roundToInt()}")
+                    writeTextWrapped("Beløp (NOK): ${periode.felter.belop.roundToInt()}")
                     writeTextWrapped("")
                 }
             }
@@ -101,15 +101,15 @@ class GravidKravPDFGenerator {
                 content.close()
                 content = lagNySide(doc, font)
             }
-            val gradering = (periode.gradering * 100).toString()
+            val gradering = (periode.felter.gradering * 100).toString()
             with(content) {
-                writeTextWrapped("FOM: ${periode.fom.format(DATE_FORMAT)}")
-                writeTextWrapped("TOM: ${periode.tom.format(DATE_FORMAT)}")
+                writeTextWrapped("FOM: ${periode.fraOgMed().format(DATE_FORMAT)}")
+                writeTextWrapped("TOM: ${periode.tilOgMed().format(DATE_FORMAT)}")
                 writeTextWrapped("Sykmeldingsgrad: $gradering%")
-                writeTextWrapped("Antall dager det kreves refusjon for: ${periode.antallDagerMedRefusjon}")
-                writeTextWrapped("Beregnet månedsinntekt (NOK): ${periode.månedsinntekt.roundToInt()}")
-                writeTextWrapped("Dagsats (NOK): ${periode.dagsats.roundToInt()}")
-                writeTextWrapped("Beløp (NOK): ${periode.belop.roundToInt()}")
+                writeTextWrapped("Antall dager det kreves refusjon for: ${periode.felter.antallDagerMedRefusjon}")
+                writeTextWrapped("Beregnet månedsinntekt (NOK): ${periode.felter.månedsinntekt.roundToInt()}")
+                writeTextWrapped("Dagsats (NOK): ${periode.felter.dagsats.roundToInt()}")
+                writeTextWrapped("Beløp (NOK): ${periode.felter.belop.roundToInt()}")
                 writeTextWrapped("")
             }
         }

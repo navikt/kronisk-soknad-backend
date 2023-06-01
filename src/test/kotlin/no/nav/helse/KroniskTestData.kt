@@ -63,7 +63,7 @@ object KroniskTestData {
                 )
             )
                 .also {
-                    it.felter = AgpFelter(antallDagerMedRefusjon = 2, månedsinntekt = 2590.0)
+                    it.felter = AgpFelter(antallDagerMedRefusjon = 2, månedsinntekt = 2590.8)
                 }
         ),
         bekreftet = true,
@@ -86,7 +86,7 @@ object KroniskTestData {
                 )
             )
                 .also {
-                    it.felter = AgpFelter(antallDagerMedRefusjon = 2, månedsinntekt = 2590.0)
+                    it.felter = AgpFelter(antallDagerMedRefusjon = 2, månedsinntekt = 2590.8)
                 },
             ArbeidsgiverperiodeNy(
                 perioder = listOf(

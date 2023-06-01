@@ -3,11 +3,14 @@ package no.nav.helse
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OpprettOppgaveResponse
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.Prioritet
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.Status
+import no.nav.helse.fritakagp.domain.AgpFelter
 import no.nav.helse.fritakagp.domain.Arbeidsgiverperiode
+import no.nav.helse.fritakagp.domain.ArbeidsgiverperiodeNy
 import no.nav.helse.fritakagp.domain.GravidKrav
 import no.nav.helse.fritakagp.domain.GravidSoeknad
 import no.nav.helse.fritakagp.domain.Omplassering
 import no.nav.helse.fritakagp.domain.OmplasseringAarsak
+import no.nav.helse.fritakagp.domain.Periode
 import no.nav.helse.fritakagp.domain.Tiltak
 import no.nav.helse.fritakagp.web.api.resreq.GravidKravRequest
 import no.nav.helse.fritakagp.web.api.resreq.GravidSoknadRequest
@@ -99,13 +102,17 @@ aąbcćdeęfghijlłmnńoóprsśtuwź
         identitetsnummer = validIdentitetsnummer,
 
         perioder = listOf(
-            Arbeidsgiverperiode(
-                LocalDate.of(2020, 1, 5),
-                LocalDate.of(2020, 1, 10),
-                2,
-                månedsinntekt = 2590.8,
-                gradering = 0.8
+            ArbeidsgiverperiodeNy(
+                perioder = listOf(
+                    Periode(
+                        LocalDate.of(2020, 1, 5),
+                        LocalDate.of(2020, 1, 10)
+                    )
+                )
             )
+                .also {
+                    it.felter = AgpFelter(antallDagerMedRefusjon = 2, månedsinntekt = 2590.8)
+                }
         ),
 
         bekreftet = true,
@@ -117,14 +124,18 @@ aąbcćdeęfghijlłmnńoóprsśtuwź
     val gravidKravRequestWithWrongDecimal = GravidKravRequest(
         virksomhetsnummer = validOrgNr,
         identitetsnummer = validIdentitetsnummer,
-
         perioder = listOf(
-            Arbeidsgiverperiode(
-                LocalDate.of(2021, 6, 1),
-                LocalDate.of(2020, 6, 12),
-                5,
-                månedsinntekt = 12344.0
+            ArbeidsgiverperiodeNy(
+                perioder = listOf(
+                    Periode(
+                        LocalDate.of(2021, 6, 1),
+                        LocalDate.of(2020, 6, 12)
+                    )
+                )
             )
+                .also {
+                    it.felter = AgpFelter(antallDagerMedRefusjon = 5, månedsinntekt = 12344.0)
+                }
         ),
 
         bekreftet = true,
@@ -138,24 +149,39 @@ aąbcćdeęfghijlłmnńoóprsśtuwź
         identitetsnummer = validIdentitetsnummer,
 
         perioder = listOf(
-            Arbeidsgiverperiode(
-                LocalDate.of(2020, 1, 15),
-                LocalDate.of(2020, 1, 10),
-                2,
-                månedsinntekt = 2590.8,
-            ),
-            Arbeidsgiverperiode(
-                LocalDate.of(2020, 1, 5),
-                LocalDate.of(2020, 1, 4),
-                2,
-                månedsinntekt = 3590.8,
-            ),
-            Arbeidsgiverperiode(
-                LocalDate.of(2020, 1, 5),
-                LocalDate.of(2020, 1, 14),
-                12,
-                månedsinntekt = 1590.8,
+            ArbeidsgiverperiodeNy(
+                perioder = listOf(
+                    Periode(
+                        LocalDate.of(2020, 1, 15),
+                        LocalDate.of(2020, 1, 10)
+                    )
+                )
             )
+                .also {
+                    it.felter = AgpFelter(antallDagerMedRefusjon = 2, månedsinntekt = 2590.8)
+                },
+            ArbeidsgiverperiodeNy(
+                perioder = listOf(
+                    Periode(
+                        LocalDate.of(2020, 1, 5),
+                        LocalDate.of(2020, 1, 4)
+                    )
+                )
+            )
+                .also {
+                    it.felter = AgpFelter(antallDagerMedRefusjon = 2, månedsinntekt = 3590.8)
+                },
+            ArbeidsgiverperiodeNy(
+                perioder = listOf(
+                    Periode(
+                        LocalDate.of(2020, 1, 5),
+                        LocalDate.of(2020, 1, 14)
+                    )
+                )
+            )
+                .also {
+                    it.felter = AgpFelter(antallDagerMedRefusjon = 12, månedsinntekt = 1590.8)
+                }
         ),
 
         bekreftet = true,
@@ -175,12 +201,17 @@ aąbcćdeęfghijlłmnńoóprsśtuwź
         virksomhetsnummer = validOrgNr,
         identitetsnummer = validIdentitetsnummer,
         perioder = listOf(
-            Arbeidsgiverperiode(
-                LocalDate.of(2020, 2, 1),
-                LocalDate.of(2020, 2, 1),
-                1,
-                månedsinntekt = 123.8
+            ArbeidsgiverperiodeNy(
+                perioder = listOf(
+                    Periode(
+                        LocalDate.of(2020, 2, 1),
+                        LocalDate.of(2020, 2, 1)
+                    )
+                )
             )
+                .also {
+                    it.felter = AgpFelter(antallDagerMedRefusjon = 1, månedsinntekt = 123.8)
+                }
         ),
 
         bekreftet = true,
@@ -196,12 +227,17 @@ aąbcćdeęfghijlłmnńoóprsśtuwź
         identitetsnummer = validIdentitetsnummer,
 
         perioder = listOf(
-            Arbeidsgiverperiode(
-                LocalDate.of(2020, 1, 5),
-                LocalDate.of(2020, 1, 10),
-                5,
-                månedsinntekt = 2590.8
+            ArbeidsgiverperiodeNy(
+                perioder = listOf(
+                    Periode(
+                        LocalDate.of(2020, 1, 5),
+                        LocalDate.of(2020, 1, 10),
+                    )
+                )
             )
+                .also {
+                    it.felter = AgpFelter(5, månedsinntekt = 2590.8)
+                }
         ),
         kontrollDager = null,
         antallDager = 4,
@@ -216,48 +252,83 @@ aąbcćdeęfghijlłmnńoóprsśtuwź
         identitetsnummer = validIdentitetsnummer,
 
         perioder = listOf(
-            Arbeidsgiverperiode(
-                LocalDate.of(2020, 1, 5),
-                LocalDate.of(2020, 1, 10),
-                5,
-                månedsinntekt = 2590.8
-            ),
-            Arbeidsgiverperiode(
-                LocalDate.of(2020, 1, 5),
-                LocalDate.of(2020, 1, 10),
-                5,
-                månedsinntekt = 2590.8
-            ),
-            Arbeidsgiverperiode(
-                LocalDate.of(2020, 1, 5),
-                LocalDate.of(2020, 1, 10),
-                5,
-                månedsinntekt = 2590.8
-            ),
-            Arbeidsgiverperiode(
-                LocalDate.of(2020, 1, 5),
-                LocalDate.of(2020, 1, 10),
-                5,
-                månedsinntekt = 2590.8
-            ),
-            Arbeidsgiverperiode(
-                LocalDate.of(2020, 1, 5),
-                LocalDate.of(2020, 1, 10),
-                5,
-                månedsinntekt = 2590.8
-            ),
-            Arbeidsgiverperiode(
-                LocalDate.of(2020, 1, 5),
-                LocalDate.of(2020, 1, 10),
-                5,
-                månedsinntekt = 2590.8
-            ),
-            Arbeidsgiverperiode(
-                LocalDate.of(2020, 1, 5),
-                LocalDate.of(2020, 1, 10),
-                5,
-                månedsinntekt = 2590.8
+            ArbeidsgiverperiodeNy(
+                perioder = listOf(
+                    Periode(
+                        LocalDate.of(2020, 1, 5),
+                        LocalDate.of(2020, 1, 10)
+                    )
+                )
             )
+                .also {
+                    it.felter = AgpFelter(antallDagerMedRefusjon = 5, månedsinntekt = 2590.8)
+                },
+            ArbeidsgiverperiodeNy(
+                perioder = listOf(
+                    Periode(
+                        LocalDate.of(2020, 1, 5),
+                        LocalDate.of(2020, 1, 10)
+                    )
+                )
+            )
+                .also {
+                    it.felter = AgpFelter(antallDagerMedRefusjon = 5, månedsinntekt = 2590.8)
+                },
+            ArbeidsgiverperiodeNy(
+                perioder = listOf(
+                    Periode(
+                        LocalDate.of(2020, 1, 5),
+                        LocalDate.of(2020, 1, 10)
+                    )
+                )
+            )
+                .also {
+                    it.felter = AgpFelter(antallDagerMedRefusjon = 5, månedsinntekt = 2590.8)
+                },
+            ArbeidsgiverperiodeNy(
+                perioder = listOf(
+                    Periode(
+                        LocalDate.of(2020, 1, 5),
+                        LocalDate.of(2020, 1, 10)
+                    )
+                )
+            )
+                .also {
+                    it.felter = AgpFelter(antallDagerMedRefusjon = 5, månedsinntekt = 2590.8)
+                },
+            ArbeidsgiverperiodeNy(
+                perioder = listOf(
+                    Periode(
+                        LocalDate.of(2020, 1, 5),
+                        LocalDate.of(2020, 1, 10)
+                    )
+                )
+            )
+                .also {
+                    it.felter = AgpFelter(antallDagerMedRefusjon = 5, månedsinntekt = 2590.8)
+                },
+            ArbeidsgiverperiodeNy(
+                perioder = listOf(
+                    Periode(
+                        LocalDate.of(2020, 1, 5),
+                        LocalDate.of(2020, 1, 10)
+                    )
+                )
+            )
+                .also {
+                    it.felter = AgpFelter(antallDagerMedRefusjon = 5, månedsinntekt = 2590.8)
+                },
+            ArbeidsgiverperiodeNy(
+                perioder = listOf(
+                    Periode(
+                        LocalDate.of(2020, 1, 5),
+                        LocalDate.of(2020, 1, 10)
+                    )
+                )
+            )
+                .also {
+                    it.felter = AgpFelter(antallDagerMedRefusjon = 5, månedsinntekt = 2590.8)
+                }
         ),
         kontrollDager = null,
         antallDager = 4,

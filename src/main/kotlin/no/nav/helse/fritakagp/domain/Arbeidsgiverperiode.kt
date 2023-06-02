@@ -5,11 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonUnwrapped
 import java.time.LocalDate
 
-data class AgpFelter(
-    val antallDagerMedRefusjon: Int,
-    val månedsinntekt: Double,
-    val gradering: Double = 1.0,
-) {
+ class AgpFelter{
     var dagsats: Double = 0.0
     var belop: Double = 0.0
 }
@@ -37,10 +33,13 @@ data class ArbeidsgiverperiodeNy(
     private var _tom: LocalDate? = null,
     @JsonInclude(JsonInclude.Include.NON_NULL)
     var perioder: List<Periode>? = null,
-    val oppgaveId: String? = null
+    val oppgaveId: String? = null,
+    val antallDagerMedRefusjon: Int,
+    val månedsinntekt: Double,
+    val gradering: Double = 1.0
 ) {
-    @JsonUnwrapped
-    lateinit var felter: AgpFelter
+    var dagsats: Double = 0.0
+    var belop: Double = 0.0
 
     init {
         if (perioder.isNullOrEmpty()) perioder = listOf(Periode(_fom!!, _tom!!))
@@ -59,11 +58,11 @@ data class ArbeidsgiverperiodeNy(
             Arbeidsgiverperiode(
                 fom = it.fom,
                 tom = it.tom,
-                antallDagerMedRefusjon = felter.antallDagerMedRefusjon,
-                månedsinntekt = felter.månedsinntekt,
+                antallDagerMedRefusjon = antallDagerMedRefusjon,
+                månedsinntekt = månedsinntekt,
             ).also {
-                it.belop = felter.belop
-                it.dagsats = felter.dagsats
+                it.belop = belop
+                it.dagsats = dagsats
             }
         }.toList()
     }

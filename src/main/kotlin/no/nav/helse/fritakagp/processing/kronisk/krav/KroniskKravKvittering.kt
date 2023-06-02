@@ -119,14 +119,14 @@ fun lagrePerioder(perioder: List<ArbeidsgiverperiodeNy>): String {
 }
 
 fun lagePeriod(periode: ArbeidsgiverperiodeNy): String {
-    val gradering = (periode.felter.gradering * 100).toString() + "%"
+    val gradering = (periode.gradering * 100).toString() + "%"
     return """<tr>
                 <td style="text-align:center">${periode.fraOgMed().format(DATE_FORMAT)}</td>
                 <td style="text-align:center">${periode.tilOgMed().format(DATE_FORMAT)}</td>
                 <td style="text-align:center">$gradering</td>
-                <td style="text-align:center">${periode.felter.antallDagerMedRefusjon}</td>
-                <td style="text-align:center">${periode.felter.månedsinntekt}</td>
-                <td style="text-align:center">${periode.felter.dagsats.roundToInt()}</td>
-                <td style="text-align:center">${periode.felter.belop.roundToInt()}</td>
+                <td style="text-align:center">${periode.antallDagerMedRefusjon}</td>
+                <td style="text-align:center">${periode.månedsinntekt}</td>
+                <td style="text-align:center">${periode.dagsats.roundToInt()}</td>
+                <td style="text-align:center">${periode.belop.roundToInt()}</td>
             </tr>"""
 }

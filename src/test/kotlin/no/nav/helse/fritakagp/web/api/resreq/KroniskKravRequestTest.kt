@@ -68,7 +68,7 @@ class KroniskKravRequestTest {
     internal fun `Antall refusjonsdager kan ikke overstige periodelengden`() {
         validationShouldFailFor("perioder[0].antallDagerMedRefusjon") {
             KroniskTestData.kroniskKravRequestValid.copy(
-                perioder = listOf(KroniskTestData.kroniskKravRequestValid.perioder.first().copy().also { it.felter = it.felter.copy(antallDagerMedRefusjon = 21) })
+                perioder = listOf(KroniskTestData.kroniskKravRequestValid.perioder.first().copy(antallDagerMedRefusjon = 21))
             ).validate(AaregTestData.evigArbeidsForholdListe)
         }
     }
@@ -84,11 +84,9 @@ class KroniskKravRequestTest {
                                 fom = LocalDate.of(2020, 1, 10),
                                 tom = LocalDate.of(2020, 1, 5)
                             )
-                        )
+                        ),
+                        antallDagerMedRefusjon = -5
                     )
-                        .also {
-                            it.felter = it.felter.copy(antallDagerMedRefusjon = -5)
-                        }
                 )
             ) // slik at validationShouldFailFor() kaster ikke to unntak
                 .validate(AaregTestData.evigArbeidsForholdListe)
@@ -100,9 +98,7 @@ class KroniskKravRequestTest {
         validationShouldFailFor("perioder[0].gradering") {
             KroniskTestData.kroniskKravRequestValid.copy(
                 perioder = listOf(
-                    KroniskTestData.kroniskKravRequestValid.perioder.first().copy().also {
-                        it.felter = it.felter.copy(gradering = 1.1)
-                    }
+                    KroniskTestData.kroniskKravRequestValid.perioder.first().copy(gradering = 1.1)
                 )
             ).validate(AaregTestData.evigArbeidsForholdListe)
         }
@@ -110,9 +106,7 @@ class KroniskKravRequestTest {
         validationShouldFailFor("perioder[0].gradering") {
             KroniskTestData.kroniskKravRequestValid.copy(
                 perioder = listOf(
-                    KroniskTestData.kroniskKravRequestValid.perioder.first().copy().also {
-                        it.felter = it.felter.copy(gradering = 0.1)
-                    }
+                    KroniskTestData.kroniskKravRequestValid.perioder.first().copy(gradering = 0.1)
                 )
             ).validate(AaregTestData.evigArbeidsForholdListe)
         }

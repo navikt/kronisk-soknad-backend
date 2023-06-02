@@ -129,16 +129,16 @@ fun genererePeriodeTable(perioder: List<ArbeidsgiverperiodeNy>): String {
     return table {
         header("FOM", "TOM", "Sykmeldingsgrad", "kreves refusjon for", "Beregnet månedsinntekt (NOK)", "Dagsats (NOK)", "Beløp (NOK)")
         for (p in perioder.sortedBy { it.fom }) {
-            val gradering = (p.felter.gradering * 100).toString() + "%"
+            val gradering = (p.gradering * 100).toString() + "%"
             row(
                 // @TODO dobbelsjekk fra og med til og med
                 p.fraOgMed().atStartOfDay(),
                 p.tilOgMed().atStartOfDay(),
                 gradering,
-                p.felter.antallDagerMedRefusjon,
-                p.felter.månedsinntekt.roundToInt().toString(),
-                p.felter.dagsats.toString(),
-                p.felter.belop.toString()
+                p.antallDagerMedRefusjon,
+                p.månedsinntekt.roundToInt().toString(),
+                p.dagsats.toString(),
+                p.belop.toString()
             )
         }
         hints {

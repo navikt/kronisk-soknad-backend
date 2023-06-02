@@ -102,12 +102,10 @@ data class KroniskKravRequest(
                     validate(Periode::fom).datoerHarRiktigRekkefolge(it.tom)
                     validate(Periode::fom).måHaAktivtArbeidsforhold(it, aktuelleArbeidsforhold)
                 }
-                validate(ArbeidsgiverperiodeNy::perioder).refusjonsDagerIkkeOverstigerPeriodelengde(it.felter.antallDagerMedRefusjon)
-                validate(ArbeidsgiverperiodeNy::felter).validate {
-                    validate(AgpFelter::gradering).isLessThanOrEqualTo(1.0)
-                    validate(AgpFelter::gradering).isGreaterThanOrEqualTo(0.2)
-                    validate(AgpFelter::månedsinntekt).maanedsInntektErMellomNullOgTiMil()
-                }
+                validate(ArbeidsgiverperiodeNy::antallDagerMedRefusjon).refusjonsDagerIkkeOverstigerPeriodelengde(it.perioder!!)
+                validate(ArbeidsgiverperiodeNy::gradering).isLessThanOrEqualTo(1.0)
+                validate(ArbeidsgiverperiodeNy::gradering).isGreaterThanOrEqualTo(0.2)
+                validate(ArbeidsgiverperiodeNy::månedsinntekt).maanedsInntektErMellomNullOgTiMil()
             }
 
             if (!this@KroniskKravRequest.dokumentasjon.isNullOrEmpty()) {

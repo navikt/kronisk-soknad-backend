@@ -13,7 +13,6 @@ object AgpTestData {
                 LocalDate.of(2020, 1, 10)
             )
         ),
-    ).also {
-        it.felter = AgpFelter(antallDagerMedRefusjon = 2, månedsinntekt = 2590.8)
-    }
+        antallDagerMedRefusjon = 2, månedsinntekt = 2590.8
+    )
 }

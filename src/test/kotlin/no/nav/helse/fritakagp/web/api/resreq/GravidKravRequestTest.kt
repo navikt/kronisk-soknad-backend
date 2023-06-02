@@ -4,6 +4,7 @@ import io.mockk.every
 import io.mockk.mockk
 import no.nav.helse.AaregTestData
 import no.nav.helse.GravidTestData
+import no.nav.helse.fritakagp.domain.AgpFelter
 import no.nav.helse.fritakagp.domain.BeloepBeregning
 import no.nav.helse.fritakagp.domain.Periode
 import no.nav.helse.fritakagp.integration.GrunnbeloepClient
@@ -58,13 +59,13 @@ class GravidKravRequestTest {
     internal fun `Sykemeldingsgrad må være gyldig`() {
         validationShouldFailFor("perioder[0].gradering") {
             GravidTestData.gravidKravRequestValid.copy(
-                perioder = listOf(GravidTestData.gravidKravRequestValid.perioder.first().copy().also { it.felter = it.felter.copy(gradering = 1.1) })
+                perioder = listOf(GravidTestData.gravidKravRequestValid.perioder.first().copy(gradering = 1.1))
             ).validate(AaregTestData.evigArbeidsForholdListe)
         }
 
         validationShouldFailFor("perioder[0].gradering") {
             GravidTestData.gravidKravRequestValid.copy(
-                perioder = listOf(GravidTestData.gravidKravRequestValid.perioder.first().copy().also { it.felter = it.felter.copy(gradering = 0.1) })
+                perioder = listOf(GravidTestData.gravidKravRequestValid.perioder.first().copy(gradering = 0.1))
             ).validate(AaregTestData.evigArbeidsForholdListe)
         }
     }
@@ -86,7 +87,7 @@ class GravidKravRequestTest {
     internal fun `Antall refusjonsdager kan ikke overstige periodelengden`() {
         validationShouldFailFor("perioder[0].antallDagerMedRefusjon") {
             GravidTestData.gravidKravRequestValid.copy(
-                perioder = listOf(GravidTestData.gravidKravRequestValid.perioder.first().copy().also { it.felter = it.felter.copy(antallDagerMedRefusjon = 21) })
+                perioder = listOf(GravidTestData.gravidKravRequestValid.perioder.first().copy(antallDagerMedRefusjon = 21))
             ).validate(AaregTestData.evigArbeidsForholdListe)
         }
     }
@@ -94,7 +95,7 @@ class GravidKravRequestTest {
     @Test
     internal fun `Til dato kan ikke komme før fra dato`() {
 
-        //TODO: fiks valiktor error handling for delperioder
+        // TODO: fiks valiktor error handling for delperioder
         validationShouldFailFor("perioder[0].fom") {
             GravidTestData.gravidKravRequestValid.copy(
                 perioder = listOf(
@@ -104,8 +105,9 @@ class GravidKravRequestTest {
                                 fom = LocalDate.of(2020, 1, 10),
                                 tom = LocalDate.of(2020, 1, 5)
                             )
-                        )
-                    ).also { it.felter = it.felter.copy(antallDagerMedRefusjon = -5) }
+                        ),
+                        antallDagerMedRefusjon = -5
+                    )
                 ) // slik at validationShouldFailFor() kaster ikke to unntak
             ).validate(AaregTestData.evigArbeidsForholdListe)
         }
@@ -120,8 +122,8 @@ class GravidKravRequestTest {
         val krav = GravidTestData.gravidKravRequestValid.toDomain(sendtAv, sendtAvNavn, navn)
         belopBeregning.beregnBeløpGravid(krav)
 
-        assertThat(krav.perioder.first().felter.dagsats).isEqualTo(7772.4)
-        assertThat(krav.perioder.first().felter.belop).isEqualTo(12435.84)
+        assertThat(krav.perioder.first().dagsats).isEqualTo(7772.4)
+        assertThat(krav.perioder.first().belop).isEqualTo(12435.84)
     }
 
     @Test
@@ -133,6 +135,6 @@ class GravidKravRequestTest {
         val krav = GravidTestData.gravidKravRequestWithWrongDecimal.toDomain(sendtAv, sendtAvNavn, navn)
         belopBeregning.beregnBeløpGravid(krav)
 
-        assertThat(krav.perioder.first().felter.belop).isEqualTo(2848.6)
+        assertThat(krav.perioder.first().belop).isEqualTo(2848.6)
     }
 }

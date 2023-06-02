@@ -78,7 +78,7 @@ class OpprettRobotOppgaveKroniskProcessor(
         val enhetsNr = behandlendeEnhetService.hentBehandlendeEnhet(krav.identitetsnummer, krav.id.toString())
         requireNotNull(aktoerId) { "Fant ikke AktørID for fnr i ${krav.id}" }
         logger.info("Fant aktørid")
-        //TODO fiks robot oppgaver for hver AGP
+        // TODO fiks robot oppgaver for hver AGP
         val beskrivelse = om.writeValueAsString(krav.toKravListeForOppgave()[0])
         val oppgaveType = "ROB_BEH"
         val request = OpprettOppgaveRequest(

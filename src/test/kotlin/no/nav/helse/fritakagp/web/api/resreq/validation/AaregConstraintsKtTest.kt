@@ -117,16 +117,14 @@ class AaregConstraintsKtTest {
                             LocalDate.of(2021, 1, 15),
                             LocalDate.of(2021, 1, 18)
                         )
-                    )
-                ).also {
-                    it.felter = AgpFelter(antallDagerMedRefusjon = 2, månedsinntekt = 2590.8)
-                },
+                    ),
+                    antallDagerMedRefusjon = 2, månedsinntekt = 2590.8
+                ),
                 ArbeidsgiverperiodeNy(
                     LocalDate.of(2021, 2, 26),
-                    LocalDate.of(2021, 3, 10)
-                ).also {
-                    it.felter = AgpFelter(antallDagerMedRefusjon = 12, månedsinntekt = 2590.0)
-                }
+                    LocalDate.of(2021, 3, 10),
+                    antallDagerMedRefusjon = 12, månedsinntekt = 2590.0
+                )
             )
         )
         validate(gravidKravRequest) {

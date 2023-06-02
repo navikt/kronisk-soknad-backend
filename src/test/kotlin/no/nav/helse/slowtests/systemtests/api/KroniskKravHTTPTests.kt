@@ -104,16 +104,18 @@ class KroniskKravHTTPTests : SystemTestBase() {
                                     LocalDate.of(2020, 2, 1),
                                     LocalDate.of(2020, 1, 31)
                                 )
-                            )
-                        ).also { it.felter = it.felter.copy(antallDagerMedRefusjon = 29, månedsinntekt = 34000000.0) },
+                            ),
+                            antallDagerMedRefusjon = 29, månedsinntekt = 34000000.0
+                        ),
                         AgpTestData.arbeidsgiverperiode.copy(
                             perioder = listOf(
                                 Periode(
                                     LocalDate.of(2020, 2, 3),
                                     LocalDate.of(2020, 1, 31)
                                 )
-                            )
-                        ).also { it.felter = it.felter.copy(antallDagerMedRefusjon = 23, månedsinntekt = -30.0) },
+                            ),
+                            antallDagerMedRefusjon = 23, månedsinntekt = -30.0
+                        ),
 
                         AgpTestData.arbeidsgiverperiode.copy(
                             perioder = listOf(
@@ -121,8 +123,9 @@ class KroniskKravHTTPTests : SystemTestBase() {
                                     LocalDate.of(2020, 1, 5),
                                     LocalDate.of(2020, 1, 14)
                                 )
-                            )
-                        ).also { it.felter = it.felter.copy(antallDagerMedRefusjon = 12) }
+                            ),
+                            antallDagerMedRefusjon = 12
+                        )
                     )
                 )
             }

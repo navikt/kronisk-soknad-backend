@@ -156,7 +156,7 @@ class GravidKravHTTPTests : SystemTestBase() {
 
                                 )
                             )
-                        ).also { it.felter = it.felter.copy(antallDagerMedRefusjon = 12) }
+               ,antallDagerMedRefusjon = 12)
                     )
                 )
             }
@@ -194,7 +194,7 @@ class GravidKravHTTPTests : SystemTestBase() {
 
                                 )
                             )
-                        ).also { it.felter = it.felter.copy(antallDagerMedRefusjon = 12) }
+               ,antallDagerMedRefusjon = 12)
                     )
                 )
             }

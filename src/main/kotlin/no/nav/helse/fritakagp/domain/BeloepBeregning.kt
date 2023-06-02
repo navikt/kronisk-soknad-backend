@@ -14,12 +14,12 @@ class BeloepBeregning(
     private fun beregnPeriodeData(perioder: List<ArbeidsgiverperiodeNy>, antallDager: Int) {
         perioder.forEach {
             val seksG = grunnbeloepClient.hentGrunnbeløp(it.fraOgMed()).grunnbeløp * 6.0
-            val arslonn = it.felter.månedsinntekt * 12
-            it.felter.dagsats = if (arslonn < seksG)
+            val arslonn = it.månedsinntekt * 12
+            it.dagsats = if (arslonn < seksG)
                 round2DigitDecimal(arslonn / antallDager)
             else
                 round2DigitDecimal(seksG / antallDager)
-            it.felter.belop = round2DigitDecimal(it.felter.dagsats * it.felter.antallDagerMedRefusjon * it.felter.gradering)
+            it.belop = round2DigitDecimal(it.dagsats * it.antallDagerMedRefusjon * it.gradering)
         }
     }
 

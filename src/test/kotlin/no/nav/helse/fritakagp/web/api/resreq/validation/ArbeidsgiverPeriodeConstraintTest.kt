@@ -17,27 +17,24 @@ class ArbeidsgiverPeriodeConstraintTest {
         val perioder = listOf<ArbeidsgiverperiodeNy>(
             ArbeidsgiverperiodeNy(
                 perioder = listOf(
-                    Periode(LocalDate.parse("2022-01-5"), LocalDate.parse("2022-01-8")),
+                    Periode(LocalDate.parse("2022-01-05"), LocalDate.parse("2022-01-08")),
                     Periode(LocalDate.parse("2022-01-12"), LocalDate.parse("2022-01-15")),
                     Periode(LocalDate.parse("2022-01-17"), LocalDate.parse("2022-01-18"))
                 )
-            ).also {
-                it.felter = AgpFelter(antallDagerMedRefusjon = 16, månedsinntekt = 1000.0)
-            },
+            ,antallDagerMedRefusjon = 16, månedsinntekt = 1000.0)
+            ,
             ArbeidsgiverperiodeNy(
                 perioder = listOf(
-                    Periode(LocalDate.parse("2022-02-15"), LocalDate.parse("2022-02-30"))
+                    Periode(LocalDate.parse("2022-02-15"), LocalDate.parse("2022-03-02"))
                 )
-            ).also {
-                it.felter = AgpFelter(antallDagerMedRefusjon = 16, månedsinntekt = 2000.0)
-            },
+            ,antallDagerMedRefusjon = 16, månedsinntekt = 2000.0)
+            ,
             ArbeidsgiverperiodeNy(
                 perioder = listOf(
-                    Periode(LocalDate.parse("2022-03-3"), LocalDate.parse("2022-03-8"))
+                    Periode(LocalDate.parse("2022-03-03"), LocalDate.parse("2022-03-08"))
                 )
-            ).also {
-                it.felter = AgpFelter(antallDagerMedRefusjon = 16, månedsinntekt = 3000.0)
-            }
+            ,antallDagerMedRefusjon = 16, månedsinntekt = 3000.0)
+
         )
         val gravidKrav = GravidTestData.gravidKrav.copy(perioder = perioder)
         validationShouldFailFor(GravidKrav::perioder) {

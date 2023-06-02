@@ -60,11 +60,8 @@ object KroniskTestData {
                         LocalDate.of(2020, 1, 5),
                         LocalDate.of(2020, 1, 10)
                     )
-                )
-            )
-                .also {
-                    it.felter = AgpFelter(antallDagerMedRefusjon = 2, månedsinntekt = 2590.8)
-                }
+                ),
+            antallDagerMedRefusjon = 2, månedsinntekt = 2590.8)
         ),
         bekreftet = true,
         dokumentasjon = null,
@@ -84,32 +81,25 @@ object KroniskTestData {
                         LocalDate.of(2020, 1, 10)
                     )
                 )
-            )
-                .also {
-                    it.felter = AgpFelter(antallDagerMedRefusjon = 2, månedsinntekt = 2590.8)
-                },
+            ,antallDagerMedRefusjon = 2, månedsinntekt = 2590.8),
             ArbeidsgiverperiodeNy(
                 perioder = listOf(
                     Periode(
                         LocalDate.of(2020, 1, 5),
                         LocalDate.of(2020, 1, 4)
                     )
-                )
-            )
-                .also {
-                    it.felter = AgpFelter(antallDagerMedRefusjon = 2, månedsinntekt = 3590.8)
-                },
+                ),
+                antallDagerMedRefusjon = 2, månedsinntekt = 3590.8
+            ),
             ArbeidsgiverperiodeNy(
                 perioder = listOf(
                     Periode(
                         LocalDate.of(2020, 1, 5),
                         LocalDate.of(2020, 1, 14)
                     )
-                )
+                ),
+                antallDagerMedRefusjon = 12, månedsinntekt = 1590.8
             )
-                .also {
-                    it.felter = AgpFelter(antallDagerMedRefusjon = 12, månedsinntekt = 1590.8)
-                }
         ),
 
         bekreftet = true,
@@ -136,10 +126,7 @@ object KroniskTestData {
                         LocalDate.of(2020, 1, 10)
                     )
                 )
-            )
-                .also {
-                    it.felter = AgpFelter(antallDagerMedRefusjon = 5, månedsinntekt = 2590.8)
-                }
+            ,antallDagerMedRefusjon = 5, månedsinntekt = 2590.8)
         ),
         kontrollDager = null,
         antallDager = 4,
@@ -159,10 +146,7 @@ object KroniskTestData {
                         LocalDate.of(2020, 1, 10)
                     )
                 )
-            )
-                .also {
-                    it.felter = AgpFelter(antallDagerMedRefusjon = 5, månedsinntekt = 2590.8)
-                },
+            ,antallDagerMedRefusjon = 5, månedsinntekt = 2590.8),
             ArbeidsgiverperiodeNy(
                 perioder = listOf(
                     Periode(
@@ -170,10 +154,7 @@ object KroniskTestData {
                         LocalDate.of(2020, 1, 10)
                     )
                 )
-            )
-                .also {
-                    it.felter = AgpFelter(antallDagerMedRefusjon = 5, månedsinntekt = 2590.8)
-                },
+            ,antallDagerMedRefusjon = 5, månedsinntekt = 2590.8),
             ArbeidsgiverperiodeNy(
                 perioder = listOf(
                     Periode(
@@ -181,10 +162,7 @@ object KroniskTestData {
                         LocalDate.of(2020, 1, 10)
                     )
                 )
-            )
-                .also {
-                    it.felter = AgpFelter(antallDagerMedRefusjon = 5, månedsinntekt = 2590.8)
-                },
+            ,antallDagerMedRefusjon = 5, månedsinntekt = 2590.8),
             ArbeidsgiverperiodeNy(
                 perioder = listOf(
                     Periode(
@@ -192,10 +170,7 @@ object KroniskTestData {
                         LocalDate.of(2020, 1, 10)
                     )
                 )
-            )
-                .also {
-                    it.felter = AgpFelter(antallDagerMedRefusjon = 5, månedsinntekt = 2590.8)
-                },
+            ,antallDagerMedRefusjon = 5, månedsinntekt = 2590.8),
             ArbeidsgiverperiodeNy(
                 perioder = listOf(
                     Periode(
@@ -203,10 +178,7 @@ object KroniskTestData {
                         LocalDate.of(2020, 1, 10)
                     )
                 )
-            )
-                .also {
-                    it.felter = AgpFelter(antallDagerMedRefusjon = 5, månedsinntekt = 2590.8)
-                },
+            ,antallDagerMedRefusjon = 5, månedsinntekt = 2590.8),
             ArbeidsgiverperiodeNy(
                 perioder = listOf(
                     Periode(
@@ -214,10 +186,7 @@ object KroniskTestData {
                         LocalDate.of(2020, 1, 10)
                     )
                 )
-            )
-                .also {
-                    it.felter = AgpFelter(antallDagerMedRefusjon = 5, månedsinntekt = 2590.8)
-                },
+            ,antallDagerMedRefusjon = 5, månedsinntekt = 2590.8),
             ArbeidsgiverperiodeNy(
                 perioder = listOf(
                     Periode(
@@ -225,10 +194,7 @@ object KroniskTestData {
                         LocalDate.of(2020, 1, 10)
                     )
                 )
-            )
-                .also {
-                    it.felter = AgpFelter(antallDagerMedRefusjon = 5, månedsinntekt = 2590.8)
-                }
+            ,antallDagerMedRefusjon = 5, månedsinntekt = 2590.8)
         ),
         kontrollDager = null,
         antallDager = 4,

@@ -73,19 +73,22 @@ class ArbeidsgiverPeriodeJsonTest {
         val om = customObjectMapper()
 
         val felter = AgpFelter(
-            3,
-            3000.0,
         )
 
         val testPeriodeLegacy = ArbeidsgiverperiodeNy(
             _fom = periode.fom,
             _tom = periode.tom,
             perioder = null,
-        ).also { it.felter = felter }
+            antallDagerMedRefusjon = 3,
+            månedsinntekt = 3000.0
+
+        )
 
         val testPeriodeNy = ArbeidsgiverperiodeNy(
             perioder = listOf(periode),
-        ).also { it.felter = felter }
+            antallDagerMedRefusjon = 3,
+            månedsinntekt = 3000.0
+        )
 
         // println(om.writeValueAsString(testPeriode))
         val tmpString = om.writeValueAsString(testPeriodeNy)

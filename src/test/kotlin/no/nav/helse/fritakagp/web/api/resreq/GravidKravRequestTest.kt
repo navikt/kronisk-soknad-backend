@@ -96,7 +96,7 @@ class GravidKravRequestTest {
     internal fun `Til dato kan ikke komme før fra dato`() {
 
         // TODO: fiks valiktor error handling for delperioder
-        validationShouldFailFor("perioder[0].fom") {
+        validationShouldFailFor("perioder[0].perioder[0].fom") {
             GravidTestData.gravidKravRequestValid.copy(
                 perioder = listOf(
                     GravidTestData.gravidKravRequestValid.perioder.first().copy(

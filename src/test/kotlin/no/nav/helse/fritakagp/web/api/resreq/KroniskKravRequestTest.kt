@@ -75,7 +75,7 @@ class KroniskKravRequestTest {
 
     @Test
     internal fun `Til dato kan ikke komme før fra dato`() {
-        validationShouldFailFor("perioder[0].fom") {
+        validationShouldFailFor("perioder[0].perioder[0].fom") {
             KroniskTestData.kroniskKravRequestValid.copy(
                 perioder = listOf(
                     KroniskTestData.kroniskKravRequestValid.perioder.first().copy(

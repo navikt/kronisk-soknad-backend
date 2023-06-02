@@ -1,7 +1,5 @@
 package no.nav.helse.fritakagp.web.api.resreq.validation
 
-import no.nav.helse.fritakagp.domain.AgpFelter
-import no.nav.helse.fritakagp.domain.Arbeidsgiverperiode
 import no.nav.helse.fritakagp.domain.ArbeidsgiverperiodeNy
 import no.nav.helse.fritakagp.domain.FravaerData
 import no.nav.helse.fritakagp.domain.GodkjenteFiletyper
@@ -46,6 +44,11 @@ fun <E> Validator<E>.Property<Iterable<ArbeidsgiverperiodeNy>?>.oppholdOverstige
                 it > 16
             }
         return@validate validationResult
+    }
+class ArbeidsgiverperiodeOverstigerIkke16Dager : CustomConstraint
+fun <E> Validator<E>.Property<Iterable<Periode>?>.periodeLengdeIkkeOver16dager() =
+    this.validate(ArbeidsgiverperiodeOverstigerIkke16Dager()) {
+        return@validate (it?.map { ChronoUnit.DAYS.between(it.fom, it.tom.plusDays(1)) }!!.sum() < 17 )
     }
 
 class FraDatoKanIkkeKommeEtterTomDato : CustomConstraint

@@ -109,7 +109,9 @@ aąbcćdeęfghijlłmnńoóprsśtuwź
                         LocalDate.of(2020, 1, 10)
                     )
                 ),
-                antallDagerMedRefusjon = 2, månedsinntekt = 2590.8
+                antallDagerMedRefusjon = 2,
+                månedsinntekt = 2590.8,
+                gradering = 0.8
             )
         ),
 

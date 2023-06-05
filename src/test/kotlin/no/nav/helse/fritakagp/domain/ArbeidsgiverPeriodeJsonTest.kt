@@ -72,8 +72,7 @@ class ArbeidsgiverPeriodeJsonTest {
     fun testSerialization() {
         val om = customObjectMapper()
 
-        val felter = AgpFelter(
-        )
+        val felter = AgpFelter()
 
         val testPeriodeLegacy = ArbeidsgiverperiodeNy(
             _fom = periode.fom,

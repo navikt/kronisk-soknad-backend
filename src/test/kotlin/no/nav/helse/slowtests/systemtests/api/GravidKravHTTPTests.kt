@@ -155,8 +155,9 @@ class GravidKravHTTPTests : SystemTestBase() {
                                     LocalDate.of(2020, 1, 14),
 
                                 )
-                            )
-               ,antallDagerMedRefusjon = 12)
+                            ),
+                            antallDagerMedRefusjon = 12
+                        )
                     )
                 )
             }
@@ -193,8 +194,9 @@ class GravidKravHTTPTests : SystemTestBase() {
                                     LocalDate.of(2020, 1, 14),
 
                                 )
-                            )
-               ,antallDagerMedRefusjon = 12)
+                            ),
+                            antallDagerMedRefusjon = 12
+                        )
                     )
                 )
             }

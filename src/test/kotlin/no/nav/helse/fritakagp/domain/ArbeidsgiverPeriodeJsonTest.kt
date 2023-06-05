@@ -99,7 +99,6 @@ class ArbeidsgiverPeriodeJsonTest {
         println(resultStringLegacy)
     }
 
-
     @Test
     fun genererTabeller() {
         val testPeriodeNy = ArbeidsgiverperiodeNy(
@@ -122,7 +121,5 @@ class ArbeidsgiverPeriodeJsonTest {
         )
 
         println(genererePeriodeTable(listOf(testPeriodeNy, testPeriodeNy)))
-
-
     }
 }

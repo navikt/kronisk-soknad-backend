@@ -140,22 +140,18 @@ fun genererePeriodeTable(perioder: List<ArbeidsgiverperiodeNy>): String {
             // TODO: gå over dette en gang til
             p.perioder?.forEachIndexed { index, e ->
                 if (index == 2)
-                row(
-                    e.fom.atStartOfDay(),
-                    e.tom.atStartOfDay(),
-                    gradering,
-                    p.antallDagerMedRefusjon,
-                    p.månedsinntekt.roundToInt().toString(),
-                    p.dagsats.toString(),
-                    p.belop.toString()
-                ) else {
-                    row(e.fom.atStartOfDay(), e.tom.atStartOfDay(), "-","-","-","-","-" )
+                    row(
+                        e.fom.atStartOfDay(),
+                        e.tom.atStartOfDay(),
+                        gradering,
+                        p.antallDagerMedRefusjon,
+                        p.månedsinntekt.roundToInt().toString(),
+                        p.dagsats.toString(),
+                        p.belop.toString()
+                    ) else {
+                    row(e.fom.atStartOfDay(), e.tom.atStartOfDay(), "-", "-", "-", "-", "-")
                 }
-
-
             }
-
-
         }
         hints {
             alignment("FOM", Table.Hints.Alignment.LEFT)

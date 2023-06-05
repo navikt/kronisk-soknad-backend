@@ -125,21 +125,37 @@ fun generereSlettGravidKravBeskrivelse(krav: GravidKrav, desc: String): String {
     }
 }
 
+fun generateAgpTable(perioder: List<Periode>): String {
+    return perioder.map {
+        "(${it.fom} - ${it.tom})"
+    }.joinToString()
+}
+
 fun genererePeriodeTable(perioder: List<ArbeidsgiverperiodeNy>): String {
     return table {
         header("FOM", "TOM", "Sykmeldingsgrad", "kreves refusjon for", "Beregnet månedsinntekt (NOK)", "Dagsats (NOK)", "Beløp (NOK)")
         for (p in perioder.sortedBy { it.fom }) {
             val gradering = (p.gradering * 100).toString() + "%"
-            row(
-                // @TODO dobbelsjekk fra og med til og med
-                p.fraOgMed().atStartOfDay(),
-                p.tilOgMed().atStartOfDay(),
-                gradering,
-                p.antallDagerMedRefusjon,
-                p.månedsinntekt.roundToInt().toString(),
-                p.dagsats.toString(),
-                p.belop.toString()
-            )
+
+            // TODO: gå over dette en gang til
+            p.perioder?.forEachIndexed { index, e ->
+                if (index == 2)
+                row(
+                    e.fom.atStartOfDay(),
+                    e.tom.atStartOfDay(),
+                    gradering,
+                    p.antallDagerMedRefusjon,
+                    p.månedsinntekt.roundToInt().toString(),
+                    p.dagsats.toString(),
+                    p.belop.toString()
+                ) else {
+                    row(e.fom.atStartOfDay(), e.tom.atStartOfDay(), "-","-","-","-","-" )
+                }
+
+
+            }
+
+
         }
         hints {
             alignment("FOM", Table.Hints.Alignment.LEFT)

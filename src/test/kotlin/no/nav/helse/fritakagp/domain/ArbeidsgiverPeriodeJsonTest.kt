@@ -49,18 +49,21 @@ class ArbeidsgiverPeriodeJsonTest {
         "  \"dagsats\" : 0.0,\n" +
         "  \"belop\" : 0.0\n" +
         "}".trimIndent()
+
     @Test
     fun testJsonBegge() {
         val resultatBegge = om.readValue(testStringBegge, ArbeidsgiverperiodeNy::class.java)
         assertThat(resultatBegge.perioder?.size).isEqualTo(1)
         assertThat(resultatBegge.perioder?.get(0)).isEqualTo(periode)
     }
+
     @Test
     fun testJsonNy() {
         val resultatNy = om.readValue(testStringNew, ArbeidsgiverperiodeNy::class.java)
         assertThat(resultatNy.perioder?.size).isEqualTo(1)
         assertThat(resultatNy.perioder?.get(0)).isEqualTo(periode)
     }
+
     @Test
     fun testJsonLegacy() {
         val resultatLegacy = om.readValue(testStringLegacy, ArbeidsgiverperiodeNy::class.java)
@@ -94,5 +97,32 @@ class ArbeidsgiverPeriodeJsonTest {
         println(tmpString)
         val resultStringLegacy = om.writeValueAsString(testPeriodeLegacy)
         println(resultStringLegacy)
+    }
+
+
+    @Test
+    fun genererTabeller() {
+        val testPeriodeNy = ArbeidsgiverperiodeNy(
+            perioder = listOf(
+                periode.copy(
+                    fom = LocalDate.of(2022, 4, 1),
+                    tom = LocalDate.of(2022, 4, 7)
+                ),
+                periode.copy(
+                    fom = LocalDate.of(2022, 4, 8),
+                    tom = LocalDate.of(2022, 4, 14)
+                ),
+                periode.copy(
+                    fom = LocalDate.of(2022, 4, 14),
+                    tom = LocalDate.of(2022, 4, 16)
+                )
+            ),
+            antallDagerMedRefusjon = 3,
+            månedsinntekt = 3000.0
+        )
+
+        println(genererePeriodeTable(listOf(testPeriodeNy, testPeriodeNy)))
+
+
     }
 }

@@ -18,6 +18,7 @@ import no.nav.helse.fritakagp.web.api.resreq.validation.isGodskjentFiletyper
 import no.nav.helse.fritakagp.web.api.resreq.validation.isVirksomhet
 import no.nav.helse.fritakagp.web.api.resreq.validation.maanedsInntektErMellomNullOgTiMil
 import no.nav.helse.fritakagp.web.api.resreq.validation.måHaAktivtArbeidsforhold
+import no.nav.helse.fritakagp.web.api.resreq.validation.periodeLengdeIkkeOver16dager
 import no.nav.helse.fritakagp.web.api.resreq.validation.refusjonsDagerIkkeOverstigerPeriodelengde
 import org.valiktor.functions.isGreaterThan
 import org.valiktor.functions.isGreaterThanOrEqualTo
@@ -107,6 +108,7 @@ data class GravidKravRequest(
             validate(GravidKravRequest::bekreftet).isTrue()
 
             validate(GravidKravRequest::perioder).validateForEach {
+                validate(ArbeidsgiverperiodeNy::perioder).periodeLengdeIkkeOver16dager()
                 validate(ArbeidsgiverperiodeNy::perioder).validateForEach {
                     validate(Periode::fom).datoerHarRiktigRekkefolge(it.tom)
                     validate(Periode::fom).måHaAktivtArbeidsforhold(it, aktuelleArbeidsforhold)

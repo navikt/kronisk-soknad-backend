@@ -49,7 +49,7 @@ fun <E> Validator<E>.Property<Iterable<ArbeidsgiverperiodeNy>?>.oppholdOverstige
 class ArbeidsgiverperiodeOverstigerIkke16Dager : CustomConstraint
 fun <E> Validator<E>.Property<Iterable<Periode>?>.periodeLengdeIkkeOver16dager() =
     this.validate(ArbeidsgiverperiodeOverstigerIkke16Dager()) {
-        return@validate (it?.map { ChronoUnit.DAYS.between(it.fom, it.tom.plusDays(1)) }!!.sum() < 17 )
+        return@validate (it?.map { ChronoUnit.DAYS.between(it.fom, it.tom.plusDays(1)) }!!.sum() < 17)
     }
 
 class FraDatoKanIkkeKommeEtterTomDato : CustomConstraint

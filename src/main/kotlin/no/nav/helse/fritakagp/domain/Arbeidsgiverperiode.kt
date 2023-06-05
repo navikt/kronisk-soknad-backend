@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonUnwrapped
 import java.time.LocalDate
 
- class AgpFelter{
+class AgpFelter {
     var dagsats: Double = 0.0
     var belop: Double = 0.0
 }

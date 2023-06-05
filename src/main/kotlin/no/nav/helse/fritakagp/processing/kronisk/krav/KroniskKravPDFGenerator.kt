@@ -61,8 +61,10 @@ class KroniskKravPDFGenerator {
                 }
                 val gradering = (periode.gradering * 100).toString()
                 with(content) {
-                    writeTextWrapped("FOM: ${periode.fraOgMed().format(DATE_FORMAT)}")
-                    writeTextWrapped("TOM: ${periode.tilOgMed().format(DATE_FORMAT)}")
+                    writeTextWrapped("Perioder:")
+                    periode.perioder?.forEach {
+                        writeTextWrapped("${it.fom.format(DATE_FORMAT)} - ${it.tom.format(DATE_FORMAT)}")
+                    }
                     writeTextWrapped("Sykmeldingsgrad: $gradering%")
                     writeTextWrapped("Antall dager det kreves refusjon for: ${periode.antallDagerMedRefusjon}")
                     writeTextWrapped("Beregnet månedsinntekt (NOK): ${periode.månedsinntekt.roundToInt()}")
@@ -104,8 +106,10 @@ class KroniskKravPDFGenerator {
             }
             val gradering = (periode.gradering * 100).toString()
             with(content) {
-                writeTextWrapped("FOM: ${periode.fraOgMed().format(DATE_FORMAT)}")
-                writeTextWrapped("TOM: ${periode.tilOgMed().format(DATE_FORMAT)}")
+                writeTextWrapped("Perioder:")
+                periode.perioder?.forEach {
+                    writeTextWrapped("${it.fom.format(DATE_FORMAT)} - ${it.tom.format(DATE_FORMAT)}")
+                }
                 writeTextWrapped("Sykmeldingsgrad: $gradering%")
                 writeTextWrapped("Antall dager det kreves refusjon for: ${periode.antallDagerMedRefusjon}")
                 writeTextWrapped("Beregnet månedsinntekt (NOK): ${periode.månedsinntekt.roundToInt()}")

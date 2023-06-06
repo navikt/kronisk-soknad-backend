@@ -202,9 +202,9 @@ class GravidKravHTTPTests : SystemTestBase() {
             }
         }
         val possiblePropertyPaths = setOf(
-            "perioder[0].fom",
+            "perioder[0].perioder[0].fom",
             "perioder[0].antallDagerMedRefusjon",
-            "perioder[1].fom",
+            "perioder[1].perioder[0].fom",
             "perioder[1].antallDagerMedRefusjon",
             "perioder[2].antallDagerMedRefusjon",
         )

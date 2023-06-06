@@ -97,17 +97,22 @@ fun lagrePerioder(perioder: List<ArbeidsgiverperiodeNy>): String {
 
     val tail = "</table>"
     var rader = ""
-    for (p in perioder) rader += lagePeriod(p)
+    rader = perioder.mapIndexed { index, periode ->
+        {
+            lagePeriod(periode, index == perioder.size - 1)
+        }
+    }.joinToString()
 
     return head + rader + tail
 }
 
-fun lagePeriod(periode: ArbeidsgiverperiodeNy): String {
+fun lagePeriod(periode: ArbeidsgiverperiodeNy, erSisteElement: Boolean): String {
     val gradering = (periode.gradering * 100).toString() + "%"
     val delPerioder = periode.perioder!!
         .sortedBy { it.fom }
         .joinToString("<br/>") { "${it.fom} - ${it.tom}" }
-    return """<tr style="border-bottom:1px solid black">
+    val lineSeparatorCss = if (erSisteElement) "" else "style=\"border-bottom:1px solid dimgray\""
+    return """<tr $lineSeparatorCss>
                 <td style="text-align:center;white-space:nowrap">
                $delPerioder
                 </td>

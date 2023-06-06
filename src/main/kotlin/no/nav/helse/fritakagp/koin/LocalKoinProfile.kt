@@ -36,6 +36,7 @@ import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravKvitteringSenderD
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravPDFGenerator
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravProcessor
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravSlettProcessor
+import no.nav.helse.fritakagp.processing.gravid.krav.OpprettRobotOppgaveGravidProcessor
 import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadKafkaProcessor
 import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadKvitteringProcessor
 import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadKvitteringSender
@@ -49,6 +50,7 @@ import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravKvitteringSende
 import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravPDFGenerator
 import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravProcessor
 import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravSlettProcessor
+import no.nav.helse.fritakagp.processing.kronisk.krav.OpprettRobotOppgaveKroniskProcessor
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadKafkaProcessor
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadKvitteringProcessor
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadKvitteringSender
@@ -86,11 +88,13 @@ fun localConfig(env: Env.Local): Module = module {
     single { KroniskSoeknadProcessor(get(), get(), get(), get(), get(), KroniskSoeknadPDFGenerator(), get(), get(), get(), get()) }
     single { KroniskKravProcessor(get(), get(), get(), get(), get(), KroniskKravPDFGenerator(), get(), get(), get(), get()) }
     single { KroniskKravSlettProcessor(get(), get(), get(), get(), get(), KroniskKravPDFGenerator(), get(), get(), get(), get()) }
+    single { OpprettRobotOppgaveKroniskProcessor(get(), get(), get(), get(), get()) }
 
     single { GravidSoeknadKvitteringSenderDummy() } bind GravidSoeknadKvitteringSender::class
     single { GravidSoeknadKvitteringProcessor(get(), get(), get()) }
     single { GravidKravKvitteringSenderDummy() } bind GravidKravKvitteringSender::class
     single { GravidKravKvitteringProcessor(get(), get(), get()) }
+    single { OpprettRobotOppgaveGravidProcessor(get(), get(), get(), get(), get()) }
 
     single { KroniskSoeknadKvitteringSenderDummy() } bind KroniskSoeknadKvitteringSender::class
     single { KroniskSoeknadKvitteringProcessor(get(), get(), get()) }

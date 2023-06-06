@@ -18,6 +18,7 @@ import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravKafkaProcessor
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravKvitteringProcessor
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravProcessor
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravSlettProcessor
+import no.nav.helse.fritakagp.processing.gravid.krav.OpprettRobotOppgaveGravidProcessor
 import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadKafkaProcessor
 import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadKvitteringProcessor
 import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadProcessor
@@ -25,6 +26,7 @@ import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravKafkaProcessor
 import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravKvitteringProcessor
 import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravProcessor
 import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravSlettProcessor
+import no.nav.helse.fritakagp.processing.kronisk.krav.OpprettRobotOppgaveKroniskProcessor
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadKafkaProcessor
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadKvitteringProcessor
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadProcessor
@@ -100,6 +102,7 @@ class FritakAgpApplication(val port: Int = 8080) : KoinComponent {
                 registrer(get<GravidKravKafkaProcessor>())
                 registrer(get<GravidKravKvitteringProcessor>())
                 registrer(get<GravidKravSlettProcessor>())
+                registrer(get<OpprettRobotOppgaveGravidProcessor>())
 
                 registrer(get<KroniskSoeknadProcessor>())
                 registrer(get<KroniskSoeknadKafkaProcessor>())
@@ -109,6 +112,7 @@ class FritakAgpApplication(val port: Int = 8080) : KoinComponent {
                 registrer(get<KroniskKravKafkaProcessor>())
                 registrer(get<KroniskKravKvitteringProcessor>())
                 registrer(get<KroniskKravSlettProcessor>())
+                registrer(get<OpprettRobotOppgaveKroniskProcessor>())
 
                 registrer(get<BrukernotifikasjonProcessor>())
                 registrer(get<ArbeidsgiverNotifikasjonProcessor>())

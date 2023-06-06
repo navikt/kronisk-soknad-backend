@@ -23,8 +23,7 @@ spec:
     periodSeconds: 5
     failureThreshold: 10
   ingresses:
-    - https://fritakagp.dev.nav.no
-    - https://arbeidsgiver.dev.nav.no/fritak-agp-api
+    - https://fritakagp-api.intern.dev.nav.no
   prometheus:
     enabled: true
   replicas:
@@ -53,14 +52,17 @@ spec:
         - host: tt02.altinn.no
         - host: kafka-schema-registry.nais-q.adeo.no
         - host: data.brreg.no
-        - host: ag-notifikasjon-produsent-api.dev.nav.no
+        - host: api-gw-q1.oera.no
+        - host: g.nav.no
 
       rules:
         - application: helsearbeidsgiver-proxy
           namespace: helsearbeidsgiver
           cluster: dev-fss
         - application: clamav
-          namespace: clamav
+          namespace: nais-system
+        - application: notifikasjon-produsent-api
+          namespace: fager
 
   envFrom:
     # servicebrukerens passord som er  hentet fra vault og lagt inn slik: https://doc.nais.io/security/secrets/kubernetes-secrets/
@@ -81,7 +83,7 @@ spec:
     - name: ALTINN_ENDPOINT
       value: https://tt02.altinn.no/ServiceEngineExternal/CorrespondenceAgencyExternalBasic.svc
     - name: CLAM_AV_URL
-      value: http://clamav.clamav.svc.cluster.local/scan
+      value: http://clamav.nais-system/scan
     - name: GCP_PRJ_ID
       value: helsearbeidsgiver-dev-6d06
     - name: GCP_BUCKET_NAME
@@ -107,11 +109,13 @@ spec:
     - name: NORG2_URL
       value: https://helsearbeidsgiver-proxy.dev-fss-pub.nais.io/norg
     - name: ARBEIDSGIVER_NOTIFIKASJON_API_URL
-      value: https://ag-notifikasjon-produsent-api.dev.nav.no/api/graphql
+      value: http://notifikasjon-produsent-api.fager/api/graphql
     - name: ARBEIDSGIVER_NOTIFIKASJON_SCOPE
       value: "api://dev-gcp.fager.notifikasjon-produsent-api/.default"
     - name: FRONTEND_URL
-      value: https://arbeidsgiver.dev.nav.no/fritak-agp
+      value: https://arbeidsgiver.intern.dev.nav.no/fritak-agp
+    - name: KTOR_APPLICATION_BASEPATH
+      value: /fritak-agp-api
 
   gcp:
     sqlInstances:
@@ -125,7 +129,7 @@ spec:
           #retentionPeriodDays: 30
           # lifecycleCondition:
           # age: 7
-          # createdBefore: 2020-01-01
+        # createdBefore: 2020-01-01
         # numNewerVersions: 2
         #  withState: ANY
 

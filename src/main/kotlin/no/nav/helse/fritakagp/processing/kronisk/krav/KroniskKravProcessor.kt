@@ -25,6 +25,7 @@ import no.nav.helse.fritakagp.domain.KroniskKrav
 import no.nav.helse.fritakagp.domain.generereKroniskKravBeskrivelse
 import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
+import no.nav.helse.fritakagp.journalførOgFerdigstillDokument
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor.Jobbdata.SkjemaType
 import no.nav.helse.fritakagp.service.BehandlendeEnhetService
@@ -130,7 +131,7 @@ class KroniskKravProcessor(
     }
 
     fun journalfør(krav: KroniskKrav): String {
-        val response = dokarkivKlient.journalførDokument(
+        val journalpostId = dokarkivKlient.journalførOgFerdigstillDokument(
             JournalpostRequest(
                 tittel = KroniskKrav.tittel,
                 journalposttype = Journalposttype.INNGAAENDE,
@@ -145,12 +146,13 @@ class KroniskKravProcessor(
                 dokumenter = createDocuments(krav, KroniskKrav.tittel),
                 datoMottatt = krav.opprettet.toLocalDate()
             ),
-            true,
-            UUID.randomUUID().toString()
+            UUID.randomUUID().toString(),
+            om,
+            logger
         )
 
-        logger.info("Journalført ${krav.id} med ref ${response.journalpostId}")
-        return response.journalpostId
+        logger.info("Journalført ${krav.id} med ref $journalpostId")
+        return journalpostId
     }
 
     private fun createDocuments(

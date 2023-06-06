@@ -23,7 +23,6 @@ spec:
     periodSeconds: 5
     failureThreshold: 10
   ingresses:
-    - https://arbeidsgiver.nav.no/fritak-agp-api
     - https://fritakagp-api.intern.nav.no
   prometheus:
     enabled: true
@@ -54,13 +53,15 @@ spec:
         - host: dokarkiv.prod-fss-pub.nais.io
         - host: oppgave.prod-fss-pub.nais.io
         - host: ag-notifikasjon-produsent-api.intern.nav.no
+        - host: api-gw.oera.no
+        - host: g.nav.no
 
       rules:
         - application: helsearbeidsgiver-proxy
           namespace: helsearbeidsgiver
           cluster: prod-fss
         - application: clamav
-          namespace: clamav
+          namespace: nais-system
 
   envFrom:
     # servicebrukerens passord som er  hentet fra vault og lagt inn slik: https://doc.nais.io/security/secrets/kubernetes-secrets/
@@ -76,7 +77,7 @@ spec:
     - name: ALTINN_ENDPOINT
       value: https://www.altinn.no/ServiceEngineExternal/CorrespondenceAgencyExternalBasic.svc
     - name: CLAM_AV_URL
-      value: http://clamav.clamav.svc.cluster.local/scan
+      value: http://clamav.nais-system/scan
     - name: GCP_PRJ_ID
       value: helsearbeidsgiver-prod-8a1c
     - name: GCP_BUCKET_NAME

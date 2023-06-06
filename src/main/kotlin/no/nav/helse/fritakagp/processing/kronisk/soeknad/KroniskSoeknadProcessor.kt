@@ -25,6 +25,7 @@ import no.nav.helse.fritakagp.domain.KroniskSoeknad
 import no.nav.helse.fritakagp.domain.generereKroniskSoeknadBeskrivelse
 import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
+import no.nav.helse.fritakagp.journalførOgFerdigstillDokument
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor.Jobbdata.SkjemaType
 import no.nav.helse.fritakagp.service.BehandlendeEnhetService
@@ -126,7 +127,7 @@ class KroniskSoeknadProcessor(
     }
 
     fun journalfør(soeknad: KroniskSoeknad): String {
-        val response = dokarkivKlient.journalførDokument(
+        val journalpostId = dokarkivKlient.journalførOgFerdigstillDokument(
             JournalpostRequest(
                 tittel = KroniskSoeknad.tittel,
                 journalposttype = Journalposttype.INNGAAENDE,
@@ -136,17 +137,18 @@ class KroniskSoeknadProcessor(
                 avsenderMottaker = AvsenderMottaker(
                     id = soeknad.virksomhetsnummer,
                     idType = IdType.ORGNR,
-                    navn = soeknad.virksomhetsnavn ?: "Ukjent arbeidsgiver"
+                    navn = soeknad.virksomhetsnavn ?: "Ukjent arbeidsgiver",
                 ),
                 dokumenter = createDocuments(soeknad, KroniskSoeknad.tittel),
                 datoMottatt = soeknad.opprettet.toLocalDate()
             ),
-            true,
-            UUID.randomUUID().toString()
+            UUID.randomUUID().toString(),
+            om,
+            logger
         )
 
-        logger.debug("Journalført ${soeknad.id} med ref ${response.journalpostId}")
-        return response.journalpostId
+        logger.debug("Journalført ${soeknad.id} med ref $journalpostId")
+        return journalpostId
     }
 
     private fun createDocuments(

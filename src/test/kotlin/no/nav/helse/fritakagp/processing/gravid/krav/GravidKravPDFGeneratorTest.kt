@@ -59,10 +59,10 @@ class GravidKravPDFGeneratorTest {
         assertThat(pdfText).contains(krav.perioder.first().månedsinntekt.roundToInt().toString())
         assertThat(antallSider).isEqualTo(1)
 
-        //TODO fjern unødvendige linjer for å generer pdf fil
-        //val file = File("src/test/resources/testfil.pdf")
-        //val writer = FileOutputStream(file)
-        //writer.write(pdf)
+        // TODO fjern unødvendige linjer for å generer pdf fil
+        // val file = File("src/test/resources/testfil.pdf")
+        // val writer = FileOutputStream(file)
+        // writer.write(pdf)
     }
 
     @Test

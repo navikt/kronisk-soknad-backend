@@ -154,13 +154,13 @@ fun genererePeriodeTable(perioder: List<ArbeidsgiverperiodeNy>): String {
                 }
             }
             row(
-               agpSpacing,
-               agpSpacing,
-               agpSpacing,
-               agpSpacing,
-               agpSpacing,
-               agpSpacing,
-               agpSpacing,
+                agpSpacing,
+                agpSpacing,
+                agpSpacing,
+                agpSpacing,
+                agpSpacing,
+                agpSpacing,
+                agpSpacing,
             )
         }
         hints {

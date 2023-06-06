@@ -131,13 +131,14 @@ fun generateAgpTable(perioder: List<Periode>): String {
     }.joinToString()
 }
 
+const val agpSpacing = "----------------"
+
 fun genererePeriodeTable(perioder: List<ArbeidsgiverperiodeNy>): String {
     return table {
         header("FOM", "TOM", "Sykmeldingsgrad", "kreves refusjon for", "Beregnet månedsinntekt (NOK)", "Dagsats (NOK)", "Beløp (NOK)")
         for (p in perioder.sortedBy { it.fom }) {
             val gradering = (p.gradering * 100).toString() + "%"
 
-            // TODO: gå over dette en gang til
             p.perioder?.forEachIndexed { index, e ->
                 if (index == 2)
                     row(
@@ -152,6 +153,15 @@ fun genererePeriodeTable(perioder: List<ArbeidsgiverperiodeNy>): String {
                     row(e.fom.atStartOfDay(), e.tom.atStartOfDay(), "-", "-", "-", "-", "-")
                 }
             }
+            row(
+               agpSpacing,
+               agpSpacing,
+               agpSpacing,
+               agpSpacing,
+               agpSpacing,
+               agpSpacing,
+               agpSpacing,
+            )
         }
         hints {
             alignment("FOM", Table.Hints.Alignment.LEFT)

@@ -8,6 +8,7 @@ import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
 import no.nav.helse.GravidTestData
+import no.nav.helse.KroniskTestData
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.Bakgrunnsjobb
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbRepository
 import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.DokarkivKlient
@@ -67,7 +68,7 @@ class GravidKravProcessorTest {
 
     @BeforeEach
     fun setup() {
-        krav = GravidTestData.gravidKrav.copy()
+        krav = GravidTestData.gravidKrav.copy(perioder = GravidTestData.gravidKrav.perioder.map { it.copy() }.toList())
         jobb = testJob(objectMapper.writeValueAsString(GravidKravProcessor.JobbData(krav.id)))
         every { repositoryMock.getById(krav.id) } returns krav
         every { bucketStorageMock.getDocAsString(any()) } returns null
@@ -133,7 +134,7 @@ class GravidKravProcessorTest {
 
     @Test
     fun `skal ikke lage oppgave når det allerede foreligger en oppgaveId `() {
-        krav.oppgaveId = "ppggssv"
+        krav.perioder[0].oppgaveId = "ppggssv"
         prosessor.prosesser(jobb)
         coVerify(exactly = 0) { oppgaveMock.opprettOppgave(any(), any()) }
     }
@@ -145,7 +146,7 @@ class GravidKravProcessorTest {
         prosessor.prosesser(jobb)
 
         assertThat(krav.journalpostId).isEqualTo(arkivReferanse)
-        assertThat(krav.oppgaveId).isEqualTo(oppgaveId.toString())
+        assertThat(krav.perioder[0].oppgaveId).isEqualTo(oppgaveId.toString())
 
         verify(exactly = 1) { joarkMock.journalførDokument(any(), true, any()) }
 

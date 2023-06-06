@@ -67,7 +67,7 @@ class KroniskKravProcessorTest {
 
     @BeforeEach
     fun setup() {
-        krav = KroniskTestData.kroniskKrav.copy()
+        krav = KroniskTestData.kroniskKrav.copy(perioder = KroniskTestData.kroniskKrav.perioder.map { it.copy() }.toList())
         jobb = testJob(objectMapper.writeValueAsString(KroniskKravProcessor.JobbData(krav.id)))
         every { repositoryMock.getById(krav.id) } returns krav
         every { bucketStorageMock.getDocAsString(any()) } returns null
@@ -135,6 +135,7 @@ class KroniskKravProcessorTest {
     @Test
     fun `skal ikke lage oppgave når det allerede foreligger en oppgaveId `() {
         krav.oppgaveId = "ppggssv"
+        krav.perioder[0].oppgaveId = "ppggssv"
         prosessor.prosesser(jobb)
         coVerify(exactly = 0) { oppgaveMock.opprettOppgave(any(), any()) }
     }
@@ -146,7 +147,7 @@ class KroniskKravProcessorTest {
         prosessor.prosesser(jobb)
 
         assertThat(krav.journalpostId).isEqualTo(arkivReferanse)
-        assertThat(krav.oppgaveId).isEqualTo(oppgaveId.toString())
+        assertThat(krav.perioder[0].oppgaveId).isEqualTo(oppgaveId.toString())
 
         verify(exactly = 1) { joarkMock.journalførDokument(any(), true, any()) }
         coVerify(exactly = 1) {

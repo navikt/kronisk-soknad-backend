@@ -87,7 +87,7 @@ fun lagrePerioder(perioder: List<ArbeidsgiverperiodeNy>): String {
     val head = """
             <table style="width:50%">
               <tr>
-                <th>Periode</th>
+                <th>Perioder</th>
                 <th>Sykmeldingsgrad</th>
                 <th>Dager med refusjon</th>
                 <th>Beregnet månedsinntekt (NOK)</th>
@@ -107,8 +107,8 @@ fun lagePeriod(periode: ArbeidsgiverperiodeNy): String {
     val delPerioder = periode.perioder!!
         .sortedBy { it.fom }
         .joinToString("<br/>") { "${it.fom} - ${it.tom}" }
-    return """<tr>
-                <td style="text-align:center">
+    return """<tr style="border-bottom:1px solid black">
+                <td style="text-align:center;white-space:nowrap">
                $delPerioder
                 </td>
                 <td style="text-align:center">$gradering</td>

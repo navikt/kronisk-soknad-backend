@@ -33,7 +33,7 @@ data class ArbeidsgiverperiodeNy(
     private var _tom: LocalDate? = null,
     @JsonInclude(JsonInclude.Include.NON_NULL)
     var perioder: List<Periode>? = null,
-    val oppgaveId: String? = null,
+    var oppgaveId: String? = null,
     val antallDagerMedRefusjon: Int,
     val månedsinntekt: Double,
     val gradering: Double = 1.0

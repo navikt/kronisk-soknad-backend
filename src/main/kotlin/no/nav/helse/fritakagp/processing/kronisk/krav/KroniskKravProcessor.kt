@@ -21,6 +21,8 @@ import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlClient
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlIdent
 import no.nav.helse.fritakagp.KroniskKravMetrics
 import no.nav.helse.fritakagp.db.KroniskKravRepository
+import no.nav.helse.fritakagp.domain.KravForOppgave
+import no.nav.helse.fritakagp.domain.KravType
 import no.nav.helse.fritakagp.domain.KroniskKrav
 import no.nav.helse.fritakagp.domain.generereKroniskKravBeskrivelse
 import no.nav.helse.fritakagp.integration.brreg.BrregClient
@@ -82,10 +84,33 @@ class KroniskKravProcessor(
             bucketStorage.deleteDoc(krav.id)
             logger.info("Slettet eventuelle vedlegg")
 
-            if (krav.oppgaveId == null) {
-                krav.oppgaveId = opprettOppgave(krav)
-                logger.info("Oppgave opprettet med id ${krav.oppgaveId}")
-                KroniskKravMetrics.tellOppgaveOpprettet()
+            for (arbeidsgiverPerioder in krav.perioder) {
+
+                val kravForOppgave = KravForOppgave(
+                    KravType.KRONISK,
+                    id = krav.id,
+                    opprettet = krav.opprettet,
+                    sendtAv = krav.sendtAv,
+                    virksomhetsnummer = krav.virksomhetsnummer,
+                    identitetsnummer = krav.identitetsnummer,
+                    navn = krav.navn,
+                    perioder = arbeidsgiverPerioder.tilArbeidsgiverperideLegacy(),
+                    harVedlegg = krav.harVedlegg,
+                    kontrollDager = krav.kontrollDager,
+                    antallDager = krav.antallDager,
+                    journalpostId = krav.journalpostId,
+                    oppgaveId = arbeidsgiverPerioder.oppgaveId,
+                    virksomhetsnavn = krav.virksomhetsnavn,
+                    sendtAvNavn = krav.sendtAvNavn,
+                    status = krav.status,
+                    arbeidsgiverSakId = krav.arbeidsgiverSakId,
+                    referansenummer = krav.referansenummer
+                )
+                if (arbeidsgiverPerioder.oppgaveId == null) {
+                    val oppgaveId = opprettOppgave(kravForOppgave)
+                    logger.info("Oppgave opprettet med id $oppgaveId")
+                    arbeidsgiverPerioder.oppgaveId = oppgaveId
+                }
             }
             bakgrunnsjobbRepo.save(
                 Bakgrunnsjobb(
@@ -201,13 +226,13 @@ class KroniskKravProcessor(
         return dokumentListe
     }
 
-    fun opprettOppgave(krav: KroniskKrav): String {
+    fun opprettOppgave(krav: KravForOppgave): String {
         val aktoerId = pdlClient.fullPerson(krav.identitetsnummer)?.hentIdenter?.trekkUtIdent(PdlIdent.PdlIdentGruppe.AKTORID)
         val enhetsNr = behandlendeEnhetService.hentBehandlendeEnhet(krav.identitetsnummer, krav.id.toString())
         requireNotNull(aktoerId) { "Fant ikke AktørID for fnr i ${krav.id}" }
         logger.info("Fant aktørid")
-        val beskrivelse = if (robotiseringToggle) om.writeValueAsString(krav.toKravListeForOppgave()[0]) else generereKroniskKravBeskrivelse(krav, KroniskKrav.tittel)
-        val oppgaveType = if (robotiseringToggle) "ROB_BEH" else "BEH_REF"
+        val beskrivelse = om.writeValueAsString(krav)
+        val oppgaveType = "ROB_BEH"
         val request = OpprettOppgaveRequest(
             tildeltEnhetsnr = enhetsNr,
             aktoerId = aktoerId,

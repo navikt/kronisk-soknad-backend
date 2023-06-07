@@ -37,30 +37,27 @@ data class KroniskKrav(
     var arbeidsgiverSakId: String? = null,
     var referansenummer: Int? = null
 ) : SimpleJsonbEntity {
-    fun toKravListeForOppgave(): List<KravForOppgave> {
-        return perioder.map {
-            KravForOppgave(
-                KravType.KRONISK,
-                id = id,
-                opprettet = opprettet,
-                sendtAv = sendtAv,
-                virksomhetsnummer = virksomhetsnummer,
-                identitetsnummer = identitetsnummer,
-                navn = navn,
-                perioder = it.tilArbeidsgiverperideLegacy(),
-                harVedlegg = harVedlegg,
-                kontrollDager = kontrollDager,
-                antallDager = antallDager,
-                journalpostId = journalpostId,
-                oppgaveId = it.oppgaveId,
-                virksomhetsnavn = virksomhetsnavn,
-                sendtAvNavn = sendtAvNavn,
-                status = status,
-                arbeidsgiverSakId = arbeidsgiverSakId,
-                referansenummer = referansenummer
-            )
-        }
-    }
+    fun toKravForOppgave(arbeidsgiverPeriode: ArbeidsgiverperiodeNy) =
+        KravForOppgave(
+            KravType.KRONISK,
+            id = id,
+            opprettet = opprettet,
+            sendtAv = sendtAv,
+            virksomhetsnummer = virksomhetsnummer,
+            identitetsnummer = identitetsnummer,
+            navn = navn,
+            arbeidsgiverPeriode = arbeidsgiverPeriode,
+            harVedlegg = harVedlegg,
+            kontrollDager = kontrollDager,
+            antallDager = antallDager,
+            journalpostId = journalpostId,
+            oppgaveId = arbeidsgiverPeriode.oppgaveId,
+            virksomhetsnavn = virksomhetsnavn,
+            sendtAvNavn = sendtAvNavn,
+            status = status,
+            arbeidsgiverSakId = arbeidsgiverSakId,
+            referansenummer = referansenummer
+        )
 
     companion object {
         const val tittel = "Krav om refusjon av arbeidsgiverperioden - kronisk eller langvarig sykdom"

@@ -141,7 +141,7 @@ class GravidKravProcessorTest {
 
     @Test
     fun `skal journalføre, opprette oppgave og oppdatere søknaden i databasen`() {
-        val forventetJson = "gravidKravRobotBeskrivelse.json".loadFromResources()
+        val forventetJson = "gravidKravRobotBeskrivelseNy.json".loadFromResources()
 
         prosessor.prosesser(jobb)
 
@@ -195,7 +195,7 @@ class GravidKravProcessorTest {
         assertThrows<IOException> { prosessor.prosesser(jobb) }
 
         assertThat(krav.journalpostId).isEqualTo(arkivReferanse)
-        assertThat(krav.oppgaveId).isNull()
+        assertThat(krav.perioder[0].oppgaveId).isNull()
 
         verify(exactly = 1) { joarkMock.journalførDokument(any(), true, any()) }
         coVerify(exactly = 1) { oppgaveMock.opprettOppgave(any(), any()) }

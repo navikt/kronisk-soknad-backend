@@ -84,32 +84,12 @@ class KroniskKravProcessor(
             bucketStorage.deleteDoc(krav.id)
             logger.info("Slettet eventuelle vedlegg")
 
-            for (arbeidsgiverPerioder in krav.perioder) {
-
-                val kravForOppgave = KravForOppgave(
-                    KravType.KRONISK,
-                    id = krav.id,
-                    opprettet = krav.opprettet,
-                    sendtAv = krav.sendtAv,
-                    virksomhetsnummer = krav.virksomhetsnummer,
-                    identitetsnummer = krav.identitetsnummer,
-                    navn = krav.navn,
-                    perioder = arbeidsgiverPerioder.tilArbeidsgiverperideLegacy(),
-                    harVedlegg = krav.harVedlegg,
-                    kontrollDager = krav.kontrollDager,
-                    antallDager = krav.antallDager,
-                    journalpostId = krav.journalpostId,
-                    oppgaveId = arbeidsgiverPerioder.oppgaveId,
-                    virksomhetsnavn = krav.virksomhetsnavn,
-                    sendtAvNavn = krav.sendtAvNavn,
-                    status = krav.status,
-                    arbeidsgiverSakId = krav.arbeidsgiverSakId,
-                    referansenummer = krav.referansenummer
-                )
-                if (arbeidsgiverPerioder.oppgaveId == null) {
+            for (arbeidsgiverPeriode in krav.perioder) {
+                val kravForOppgave = krav.toKravForOppgave(arbeidsgiverPeriode)
+                if (arbeidsgiverPeriode.oppgaveId == null) {
                     val oppgaveId = opprettOppgave(kravForOppgave)
                     logger.info("Oppgave opprettet med id $oppgaveId")
-                    arbeidsgiverPerioder.oppgaveId = oppgaveId
+                    arbeidsgiverPeriode.oppgaveId = oppgaveId
                 }
             }
             bakgrunnsjobbRepo.save(

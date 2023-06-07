@@ -134,7 +134,6 @@ class KroniskKravProcessorTest {
 
     @Test
     fun `skal ikke lage oppgave når det allerede foreligger en oppgaveId `() {
-        krav.oppgaveId = "ppggssv"
         krav.perioder[0].oppgaveId = "ppggssv"
         prosessor.prosesser(jobb)
         coVerify(exactly = 0) { oppgaveMock.opprettOppgave(any(), any()) }
@@ -142,7 +141,7 @@ class KroniskKravProcessorTest {
 
     @Test
     fun `skal journalføre, opprette oppgave og oppdatere søknaden i databasen`() {
-        val forventetJson = "kroniskKravRobotBeskrivelse.json".loadFromResources()
+        val forventetJson = "kroniskKravRobotBeskrivelseNy.json".loadFromResources()
 
         prosessor.prosesser(jobb)
 
@@ -194,7 +193,7 @@ class KroniskKravProcessorTest {
         assertThrows<IOException> { prosessor.prosesser(jobb) }
 
         assertThat(krav.journalpostId).isEqualTo(arkivReferanse)
-        assertThat(krav.oppgaveId).isNull()
+        assertThat(krav.perioder[0].oppgaveId).isNull()
 
         verify(exactly = 1) { joarkMock.journalførDokument(any(), true, any()) }
         coVerify(exactly = 1) { oppgaveMock.opprettOppgave(any(), any()) }

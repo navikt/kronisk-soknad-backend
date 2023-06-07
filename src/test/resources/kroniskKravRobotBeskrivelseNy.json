@@ -1,0 +1,31 @@
+{
+  "kravType" : "KRONISK",
+  "id" : "95c0455e-3882-4295-8381-19e10b87642d",
+  "opprettet" : "2022-11-25T13:07:10.808178",
+  "sendtAv" : "20015001543",
+  "virksomhetsnummer" : "917404437",
+  "identitetsnummer" : "20015001543",
+  "navn" : "Ola M Avsender",
+  "arbeidsgiverPeriode": {
+    "perioder": [{
+      "fom" : "2020-01-05",
+      "tom" : "2020-01-10"
+    }],
+    "oppgaveId": null,
+    "antallDagerMedRefusjon" : 5,
+    "månedsinntekt" : 2590.8,
+    "gradering" : 1.0,
+    "dagsats" : 0.0,
+    "belop" : 0.0
+  },
+  "harVedlegg" : false,
+  "kontrollDager" : null,
+  "antallDager" : 4,
+  "journalpostId" : "12345",
+  "oppgaveId" : null,
+  "virksomhetsnavn" : "Stark Industries",
+  "sendtAvNavn" : "Ola M Avsender",
+  "status" : "OPPRETTET",
+  "arbeidsgiverSakId" : null,
+  "referansenummer" : null
+}

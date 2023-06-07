@@ -214,7 +214,6 @@ class GravidKravProcessor(
         krav.oppgaveId
         oppgaveKlient
 
-        // TODO: Opprett oppgave for hver AGP
         val beskrivelse = om.writeValueAsString(krav)
         val oppgaveType = "ROB_BEH"
         val request = OpprettOppgaveRequest(

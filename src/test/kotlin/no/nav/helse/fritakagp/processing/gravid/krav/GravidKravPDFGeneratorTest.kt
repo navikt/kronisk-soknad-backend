@@ -45,6 +45,24 @@ class GravidKravPDFGeneratorTest {
                     ),
                     antallDagerMedRefusjon = 3,
                     månedsinntekt = 3000.0
+                ),
+                ArbeidsgiverperiodeNy(
+                    perioder = listOf(
+                        periode.copy(
+                            fom = LocalDate.of(2022, 6, 1),
+                            tom = LocalDate.of(2022, 6, 7)
+                        ),
+                        periode.copy(
+                            fom = LocalDate.of(2022, 6, 8),
+                            tom = LocalDate.of(2022, 6, 14)
+                        ),
+                        periode.copy(
+                            fom = LocalDate.of(2022, 6, 14),
+                            tom = LocalDate.of(2022, 6, 16)
+                        )
+                    ),
+                    antallDagerMedRefusjon = 3,
+                    månedsinntekt = 3000.0
                 )
             )
         )
@@ -58,11 +76,6 @@ class GravidKravPDFGeneratorTest {
         assertThat(pdfText).contains(krav.virksomhetsnummer)
         assertThat(pdfText).contains(krav.perioder.first().månedsinntekt.roundToInt().toString())
         assertThat(antallSider).isEqualTo(1)
-
-        // TODO fjern unødvendige linjer for å generer pdf fil
-        // val file = File("src/test/resources/testfil.pdf")
-        // val writer = FileOutputStream(file)
-        // writer.write(pdf)
     }
 
     @Test

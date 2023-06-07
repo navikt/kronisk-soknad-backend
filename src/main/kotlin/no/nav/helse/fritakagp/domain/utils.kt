@@ -83,7 +83,7 @@ fun generereKroniskKravBeskrivelse(krav: KroniskKrav, desc: String): String {
         appendLine("Person (FNR): ${krav.identitetsnummer}")
         appendLine("Arbeidsgiver oppgitt i krav: ${krav.virksomhetsnavn} (${krav.virksomhetsnummer})")
         appendLine("Antall lønnsdager: ${krav.antallDager}")
-        appendLine("Periode:")
+        appendLine("Perioder:")
         appendLine(genererePeriodeTable(krav.perioder))
     }
 }
@@ -95,7 +95,7 @@ fun generereSlettKroniskKravBeskrivelse(krav: KroniskKrav, desc: String): String
         appendLine("Tidligere krav med JournalpostId: ${krav.journalpostId}")
         appendLine("Person (FNR): ${krav.identitetsnummer}")
         appendLine("Arbeidsgiver oppgitt i krav: ${krav.virksomhetsnavn} (${krav.virksomhetsnummer})")
-        appendLine("Periode:")
+        appendLine("Perioder:")
         appendLine(genererePeriodeTable(krav.perioder))
     }
 }
@@ -108,7 +108,7 @@ fun generereGravidkKravBeskrivelse(krav: GravidKrav, desc: String): String {
         appendLine("Person (FNR): ${krav.identitetsnummer}")
         appendLine("Arbeidsgiver oppgitt i krav: ${krav.virksomhetsnavn} (${krav.virksomhetsnummer})")
         appendLine("Antall lønnsdager: ${krav.antallDager}")
-        appendLine("Periode:")
+        appendLine("Perioder:")
         appendLine(genererePeriodeTable(krav.perioder))
     }
 }
@@ -120,7 +120,7 @@ fun generereSlettGravidKravBeskrivelse(krav: GravidKrav, desc: String): String {
         appendLine("Tidligere krav med JournalpostId: ${krav.journalpostId}")
         appendLine("Person (FNR): ${krav.identitetsnummer}")
         appendLine("Arbeidsgiver oppgitt i krav: ${krav.virksomhetsnavn} (${krav.virksomhetsnummer})")
-        appendLine("Periode:")
+        appendLine("Perioder:")
         appendLine(genererePeriodeTable(krav.perioder))
     }
 }

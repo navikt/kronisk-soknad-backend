@@ -1,0 +1,99 @@
+apiVersion: nais.io/v1alpha1
+kind: Application
+metadata:
+  name: fritakagp
+  namespace: helsearbeidsgiver
+  labels:
+    team: helsearbeidsgiver
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: 50M
+
+spec:
+  image: {{ image }}
+  port: 8080
+  replicas:
+    max: 1
+    min: 1
+  resources:
+    limits:
+      cpu: 3500m
+      memory: 1000Mi
+    requests:
+      cpu: 400m
+      memory: 200Mi
+  liveness:
+    path: /health/is-alive
+    initialDelay: 10
+    timeout: 2
+    periodSeconds: 30
+    failureThreshold: 10
+  readiness:
+    path: /health/is-ready
+    initialDelay: 10
+    timeout: 2
+    periodSeconds: 5
+    failureThreshold: 10
+
+  kafka:
+    pool: nav-{{ context }}
+  azure:
+    application:
+      enabled: true
+  secureLogs:
+    enabled: true
+  prometheus:
+    enabled: true
+
+  gcp:
+    sqlInstances:
+      - type: POSTGRES_11
+        databases:
+          - name: fritakagp-db
+            diskAutoresize: true
+    {{#if bucketName}}
+    buckets:
+      - name: {{ bucketName }}
+        uniformBucketLevelAccess: true
+    {{/if}}
+
+  {{#if ingress}}
+  ingresses:
+    - {{ ingress }}
+  {{/if}}
+
+  accessPolicy:
+    outbound:
+      rules:
+        - application: helsearbeidsgiver-proxy
+          namespace: helsearbeidsgiver
+          cluster: {{ context }}-fss
+        - application: clamav
+          namespace: nais-system
+        {{#each accessOutbound.apps as |app|}}
+        - application: {{ app.name }}
+          namespace: {{ app.namespace }}
+        {{/each}}
+
+      {{#if accessOutbound.external}}
+      external:
+        {{#each accessOutbound.external as |host|}}
+        - host: {{ host }}
+        {{/each}}
+      {{/if}}
+
+  envFrom:
+    {{#each envFrom as |secret|}}
+    - secret: {{ secret }}
+    {{/each}}
+    # tilgjengeliggjør LOGINSERVICE_IDPORTEN_DISCOVERY_URL og LOGINSERVICE_IDPORTEN_AUDIENCE
+    - configmap: loginservice-idporten
+
+  env:
+    - name: KAFKA_BESKJED_TOPIC_NAME
+      value: min-side.aapen-brukernotifikasjon-beskjed-v1
+    - name: CLAM_AV_URL
+      value: http://clamav.nais-system/scan
+    {{#each env as |var|}}
+    - name: {{ var.name }}
+      value: "{{ var.value }}"
+    {{/each}}

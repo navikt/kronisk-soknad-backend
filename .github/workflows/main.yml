@@ -8,8 +8,7 @@ on:
 
 env:
   IMAGE: ghcr.io/${{ github.repository }}/${{ github.event.repository.name }}
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
 jobs:
   buildAndTest:
     runs-on: ubuntu-latest
@@ -32,20 +31,7 @@ jobs:
         with:
           arguments: --console=plain build test jar
         env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          ORG_GRADLE_PROJECT_githubUser: x-access-token
           ORG_GRADLE_PROJECT_githubPassword: ${{ secrets.GITHUB_TOKEN }}
-
-      # - name: Sonarcube
-      #   uses: gradle/gradle-build-action@v2
-      #   with:
-      #     arguments: sonarqube
-      #   env:
-      #     ORG_GRADLE_PROJECT_githubUser: x-access-token
-      #     ORG_GRADLE_PROJECT_githubPassword: ${{ secrets.GITHUB_TOKEN }}
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
@@ -86,6 +72,6 @@ jobs:
           TEAM: helsearbeidsgiver
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: dev-gcp
-          RESOURCE: deploy/dev.yaml
-          REF: ${{ env.COMMIT }}
-          IMAGE: ${{ env.IMAGE }}:${{ github.sha }}
+          RESOURCE: deploy/nais.yml
+          VAR: image=${{ env.IMAGE }}:${{ github.sha }}
+          VARS: deploy/dev.yml

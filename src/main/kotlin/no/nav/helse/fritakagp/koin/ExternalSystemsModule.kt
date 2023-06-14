@@ -63,7 +63,7 @@ fun Module.externalSystemClients(config: ApplicationConfig) {
         )
     } bind AltinnOrganisationsRepository::class
 
-    single { GrunnbeloepClient(get()) }
+    single { GrunnbeloepClient(env.grunnbeloepUrl, get()) }
 
     single(named("OPPGAVE")) {
         val clientConfig = OAuth2ClientConfig(config, "oppgavescope")

@@ -71,7 +71,7 @@ fun localConfig(config: ApplicationConfig): Module = module {
 
     mockExternalDependecies()
 
-    single { GrunnbeloepClient(get()) }
+    single { GrunnbeloepClient(env.grunnbeloepUrl, get()) }
     single { BeloepBeregning(get()) }
     single { HikariDataSource(createHikariConfig(env.databaseUrl, env.databaseUsername, env.databasePassword)) } bind DataSource::class
     single { PostgresGravidSoeknadRepository(get(), get()) } bind GravidSoeknadRepository::class

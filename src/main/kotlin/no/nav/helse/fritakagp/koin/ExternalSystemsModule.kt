@@ -67,7 +67,7 @@ fun Module.externalSystemClients(env: Env.Auth) {
     single { GrunnbeloepClient(get()) }
 
     single(named("OPPGAVE")) {
-        val clientConfig = env.oauth2.clientConfig(env.oauth2.scopeOppgave)
+        val azureAdConfig = env.oauth2.azureAdConfig(env.oauth2.scopeOppgave)
         val tokenResolver = TokenResolver()
         val oauthHttpClient = DefaultOAuth2HttpClient(get())
         val accessTokenService = OAuth2AccessTokenService(
@@ -77,11 +77,11 @@ fun Module.externalSystemClients(env: Env.Auth) {
             TokenExchangeClient(oauthHttpClient)
         )
 
-        OAuth2TokenProvider(accessTokenService, clientConfig)
+        OAuth2TokenProvider(accessTokenService, azureAdConfig)
     } bind AccessTokenProvider::class
 
     single(named("PROXY")) {
-        val clientConfig = env.oauth2.clientConfig(env.oauth2.scopeProxy)
+        val azureAdConfig = env.oauth2.azureAdConfig(env.oauth2.scopeProxy)
         val tokenResolver = TokenResolver()
         val oauthHttpClient = DefaultOAuth2HttpClient(get())
         val accessTokenService = OAuth2AccessTokenService(
@@ -91,11 +91,11 @@ fun Module.externalSystemClients(env: Env.Auth) {
             TokenExchangeClient(oauthHttpClient)
         )
 
-        OAuth2TokenProvider(accessTokenService, clientConfig)
+        OAuth2TokenProvider(accessTokenService, azureAdConfig)
     } bind AccessTokenProvider::class
 
     single(named("DOKARKIV")) {
-        val clientConfig = env.oauth2.clientConfig(env.oauth2.scopeDokarkiv)
+        val azureAdConfig = env.oauth2.azureAdConfig(env.oauth2.scopeDokarkiv)
         val tokenResolver = TokenResolver()
         val oauthHttpClient = DefaultOAuth2HttpClient(get())
         val accessTokenService = OAuth2AccessTokenService(
@@ -105,11 +105,11 @@ fun Module.externalSystemClients(env: Env.Auth) {
             TokenExchangeClient(oauthHttpClient)
         )
 
-        OAuth2TokenProvider(accessTokenService, clientConfig)
+        OAuth2TokenProvider(accessTokenService, azureAdConfig)
     } bind AccessTokenProvider::class
 
     single(named("ARBEIDSGIVERNOTIFIKASJON")) {
-        val clientConfig = env.oauth2.clientConfig(env.oauth2.scopeArbeidsgivernotifikasjon)
+        val azureAdConfig = env.oauth2.azureAdConfig(env.oauth2.scopeArbeidsgivernotifikasjon)
         val tokenResolver = TokenResolver()
         val oauthHttpClient = DefaultOAuth2HttpClient(get())
         val accessTokenService = OAuth2AccessTokenService(
@@ -119,7 +119,7 @@ fun Module.externalSystemClients(env: Env.Auth) {
             TokenExchangeClient(oauthHttpClient)
         )
 
-        OAuth2TokenProvider(accessTokenService, clientConfig)
+        OAuth2TokenProvider(accessTokenService, azureAdConfig)
     } bind AccessTokenProvider::class
 
     single { AaregArbeidsforholdClientImpl(env.aaregUrl, get(qualifier = named("PROXY")), get()) } bind AaregArbeidsforholdClient::class
@@ -170,7 +170,7 @@ fun Module.externalSystemClients(env: Env.Auth) {
     single { BehandlendeEnhetService(get(), get()) }
 }
 
-private fun EnvOauth2.clientConfig(scope: String): ClientProperties =
+private fun EnvOauth2.azureAdConfig(scope: String): ClientProperties =
     ClientProperties(
         tokenEndpointUrl.let(::URI),
         wellKnownUrl.let(::URI),

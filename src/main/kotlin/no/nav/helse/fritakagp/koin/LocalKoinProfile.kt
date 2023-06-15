@@ -1,7 +1,6 @@
 package no.nav.helse.fritakagp.koin
 
 import com.zaxxer.hikari.HikariDataSource
-import io.ktor.config.ApplicationConfig
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbRepository
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbService
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.PostgresBakgrunnsjobbRepository
@@ -66,9 +65,7 @@ import org.koin.dsl.module
 import java.net.URL
 import javax.sql.DataSource
 
-fun localConfig(config: ApplicationConfig): Module = module {
-    val env = Env(config)
-
+fun localConfig(env: Env.Local): Module = module {
     mockExternalDependecies()
 
     single { GrunnbeloepClient(env.grunnbeloepUrl, get()) }

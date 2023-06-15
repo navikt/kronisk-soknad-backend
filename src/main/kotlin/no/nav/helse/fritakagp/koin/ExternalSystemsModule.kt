@@ -1,6 +1,6 @@
 package no.nav.helse.fritakagp.koin
 
-import io.ktor.config.ApplicationConfig
+import com.nimbusds.oauth2.sdk.auth.ClientAuthenticationMethod
 import no.nav.helse.arbeidsgiver.integrasjoner.AccessTokenProvider
 import no.nav.helse.arbeidsgiver.integrasjoner.OAuth2TokenProvider
 import no.nav.helse.arbeidsgiver.integrasjoner.aareg.AaregArbeidsforholdClient
@@ -14,6 +14,7 @@ import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlClient
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlClientImpl
 import no.nav.helse.arbeidsgiver.web.auth.AltinnOrganisationsRepository
 import no.nav.helse.fritakagp.Env
+import no.nav.helse.fritakagp.EnvOauth2
 import no.nav.helse.fritakagp.integration.GrunnbeloepClient
 import no.nav.helse.fritakagp.integration.altinn.CachedAuthRepo
 import no.nav.helse.fritakagp.integration.brreg.BrregClient
@@ -32,13 +33,14 @@ import no.nav.helse.fritakagp.integration.kafka.kravmeldingKafkaProps
 import no.nav.helse.fritakagp.integration.kafka.soeknadmeldingKafkaProps
 import no.nav.helse.fritakagp.integration.norg.Norg2Client
 import no.nav.helse.fritakagp.integration.oauth2.DefaultOAuth2HttpClient
-import no.nav.helse.fritakagp.integration.oauth2.OAuth2ClientConfig
 import no.nav.helse.fritakagp.integration.oauth2.TokenResolver
 import no.nav.helse.fritakagp.integration.virusscan.ClamavVirusScannerImp
 import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
 import no.nav.helse.fritakagp.service.BehandlendeEnhetService
 import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonKlient
+import no.nav.security.token.support.client.core.ClientAuthenticationProperties
 import no.nav.security.token.support.client.core.ClientProperties
+import no.nav.security.token.support.client.core.OAuth2GrantType
 import no.nav.security.token.support.client.core.oauth2.ClientCredentialsTokenClient
 import no.nav.security.token.support.client.core.oauth2.OAuth2AccessTokenService
 import no.nav.security.token.support.client.core.oauth2.OnBehalfOfTokenClient
@@ -46,11 +48,10 @@ import no.nav.security.token.support.client.core.oauth2.TokenExchangeClient
 import org.koin.core.module.Module
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
+import java.net.URI
 import java.net.URL
 
-fun Module.externalSystemClients(config: ApplicationConfig) {
-    val env = Env(config)
-
+fun Module.externalSystemClients(env: Env.Auth) {
     single {
         CachedAuthRepo(
             AltinnRestClient(
@@ -66,7 +67,7 @@ fun Module.externalSystemClients(config: ApplicationConfig) {
     single { GrunnbeloepClient(env.grunnbeloepUrl, get()) }
 
     single(named("OPPGAVE")) {
-        val clientConfig = OAuth2ClientConfig(config, "oppgavescope")
+        val azureAdConfig = env.oauth2.azureAdConfig(env.oauth2.scopeOppgave)
         val tokenResolver = TokenResolver()
         val oauthHttpClient = DefaultOAuth2HttpClient(get())
         val accessTokenService = OAuth2AccessTokenService(
@@ -76,11 +77,11 @@ fun Module.externalSystemClients(config: ApplicationConfig) {
             TokenExchangeClient(oauthHttpClient)
         )
 
-        OAuth2TokenProvider(accessTokenService, clientConfig.azureAdConfig())
+        OAuth2TokenProvider(accessTokenService, azureAdConfig)
     } bind AccessTokenProvider::class
 
     single(named("PROXY")) {
-        val clientConfig = OAuth2ClientConfig(config, "proxyscope")
+        val azureAdConfig = env.oauth2.azureAdConfig(env.oauth2.scopeProxy)
         val tokenResolver = TokenResolver()
         val oauthHttpClient = DefaultOAuth2HttpClient(get())
         val accessTokenService = OAuth2AccessTokenService(
@@ -90,11 +91,11 @@ fun Module.externalSystemClients(config: ApplicationConfig) {
             TokenExchangeClient(oauthHttpClient)
         )
 
-        OAuth2TokenProvider(accessTokenService, clientConfig.azureAdConfig())
+        OAuth2TokenProvider(accessTokenService, azureAdConfig)
     } bind AccessTokenProvider::class
 
     single(named("DOKARKIV")) {
-        val clientConfig = OAuth2ClientConfig(config, "dokarkivscope")
+        val azureAdConfig = env.oauth2.azureAdConfig(env.oauth2.scopeDokarkiv)
         val tokenResolver = TokenResolver()
         val oauthHttpClient = DefaultOAuth2HttpClient(get())
         val accessTokenService = OAuth2AccessTokenService(
@@ -104,11 +105,11 @@ fun Module.externalSystemClients(config: ApplicationConfig) {
             TokenExchangeClient(oauthHttpClient)
         )
 
-        OAuth2TokenProvider(accessTokenService, clientConfig.azureAdConfig())
+        OAuth2TokenProvider(accessTokenService, azureAdConfig)
     } bind AccessTokenProvider::class
 
     single(named("ARBEIDSGIVERNOTIFIKASJON")) {
-        val clientConfig = OAuth2ClientConfig(config, "arbeidsgivernotifikasjonscope")
+        val azureAdConfig = env.oauth2.azureAdConfig(env.oauth2.scopeArbeidsgivernotifikasjon)
         val tokenResolver = TokenResolver()
         val oauthHttpClient = DefaultOAuth2HttpClient(get())
         val accessTokenService = OAuth2AccessTokenService(
@@ -118,7 +119,7 @@ fun Module.externalSystemClients(config: ApplicationConfig) {
             TokenExchangeClient(oauthHttpClient)
         )
 
-        OAuth2TokenProvider(accessTokenService, clientConfig.azureAdConfig())
+        OAuth2TokenProvider(accessTokenService, azureAdConfig)
     } bind AccessTokenProvider::class
 
     single { AaregArbeidsforholdClientImpl(env.aaregUrl, get(qualifier = named("PROXY")), get()) } bind AaregArbeidsforholdClient::class
@@ -169,5 +170,21 @@ fun Module.externalSystemClients(config: ApplicationConfig) {
     single { BehandlendeEnhetService(get(), get()) }
 }
 
-private fun OAuth2ClientConfig.azureAdConfig(): ClientProperties =
-    clientConfig["azure_ad"] ?: error("Fant ikke config i application.conf")
+private fun EnvOauth2.azureAdConfig(scope: String): ClientProperties =
+    ClientProperties(
+        tokenEndpointUrl.let(::URI),
+        wellKnownUrl.let(::URI),
+        grantType.let(::OAuth2GrantType),
+        scope.split(","),
+        authProps(),
+        null,
+        null
+    )
+
+private fun EnvOauth2.authProps(): ClientAuthenticationProperties =
+    ClientAuthenticationProperties(
+        authClientId,
+        authClientAuthMethod.let(::ClientAuthenticationMethod),
+        authClientSecret,
+        null
+    )

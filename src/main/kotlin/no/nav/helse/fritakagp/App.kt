@@ -11,7 +11,7 @@ import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbService
 import no.nav.helse.arbeidsgiver.kubernetes.KubernetesProbeManager
 import no.nav.helse.arbeidsgiver.kubernetes.LivenessComponent
 import no.nav.helse.arbeidsgiver.kubernetes.ReadynessComponent
-import no.nav.helse.fritakagp.koin.selectModuleBasedOnProfile
+import no.nav.helse.fritakagp.koin.profileModules
 import no.nav.helse.fritakagp.processing.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravKafkaProcessor
@@ -44,17 +44,17 @@ import org.koin.core.context.stopKoin
 class FritakAgpApplication(val port: Int = 8080) : KoinComponent {
     private val logger = this.logger()
     private val appConfig = HoconApplicationConfig(ConfigFactory.load())
-    private val env = Env(appConfig)
+    private val env = readEnv(appConfig)
 
     private val webserver: NettyApplicationEngine
 
     init {
-        if (env.appEnv in listOf(AppEnv.PREPROD, AppEnv.PROD)) {
+        if (env is Env.Preprod || env is Env.Prod) {
             logger.info("Sover i 30s i påvente av SQL proxy sidecar")
             Thread.sleep(30000)
         }
 
-        startKoin { modules(selectModuleBasedOnProfile(env, appConfig)) }
+        startKoin { modules(profileModules(env)) }
         migrateDatabase()
 
         configAndStartBackgroundWorker()
@@ -81,7 +81,7 @@ class FritakAgpApplication(val port: Int = 8080) : KoinComponent {
                 }
 
                 module {
-                    if (env.appEnv != AppEnv.PROD) {
+                    if (env !is Env.Prod) {
                         localCookieDispenser(config)
                     }
 

@@ -51,7 +51,7 @@ import org.koin.dsl.bind
 import java.net.URI
 import java.net.URL
 
-fun Module.externalSystemClients(env: Env.Auth) {
+fun Module.externalSystemClients(env: Env, envOauth2: EnvOauth2) {
     single {
         CachedAuthRepo(
             AltinnRestClient(
@@ -67,7 +67,7 @@ fun Module.externalSystemClients(env: Env.Auth) {
     single { GrunnbeloepClient(get()) }
 
     single(named("OPPGAVE")) {
-        val azureAdConfig = env.oauth2.azureAdConfig(env.oauth2.scopeOppgave)
+        val azureAdConfig = envOauth2.azureAdConfig(envOauth2.scopeOppgave)
         val tokenResolver = TokenResolver()
         val oauthHttpClient = DefaultOAuth2HttpClient(get())
         val accessTokenService = OAuth2AccessTokenService(
@@ -81,7 +81,7 @@ fun Module.externalSystemClients(env: Env.Auth) {
     } bind AccessTokenProvider::class
 
     single(named("PROXY")) {
-        val azureAdConfig = env.oauth2.azureAdConfig(env.oauth2.scopeProxy)
+        val azureAdConfig = envOauth2.azureAdConfig(envOauth2.scopeProxy)
         val tokenResolver = TokenResolver()
         val oauthHttpClient = DefaultOAuth2HttpClient(get())
         val accessTokenService = OAuth2AccessTokenService(
@@ -95,7 +95,7 @@ fun Module.externalSystemClients(env: Env.Auth) {
     } bind AccessTokenProvider::class
 
     single(named("DOKARKIV")) {
-        val azureAdConfig = env.oauth2.azureAdConfig(env.oauth2.scopeDokarkiv)
+        val azureAdConfig = envOauth2.azureAdConfig(envOauth2.scopeDokarkiv)
         val tokenResolver = TokenResolver()
         val oauthHttpClient = DefaultOAuth2HttpClient(get())
         val accessTokenService = OAuth2AccessTokenService(
@@ -109,7 +109,7 @@ fun Module.externalSystemClients(env: Env.Auth) {
     } bind AccessTokenProvider::class
 
     single(named("ARBEIDSGIVERNOTIFIKASJON")) {
-        val azureAdConfig = env.oauth2.azureAdConfig(env.oauth2.scopeArbeidsgivernotifikasjon)
+        val azureAdConfig = envOauth2.azureAdConfig(envOauth2.scopeArbeidsgivernotifikasjon)
         val tokenResolver = TokenResolver()
         val oauthHttpClient = DefaultOAuth2HttpClient(get())
         val accessTokenService = OAuth2AccessTokenService(

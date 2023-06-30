@@ -1,6 +1,9 @@
 package no.nav.helse.fritakagp.processing.gravid.krav
 
+import no.nav.helse.AgpTestData
 import no.nav.helse.GravidTestData
+import no.nav.helse.fritakagp.domain.ArbeidsgiverperiodeNy
+import no.nav.helse.fritakagp.domain.Periode
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.text.PDFTextStripper
 import org.assertj.core.api.Assertions.assertThat
@@ -10,12 +13,59 @@ import java.awt.Desktop
 import java.nio.file.Files
 import java.time.LocalDateTime
 import kotlin.math.roundToInt
+import java.io.File
+import java.io.FileOutputStream
+import java.time.LocalDate
 
 class GravidKravPDFGeneratorTest {
 
     @Test
     fun testLagPDF() {
-        val krav = GravidTestData.gravidKrav
+        val periode = Periode(
+            fom = LocalDate.of(2022, 4, 1),
+            tom = LocalDate.of(2022, 4, 16)
+        )
+
+        val krav = GravidTestData.gravidKrav.copy(
+            perioder = listOf(
+                ArbeidsgiverperiodeNy(
+                    perioder = listOf(
+                        periode.copy(
+                            fom = LocalDate.of(2022, 4, 1),
+                            tom = LocalDate.of(2022, 4, 7)
+                        ),
+                        periode.copy(
+                            fom = LocalDate.of(2022, 4, 8),
+                            tom = LocalDate.of(2022, 4, 14)
+                        ),
+                        periode.copy(
+                            fom = LocalDate.of(2022, 4, 14),
+                            tom = LocalDate.of(2022, 4, 16)
+                        )
+                    ),
+                    antallDagerMedRefusjon = 3,
+                    månedsinntekt = 3000.0
+                ),
+                ArbeidsgiverperiodeNy(
+                    perioder = listOf(
+                        periode.copy(
+                            fom = LocalDate.of(2022, 6, 1),
+                            tom = LocalDate.of(2022, 6, 7)
+                        ),
+                        periode.copy(
+                            fom = LocalDate.of(2022, 6, 8),
+                            tom = LocalDate.of(2022, 6, 14)
+                        ),
+                        periode.copy(
+                            fom = LocalDate.of(2022, 6, 14),
+                            tom = LocalDate.of(2022, 6, 16)
+                        )
+                    ),
+                    antallDagerMedRefusjon = 3,
+                    månedsinntekt = 3000.0
+                )
+            )
+        )
         val pdf = GravidKravPDFGenerator().lagPDF(krav)
         assertThat(pdf).isNotNull
 

@@ -11,9 +11,9 @@ class BeloepBeregning(
 
     fun beregnBeløpGravid(krav: GravidKrav) = beregnPeriodeData(krav.perioder, krav.antallDager)
 
-    private fun beregnPeriodeData(perioder: List<Arbeidsgiverperiode>, antallDager: Int) {
+    private fun beregnPeriodeData(perioder: List<ArbeidsgiverperiodeNy>, antallDager: Int) {
         perioder.forEach {
-            val seksG = grunnbeloepClient.hentGrunnbeløp(it.fom).grunnbeløp * 6.0
+            val seksG = grunnbeloepClient.hentGrunnbeløp(it.fraOgMed()).grunnbeløp * 6.0
             val arslonn = it.månedsinntekt * 12
             it.dagsats = if (arslonn < seksG)
                 round2DigitDecimal(arslonn / antallDager)

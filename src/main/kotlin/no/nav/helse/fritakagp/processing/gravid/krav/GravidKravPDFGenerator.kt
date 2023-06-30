@@ -46,10 +46,9 @@ class GravidKravPDFGenerator {
         content.writeTextWrapped("Person navn: ${krav.navn}")
         content.writeTextWrapped("Arbeidsgiver oppgitt i krav: ${krav.virksomhetsnavn} (${krav.virksomhetsnummer})")
         content.writeTextWrapped("Antall lønnsdager: ${krav.antallDager}")
-        content.writeTextWrapped("Arbeidsgiverperiode", 2)
         krav
             .perioder
-            .sortedBy { it.fom }
+            .sortedBy { it.fraOgMed() }
             .withIndex()
             .forEach { (index, periode) ->
                 // For hvert 4 nye krav, lag ny side
@@ -60,8 +59,11 @@ class GravidKravPDFGenerator {
                 }
                 val gradering = (periode.gradering * 100).toString()
                 with(content) {
-                    writeTextWrapped("FOM: ${periode.fom.format(DATE_FORMAT)}")
-                    writeTextWrapped("TOM: ${periode.tom.format(DATE_FORMAT)}")
+                    writeTextWrapped("Arbeidsgiverperiode", 2)
+                    writeTextWrapped("Perioder:")
+                    periode.perioder?.forEach {
+                        writeTextWrapped("${it.fom.format(DATE_FORMAT)} - ${it.tom.format(DATE_FORMAT)}")
+                    }
                     writeTextWrapped("Sykmeldingsgrad: $gradering%")
                     writeTextWrapped("Antall dager det kreves refusjon for: ${periode.antallDagerMedRefusjon}")
                     writeTextWrapped("Beregnet månedsinntekt (NOK): ${periode.månedsinntekt.roundToInt()}")
@@ -93,9 +95,8 @@ class GravidKravPDFGenerator {
         content.writeTextWrapped("Sendt av: ${krav.sendtAvNavn}")
         content.writeTextWrapped("Person navn: ${krav.navn}")
         content.writeTextWrapped("Arbeidsgiver oppgitt i krav: ${krav.virksomhetsnavn} (${krav.virksomhetsnummer})")
-        content.writeTextWrapped("Perioder", 2)
 
-        krav.perioder.withIndex().forEach { (index, periode) ->
+        krav.perioder.sortedBy { it.fraOgMed() }.withIndex().forEach { (index, periode) ->
             // For hvert 4 nye krav, lag ny side
             if (index != 0 && index % 4 == 0) {
                 content.close()
@@ -103,8 +104,11 @@ class GravidKravPDFGenerator {
             }
             val gradering = (periode.gradering * 100).toString()
             with(content) {
-                writeTextWrapped("FOM: ${periode.fom.format(DATE_FORMAT)}")
-                writeTextWrapped("TOM: ${periode.tom.format(DATE_FORMAT)}")
+                writeTextWrapped("Arbeidsgiverperiode", 2)
+                writeTextWrapped("Perioder:")
+                periode.perioder?.forEach {
+                    writeTextWrapped("${it.fom.format(DATE_FORMAT)} - ${it.tom.format(DATE_FORMAT)}")
+                }
                 writeTextWrapped("Sykmeldingsgrad: $gradering%")
                 writeTextWrapped("Antall dager det kreves refusjon for: ${periode.antallDagerMedRefusjon}")
                 writeTextWrapped("Beregnet månedsinntekt (NOK): ${periode.månedsinntekt.roundToInt()}")

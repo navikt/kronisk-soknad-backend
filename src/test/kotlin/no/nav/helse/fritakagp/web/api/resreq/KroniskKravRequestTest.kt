@@ -2,6 +2,8 @@ package no.nav.helse.fritakagp.web.api.resreq
 
 import no.nav.helse.AaregTestData
 import no.nav.helse.KroniskTestData
+import no.nav.helse.fritakagp.domain.AgpFelter
+import no.nav.helse.fritakagp.domain.Periode
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
@@ -73,16 +75,21 @@ class KroniskKravRequestTest {
 
     @Test
     internal fun `Til dato kan ikke komme før fra dato`() {
-        validationShouldFailFor("perioder[0].fom") {
+        validationShouldFailFor("perioder[0].perioder[0].fom") {
             KroniskTestData.kroniskKravRequestValid.copy(
                 perioder = listOf(
                     KroniskTestData.kroniskKravRequestValid.perioder.first().copy(
-                        fom = LocalDate.of(2020, 1, 10),
-                        tom = LocalDate.of(2020, 1, 5),
+                        perioder = listOf(
+                            Periode(
+                                fom = LocalDate.of(2020, 1, 10),
+                                tom = LocalDate.of(2020, 1, 5)
+                            )
+                        ),
                         antallDagerMedRefusjon = -5
                     )
-                ) // slik at validationShouldFailFor() kaster ikke to unntak
-            ).validate(AaregTestData.evigArbeidsForholdListe)
+                )
+            ) // slik at validationShouldFailFor() kaster ikke to unntak
+                .validate(AaregTestData.evigArbeidsForholdListe)
         }
     }
 
@@ -90,13 +97,17 @@ class KroniskKravRequestTest {
     internal fun `Sykemeldingsgrad må være gyldig`() {
         validationShouldFailFor("perioder[0].gradering") {
             KroniskTestData.kroniskKravRequestValid.copy(
-                perioder = listOf(KroniskTestData.kroniskKravRequestValid.perioder.first().copy(gradering = 1.1))
+                perioder = listOf(
+                    KroniskTestData.kroniskKravRequestValid.perioder.first().copy(gradering = 1.1)
+                )
             ).validate(AaregTestData.evigArbeidsForholdListe)
         }
 
         validationShouldFailFor("perioder[0].gradering") {
             KroniskTestData.kroniskKravRequestValid.copy(
-                perioder = listOf(KroniskTestData.kroniskKravRequestValid.perioder.first().copy(gradering = 0.1))
+                perioder = listOf(
+                    KroniskTestData.kroniskKravRequestValid.perioder.first().copy(gradering = 0.1)
+                )
             ).validate(AaregTestData.evigArbeidsForholdListe)
         }
     }

@@ -36,7 +36,7 @@ class OpprettRobotOppgaveKroniskProcessorTest {
 
     @BeforeEach
     fun setup() {
-        krav = KroniskTestData.kroniskKrav.copy()
+        krav = KroniskTestData.kroniskKrav.copy(perioder = KroniskTestData.kroniskKrav.perioder.map { it.copy() }.toList())
         jobb = BakgrunnsJobbUtils.testJob(objectMapper.writeValueAsString(OpprettRobotOppgaveKroniskProcessor.JobbData(krav.id)))
         every { repositoryMock.getById(krav.id) } returns krav
         every { pdlClientMock.personNavn(krav.sendtAv) } returns PdlHentPersonNavn.PdlPersonNavneliste(
@@ -56,7 +56,7 @@ class OpprettRobotOppgaveKroniskProcessorTest {
     fun `skal journalføre, opprette oppgave og oppdatere søknaden i databasen`() {
         prosessor.prosesser(jobb)
 
-        Assertions.assertThat(krav.oppgaveId).isEqualTo(oppgaveId.toString())
+        Assertions.assertThat(krav.perioder[0].oppgaveId).isEqualTo(oppgaveId.toString())
 
         coVerify(exactly = 1) {
             oppgaveMock.opprettOppgave(
@@ -71,7 +71,7 @@ class OpprettRobotOppgaveKroniskProcessorTest {
 
     @Test
     fun `skal ikke lage oppgave når det allerede foreligger en oppgaveId `() {
-        krav.oppgaveId = "ppggssv"
+        krav.perioder[0].oppgaveId = "ppggssv"
         prosessor.prosesser(jobb)
         coVerify(exactly = 0) { oppgaveMock.opprettOppgave(any(), any()) }
     }

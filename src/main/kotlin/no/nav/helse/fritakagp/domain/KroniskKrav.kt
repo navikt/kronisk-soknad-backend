@@ -13,7 +13,7 @@ data class KroniskKrav(
     val identitetsnummer: String,
     // Må være null for tidligere verdier er lagret med null
     var navn: String? = null,
-    val perioder: List<Arbeidsgiverperiode>,
+    val perioder: List<ArbeidsgiverperiodeNy>,
     val harVedlegg: Boolean = false,
     val kontrollDager: Int?,
     val antallDager: Int,
@@ -37,8 +37,8 @@ data class KroniskKrav(
     var arbeidsgiverSakId: String? = null,
     var referansenummer: Int? = null
 ) : SimpleJsonbEntity {
-    fun toKravForOppgave(): KravForOppgave {
-        return KravForOppgave(
+    fun toKravForOppgave(arbeidsgiverPeriode: ArbeidsgiverperiodeNy) =
+        KravForOppgave(
             KravType.KRONISK,
             id = id,
             opprettet = opprettet,
@@ -46,19 +46,18 @@ data class KroniskKrav(
             virksomhetsnummer = virksomhetsnummer,
             identitetsnummer = identitetsnummer,
             navn = navn,
-            perioder = perioder,
+            arbeidsgiverPeriode = arbeidsgiverPeriode,
             harVedlegg = harVedlegg,
             kontrollDager = kontrollDager,
             antallDager = antallDager,
             journalpostId = journalpostId,
-            oppgaveId = oppgaveId,
+            oppgaveId = arbeidsgiverPeriode.oppgaveId,
             virksomhetsnavn = virksomhetsnavn,
             sendtAvNavn = sendtAvNavn,
             status = status,
             arbeidsgiverSakId = arbeidsgiverSakId,
             referansenummer = referansenummer
         )
-    }
 
     companion object {
         const val tittel = "Krav om refusjon av arbeidsgiverperioden - kronisk eller langvarig sykdom"

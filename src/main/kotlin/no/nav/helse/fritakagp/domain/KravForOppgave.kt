@@ -13,7 +13,7 @@ data class KravForOppgave(
     val identitetsnummer: String,
     // Må være null for tidligere verdier er lagret med null
     var navn: String? = null,
-    val perioder: List<Arbeidsgiverperiode>,
+    val arbeidsgiverPeriode: ArbeidsgiverperiodeNy,
     val harVedlegg: Boolean = false,
     val kontrollDager: Int?,
     val antallDager: Int,

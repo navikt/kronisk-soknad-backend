@@ -83,7 +83,7 @@ fun generereKroniskKravBeskrivelse(krav: KroniskKrav, desc: String): String {
         appendLine("Person (FNR): ${krav.identitetsnummer}")
         appendLine("Arbeidsgiver oppgitt i krav: ${krav.virksomhetsnavn} (${krav.virksomhetsnummer})")
         appendLine("Antall lønnsdager: ${krav.antallDager}")
-        appendLine("Periode:")
+        appendLine("Perioder:")
         appendLine(genererePeriodeTable(krav.perioder))
     }
 }
@@ -95,7 +95,7 @@ fun generereSlettKroniskKravBeskrivelse(krav: KroniskKrav, desc: String): String
         appendLine("Tidligere krav med JournalpostId: ${krav.journalpostId}")
         appendLine("Person (FNR): ${krav.identitetsnummer}")
         appendLine("Arbeidsgiver oppgitt i krav: ${krav.virksomhetsnavn} (${krav.virksomhetsnummer})")
-        appendLine("Periode:")
+        appendLine("Perioder:")
         appendLine(genererePeriodeTable(krav.perioder))
     }
 }
@@ -108,7 +108,7 @@ fun generereGravidkKravBeskrivelse(krav: GravidKrav, desc: String): String {
         appendLine("Person (FNR): ${krav.identitetsnummer}")
         appendLine("Arbeidsgiver oppgitt i krav: ${krav.virksomhetsnavn} (${krav.virksomhetsnummer})")
         appendLine("Antall lønnsdager: ${krav.antallDager}")
-        appendLine("Periode:")
+        appendLine("Perioder:")
         appendLine(genererePeriodeTable(krav.perioder))
     }
 }
@@ -120,24 +120,47 @@ fun generereSlettGravidKravBeskrivelse(krav: GravidKrav, desc: String): String {
         appendLine("Tidligere krav med JournalpostId: ${krav.journalpostId}")
         appendLine("Person (FNR): ${krav.identitetsnummer}")
         appendLine("Arbeidsgiver oppgitt i krav: ${krav.virksomhetsnavn} (${krav.virksomhetsnummer})")
-        appendLine("Periode:")
+        appendLine("Perioder:")
         appendLine(genererePeriodeTable(krav.perioder))
     }
 }
 
-fun genererePeriodeTable(perioder: List<Arbeidsgiverperiode>): String {
+fun generateAgpTable(perioder: List<Periode>): String {
+    return perioder.map {
+        "(${it.fom} - ${it.tom})"
+    }.joinToString()
+}
+
+const val agpSpacing = "----------------"
+
+fun genererePeriodeTable(perioder: List<ArbeidsgiverperiodeNy>): String {
     return table {
         header("FOM", "TOM", "Sykmeldingsgrad", "kreves refusjon for", "Beregnet månedsinntekt (NOK)", "Dagsats (NOK)", "Beløp (NOK)")
         for (p in perioder.sortedBy { it.fom }) {
             val gradering = (p.gradering * 100).toString() + "%"
+
+            p.perioder?.forEachIndexed { index, e ->
+                if (index == 2)
+                    row(
+                        e.fom.atStartOfDay(),
+                        e.tom.atStartOfDay(),
+                        gradering,
+                        p.antallDagerMedRefusjon,
+                        p.månedsinntekt.roundToInt().toString(),
+                        p.dagsats.toString(),
+                        p.belop.toString()
+                    ) else {
+                    row(e.fom.atStartOfDay(), e.tom.atStartOfDay(), "-", "-", "-", "-", "-")
+                }
+            }
             row(
-                p.fom.atStartOfDay(),
-                p.tom.atStartOfDay(),
-                gradering,
-                p.antallDagerMedRefusjon,
-                p.månedsinntekt.roundToInt().toString(),
-                p.dagsats.toString(),
-                p.belop.toString()
+                agpSpacing,
+                agpSpacing,
+                agpSpacing,
+                agpSpacing,
+                agpSpacing,
+                agpSpacing,
+                agpSpacing,
             )
         }
         hints {

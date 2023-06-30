@@ -22,6 +22,8 @@ import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlIdent
 import no.nav.helse.fritakagp.GravidKravMetrics
 import no.nav.helse.fritakagp.db.GravidKravRepository
 import no.nav.helse.fritakagp.domain.GravidKrav
+import no.nav.helse.fritakagp.domain.KravForOppgave
+import no.nav.helse.fritakagp.domain.KravType
 import no.nav.helse.fritakagp.domain.KroniskKrav
 import no.nav.helse.fritakagp.domain.generereGravidkKravBeskrivelse
 import no.nav.helse.fritakagp.integration.brreg.BrregClient
@@ -81,10 +83,16 @@ class GravidKravProcessor(
 
             bucketStorage.deleteDoc(krav.id)
 
-            if (krav.oppgaveId == null) {
-                krav.oppgaveId = opprettOppgave(krav)
-                GravidKravMetrics.tellOppgaveOpprettet()
+            for (arbeidsgiverPeriode in krav.perioder) {
+
+                val kravForOppgave = krav.toKravForOppgave(arbeidsgiverPeriode)
+                if (arbeidsgiverPeriode.oppgaveId == null) {
+                    val oppgaveId = opprettOppgave(kravForOppgave)
+                    logger.info("Oppgave opprettet med id $oppgaveId")
+                    arbeidsgiverPeriode.oppgaveId = oppgaveId
+                }
             }
+
             bakgrunnsjobbRepo.save(
                 Bakgrunnsjobb(
                     maksAntallForsoek = 10,
@@ -200,14 +208,14 @@ class GravidKravProcessor(
         return dokumentListe
     }
 
-    fun opprettOppgave(krav: GravidKrav): String {
+    fun opprettOppgave(krav: KravForOppgave): String {
         val aktoerId = pdlClient.fullPerson(krav.identitetsnummer)?.hentIdenter?.trekkUtIdent(PdlIdent.PdlIdentGruppe.AKTORID)
         requireNotNull(aktoerId) { "Fant ikke AktørID for fnr i ${krav.id}" }
         krav.oppgaveId
         oppgaveKlient
 
-        val beskrivelse = if (robotiseringToggle) om.writeValueAsString(krav.toKravForOppgave()) else generereGravidkKravBeskrivelse(krav, KroniskKrav.tittel)
-        val oppgaveType = if (robotiseringToggle) "ROB_BEH" else "BEH_REF"
+        val beskrivelse = om.writeValueAsString(krav)
+        val oppgaveType = "ROB_BEH"
         val request = OpprettOppgaveRequest(
             aktoerId = aktoerId,
             journalpostId = krav.journalpostId,

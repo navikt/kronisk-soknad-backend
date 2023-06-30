@@ -9,6 +9,7 @@ import no.nav.helse.fritakagp.domain.KroniskKrav
 import no.nav.helse.fritakagp.domain.sladdFnr
 import no.nav.helse.fritakagp.domain.TIMESTAMP_FORMAT_MED_KL
 import no.nav.helse.fritakagp.domain.Arbeidsgiverperiode
+import no.nav.helse.fritakagp.domain.ArbeidsgiverperiodeNy
 import no.nav.helse.fritakagp.domain.DATE_FORMAT
 import kotlin.math.roundToInt
 
@@ -36,11 +37,7 @@ class KroniskKravAltinnKvitteringSender(
     override fun send(kvittering: KroniskKrav) {
         try {
             val receiptExternal = iCorrespondenceAgencyExternalBasic.insertCorrespondenceBasicV2(
-                username,
-                password,
-                SYSTEM_USER_CODE,
-                kvittering.id.toString(),
-                mapKvitteringTilInsertCorrespondence(kvittering)
+                username, password, SYSTEM_USER_CODE, kvittering.id.toString(), mapKvitteringTilInsertCorrespondence(kvittering)
             )
             if (receiptExternal.receiptStatusCode != ReceiptStatusEnum.OK) {
                 throw RuntimeException("Fikk uventet statuskode fra Altinn: ${receiptExternal.receiptStatusCode} ${receiptExternal.receiptText}")
@@ -80,28 +77,17 @@ class KroniskKravAltinnKvitteringSender(
         </html>
         """.trimIndent()
 
-        val meldingsInnhold = ExternalContentV2()
-            .withLanguageCode("1044")
-            .withMessageTitle(tittel)
-            .withMessageBody(innhold)
-            .withMessageSummary("Kvittering for krav om refusjon av arbeidsgiverperioden ifbm kronisk sykdom")
+        val meldingsInnhold = ExternalContentV2().withLanguageCode("1044").withMessageTitle(tittel).withMessageBody(innhold).withMessageSummary("Kvittering for krav om refusjon av arbeidsgiverperioden ifbm kronisk sykdom")
 
-        return InsertCorrespondenceV2()
-            .withAllowForwarding(false)
-            .withReportee(kvittering.virksomhetsnummer)
-            .withMessageSender("NAV (Arbeids- og velferdsetaten)")
-            .withServiceCode(altinnTjenesteKode)
-            .withServiceEdition("1")
-            .withContent(meldingsInnhold)
+        return InsertCorrespondenceV2().withAllowForwarding(false).withReportee(kvittering.virksomhetsnummer).withMessageSender("NAV (Arbeids- og velferdsetaten)").withServiceCode(altinnTjenesteKode).withServiceEdition("1").withContent(meldingsInnhold)
     }
 }
 
-fun lagrePerioder(perioder: List<Arbeidsgiverperiode>): String {
+fun lagrePerioder(perioder: List<ArbeidsgiverperiodeNy>): String {
     val head = """
             <table style="width:50%">
               <tr>
-                <th>Fra dato</th>
-                <th>Til dato</th>
+                <th>Perioder</th>
                 <th>Sykmeldingsgrad</th>
                 <th>Dager med refusjon</th>
                 <th>Beregnet månedsinntekt (NOK)</th>
@@ -111,17 +97,25 @@ fun lagrePerioder(perioder: List<Arbeidsgiverperiode>): String {
 
     val tail = "</table>"
     var rader = ""
-    for (p in perioder)
-        rader += lagePeriod(p)
+    rader = perioder.mapIndexed { index, periode ->
+        {
+            lagePeriod(periode, index == perioder.size - 1)
+        }
+    }.joinToString()
 
     return head + rader + tail
 }
 
-fun lagePeriod(periode: Arbeidsgiverperiode): String {
+fun lagePeriod(periode: ArbeidsgiverperiodeNy, erSisteElement: Boolean): String {
     val gradering = (periode.gradering * 100).toString() + "%"
-    return """<tr>
-                <td style="text-align:center">${periode.fom.format(DATE_FORMAT)}</td>
-                <td style="text-align:center">${periode.tom.format(DATE_FORMAT)}</td>
+    val delPerioder = periode.perioder!!
+        .sortedBy { it.fom }
+        .joinToString("<br/>") { "${it.fom} - ${it.tom}" }
+    val lineSeparatorCss = if (erSisteElement) "" else "style=\"border-bottom:1px solid dimgray\""
+    return """<tr $lineSeparatorCss>
+                <td style="text-align:center;white-space:nowrap">
+               $delPerioder
+                </td>
                 <td style="text-align:center">$gradering</td>
                 <td style="text-align:center">${periode.antallDagerMedRefusjon}</td>
                 <td style="text-align:center">${periode.månedsinntekt}</td>

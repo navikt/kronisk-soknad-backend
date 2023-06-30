@@ -8,10 +8,14 @@ import io.ktor.client.statement.HttpResponse
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
+import no.nav.helse.AgpTestData
 import no.nav.helse.GravidTestData
 import no.nav.helse.fritakagp.db.GravidKravRepository
+import no.nav.helse.fritakagp.domain.AgpFelter
 import no.nav.helse.fritakagp.domain.Arbeidsgiverperiode
+import no.nav.helse.fritakagp.domain.ArbeidsgiverperiodeNy
 import no.nav.helse.fritakagp.domain.GravidKrav
+import no.nav.helse.fritakagp.domain.Periode
 import no.nav.helse.fritakagp.web.api.resreq.ValidationProblem
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Disabled
@@ -29,8 +33,7 @@ class GravidKravHTTPTests : SystemTestBase() {
         val repo by inject<GravidKravRepository>()
 
         repo.insert(GravidTestData.gravidKrav)
-        val exception = assertThrows<ClientRequestException>
-        {
+        val exception = assertThrows<ClientRequestException> {
             httpClient.get<HttpResponse> {
                 appUrl("$kravGravidUrl/${GravidTestData.gravidKrav.id}")
                 contentType(ContentType.Application.Json)
@@ -135,23 +138,25 @@ class GravidKravHTTPTests : SystemTestBase() {
                 loggedInAs("123456789")
                 body = GravidTestData.gravidKravRequestInValid.copy(
                     perioder = listOf(
-                        Arbeidsgiverperiode(
-                            LocalDate.of(2020, 1, 15),
-                            LocalDate.of(2020, 1, 10),
-                            2,
-                            månedsinntekt = 2590.8
+                        AgpTestData.arbeidsgiverperiode.copy(),
+                        AgpTestData.arbeidsgiverperiode.copy(
+                            perioder = listOf(
+                                Periode(
+                                    LocalDate.of(2020, 1, 5),
+                                    LocalDate.of(2020, 1, 4),
+
+                                )
+                            )
                         ),
-                        Arbeidsgiverperiode(
-                            LocalDate.of(2020, 1, 5),
-                            LocalDate.of(2020, 1, 4),
-                            2,
-                            månedsinntekt = 2590.8,
-                        ),
-                        Arbeidsgiverperiode(
-                            LocalDate.of(2020, 1, 5),
-                            LocalDate.of(2020, 1, 14),
-                            12,
-                            månedsinntekt = 2590.8,
+                        AgpTestData.arbeidsgiverperiode.copy(
+                            perioder = listOf(
+                                Periode(
+                                    LocalDate.of(2020, 1, 5),
+                                    LocalDate.of(2020, 1, 14),
+
+                                )
+                            ),
+                            antallDagerMedRefusjon = 12
                         )
                     )
                 )
@@ -172,32 +177,34 @@ class GravidKravHTTPTests : SystemTestBase() {
                 loggedInAs("123456789")
                 body = GravidTestData.gravidKravRequestInValid.copy(
                     perioder = listOf(
-                        Arbeidsgiverperiode(
-                            LocalDate.of(2020, 1, 15),
-                            LocalDate.of(2020, 1, 10),
-                            2,
-                            månedsinntekt = 2590.8
+                        AgpTestData.arbeidsgiverperiode.copy(),
+                        AgpTestData.arbeidsgiverperiode.copy(
+                            perioder = listOf(
+                                Periode(
+                                    LocalDate.of(2020, 1, 5),
+                                    LocalDate.of(2020, 1, 4),
+
+                                )
+                            )
                         ),
-                        Arbeidsgiverperiode(
-                            LocalDate.of(2020, 1, 5),
-                            LocalDate.of(2020, 1, 4),
-                            2,
-                            månedsinntekt = 2590.8,
-                        ),
-                        Arbeidsgiverperiode(
-                            LocalDate.of(2020, 1, 5),
-                            LocalDate.of(2020, 1, 14),
-                            12,
-                            månedsinntekt = 2590.8,
+                        AgpTestData.arbeidsgiverperiode.copy(
+                            perioder = listOf(
+                                Periode(
+                                    LocalDate.of(2020, 1, 5),
+                                    LocalDate.of(2020, 1, 14),
+
+                                )
+                            ),
+                            antallDagerMedRefusjon = 12
                         )
                     )
                 )
             }
         }
         val possiblePropertyPaths = setOf(
-            "perioder[0].fom",
+            "perioder[0].perioder[0].fom",
             "perioder[0].antallDagerMedRefusjon",
-            "perioder[1].fom",
+            "perioder[1].perioder[0].fom",
             "perioder[1].antallDagerMedRefusjon",
             "perioder[2].antallDagerMedRefusjon",
         )

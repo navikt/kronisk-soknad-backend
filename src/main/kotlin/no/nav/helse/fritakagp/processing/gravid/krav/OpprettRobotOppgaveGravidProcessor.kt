@@ -12,6 +12,7 @@ import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlIdent
 import no.nav.helse.fritakagp.GravidKravMetrics
 import no.nav.helse.fritakagp.db.GravidKravRepository
 import no.nav.helse.fritakagp.domain.GravidKrav
+import no.nav.helse.fritakagp.domain.KravForOppgave
 import no.nav.helse.fritakagp.service.BehandlendeEnhetService
 import no.nav.helsearbeidsgiver.utils.log.logger
 import java.time.LocalDate
@@ -39,10 +40,14 @@ class OpprettRobotOppgaveGravidProcessor(
         logger.info("Prosesserer krav ${krav.id}")
 
         try {
-            if (krav.oppgaveId == null) {
-                krav.oppgaveId = opprettOppgave(krav)
-                logger.info("Robot Oppgave opprettet med id ${krav.oppgaveId}")
-                GravidKravMetrics.tellOppgaveOpprettet()
+            for (arbeidsgiverPeriode in krav.perioder) {
+
+                val kravForOppgave = krav.toKravForOppgave(arbeidsgiverPeriode)
+                if (arbeidsgiverPeriode.oppgaveId == null) {
+                    val oppgaveId = opprettOppgave(kravForOppgave)
+                    logger.info("Oppgave opprettet med id $oppgaveId")
+                    arbeidsgiverPeriode.oppgaveId = oppgaveId
+                }
             }
         } finally {
             updateAndLogOnFailure(krav)
@@ -68,12 +73,12 @@ class OpprettRobotOppgaveGravidProcessor(
         }
     }
 
-    fun opprettOppgave(krav: GravidKrav): String {
+    fun opprettOppgave(krav: KravForOppgave): String {
         val aktoerId = pdlClient.fullPerson(krav.identitetsnummer)?.hentIdenter?.trekkUtIdent(PdlIdent.PdlIdentGruppe.AKTORID)
         val enhetsNr = behandlendeEnhetService.hentBehandlendeEnhet(krav.identitetsnummer, krav.id.toString())
         requireNotNull(aktoerId) { "Fant ikke AktørID for fnr i ${krav.id}" }
         logger.info("Fant aktørid")
-        val beskrivelse = om.writeValueAsString(krav.toKravForOppgave())
+        val beskrivelse = om.writeValueAsString(krav)
         val oppgaveType = "ROB_BEH"
         val request = OpprettOppgaveRequest(
             tildeltEnhetsnr = enhetsNr,

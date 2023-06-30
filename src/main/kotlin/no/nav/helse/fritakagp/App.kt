@@ -92,33 +92,31 @@ class FritakAgpApplication(val port: Int = 8080) : KoinComponent {
         )
 
     private fun configAndStartBackgroundWorker() {
-        if (env.appShouldRunBackgroundWorkers) {
-            get<BakgrunnsjobbService>().apply {
-                registrer(get<GravidSoeknadProcessor>())
-                registrer(get<GravidSoeknadKafkaProcessor>())
-                registrer(get<GravidSoeknadKvitteringProcessor>())
+        get<BakgrunnsjobbService>().apply {
+            registrer(get<GravidSoeknadProcessor>())
+            registrer(get<GravidSoeknadKafkaProcessor>())
+            registrer(get<GravidSoeknadKvitteringProcessor>())
 
-                registrer(get<GravidKravProcessor>())
-                registrer(get<GravidKravKafkaProcessor>())
-                registrer(get<GravidKravKvitteringProcessor>())
-                registrer(get<GravidKravSlettProcessor>())
-                registrer(get<OpprettRobotOppgaveGravidProcessor>())
+            registrer(get<GravidKravProcessor>())
+            registrer(get<GravidKravKafkaProcessor>())
+            registrer(get<GravidKravKvitteringProcessor>())
+            registrer(get<GravidKravSlettProcessor>())
+            registrer(get<OpprettRobotOppgaveGravidProcessor>())
 
-                registrer(get<KroniskSoeknadProcessor>())
-                registrer(get<KroniskSoeknadKafkaProcessor>())
-                registrer(get<KroniskSoeknadKvitteringProcessor>())
+            registrer(get<KroniskSoeknadProcessor>())
+            registrer(get<KroniskSoeknadKafkaProcessor>())
+            registrer(get<KroniskSoeknadKvitteringProcessor>())
 
-                registrer(get<KroniskKravProcessor>())
-                registrer(get<KroniskKravKafkaProcessor>())
-                registrer(get<KroniskKravKvitteringProcessor>())
-                registrer(get<KroniskKravSlettProcessor>())
-                registrer(get<OpprettRobotOppgaveKroniskProcessor>())
+            registrer(get<KroniskKravProcessor>())
+            registrer(get<KroniskKravKafkaProcessor>())
+            registrer(get<KroniskKravKvitteringProcessor>())
+            registrer(get<KroniskKravSlettProcessor>())
+            registrer(get<OpprettRobotOppgaveKroniskProcessor>())
 
-                registrer(get<BrukernotifikasjonProcessor>())
-                registrer(get<ArbeidsgiverNotifikasjonProcessor>())
+            registrer(get<BrukernotifikasjonProcessor>())
+            registrer(get<ArbeidsgiverNotifikasjonProcessor>())
 
-                startAsync(true)
-            }
+            startAsync(true)
         }
     }
 

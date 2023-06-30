@@ -64,7 +64,7 @@ fun Module.externalSystemClients(env: Env.Auth) {
         )
     } bind AltinnOrganisationsRepository::class
 
-    single { GrunnbeloepClient(get()) }
+    single { GrunnbeloepClient(env.grunnbeloepUrl, get()) }
 
     single(named("OPPGAVE")) {
         val azureAdConfig = env.oauth2.azureAdConfig(env.oauth2.scopeOppgave)

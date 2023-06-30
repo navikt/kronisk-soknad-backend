@@ -59,6 +59,8 @@ sealed class Env private constructor(
 
     val dokarkivUrl = "dokarkiv.base_url".prop()
 
+    val grunnbeloepUrl = "grunnbeloep_url".prop()
+
     val norg2Url = "norg2_url".prop()
 
     val oppgavebehandlingUrl = "oppgavebehandling.url".prop()

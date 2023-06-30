@@ -45,6 +45,8 @@ env:
     value: http://notifikasjon-produsent-api.fager/api/graphql
   - name: DOKARKIV_URL
     value: https://dokarkiv.dev-fss-pub.nais.io
+  - name: GRUNNBELOEP_URL
+    value: https://g.nav.no/api/v1/grunnbeløp
   - name: NORG2_URL
     value: https://helsearbeidsgiver-proxy.dev-fss-pub.nais.io/norg
   - name: OPPGAVEBEHANDLING_URL

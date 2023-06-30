@@ -26,7 +26,7 @@ sealed class Env private constructor(
         val jwt = EnvJwt(config)
     }
 
-    val ktorBasepath = "ktor.application.basepath"
+    val ktorBasepath = "ktor.application.basepath".prop()
 
     val frontendUrl = "frontend_app_url".prop()
 

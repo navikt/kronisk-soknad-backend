@@ -26,8 +26,6 @@ sealed class Env private constructor(
         val jwt = EnvJwt(config)
     }
 
-    val appShouldRunBackgroundWorkers = "run_background_workers".prop() == "true"
-
     val ktorBasepath = "ktor.application.basepath"
 
     val frontendUrl = "frontend_app_url".prop()
@@ -67,6 +65,8 @@ sealed class Env private constructor(
     val clamAvUrl = "clamav_url".prop()
 
     val dokarkivUrl = "dokarkiv.base_url".prop()
+
+    val grunnbeloepUrl = "grunnbeloep_url".prop()
 
     val norg2Url = "norg2_url".prop()
 

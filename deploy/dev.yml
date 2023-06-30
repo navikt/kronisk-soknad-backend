@@ -22,8 +22,6 @@ envFrom:
 env:
   - name: KOIN_PROFILE
     value: PREPROD
-  - name: RUN_BACKGROUND_WORKERS
-    value: false
   - name: KTOR_APPLICATION_BASEPATH
     value: /fritak-agp-api
   - name: GCP_PRJ_ID
@@ -47,6 +45,8 @@ env:
     value: http://notifikasjon-produsent-api.fager/api/graphql
   - name: DOKARKIV_URL
     value: https://dokarkiv.dev-fss-pub.nais.io
+  - name: GRUNNBELOEP_URL
+    value: https://g.nav.no/api/v1/grunnbeløp
   - name: NORG2_URL
     value: https://helsearbeidsgiver-proxy.dev-fss-pub.nais.io/norg
   - name: OPPGAVEBEHANDLING_URL

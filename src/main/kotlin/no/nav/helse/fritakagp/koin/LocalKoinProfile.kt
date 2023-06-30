@@ -68,7 +68,7 @@ import javax.sql.DataSource
 fun localConfig(env: Env.Local): Module = module {
     mockExternalDependecies()
 
-    single { GrunnbeloepClient(get()) }
+    single { GrunnbeloepClient(env.grunnbeloepUrl, get()) }
     single { BeloepBeregning(get()) }
     single { HikariDataSource(createHikariConfig(env.databaseUrl, env.databaseUsername, env.databasePassword)) } bind DataSource::class
     single { PostgresGravidSoeknadRepository(get(), get()) } bind GravidSoeknadRepository::class
@@ -83,7 +83,7 @@ fun localConfig(env: Env.Local): Module = module {
     single { BakgrunnsjobbService(get()) }
 
     single { GravidSoeknadProcessor(get(), get(), get(), get(), get(), GravidSoeknadPDFGenerator(), get(), get(), get(), get()) }
-    single { GravidKravProcessor(get(), get(), get(), get(), get(), GravidKravPDFGenerator(), get(), get(), get(), get()) }
+    single { GravidKravProcessor(get(), get(), get(), get(), get(), GravidKravPDFGenerator(), get(), get(), get()) }
     single { GravidKravSlettProcessor(get(), get(), get(), get(), get(), GravidKravPDFGenerator(), get(), get(), get(), get(), get()) }
     single { KroniskSoeknadProcessor(get(), get(), get(), get(), get(), KroniskSoeknadPDFGenerator(), get(), get(), get(), get()) }
     single { KroniskKravProcessor(get(), get(), get(), get(), get(), KroniskKravPDFGenerator(), get(), get(), get(), get()) }

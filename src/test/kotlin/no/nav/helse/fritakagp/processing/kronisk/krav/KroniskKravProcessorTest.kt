@@ -58,7 +58,7 @@ class KroniskKravProcessorTest {
     val bakgrunnsjobbRepomock = mockk<BakgrunnsjobbRepository>(relaxed = true)
     val berregServiceMock = mockk<BrregClient>(relaxed = true)
     val behandlendeEnhetService = mockk<BehandlendeEnhetService>(relaxed = true)
-    val prosessor = KroniskKravProcessor(repositoryMock, joarkMock, oppgaveMock, pdlClientMock, bakgrunnsjobbRepomock, pdfGeneratorMock, objectMapper, bucketStorageMock, berregServiceMock, behandlendeEnhetService, robotiseringToggle = true)
+    val prosessor = KroniskKravProcessor(repositoryMock, joarkMock, oppgaveMock, pdlClientMock, bakgrunnsjobbRepomock, pdfGeneratorMock, objectMapper, bucketStorageMock, berregServiceMock, behandlendeEnhetService)
     lateinit var krav: KroniskKrav
 
     private val oppgaveId = 9999

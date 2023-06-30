@@ -44,8 +44,7 @@ class KroniskKravProcessor(
     private val om: ObjectMapper,
     private val bucketStorage: BucketStorage,
     private val brregClient: BrregClient,
-    private val behandlendeEnhetService: BehandlendeEnhetService,
-    private val robotiseringToggle: Boolean = false
+    private val behandlendeEnhetService: BehandlendeEnhetService
 ) : BakgrunnsjobbProsesserer {
     companion object {
         val JOB_TYPE = "kronisk-krav-formidling"
@@ -206,8 +205,8 @@ class KroniskKravProcessor(
         val enhetsNr = behandlendeEnhetService.hentBehandlendeEnhet(krav.identitetsnummer, krav.id.toString())
         requireNotNull(aktoerId) { "Fant ikke AktørID for fnr i ${krav.id}" }
         logger.info("Fant aktørid")
-        val beskrivelse = if (robotiseringToggle) om.writeValueAsString(krav.toKravForOppgave()) else generereKroniskKravBeskrivelse(krav, KroniskKrav.tittel)
-        val oppgaveType = if (robotiseringToggle) "ROB_BEH" else "BEH_REF"
+        val beskrivelse = om.writeValueAsString(krav.toKravForOppgave())
+        val oppgaveType = "ROB_BEH"
         val request = OpprettOppgaveRequest(
             tildeltEnhetsnr = enhetsNr,
             aktoerId = aktoerId,

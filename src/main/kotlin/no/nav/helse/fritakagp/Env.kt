@@ -21,8 +21,6 @@ sealed class Env private constructor(
         val oauth2 = EnvOauth2(config)
     }
 
-    val appShouldRunBackgroundWorkers = "run_background_workers".prop() == "true"
-
     val frontendUrl = "frontend_app_url".prop()
 
     val databaseUrl = "jdbc:postgresql://%s:%s/%s".format("database.host".prop(), "database.port".prop(), "database.name".prop())

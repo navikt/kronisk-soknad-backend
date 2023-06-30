@@ -22,8 +22,6 @@ envFrom:
 env:
   - name: KOIN_PROFILE
     value: PREPROD
-  - name: RUN_BACKGROUND_WORKERS
-    value: false
   - name: KTOR_APPLICATION_BASEPATH
     value: /fritak-agp-api
   - name: GCP_PRJ_ID

@@ -3,7 +3,6 @@ package no.nav.helse.fritakagp.web.api.resreq.validation
 import no.nav.helse.fritakagp.domain.Arbeidsgiverperiode
 import no.nav.helse.fritakagp.domain.FravaerData
 import no.nav.helse.fritakagp.domain.GodkjenteFiletyper
-import no.nav.helse.fritakagp.domain.KroniskSoeknad
 import org.valiktor.Constraint
 import org.valiktor.Validator
 import java.time.LocalDate
@@ -34,12 +33,6 @@ fun <E> Validator<E>.Property<Double?>.maanedsInntektErMellomNullOgTiMil() =
         it!! > 0.0 && it!! <= TiMil
     }
 
-class AntallPerioderErMellomNullOgTreHundre() : CustomConstraint
-fun <E> Validator<E>.Property<Iterable<KroniskSoeknad>?>.antallPerioderErMellomNullOgTreHundre() =
-    this.validate(AntallPerioderErMellomNullOgTreHundre()) { ps ->
-        ps!!.any { p -> p.antallPerioder >= 1 && p.antallPerioder < 300 }
-    }
-
 class DataUrlExtensionConstraints : CustomConstraint
 fun <E> Validator<E>.Property<String?>.isGodskjentFiletyper() =
     this.validate(DataUrlExtensionConstraints()) {
@@ -49,7 +42,7 @@ fun <E> Validator<E>.Property<String?>.isGodskjentFiletyper() =
 class DataUrlBase64Constraints : CustomConstraint
 fun <E> Validator<E>.Property<String?>.isAvStorrelse(minSize: Long, maxSize: Long) =
     this.validate(DataUrlBase64Constraints()) {
-        return@validate extractBase64Del(it!!).toByteArray().size <= maxSize && extractBase64Del(it!!).toByteArray().size > minSize
+        return@validate extractBase64Del(it!!).toByteArray().size in (minSize + 1)..maxSize
     }
 
 class MaxAgeFravaersDataConstraint : CustomConstraint

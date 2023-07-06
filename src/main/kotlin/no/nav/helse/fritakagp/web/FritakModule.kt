@@ -5,19 +5,16 @@ import io.ktor.application.Application
 import io.ktor.application.install
 import io.ktor.auth.Authentication
 import io.ktor.auth.authenticate
-import io.ktor.config.ApplicationConfig
 import io.ktor.features.CORS
 import io.ktor.features.ContentNegotiation
 import io.ktor.http.ContentType
 import io.ktor.http.HttpMethod
 import io.ktor.jackson.JacksonConverter
-import io.ktor.locations.KtorExperimentalLocationsAPI
 import io.ktor.routing.IgnoreTrailingSlash
 import io.ktor.routing.route
 import io.ktor.routing.routing
-import no.nav.helse.arbeidsgiver.system.AppEnv
-import no.nav.helse.arbeidsgiver.system.getEnvironment
-import no.nav.helse.arbeidsgiver.system.getString
+import io.ktor.util.KtorExperimentalAPI
+import no.nav.helse.fritakagp.Env
 import no.nav.helse.fritakagp.web.api.altinnRoutes
 import no.nav.helse.fritakagp.web.api.configureExceptionHandling
 import no.nav.helse.fritakagp.web.api.gravidRoutes
@@ -27,15 +24,15 @@ import no.nav.helse.fritakagp.web.api.systemRoutes
 import no.nav.security.token.support.ktor.tokenValidationSupport
 import org.koin.ktor.ext.get
 
-@KtorExperimentalLocationsAPI
-fun Application.fritakModule(config: ApplicationConfig = environment.config) {
+@OptIn(KtorExperimentalAPI::class)
+fun Application.fritakModule(env: Env) {
 
     install(IgnoreTrailingSlash)
     install(Authentication) {
-        tokenValidationSupport(config = config)
+        tokenValidationSupport(config = environment.config)
     }
 
-    configureCORSAccess(config)
+    configureCORSAccess(env)
     configureExceptionHandling()
 
     install(ContentNegotiation) {
@@ -44,8 +41,7 @@ fun Application.fritakModule(config: ApplicationConfig = environment.config) {
     }
 
     routing {
-        val apiBasePath = config.getString("ktor.application.basepath")
-        route("$apiBasePath/api/v1") {
+        route("${env.ktorBasepath}/api/v1") {
             authenticate {
                 systemRoutes()
                 kroniskRoutes(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
@@ -53,11 +49,11 @@ fun Application.fritakModule(config: ApplicationConfig = environment.config) {
                 altinnRoutes(get())
             }
         }
-        swaggerRoutes("$apiBasePath")
+        swaggerRoutes(env.ktorBasepath)
     }
 }
 
-private fun Application.configureCORSAccess(config: ApplicationConfig) {
+private fun Application.configureCORSAccess(env: Env) {
     install(CORS) {
         method(HttpMethod.Options)
         method(HttpMethod.Post)
@@ -65,10 +61,10 @@ private fun Application.configureCORSAccess(config: ApplicationConfig) {
         method(HttpMethod.Delete)
         method(HttpMethod.Patch)
 
-        when (config.getEnvironment()) {
-            AppEnv.PROD -> host("arbeidsgiver.nav.no", schemes = listOf("https"))
-            AppEnv.PREPROD -> host("arbeidsgiver.intern.dev.nav.no", schemes = listOf("https"))
-            else -> anyHost()
+        when (env) {
+            is Env.Prod -> host("arbeidsgiver.nav.no", schemes = listOf("https"))
+            is Env.Preprod -> host("arbeidsgiver.intern.dev.nav.no", schemes = listOf("https"))
+            is Env.Local -> anyHost()
         }
 
         allowCredentials = true

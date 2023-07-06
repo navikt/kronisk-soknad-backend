@@ -13,13 +13,20 @@ fun readEnv(config: ApplicationConfig): Env =
 sealed class Env private constructor(
     private val config: ApplicationConfig
 ) {
-    class Prod(config: ApplicationConfig) : Auth(config)
-    class Preprod(config: ApplicationConfig) : Auth(config)
-    class Local(config: ApplicationConfig) : Env(config)
-
-    sealed class Auth(config: ApplicationConfig) : Env(config) {
+    class Prod(config: ApplicationConfig) : Env(config) {
         val oauth2 = EnvOauth2(config)
     }
+
+    class Preprod(config: ApplicationConfig) : Env(config) {
+        val oauth2 = EnvOauth2(config)
+        val jwt = EnvJwt(config)
+    }
+
+    class Local(config: ApplicationConfig) : Env(config) {
+        val jwt = EnvJwt(config)
+    }
+
+    val ktorBasepath = "ktor.application.basepath".prop()
 
     val frontendUrl = "frontend_app_url".prop()
 
@@ -92,6 +99,18 @@ class EnvOauth2(mainConfig: ApplicationConfig) {
 
     private fun String.prop(): String =
         oauth2Config.prop(this)
+}
+
+class EnvJwt(mainConfig: ApplicationConfig) {
+    private val jwtIssuerConfig = "no.nav.security.jwt.issuers".let(mainConfig::configList)
+        .first()
+
+    val issuerName = "issuer_name".prop()
+    val audience = "accepted_audience".prop()
+    val cookieName = "cookie_name".prop()
+
+    private fun String.prop(): String =
+        jwtIssuerConfig.prop(this)
 }
 
 private fun ApplicationConfig.prop(key: String): String =

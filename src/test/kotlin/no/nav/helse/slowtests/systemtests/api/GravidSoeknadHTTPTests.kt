@@ -43,7 +43,7 @@ class GravidSoeknadHTTPTests : SystemTestBase() {
         }
             .body<GravidSoeknad>()
 
-        assertThat(accessGrantedForm).isEqualTo(GravidTestData.soeknadGravid)
+        assertThat(accessGrantedForm).isEqualToIgnoringGivenFields(GravidTestData.soeknadGravid, "referansenummer")
     }
 
     @Test

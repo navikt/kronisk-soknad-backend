@@ -8,15 +8,12 @@ import io.ktor.server.application.Application
 import io.ktor.server.application.install
 import io.ktor.server.auth.Authentication
 import io.ktor.server.auth.authenticate
-import io.ktor.server.config.ApplicationConfig
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.plugins.cors.routing.CORS
 import io.ktor.server.routing.IgnoreTrailingSlash
 import io.ktor.server.routing.route
 import io.ktor.server.routing.routing
-import no.nav.helse.fritakagp.config.AppEnv
-import no.nav.helse.fritakagp.config.env
-import no.nav.helse.fritakagp.config.prop
+import no.nav.helse.fritakagp.Env
 import no.nav.helse.fritakagp.web.api.altinnRoutes
 import no.nav.helse.fritakagp.web.api.configureExceptionHandling
 import no.nav.helse.fritakagp.web.api.gravidRoutes
@@ -26,14 +23,14 @@ import no.nav.helse.fritakagp.web.api.systemRoutes
 import no.nav.security.token.support.v2.tokenValidationSupport
 import org.koin.ktor.ext.get
 
-fun Application.fritakModule(config: ApplicationConfig = environment.config) {
+fun Application.fritakModule(env: Env) {
 
     install(IgnoreTrailingSlash)
     install(Authentication) {
-        tokenValidationSupport(config = config)
+        tokenValidationSupport(config = this@fritakModule.environment.config)
     }
 
-    configureCORSAccess(config)
+    configureCORSAccess(env)
     configureExceptionHandling()
 
     install(ContentNegotiation) {
@@ -42,8 +39,7 @@ fun Application.fritakModule(config: ApplicationConfig = environment.config) {
     }
 
     routing {
-        val apiBasePath = config.prop("ktor.application.basepath")
-        route("$apiBasePath/api/v1") {
+        route("${env.ktorBasepath}/api/v1") {
             authenticate {
                 systemRoutes()
                 kroniskRoutes(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
@@ -51,11 +47,11 @@ fun Application.fritakModule(config: ApplicationConfig = environment.config) {
                 altinnRoutes(get())
             }
         }
-        swaggerRoutes(apiBasePath)
+        swaggerRoutes(env.ktorBasepath)
     }
 }
 
-private fun Application.configureCORSAccess(config: ApplicationConfig) {
+private fun Application.configureCORSAccess(env: Env) {
     install(CORS) {
         allowMethod(HttpMethod.Options)
         allowMethod(HttpMethod.Post)
@@ -63,10 +59,10 @@ private fun Application.configureCORSAccess(config: ApplicationConfig) {
         allowMethod(HttpMethod.Delete)
         allowMethod(HttpMethod.Patch)
 
-        when (config.env()) {
-            AppEnv.PROD -> allowHost("arbeidsgiver.nav.no", schemes = listOf("https"))
-            AppEnv.PREPROD -> allowHost("arbeidsgiver.dev.nav.no", schemes = listOf("https"))
-            AppEnv.LOCAL -> anyHost()
+        when (env) {
+            is Env.Prod -> allowHost("arbeidsgiver.nav.no", schemes = listOf("https"))
+            is Env.Preprod -> allowHost("arbeidsgiver.intern.dev.nav.no", schemes = listOf("https"))
+            is Env.Local -> anyHost()
         }
 
         allowCredentials = true

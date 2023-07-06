@@ -5,10 +5,12 @@ import no.altinn.schemas.services.serviceengine.correspondence._2010._10.Externa
 import no.altinn.schemas.services.serviceengine.correspondence._2010._10.InsertCorrespondenceV2
 import no.altinn.services.serviceengine.correspondence._2009._10.ICorrespondenceAgencyExternalBasic
 import no.altinn.services.serviceengine.correspondence._2009._10.ICorrespondenceAgencyExternalBasicInsertCorrespondenceBasicV2AltinnFaultFaultFaultMessage
-import no.nav.helse.fritakagp.domain.Arbeidsgiverperiode
 import no.nav.helse.fritakagp.domain.KroniskKrav
 import no.nav.helse.fritakagp.domain.sladdFnr
-import java.time.format.DateTimeFormatter
+import no.nav.helse.fritakagp.domain.TIMESTAMP_FORMAT_MED_KL
+import no.nav.helse.fritakagp.domain.Arbeidsgiverperiode
+import no.nav.helse.fritakagp.domain.DATE_FORMAT
+import kotlin.math.roundToInt
 
 interface KroniskKravKvitteringSender {
     fun send(kvittering: KroniskKrav)
@@ -34,8 +36,10 @@ class KroniskKravAltinnKvitteringSender(
     override fun send(kvittering: KroniskKrav) {
         try {
             val receiptExternal = iCorrespondenceAgencyExternalBasic.insertCorrespondenceBasicV2(
-                username, password,
-                SYSTEM_USER_CODE, kvittering.id.toString(),
+                username,
+                password,
+                SYSTEM_USER_CODE,
+                kvittering.id.toString(),
                 mapKvitteringTilInsertCorrespondence(kvittering)
             )
             if (receiptExternal.receiptStatusCode != ReceiptStatusEnum.OK) {
@@ -47,7 +51,6 @@ class KroniskKravAltinnKvitteringSender(
     }
 
     fun mapKvitteringTilInsertCorrespondence(kvittering: KroniskKrav): InsertCorrespondenceV2 {
-        val dateTimeFormatterMedKl = DateTimeFormatter.ofPattern("dd.MM.yyyy 'kl.' HH:mm")
         val sladdetFnr = sladdFnr(kvittering.identitetsnummer)
         val tittel = "$sladdetFnr - Kvittering for mottatt refusjonskrav fra arbeidsgiverperioden grunnet kronisk sykdom"
 
@@ -60,14 +63,14 @@ class KroniskKravAltinnKvitteringSender(
                <div class="melding">
             <p>Kvittering for mottatt krav om fritak fra arbeidsgiverperioden grunnet risiko for høyt sykefravær knyttet til kronisk sykdom.</p>
             <p>Virksomhetsnummer: ${kvittering.virksomhetsnummer}</p>
-            <p>${kvittering.opprettet.format(dateTimeFormatterMedKl)}</p>
+            <p>${kvittering.opprettet.format(TIMESTAMP_FORMAT_MED_KL)}</p>
             <p>Kravet vil bli behandlet fortløpende. Ved behov vil NAV innhente ytterligere dokumentasjon.
              Har dere spørsmål, ring NAVs arbeidsgivertelefon 55 55 33 36.</p>
             <p>Dere har innrapportert følgende:</p>
             <ul>
                 <li>Navn: ${kvittering.navn} </li>
                 <li>Dokumentasjon vedlagt: ${if (kvittering.harVedlegg) "Ja" else "Nei"} </li>
-                <li>Mottatt:  ${kvittering.opprettet.format(dateTimeFormatterMedKl)}  </li>
+                <li>Mottatt:  ${kvittering.opprettet.format(TIMESTAMP_FORMAT_MED_KL)}  </li>
                 <li>Innrapportert av: ${kvittering.sendtAvNavn}</li>
                 <li>Perioder: </li>
                 <ul> ${lagrePerioder(kvittering.perioder)}</ul>
@@ -94,7 +97,6 @@ class KroniskKravAltinnKvitteringSender(
 }
 
 fun lagrePerioder(perioder: List<Arbeidsgiverperiode>): String {
-
     val head = """
             <table style="width:50%">
               <tr>
@@ -116,15 +118,14 @@ fun lagrePerioder(perioder: List<Arbeidsgiverperiode>): String {
 }
 
 fun lagePeriod(periode: Arbeidsgiverperiode): String {
-    val dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
     val gradering = (periode.gradering * 100).toString() + "%"
     return """<tr>
-                <td style="text-align:center">${periode.fom.format(dateFormatter)}</td>
-                <td style="text-align:center">${periode.tom.format(dateFormatter)}</td>
+                <td style="text-align:center">${periode.fom.format(DATE_FORMAT)}</td>
+                <td style="text-align:center">${periode.tom.format(DATE_FORMAT)}</td>
                 <td style="text-align:center">$gradering</td>
                 <td style="text-align:center">${periode.antallDagerMedRefusjon}</td>
                 <td style="text-align:center">${periode.månedsinntekt}</td>
-                <td style="text-align:center">${periode.dagsats}</td>
-                <td style="text-align:center">${periode.belop}</td>
+                <td style="text-align:center">${periode.dagsats.roundToInt()}</td>
+                <td style="text-align:center">${periode.belop.roundToInt()}</td>
             </tr>"""
 }

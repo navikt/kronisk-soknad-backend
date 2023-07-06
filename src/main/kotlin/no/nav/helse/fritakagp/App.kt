@@ -11,16 +11,14 @@ import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbService
 import no.nav.helse.arbeidsgiver.kubernetes.KubernetesProbeManager
 import no.nav.helse.arbeidsgiver.kubernetes.LivenessComponent
 import no.nav.helse.arbeidsgiver.kubernetes.ReadynessComponent
-import no.nav.helse.fritakagp.config.AppEnv
-import no.nav.helse.fritakagp.config.env
-import no.nav.helse.fritakagp.config.shouldRunBackgroundWorkers
-import no.nav.helse.fritakagp.koin.selectModuleBasedOnProfile
+import no.nav.helse.fritakagp.koin.profileModules
 import no.nav.helse.fritakagp.processing.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravKafkaProcessor
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravKvitteringProcessor
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravProcessor
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravSlettProcessor
+import no.nav.helse.fritakagp.processing.gravid.krav.OpprettRobotOppgaveGravidProcessor
 import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadKafkaProcessor
 import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadKvitteringProcessor
 import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadProcessor
@@ -28,6 +26,7 @@ import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravKafkaProcessor
 import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravKvitteringProcessor
 import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravProcessor
 import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravSlettProcessor
+import no.nav.helse.fritakagp.processing.kronisk.krav.OpprettRobotOppgaveKroniskProcessor
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadKafkaProcessor
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadKvitteringProcessor
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadProcessor
@@ -45,22 +44,25 @@ import org.koin.core.context.stopKoin
 class FritakAgpApplication(val port: Int = 8080) : KoinComponent {
     private val logger = this.logger()
     private val appConfig = HoconApplicationConfig(ConfigFactory.load())
-    private val runtimeEnvironment = appConfig.env()
+    private val env = readEnv(appConfig)
 
-    private lateinit var webserver: NettyApplicationEngine
+    private val webserver: NettyApplicationEngine
 
     init {
-        if (runtimeEnvironment in listOf(AppEnv.PREPROD, AppEnv.PROD)) {
+        if (env is Env.Preprod || env is Env.Prod) {
             logger.info("Sover i 30s i påvente av SQL proxy sidecar")
             Thread.sleep(30000)
         }
 
-        startKoin { modules(selectModuleBasedOnProfile(appConfig)) }
+        startKoin { modules(profileModules(env)) }
         migrateDatabase()
 
         configAndStartBackgroundWorker()
         autoDetectProbeableComponents()
-        configAndStartWebserver()
+
+        webserver = createWebserver().also {
+            it.start(wait = false)
+        }
     }
 
     fun shutdown() {
@@ -69,8 +71,8 @@ class FritakAgpApplication(val port: Int = 8080) : KoinComponent {
         stopKoin()
     }
 
-    private fun configAndStartWebserver() {
-        webserver = embeddedServer(
+    private fun createWebserver(): NettyApplicationEngine =
+        embeddedServer(
             Netty,
             applicationEngineEnvironment {
                 config = appConfig
@@ -79,44 +81,44 @@ class FritakAgpApplication(val port: Int = 8080) : KoinComponent {
                 }
 
                 module {
-                    if (runtimeEnvironment != AppEnv.PROD) {
-                        localCookieDispenser(config)
+                    if (env is Env.Preprod) {
+                        localCookieDispenser(env.jwt, "dev.nav.no")
+                    } else if (env is Env.Local) {
+                        localCookieDispenser(env.jwt, "localhost")
                     }
 
                     nais()
-                    fritakModule(config)
+                    fritakModule(env)
                 }
             }
         )
-            .start(wait = false)
-    }
 
     private fun configAndStartBackgroundWorker() {
-        if (appConfig.shouldRunBackgroundWorkers()) {
-            get<BakgrunnsjobbService>().apply {
-                registrer(get<GravidSoeknadProcessor>())
-                registrer(get<GravidSoeknadKafkaProcessor>())
-                registrer(get<GravidSoeknadKvitteringProcessor>())
+        get<BakgrunnsjobbService>().apply {
+            registrer(get<GravidSoeknadProcessor>())
+            registrer(get<GravidSoeknadKafkaProcessor>())
+            registrer(get<GravidSoeknadKvitteringProcessor>())
 
-                registrer(get<GravidKravProcessor>())
-                registrer(get<GravidKravKafkaProcessor>())
-                registrer(get<GravidKravKvitteringProcessor>())
-                registrer(get<GravidKravSlettProcessor>())
+            registrer(get<GravidKravProcessor>())
+            registrer(get<GravidKravKafkaProcessor>())
+            registrer(get<GravidKravKvitteringProcessor>())
+            registrer(get<GravidKravSlettProcessor>())
+            registrer(get<OpprettRobotOppgaveGravidProcessor>())
 
-                registrer(get<KroniskSoeknadProcessor>())
-                registrer(get<KroniskSoeknadKafkaProcessor>())
-                registrer(get<KroniskSoeknadKvitteringProcessor>())
+            registrer(get<KroniskSoeknadProcessor>())
+            registrer(get<KroniskSoeknadKafkaProcessor>())
+            registrer(get<KroniskSoeknadKvitteringProcessor>())
 
-                registrer(get<KroniskKravProcessor>())
-                registrer(get<KroniskKravKafkaProcessor>())
-                registrer(get<KroniskKravKvitteringProcessor>())
-                registrer(get<KroniskKravSlettProcessor>())
+            registrer(get<KroniskKravProcessor>())
+            registrer(get<KroniskKravKafkaProcessor>())
+            registrer(get<KroniskKravKvitteringProcessor>())
+            registrer(get<KroniskKravSlettProcessor>())
+            registrer(get<OpprettRobotOppgaveKroniskProcessor>())
 
-                registrer(get<BrukernotifikasjonProcessor>())
-                registrer(get<ArbeidsgiverNotifikasjonProcessor>())
+            registrer(get<BrukernotifikasjonProcessor>())
+            registrer(get<ArbeidsgiverNotifikasjonProcessor>())
 
-                startAsync(true)
-            }
+            startAsync(true)
         }
     }
 

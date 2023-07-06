@@ -21,10 +21,9 @@ import no.nav.helse.fritakagp.db.KroniskKravRepository
 import no.nav.helse.fritakagp.domain.KroniskKrav
 import no.nav.helse.fritakagp.domain.generereSlettKroniskKravBeskrivelse
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
+import no.nav.helse.fritakagp.journalførOgFerdigstillDokument
 import no.nav.helse.fritakagp.service.BehandlendeEnhetService
 import no.nav.helse.fritakagp.service.PdlService
-import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonKlient
-import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.hardDeleteSak
 import no.nav.helsearbeidsgiver.utils.log.logger
 import java.time.LocalDate
 import java.util.Base64
@@ -45,6 +44,7 @@ class KroniskKravSlettProcessor(
         val JOB_TYPE = "slett-kronisk-krav"
         val dokumentasjonBrevkode = "annuller_krav_om_fritak_fra_agp_dokumentasjon"
     }
+
     override val type: String get() = JOB_TYPE
 
     val digitalKravBehandingsType = "ae0121"
@@ -89,8 +89,8 @@ class KroniskKravSlettProcessor(
     }
 
     fun journalførSletting(krav: KroniskKrav): String {
-        val journalfoeringsTittel = "Annuller krav om fritak fra arbeidsgiverperioden - kronisk eller langvarig sykdom"
-        val response = dokarkivKlient.journalførDokument(
+        val journalfoeringsTittel = "Annuller ${KroniskKrav.tittel}"
+        val journalpostId = dokarkivKlient.journalførOgFerdigstillDokument(
             JournalpostRequest(
                 tittel = journalfoeringsTittel,
                 journalposttype = Journalposttype.INNGAAENDE,
@@ -105,12 +105,13 @@ class KroniskKravSlettProcessor(
                 dokumenter = createDocuments(krav, journalfoeringsTittel),
                 datoMottatt = krav.opprettet.toLocalDate()
             ),
-            true, UUID.randomUUID().toString()
-
+            UUID.randomUUID().toString(),
+            om,
+            logger
         )
 
-        logger.debug("Journalført ${krav.id} med ref ${response.journalpostId}")
-        return response.journalpostId
+        logger.debug("Journalført ${krav.id} med ref $journalpostId")
+        return journalpostId
     }
 
     private fun createDocuments(
@@ -123,7 +124,7 @@ class KroniskKravSlettProcessor(
             Dokument(
                 dokumentVarianter = listOf(
                     DokumentVariant(
-                        fysiskDokument = base64EnkodetPdf,
+                        fysiskDokument = base64EnkodetPdf
                     ),
                     DokumentVariant(
                         filtype = "JSON",
@@ -132,7 +133,7 @@ class KroniskKravSlettProcessor(
                     )
                 ),
                 brevkode = dokumentasjonBrevkode,
-                tittel = journalfoeringsTittel,
+                tittel = journalfoeringsTittel
             )
         )
 
@@ -151,7 +152,7 @@ class KroniskKravSlettProcessor(
                         )
                     ),
                     brevkode = KroniskKravProcessor.dokumentasjonBrevkode,
-                    tittel = "Helsedokumentasjon",
+                    tittel = "Helsedokumentasjon"
                 )
             )
         }
@@ -166,7 +167,7 @@ class KroniskKravSlettProcessor(
         val request = OpprettOppgaveRequest(
             aktoerId = aktoerId,
             journalpostId = krav.journalpostId,
-            beskrivelse = generereSlettKroniskKravBeskrivelse(krav, "Annullering av refusjonskrav ifbm sykdom i arbeidsgiverperioden med fritak fra arbeidsgiverperioden grunnet kronisk sykdom."),
+            beskrivelse = generereSlettKroniskKravBeskrivelse(krav, "Annullering av ${KroniskKrav.tittel}"),
             tema = "SYK",
             behandlingstype = digitalKravBehandingsType,
             oppgavetype = "BEH_REF",
@@ -186,7 +187,7 @@ class KroniskKravSlettProcessor(
         val request = OpprettOppgaveRequest(
             aktoerId = aktoerId,
             journalpostId = krav.journalpostId,
-            beskrivelse = generereSlettKroniskKravBeskrivelse(krav, "Fordelingsoppgave for annullering av refusjonskrav ifbm sykdom i aprbeidsgiverperioden med fritak fra arbeidsgiverperioden grunnet kronisk sykdom."),
+            beskrivelse = generereSlettKroniskKravBeskrivelse(krav, "Fordelingsoppgave for annullering av ${KroniskKrav.tittel}"),
             tema = "SYK",
             behandlingstype = digitalKravBehandingsType,
             oppgavetype = OPPGAVETYPE_FORDELINGSOPPGAVE,

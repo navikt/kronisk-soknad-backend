@@ -9,6 +9,7 @@ import java.time.LocalDate
 import kotlin.time.Duration.Companion.days
 
 class GrunnbeloepClient(
+    private val url: String,
     private val httpClient: HttpClient,
 ) {
     private val cache = LocalCache<GrunnbeløpInfo>(1.days, 5)
@@ -18,7 +19,7 @@ class GrunnbeloepClient(
 
         return cache.get(cacheKey) {
             runBlocking {
-                httpClient.get("https://g.nav.no/api/v1/grunnbeløp?dato=$dato")
+                httpClient.get("$url?dato=$dato")
                     .body()
             }
         }

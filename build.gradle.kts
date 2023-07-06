@@ -37,11 +37,11 @@ repositories {
         }
     }
     maven {
+        setUrl("https://maven.pkg.github.com/navikt/*")
         credentials {
             username = "x-access-token"
             password = githubPassword
         }
-        setUrl("https://maven.pkg.github.com/navikt/*")
     }
 }
 

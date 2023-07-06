@@ -17,8 +17,6 @@ import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbService
 import no.nav.helse.arbeidsgiver.integrasjoner.aareg.AaregArbeidsforholdClient
 import no.nav.helse.fritakagp.KroniskKravMetrics
 import no.nav.helse.fritakagp.KroniskSoeknadMetrics
-import no.nav.helse.fritakagp.config.AppEnv
-import no.nav.helse.fritakagp.config.env
 import no.nav.helse.fritakagp.db.KroniskKravRepository
 import no.nav.helse.fritakagp.db.KroniskSoeknadRepository
 import no.nav.helse.fritakagp.domain.BeloepBeregning
@@ -39,6 +37,7 @@ import no.nav.helse.fritakagp.web.auth.hentIdentitetsnummerFraLoginToken
 import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonKlient
 import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.hardDeleteSak
 import no.nav.helsearbeidsgiver.brreg.BrregClient
+import no.nav.helsearbeidsgiver.utils.log.logger
 import java.time.LocalDateTime
 import java.util.UUID
 import javax.sql.DataSource
@@ -58,14 +57,21 @@ fun Route.kroniskRoutes(
     pdlService: PdlService,
     arbeidsgiverNotifikasjonKlient: ArbeidsgiverNotifikasjonKlient
 ) {
+    val logger = "kroniskRoutes".logger()
+
     route("/kronisk") {
         route("/soeknad") {
             get("/{id}") {
+                logger.info("KSG: Hent kronisk søknad.")
                 val innloggetFnr = hentIdentitetsnummerFraLoginToken(call.request)
+
+                logger.info("KSG: Hent søknad fra db.")
                 val form = kroniskSoeknadRepo.getById(UUID.fromString(call.parameters["id"]))
+
                 if (form == null || form.identitetsnummer != innloggetFnr) {
                     call.respond(HttpStatusCode.NotFound)
                 } else {
+                    logger.info("KSG: Hent personinfo fra pdl.")
                     form.sendtAvNavn = form.sendtAvNavn ?: pdlService.hentNavn(innloggetFnr)
                     form.navn = form.navn ?: pdlService.hentNavn(form.identitetsnummer)
 
@@ -74,19 +80,29 @@ fun Route.kroniskRoutes(
             }
 
             post {
+                logger.info("KSP: Send inn kronisk søknad.")
                 val request = call.receive<KroniskSoknadRequest>()
 
-                val isVirksomhet = if (application.environment.config.env() == AppEnv.PREPROD) true else brregClient.erVirksomhet(request.virksomhetsnummer)
+                val isVirksomhet = if (application.environment.config.property("koin.profile").getString() == "PREPROD") {
+                    true
+                } else {
+                    logger.info("KSP: Hent virksomhet fra brreg.")
+                    brregClient.erVirksomhet(request.virksomhetsnummer)
+                }
                 request.validate(isVirksomhet)
 
                 val innloggetFnr = hentIdentitetsnummerFraLoginToken(call.request)
 
+                logger.info("KSP: Hent personinfo fra pdl.")
                 val sendtAvNavn = pdlService.hentNavn(innloggetFnr)
                 val navn = pdlService.hentNavn(request.identitetsnummer)
 
                 val soeknad = request.toDomain(innloggetFnr, sendtAvNavn, navn)
+
+                logger.info("KSP: Prosesser dokument for GCP-lagring.")
                 processDocumentForGCPStorage(request.dokumentasjon, virusScanner, bucket, soeknad.id)
 
+                logger.info("KSP: Lagre søknad i db.")
                 datasource.connection.use { connection ->
                     kroniskSoeknadRepo.insert(soeknad, connection)
                     bakgunnsjobbService.opprettJobb<KroniskSoeknadProcessor>(
@@ -108,14 +124,21 @@ fun Route.kroniskRoutes(
 
         route("/krav") {
             get("/{id}") {
+                logger.info("KKG: Hent kronisk krav.")
+
                 val innloggetFnr = hentIdentitetsnummerFraLoginToken(call.request)
+
+                logger.info("KKG: Hent krav fra db.")
                 val form = kroniskKravRepo.getById(UUID.fromString(call.parameters["id"]))
+
                 if (form == null) {
                     call.respond(HttpStatusCode.NotFound)
                 } else {
                     if (form.identitetsnummer != innloggetFnr) {
                         altinnService.authorize(this, form.virksomhetsnummer)
                     }
+
+                    logger.info("KKG: Hent personinfo fra pdl.")
                     form.sendtAvNavn = form.sendtAvNavn ?: pdlService.hentNavn(innloggetFnr)
                     form.navn = form.navn ?: pdlService.hentNavn(form.identitetsnummer)
 
@@ -124,8 +147,13 @@ fun Route.kroniskRoutes(
             }
 
             post {
+                logger.info("KKPo: Send inn kronisk krav.")
+
                 val request = call.receive<KroniskKravRequest>()
+
                 altinnService.authorize(this, request.virksomhetsnummer)
+
+                logger.info("KKPo: Hent arbeidsforhold fra aareg.")
                 val arbeidsforhold = aaregClient
                     .hentArbeidsforhold(request.identitetsnummer, UUID.randomUUID().toString())
                     .filter { it.arbeidsgiver.organisasjonsnummer == request.virksomhetsnummer }
@@ -133,14 +161,20 @@ fun Route.kroniskRoutes(
                 request.validate(arbeidsforhold)
 
                 val innloggetFnr = hentIdentitetsnummerFraLoginToken(call.request)
+
+                logger.info("KKPo: Hent personinfo fra pdl.")
                 val sendtAvNavn = pdlService.hentNavn(innloggetFnr)
                 val navn = pdlService.hentNavn(request.identitetsnummer)
 
                 val krav = request.toDomain(innloggetFnr, sendtAvNavn, navn)
 
+                logger.info("KKPo: Hent grunnbeløp.")
                 belopBeregning.beregnBeløpKronisk(krav)
+
+                logger.info("KKPo: Prosesser dokument for GCP-lagring.")
                 processDocumentForGCPStorage(request.dokumentasjon, virusScanner, bucket, krav.id)
 
+                logger.info("KKPo: Legg til krav i db.")
                 datasource.connection.use { connection ->
                     kroniskKravRepo.insert(krav, connection)
                     bakgunnsjobbService.opprettJobb<KroniskKravProcessor>(
@@ -165,6 +199,8 @@ fun Route.kroniskRoutes(
             }
 
             patch("/{id}") {
+                logger.info("KKPa: Oppdater kronisk krav.")
+
                 val request = call.receive<KroniskKravRequest>()
 
                 altinnService.authorize(this, request.virksomhetsnummer)
@@ -173,6 +209,7 @@ fun Route.kroniskRoutes(
                 val sendtAvNavn = pdlService.hentNavn(innloggetFnr)
                 val navn = pdlService.hentNavn(request.identitetsnummer)
 
+                logger.info("KKPa: Hent arbeidsforhold fra aareg.")
                 val arbeidsforhold = aaregClient
                     .hentArbeidsforhold(request.identitetsnummer, UUID.randomUUID().toString())
                     .filter { it.arbeidsgiver.organisasjonsnummer == request.virksomhetsnummer }
@@ -180,6 +217,8 @@ fun Route.kroniskRoutes(
                 request.validate(arbeidsforhold)
 
                 val kravId = UUID.fromString(call.parameters["id"])
+
+                logger.info("KKPa: Hent gammelt krav fra db.")
                 val kravTilSletting = kroniskKravRepo.getById(kravId)
                     ?: return@patch call.respond(HttpStatusCode.NotFound)
 
@@ -196,10 +235,12 @@ fun Route.kroniskRoutes(
                 kravTilSletting.endretDato = LocalDateTime.now()
 
                 // Sletter gammelt krav
+                logger.info("KKPa: Slett sak om gammelt krav i arbeidsgivernotifikasjon.")
                 kravTilSletting.arbeidsgiverSakId?.let {
                     runBlocking { arbeidsgiverNotifikasjonKlient.hardDeleteSak(it) }
                 }
 
+                logger.info("KKPa: Oppdater gammelt krav til slettet i db.")
                 datasource.connection.use { connection ->
                     kroniskKravRepo.update(kravTilSletting, connection)
                     bakgunnsjobbService.opprettJobb<KroniskKravSlettProcessor>(
@@ -210,6 +251,7 @@ fun Route.kroniskRoutes(
                 }
 
                 // Oppretter nytt krav
+                logger.info("KKPa: Legg til nytt krav i db.")
                 datasource.connection.use { connection ->
                     kroniskKravRepo.insert(kravTilOppdatering, connection)
                     bakgunnsjobbService.opprettJobb<KroniskKravProcessor>(
@@ -233,14 +275,18 @@ fun Route.kroniskRoutes(
             }
 
             delete("/{id}") {
+                logger.info("KKD: Slett kronisk krav.")
+
                 val innloggetFnr = hentIdentitetsnummerFraLoginToken(call.request)
                 val slettetAv = pdlService.hentNavn(innloggetFnr)
+
                 val kravId = UUID.fromString(call.parameters["id"])
                 val form = kroniskKravRepo.getById(kravId)
                     ?: return@delete call.respond(HttpStatusCode.NotFound)
 
                 altinnService.authorize(this, form.virksomhetsnummer)
 
+                logger.info("KKD: Slett sak i arbeidsgivernotifikasjon.")
                 form.arbeidsgiverSakId?.let {
                     runBlocking { arbeidsgiverNotifikasjonKlient.hardDeleteSak(it) }
                 }
@@ -248,6 +294,8 @@ fun Route.kroniskRoutes(
                 form.slettetAv = innloggetFnr
                 form.slettetAvNavn = slettetAv
                 form.endretDato = LocalDateTime.now()
+
+                logger.info("KKD: Oppdater krav til slettet i db.")
                 datasource.connection.use { connection ->
                     kroniskKravRepo.update(form, connection)
                     bakgunnsjobbService.opprettJobb<KroniskKravSlettProcessor>(

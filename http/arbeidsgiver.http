@@ -1,0 +1,24 @@
+### Hent autorisasjonstoken
+# @no-cookie-jar
+GET localhost:8080/local/cookie-please?subject=123456789
+
+> {%
+const jwtRgx =  /(?:[\w-_]+\.){2}[\w-_]+/
+const authToken = response.headers.valueOf("Set-Cookie").match(jwtRgx).pop()
+
+client.test("Auth-token ble funnet", () => {
+    client.assert(authToken !== undefined)
+})
+
+client.global.set("auth_token", authToken)
+%}
+
+### Arbeidsgivere
+GET localhost:8080/api/v1/arbeidsgivere
+Authorization: Bearer {{auth_token}}
+
+> {%
+client.test("Response OK", () => {
+    client.assert(response.status === 200, "Response not OK: " + response.status)
+})
+%}

@@ -1,6 +1,7 @@
 package no.nav.helse.fritakagp.db
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.node.ObjectNode
 import java.sql.Connection
 import java.util.UUID
 import javax.sql.DataSource
@@ -39,6 +40,7 @@ abstract class SimpleJsonbRepositoryBase<T : SimpleJsonbEntity>(
     private val saveStatement = "INSERT INTO $tableName (data) VALUES (?::json);"
     private val updateStatement = "UPDATE $tableName SET data = ?::json WHERE data ->> 'id' = ?"
     private val deleteStatement = """DELETE FROM $tableName WHERE data ->> 'id' = ?"""
+    private val getNesteReferanseStatement = "SELECT nextval('referanse_seq')"
 
     override fun getById(id: UUID): T? {
         ds.connection.use {
@@ -57,11 +59,23 @@ abstract class SimpleJsonbRepositoryBase<T : SimpleJsonbEntity>(
     }
 
     override fun insert(entity: T, connection: Connection): T {
-        val json = mapper.writeValueAsString(entity)
+        val referansenummer = getNesteReferanse(connection)
+        val json = mapper.convertValue(entity, ObjectNode::class.java).apply {
+            put("referansenummer", referansenummer)
+        }.let { mapper.writeValueAsString(it) }
+
         connection.prepareStatement(saveStatement).apply {
             setString(1, json)
         }.executeUpdate()
         return entity
+    }
+
+    private fun getNesteReferanse(connection: Connection): Int? {
+        val res = connection.prepareStatement(getNesteReferanseStatement).executeQuery()
+        if (res.next()) {
+            return res.getInt(1)
+        }
+        return null
     }
 
     override fun insert(entity: T): T {

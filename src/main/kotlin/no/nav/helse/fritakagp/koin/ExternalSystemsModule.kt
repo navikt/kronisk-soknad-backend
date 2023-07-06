@@ -1,6 +1,6 @@
 package no.nav.helse.fritakagp.koin
 
-import io.ktor.server.config.ApplicationConfig
+import com.nimbusds.oauth2.sdk.auth.ClientAuthenticationMethod
 import no.nav.helse.arbeidsgiver.integrasjoner.OAuth2TokenProvider
 import no.nav.helse.arbeidsgiver.integrasjoner.aareg.AaregArbeidsforholdClient
 import no.nav.helse.arbeidsgiver.integrasjoner.aareg.AaregArbeidsforholdClientImpl
@@ -8,7 +8,8 @@ import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.DokarkivKlient
 import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.DokarkivKlientImpl
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OppgaveKlient
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OppgaveKlientImpl
-import no.nav.helse.fritakagp.config.prop
+import no.nav.helse.fritakagp.Env
+import no.nav.helse.fritakagp.EnvOauth2
 import no.nav.helse.fritakagp.integration.GrunnbeloepClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.integration.gcp.BucketStorageImpl
@@ -24,7 +25,6 @@ import no.nav.helse.fritakagp.integration.kafka.kravmeldingKafkaProps
 import no.nav.helse.fritakagp.integration.kafka.soeknadmeldingKafkaProps
 import no.nav.helse.fritakagp.integration.norg.Norg2Client
 import no.nav.helse.fritakagp.integration.oauth2.DefaultOAuth2HttpClient
-import no.nav.helse.fritakagp.integration.oauth2.OAuth2ClientConfig
 import no.nav.helse.fritakagp.integration.oauth2.TokenResolver
 import no.nav.helse.fritakagp.integration.virusscan.ClamavVirusScannerImp
 import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
@@ -34,6 +34,9 @@ import no.nav.helsearbeidsgiver.altinn.CacheConfig
 import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonKlient
 import no.nav.helsearbeidsgiver.brreg.BrregClient
 import no.nav.helsearbeidsgiver.pdl.PdlClient
+import no.nav.security.token.support.client.core.ClientAuthenticationProperties
+import no.nav.security.token.support.client.core.ClientProperties
+import no.nav.security.token.support.client.core.OAuth2GrantType
 import no.nav.security.token.support.client.core.oauth2.ClientCredentialsTokenClient
 import no.nav.security.token.support.client.core.oauth2.OAuth2AccessTokenService
 import no.nav.security.token.support.client.core.oauth2.OnBehalfOfTokenClient
@@ -41,72 +44,66 @@ import no.nav.security.token.support.client.core.oauth2.TokenExchangeClient
 import org.koin.core.module.Module
 import org.koin.core.scope.Scope
 import org.koin.dsl.bind
+import java.net.URI
 import kotlin.time.Duration.Companion.minutes
 
-private enum class AuthScope(val scope: String) {
-    PROXY("proxyscope"),
-    DOKARK("dokarkivscope"),
-    OPPGAVE("oppgavescope"),
-    ARBEIDSGIVER_NOTIFIKASJON("arbeidsgivernotifikasjonscope"),
-}
-
-fun Module.externalSystemClients(config: ApplicationConfig) {
+fun Module.externalSystemClients(env: Env, envOauth2: EnvOauth2) {
     single {
         AltinnClient(
-            url = config.prop("altinn.service_owner_api_url"),
-            serviceCode = config.prop("altinn.service_id"),
-            apiGwApiKey = config.prop("altinn.gw_api_key"),
-            altinnApiKey = config.prop("altinn.altinn_api_key"),
+            url = env.altinnServiceOwnerUrl,
+            serviceCode = env.altinnServiceOwnerServiceId,
+            apiGwApiKey = env.altinnServiceOwnerGatewayApiKey,
+            altinnApiKey = env.altinnServiceOwnerApiKey,
             cacheConfig = CacheConfig(60.minutes, 100),
         )
     }
 
-    single { GrunnbeloepClient(get()) }
+    single { GrunnbeloepClient(env.grunnbeloepUrl, get()) }
 
     single {
         AaregArbeidsforholdClientImpl(
-            config.prop("aareg_url"),
-            oAuth2TokenProvider(config, AuthScope.PROXY),
+            env.aaregUrl,
+            oauth2TokenProvider(envOauth2, envOauth2.scopeProxy),
             get(),
         )
     } bind AaregArbeidsforholdClient::class
 
     single {
-        val accessTokenProvider = oAuth2TokenProvider(config, AuthScope.PROXY)
+        val accessTokenProvider = oauth2TokenProvider(envOauth2, envOauth2.scopeProxy)
         PdlClient(
-            config.prop("pdl_url"),
+            env.pdlUrl,
             accessTokenProvider::getToken,
         )
     }
 
     single {
         Norg2Client(
-            config.prop("norg2_url"),
-            oAuth2TokenProvider(config, AuthScope.PROXY),
+            env.norg2Url,
+            oauth2TokenProvider(envOauth2, envOauth2.scopeProxy),
             get(),
         )
     }
 
     single {
         DokarkivKlientImpl(
-            config.prop("dokarkiv.base_url"),
+            env.dokarkivUrl,
             get(),
-            oAuth2TokenProvider(config, AuthScope.DOKARK),
+            oauth2TokenProvider(envOauth2, envOauth2.scopeDokarkiv),
         )
     } bind DokarkivKlient::class
 
     single {
         OppgaveKlientImpl(
-            config.prop("oppgavebehandling.url"),
-            oAuth2TokenProvider(config, AuthScope.OPPGAVE),
+            env.oppgavebehandlingUrl,
+            oauth2TokenProvider(envOauth2, envOauth2.scopeOppgave),
             get(),
         )
     } bind OppgaveKlient::class
 
     single {
-        val accessTokenProvider = oAuth2TokenProvider(config, AuthScope.ARBEIDSGIVER_NOTIFIKASJON)
+        val accessTokenProvider = oauth2TokenProvider(envOauth2, envOauth2.scopeArbeidsgivernotifikasjon)
         ArbeidsgiverNotifikasjonKlient(
-            config.prop("arbeidsgiver_notifikasjon_api_url"),
+            env.arbeidsgiverNotifikasjonUrl,
             accessTokenProvider::getToken,
         )
     }
@@ -114,21 +111,21 @@ fun Module.externalSystemClients(config: ApplicationConfig) {
     single {
         ClamavVirusScannerImp(
             get(),
-            config.prop("clamav_url")
+            env.clamAvUrl
         )
     } bind VirusScanner::class
 
     single {
         BucketStorageImpl(
-            config.prop("gcp_bucket_name"),
-            config.prop("gcp_prjId")
+            env.gcpBucketName,
+            env.gcpProjectId
         )
     } bind BucketStorage::class
 
     single {
         SoeknadmeldingKafkaProducer(
             soeknadmeldingKafkaProps(),
-            config.prop("kafka_soeknad_topic_name"),
+            env.kafkaTopicNameSoeknad,
             get(),
             StringKafkaProducerFactory()
         )
@@ -137,7 +134,7 @@ fun Module.externalSystemClients(config: ApplicationConfig) {
     single {
         KravmeldingKafkaProducer(
             kravmeldingKafkaProps(),
-            config.prop("kafka_krav_topic_name"),
+            env.kafkaTopicNameKrav,
             get(),
             StringKafkaProducerFactory()
         )
@@ -146,17 +143,23 @@ fun Module.externalSystemClients(config: ApplicationConfig) {
     single {
         BrukernotifikasjonBeskjedKafkaProducer(
             brukernotifikasjonKafkaProps(),
-            config.prop("brukernotifikasjon.topic_name")
+            env.kafkaTopicNameBrukernotifikasjon
         )
     } bind BrukernotifikasjonBeskjedSender::class
 
-    single { BrregClient(config.prop("berreg_enhet_url")) }
+    single { BrregClient(env.brregUrl) }
 
     single { BehandlendeEnhetService(get(), get()) }
 }
 
-private fun Scope.oAuth2TokenProvider(config: ApplicationConfig, authScope: AuthScope): OAuth2TokenProvider {
-    val accessTokenService = DefaultOAuth2HttpClient(this.get()).let {
+private fun Scope.oauth2TokenProvider(envOauth2: EnvOauth2, scope: String): OAuth2TokenProvider =
+    OAuth2TokenProvider(
+        oauth2Service = accessTokenService(this),
+        clientProperties = envOauth2.azureAdConfig(scope)
+    )
+
+private fun accessTokenService(scope: Scope): OAuth2AccessTokenService =
+    DefaultOAuth2HttpClient(scope.get()).let {
         OAuth2AccessTokenService(
             TokenResolver(),
             OnBehalfOfTokenClient(it),
@@ -164,9 +167,22 @@ private fun Scope.oAuth2TokenProvider(config: ApplicationConfig, authScope: Auth
             TokenExchangeClient(it)
         )
     }
-    val azureAdConfig = OAuth2ClientConfig(config, authScope.scope)
-        .clientConfig["azure_ad"]
-        ?: error("Fant ikke config i application.conf")
 
-    return OAuth2TokenProvider(accessTokenService, azureAdConfig)
-}
+private fun EnvOauth2.azureAdConfig(scope: String): ClientProperties =
+    ClientProperties(
+        tokenEndpointUrl.let(::URI),
+        wellKnownUrl.let(::URI),
+        grantType.let(::OAuth2GrantType),
+        scope.split(","),
+        authProps(),
+        null,
+        null
+    )
+
+private fun EnvOauth2.authProps(): ClientAuthenticationProperties =
+    ClientAuthenticationProperties(
+        authClientId,
+        authClientAuthMethod.let(::ClientAuthenticationMethod),
+        authClientSecret,
+        null
+    )

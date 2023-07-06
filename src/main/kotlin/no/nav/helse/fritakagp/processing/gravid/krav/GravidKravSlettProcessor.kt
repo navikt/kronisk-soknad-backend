@@ -21,6 +21,7 @@ import no.nav.helse.fritakagp.db.GravidKravRepository
 import no.nav.helse.fritakagp.domain.GravidKrav
 import no.nav.helse.fritakagp.domain.generereSlettGravidKravBeskrivelse
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
+import no.nav.helse.fritakagp.journalførOgFerdigstillDokument
 import no.nav.helse.fritakagp.service.BehandlendeEnhetService
 import no.nav.helse.fritakagp.service.PdlService
 import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonKlient
@@ -90,8 +91,8 @@ class GravidKravSlettProcessor(
     }
 
     fun journalførSletting(krav: GravidKrav): String {
-        val journalfoeringsTittel = "Annuller krav om fritak fra arbeidsgiverperioden ifbm graviditet"
-        val response = dokarkivKlient.journalførDokument(
+        val journalfoeringsTittel = "Annuller ${GravidKrav.tittel}"
+        val journalpostId = dokarkivKlient.journalførOgFerdigstillDokument(
             JournalpostRequest(
                 tittel = journalfoeringsTittel,
                 journalposttype = Journalposttype.INNGAAENDE,
@@ -106,13 +107,14 @@ class GravidKravSlettProcessor(
                 dokumenter = createDocuments(krav, journalfoeringsTittel),
                 datoMottatt = krav.opprettet.toLocalDate()
             ),
-            true,
-            UUID.randomUUID().toString()
+            UUID.randomUUID().toString(),
+            om,
+            logger
 
         )
 
-        logger.debug("Journalført ${krav.id} med ref ${response.journalpostId}")
-        return response.journalpostId
+        logger.debug("Journalført ${krav.id} med ref $journalpostId")
+        return journalpostId
     }
 
     private fun createDocuments(
@@ -168,7 +170,7 @@ class GravidKravSlettProcessor(
         val request = OpprettOppgaveRequest(
             aktoerId = aktoerId,
             journalpostId = krav.journalpostId,
-            beskrivelse = generereSlettGravidKravBeskrivelse(krav, "Annullering av refusjonskrav ifbm sykefravær i arbeidsgiverperioden med fritak fra arbeidsgiverperioden grunnet graviditet."),
+            beskrivelse = generereSlettGravidKravBeskrivelse(krav, "Annullering av ${GravidKrav.tittel}."),
             tema = "SYK",
             behandlingstype = digitalKravBehandingsType,
             oppgavetype = "BEH_REF",
@@ -188,7 +190,7 @@ class GravidKravSlettProcessor(
         val request = OpprettOppgaveRequest(
             aktoerId = aktoerId,
             journalpostId = krav.journalpostId,
-            beskrivelse = generereSlettGravidKravBeskrivelse(krav, "Fordelingsoppgave for annullering av refusjonskrav ifbm sykefravær i arbeidsgiverperioden med fritak fra arbeidsgiverperioden grunnet graviditet."),
+            beskrivelse = generereSlettGravidKravBeskrivelse(krav, "Fordelingsoppgave for annullering av ${GravidKrav.tittel}"),
             tema = "SYK",
             behandlingstype = digitalKravBehandingsType,
             oppgavetype = OPPGAVETYPE_FORDELINGSOPPGAVE,

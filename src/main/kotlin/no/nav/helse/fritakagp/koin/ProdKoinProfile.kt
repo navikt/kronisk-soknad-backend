@@ -1,13 +1,11 @@
 package no.nav.helse.fritakagp.koin
 
 import com.zaxxer.hikari.HikariDataSource
-import io.ktor.server.config.ApplicationConfig
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbRepository
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbService
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.PostgresBakgrunnsjobbRepository
+import no.nav.helse.fritakagp.Env
 import no.nav.helse.fritakagp.MetrikkVarsler
-import no.nav.helse.fritakagp.config.jdbcUrl
-import no.nav.helse.fritakagp.config.prop
 import no.nav.helse.fritakagp.datapakke.DatapakkePublisherJob
 import no.nav.helse.fritakagp.db.GravidKravRepository
 import no.nav.helse.fritakagp.db.GravidSoeknadRepository
@@ -31,6 +29,7 @@ import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravKvitteringSender
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravPDFGenerator
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravProcessor
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravSlettProcessor
+import no.nav.helse.fritakagp.processing.gravid.krav.OpprettRobotOppgaveGravidProcessor
 import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadAltinnKvitteringSender
 import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadKafkaProcessor
 import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadKvitteringProcessor
@@ -44,6 +43,7 @@ import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravKvitteringSende
 import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravPDFGenerator
 import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravProcessor
 import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravSlettProcessor
+import no.nav.helse.fritakagp.processing.kronisk.krav.OpprettRobotOppgaveKroniskProcessor
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadAltinnKvitteringSender
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadKafkaProcessor
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadKvitteringProcessor
@@ -57,15 +57,15 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import javax.sql.DataSource
 
-fun prodConfig(config: ApplicationConfig): Module = module {
-    externalSystemClients(config)
+fun prodConfig(env: Env.Prod): Module = module {
+    externalSystemClients(env, env.oauth2)
 
     single {
         HikariDataSource(
             createHikariConfig(
-                config.jdbcUrl(),
-                config.prop("database.username"),
-                config.prop("database.password")
+                env.databaseUrl,
+                env.databaseUsername,
+                env.databasePassword
             )
         )
     } bind DataSource::class
@@ -79,21 +79,23 @@ fun prodConfig(config: ApplicationConfig): Module = module {
     single { BakgrunnsjobbService(get(), bakgrunnsvarsler = MetrikkVarsler()) }
 
     single { GravidSoeknadProcessor(get(), get(), get(), get(), get(), GravidSoeknadPDFGenerator(), get(), get(), get(), get()) }
-    single { GravidKravProcessor(get(), get(), get(), get(), get(), GravidKravPDFGenerator(), get(), get(), get(), get()) }
+    single { GravidKravProcessor(get(), get(), get(), get(), get(), GravidKravPDFGenerator(), get(), get(), get()) }
     single { GravidKravSlettProcessor(get(), get(), get(), get(), get(), GravidKravPDFGenerator(), get(), get(), get(), get()) }
+    single { OpprettRobotOppgaveGravidProcessor(get(), get(), get(), get(), get()) }
 
     single { KroniskSoeknadProcessor(get(), get(), get(), get(), get(), KroniskSoeknadPDFGenerator(), get(), get(), get(), get()) }
     single { KroniskKravProcessor(get(), get(), get(), get(), get(), KroniskKravPDFGenerator(), get(), get(), get(), get()) }
     single { KroniskKravSlettProcessor(get(), get(), get(), get(), get(), KroniskKravPDFGenerator(), get(), get(), get()) }
+    single { OpprettRobotOppgaveKroniskProcessor(get(), get(), get(), get(), get()) }
 
-    single { Clients.iCorrespondenceExternalBasic(config.prop("altinn_melding.altinn_endpoint")) }
+    single { Clients.iCorrespondenceExternalBasic(env.altinnMeldingUrl) }
 
     single {
         GravidSoeknadAltinnKvitteringSender(
-            config.prop("altinn_melding.service_id"),
+            env.altinnMeldingServiceId,
             get(),
-            config.prop("altinn_melding.username"),
-            config.prop("altinn_melding.password")
+            env.altinnMeldingUsername,
+            env.altinnMeldingPassword
         )
     } bind GravidSoeknadKvitteringSender::class
 
@@ -101,10 +103,10 @@ fun prodConfig(config: ApplicationConfig): Module = module {
 
     single {
         GravidKravAltinnKvitteringSender(
-            config.prop("altinn_melding.service_id"),
+            env.altinnMeldingServiceId,
             get(),
-            config.prop("altinn_melding.username"),
-            config.prop("altinn_melding.password")
+            env.altinnMeldingUsername,
+            env.altinnMeldingPassword
         )
     } bind GravidKravKvitteringSender::class
 
@@ -112,20 +114,20 @@ fun prodConfig(config: ApplicationConfig): Module = module {
 
     single {
         KroniskSoeknadAltinnKvitteringSender(
-            config.prop("altinn_melding.service_id"),
+            env.altinnMeldingServiceId,
             get(),
-            config.prop("altinn_melding.username"),
-            config.prop("altinn_melding.password")
+            env.altinnMeldingUsername,
+            env.altinnMeldingPassword
         )
     } bind KroniskSoeknadKvitteringSender::class
     single { KroniskSoeknadKvitteringProcessor(get(), get(), get()) }
 
     single {
         KroniskKravAltinnKvitteringSender(
-            config.prop("altinn_melding.service_id"),
+            env.altinnMeldingServiceId,
             get(),
-            config.prop("altinn_melding.username"),
-            config.prop("altinn_melding.password")
+            env.altinnMeldingUsername,
+            env.altinnMeldingPassword
         )
     } bind KroniskKravKvitteringSender::class
     single { KroniskKravKvitteringProcessor(get(), get(), get()) }
@@ -135,14 +137,14 @@ fun prodConfig(config: ApplicationConfig): Module = module {
     single { KroniskSoeknadKafkaProcessor(get(), get(), get()) }
     single { KroniskKravKafkaProcessor(get(), get(), get()) }
 
-    single { BrukernotifikasjonProcessor(get(), get(), get(), get(), get(), get(), 4, config.prop("frontend_app_url")) }
-    single { ArbeidsgiverNotifikasjonProcessor(get(), get(), get(), config.prop("frontend_app_url"), get()) }
+    single { BrukernotifikasjonProcessor(get(), get(), get(), get(), get(), get(), 4, env.frontendUrl) }
+    single { ArbeidsgiverNotifikasjonProcessor(get(), get(), get(), env.frontendUrl, get()) }
 
     single { AltinnService(get()) }
     single { PdlService(get()) }
 
     single { BeloepBeregning(get()) }
 
-    single { DatapakkePublisherJob(get(), get(), config.prop("datapakke.api_url"), config.prop("datapakke.id"), get()) }
+    single { DatapakkePublisherJob(get(), get(), env.datapakkeUrl, env.datapakkeId, get()) }
     single { StatsRepoImpl(get()) } bind IStatsRepo::class
 }

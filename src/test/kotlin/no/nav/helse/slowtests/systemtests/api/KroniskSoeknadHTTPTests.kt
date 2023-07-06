@@ -45,7 +45,7 @@ class KroniskSoeknadHTTPTests : SystemTestBase() {
         }
             .body<KroniskSoeknad>()
 
-        Assertions.assertThat(accessGrantedForm).isEqualTo(KroniskTestData.soeknadKronisk)
+        Assertions.assertThat(accessGrantedForm).isEqualToIgnoringGivenFields(KroniskTestData.soeknadKronisk, "referansenummer")
     }
 
     @Test

@@ -2,7 +2,7 @@ package no.nav.helse.fritakagp.processing.brukernotifikasjon
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.KotlinModule
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -19,7 +19,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.util.UUID
 
-internal class BrukernotifikasjonProcessorTest {
+class BrukernotifikasjonProcessorTest {
 
     val ksRepo = mockk<KroniskSoeknadRepository>(relaxed = true)
     val kkRepo = mockk<KroniskKravRepository>(relaxed = true)
@@ -27,7 +27,7 @@ internal class BrukernotifikasjonProcessorTest {
     val gsRepo = mockk<GravidSoeknadRepository>(relaxed = true)
     val kafkaSenderMock = mockk<BrukernotifikasjonBeskjedSender>(relaxed = true)
 
-    val objectMapper = ObjectMapper().registerModules(KotlinModule(), JavaTimeModule())
+    val objectMapper = ObjectMapper().registerKotlinModule().registerModule(JavaTimeModule())
 
     val prosessor = BrukernotifikasjonProcessor(gkRepo, gsRepo, kkRepo, ksRepo, objectMapper, kafkaSenderMock, 4)
 

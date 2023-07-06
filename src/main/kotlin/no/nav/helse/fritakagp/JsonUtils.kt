@@ -12,6 +12,20 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 
 fun customObjectMapper(customPrettyPrinter: Boolean = true): ObjectMapper =
     jacksonObjectMapper().apply {
+        configureCustom()
+
+        if (customPrettyPrinter) {
+            setDefaultPrettyPrinter(
+                DefaultPrettyPrinter().apply {
+                    indentArraysWith(DefaultPrettyPrinter.FixedSpaceIndenter.instance)
+                    indentObjectsWith(DefaultIndenter("  ", "\n"))
+                }
+            )
+        }
+    }
+
+fun ObjectMapper.configureCustom(): ObjectMapper =
+    apply {
         registerModules(
             Jdk8Module(),
             JavaTimeModule()
@@ -22,13 +36,4 @@ fun customObjectMapper(customPrettyPrinter: Boolean = true): ObjectMapper =
 
         disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
         disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-
-        if (customPrettyPrinter) {
-            setDefaultPrettyPrinter(
-                DefaultPrettyPrinter().apply {
-                    indentArraysWith(DefaultPrettyPrinter.FixedSpaceIndenter.instance)
-                    indentObjectsWith(DefaultIndenter("  ", "\n"))
-                }
-            )
-        }
     }

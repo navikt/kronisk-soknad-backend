@@ -1,8 +1,6 @@
 package no.nav.helse.fritakagp.service
 
 import kotlinx.coroutines.runBlocking
-import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlClient
-import no.nav.helse.fritakagp.domain.GeografiskTilknytningData
 import no.nav.helse.fritakagp.integration.norg.ArbeidsfordelingRequest
 import no.nav.helse.fritakagp.integration.norg.ArbeidsfordelingResponse
 import no.nav.helse.fritakagp.integration.norg.Norg2Client
@@ -13,19 +11,19 @@ const val SYKEPENGER_UTLAND = "4474"
 const val SYKEPENGER = "SYK"
 
 class BehandlendeEnhetService(
-    private val pdlClient: PdlClient,
+    private val pdlService: PdlService,
     private val norg2Client: Norg2Client,
 ) {
 
     private val logger = this.logger()
 
     fun hentBehandlendeEnhet(fnr: String, uuid: String, tidspunkt: LocalDate = LocalDate.now()): String {
-        val geografiskTilknytning = hentGeografiskTilknytning(fnr)
+        val geografiskTilknytning = pdlService.hentGeografiskTilknytning(fnr)
 
         val criteria = ArbeidsfordelingRequest(
             tema = SYKEPENGER,
-            diskresjonskode = geografiskTilknytning?.diskresjonskode,
-            geografiskOmraade = geografiskTilknytning?.geografiskTilknytning
+            diskresjonskode = geografiskTilknytning.diskresjonskode,
+            geografiskOmraade = geografiskTilknytning.geografiskTilknytning
         )
 
         val callId = MDCOperations.getFromMDC(MDCOperations.MDC_CALL_ID)
@@ -46,15 +44,6 @@ class BehandlendeEnhetService(
         } catch (e: RuntimeException) {
             logger.error("Klarte ikke å hente behandlende enhet!", e)
             throw BehandlendeEnhetFeiletException(e)
-        }
-    }
-
-    fun hentGeografiskTilknytning(fnr: String): GeografiskTilknytningData {
-        pdlClient.fullPerson(fnr).let {
-            return GeografiskTilknytningData(
-                geografiskTilknytning = it?.hentGeografiskTilknytning?.hentTilknytning(),
-                diskresjonskode = it?.hentPerson?.trekkUtDiskresjonskode()
-            )
         }
     }
 }

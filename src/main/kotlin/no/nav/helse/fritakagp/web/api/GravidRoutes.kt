@@ -1,29 +1,29 @@
 package no.nav.helse.fritakagp.web.api
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import io.ktor.application.application
-import io.ktor.application.call
 import io.ktor.http.HttpStatusCode
-import io.ktor.request.receive
-import io.ktor.response.respond
-import io.ktor.routing.Route
-import io.ktor.routing.delete
-import io.ktor.routing.get
-import io.ktor.routing.patch
-import io.ktor.routing.post
-import io.ktor.routing.route
+import io.ktor.server.application.application
+import io.ktor.server.application.call
+import io.ktor.server.request.receive
+import io.ktor.server.response.respond
+import io.ktor.server.routing.Route
+import io.ktor.server.routing.delete
+import io.ktor.server.routing.get
+import io.ktor.server.routing.patch
+import io.ktor.server.routing.post
+import io.ktor.server.routing.route
 import kotlinx.coroutines.runBlocking
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbService
 import no.nav.helse.arbeidsgiver.integrasjoner.aareg.AaregArbeidsforholdClient
-import no.nav.helse.arbeidsgiver.web.auth.AltinnAuthorizer
 import no.nav.helse.fritakagp.GravidKravMetrics
 import no.nav.helse.fritakagp.GravidSoeknadMetrics
+import no.nav.helse.fritakagp.config.AppEnv
+import no.nav.helse.fritakagp.config.env
 import no.nav.helse.fritakagp.db.GravidKravRepository
 import no.nav.helse.fritakagp.db.GravidSoeknadRepository
 import no.nav.helse.fritakagp.domain.BeloepBeregning
 import no.nav.helse.fritakagp.domain.KravStatus
 import no.nav.helse.fritakagp.domain.decodeBase64File
-import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
 import no.nav.helse.fritakagp.processing.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonProcessor
@@ -32,16 +32,17 @@ import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravProcessor
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravSlettProcessor
 import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadKvitteringProcessor
 import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadProcessor
+import no.nav.helse.fritakagp.service.AltinnService
 import no.nav.helse.fritakagp.service.PdlService
 import no.nav.helse.fritakagp.web.api.resreq.GravidKravRequest
 import no.nav.helse.fritakagp.web.api.resreq.GravidSoknadRequest
 import no.nav.helse.fritakagp.web.api.resreq.validation.VirusCheckConstraint
 import no.nav.helse.fritakagp.web.api.resreq.validation.extractBase64Del
 import no.nav.helse.fritakagp.web.api.resreq.validation.extractFilExtDel
-import no.nav.helse.fritakagp.web.auth.authorize
 import no.nav.helse.fritakagp.web.auth.hentIdentitetsnummerFraLoginToken
 import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonKlient
 import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.hardDeleteSak
+import no.nav.helsearbeidsgiver.brreg.BrregClient
 import org.valiktor.ConstraintViolationException
 import org.valiktor.DefaultConstraintViolation
 import java.time.LocalDateTime
@@ -49,7 +50,8 @@ import java.util.UUID
 import javax.sql.DataSource
 
 fun Route.gravidRoutes(
-    breegClient: BrregClient,
+    altinnService: AltinnService,
+    brregClient: BrregClient,
     datasource: DataSource,
     gravidSoeknadRepo: GravidSoeknadRepository,
     gravidKravRepo: GravidKravRepository,
@@ -57,7 +59,6 @@ fun Route.gravidRoutes(
     om: ObjectMapper,
     virusScanner: VirusScanner,
     bucket: BucketStorage,
-    authorizer: AltinnAuthorizer,
     belopBeregning: BeloepBeregning,
     aaregClient: AaregArbeidsforholdClient,
     pdlService: PdlService,
@@ -66,27 +67,27 @@ fun Route.gravidRoutes(
     route("/gravid") {
         route("/soeknad") {
             get("/{id}") {
-                val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
+                val innloggetFnr = hentIdentitetsnummerFraLoginToken(call.request)
                 val form = gravidSoeknadRepo.getById(UUID.fromString(call.parameters["id"]))
                 if (form == null || form.identitetsnummer != innloggetFnr) {
                     call.respond(HttpStatusCode.NotFound)
                 } else {
-                    form.sendtAvNavn = form.sendtAvNavn ?: pdlService.finnNavn(innloggetFnr)
-                    form.navn = form.navn ?: pdlService.finnNavn(form.identitetsnummer)
+                    form.sendtAvNavn = form.sendtAvNavn ?: pdlService.hentNavn(innloggetFnr)
+                    form.navn = form.navn ?: pdlService.hentNavn(form.identitetsnummer)
 
                     call.respond(HttpStatusCode.OK, form)
                 }
             }
 
             post {
-                val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
+                val innloggetFnr = hentIdentitetsnummerFraLoginToken(call.request)
                 val request = call.receive<GravidSoknadRequest>()
 
-                val isVirksomhet = if (application.environment.config.property("koin.profile").getString() == "PREPROD") true else breegClient.erVirksomhet(request.virksomhetsnummer)
+                val isVirksomhet = if (application.environment.config.env() == AppEnv.PREPROD) true else brregClient.erVirksomhet(request.virksomhetsnummer)
                 request.validate(isVirksomhet)
 
-                val sendtAvNavn = pdlService.finnNavn(innloggetFnr)
-                val navn = pdlService.finnNavn(request.identitetsnummer)
+                val sendtAvNavn = pdlService.hentNavn(innloggetFnr)
+                val navn = pdlService.hentNavn(request.identitetsnummer)
 
                 val soeknad = request.toDomain(innloggetFnr, sendtAvNavn, navn)
 
@@ -113,16 +114,16 @@ fun Route.gravidRoutes(
 
         route("/krav") {
             get("/{id}") {
-                val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
+                val innloggetFnr = hentIdentitetsnummerFraLoginToken(call.request)
                 val form = gravidKravRepo.getById(UUID.fromString(call.parameters["id"]))
                 if (form == null) {
                     call.respond(HttpStatusCode.NotFound)
                 } else {
                     if (form.identitetsnummer != innloggetFnr) {
-                        authorize(authorizer, form.virksomhetsnummer)
+                        altinnService.authorize(this, form.virksomhetsnummer)
                     }
-                    form.sendtAvNavn = form.sendtAvNavn ?: pdlService.finnNavn(innloggetFnr)
-                    form.navn = form.navn ?: pdlService.finnNavn(form.identitetsnummer)
+                    form.sendtAvNavn = form.sendtAvNavn ?: pdlService.hentNavn(innloggetFnr)
+                    form.navn = form.navn ?: pdlService.hentNavn(form.identitetsnummer)
 
                     call.respond(HttpStatusCode.OK, form)
                 }
@@ -130,16 +131,16 @@ fun Route.gravidRoutes(
 
             post {
                 val request = call.receive<GravidKravRequest>()
-                authorize(authorizer, request.virksomhetsnummer)
+                altinnService.authorize(this, request.virksomhetsnummer)
                 val arbeidsforhold = aaregClient
                     .hentArbeidsforhold(request.identitetsnummer, UUID.randomUUID().toString())
                     .filter { it.arbeidsgiver.organisasjonsnummer == request.virksomhetsnummer }
 
                 request.validate(arbeidsforhold)
 
-                val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
-                val sendtAvNavn = pdlService.finnNavn(innloggetFnr)
-                val navn = pdlService.finnNavn(request.identitetsnummer)
+                val innloggetFnr = hentIdentitetsnummerFraLoginToken(call.request)
+                val sendtAvNavn = pdlService.hentNavn(innloggetFnr)
+                val navn = pdlService.hentNavn(request.identitetsnummer)
 
                 val krav = request.toDomain(innloggetFnr, sendtAvNavn, navn)
                 belopBeregning.beregnBeløpGravid(krav)
@@ -171,11 +172,11 @@ fun Route.gravidRoutes(
             patch("/{id}") {
                 val request = call.receive<GravidKravRequest>()
 
-                authorize(authorizer, request.virksomhetsnummer)
+                altinnService.authorize(this, request.virksomhetsnummer)
 
-                val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
-                val sendtAvNavn = pdlService.finnNavn(innloggetFnr)
-                val navn = pdlService.finnNavn(request.identitetsnummer)
+                val innloggetFnr = hentIdentitetsnummerFraLoginToken(call.request)
+                val sendtAvNavn = pdlService.hentNavn(innloggetFnr)
+                val navn = pdlService.hentNavn(request.identitetsnummer)
 
                 val arbeidsforhold = aaregClient
                     .hentArbeidsforhold(request.identitetsnummer, UUID.randomUUID().toString())
@@ -237,13 +238,13 @@ fun Route.gravidRoutes(
             }
 
             delete("/{id}") {
-                val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
-                val slettetAv = pdlService.finnNavn(innloggetFnr)
+                val innloggetFnr = hentIdentitetsnummerFraLoginToken(call.request)
+                val slettetAv = pdlService.hentNavn(innloggetFnr)
                 val kravId = UUID.fromString(call.parameters["id"])
                 val form = gravidKravRepo.getById(kravId)
                     ?: return@delete call.respond(HttpStatusCode.NotFound)
 
-                authorize(authorizer, form.virksomhetsnummer)
+                altinnService.authorize(this, form.virksomhetsnummer)
 
                 form.arbeidsgiverSakId?.let {
                     runBlocking { arbeidsgiverNotifikasjonKlient.hardDeleteSak(it) }

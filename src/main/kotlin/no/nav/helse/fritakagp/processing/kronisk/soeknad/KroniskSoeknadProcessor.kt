@@ -17,18 +17,17 @@ import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.Journalposttype
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OPPGAVETYPE_FORDELINGSOPPGAVE
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OppgaveKlient
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OpprettOppgaveRequest
-import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlClient
-import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlIdent
 import no.nav.helse.fritakagp.KroniskSoeknadMetrics
 import no.nav.helse.fritakagp.db.KroniskSoeknadRepository
 import no.nav.helse.fritakagp.domain.KroniskSoeknad
 import no.nav.helse.fritakagp.domain.generereKroniskSoeknadBeskrivelse
-import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.journalførOgFerdigstillDokument
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor.Jobbdata.SkjemaType
 import no.nav.helse.fritakagp.service.BehandlendeEnhetService
+import no.nav.helse.fritakagp.service.PdlService
+import no.nav.helsearbeidsgiver.brreg.BrregClient
 import no.nav.helsearbeidsgiver.utils.log.logger
 import java.time.LocalDate
 import java.util.Base64
@@ -39,7 +38,7 @@ class KroniskSoeknadProcessor(
     private val dokarkivKlient: DokarkivKlient,
     private val oppgaveKlient: OppgaveKlient,
     private val bakgrunnsjobbRepo: BakgrunnsjobbRepository,
-    private val pdlClient: PdlClient,
+    private val pdlService: PdlService,
     private val pdfGenerator: KroniskSoeknadPDFGenerator,
     private val om: ObjectMapper,
     private val bucketStorage: BucketStorage,
@@ -66,9 +65,7 @@ class KroniskSoeknadProcessor(
 
         try {
             if (soeknad.virksomhetsnavn == null) {
-                runBlocking {
-                    soeknad.virksomhetsnavn = brregClient.getVirksomhetsNavn(soeknad.virksomhetsnummer)
-                }
+                soeknad.virksomhetsnavn = runBlocking { brregClient.hentVirksomhetNavnOrDefault(soeknad.virksomhetsnummer) }
             }
             if (soeknad.journalpostId == null) {
                 soeknad.journalpostId = journalfør(soeknad)
@@ -193,7 +190,7 @@ class KroniskSoeknadProcessor(
     }
 
     fun opprettOppgave(soeknad: KroniskSoeknad): String {
-        val aktoerId = pdlClient.fullPerson(soeknad.identitetsnummer)?.hentIdenter?.trekkUtIdent(PdlIdent.PdlIdentGruppe.AKTORID)
+        val aktoerId = pdlService.hentAktoerId(soeknad.identitetsnummer)
         requireNotNull(aktoerId) { "Fant ikke AktørID for fnr i ${soeknad.id}" }
 
         val request = OpprettOppgaveRequest(
@@ -213,7 +210,7 @@ class KroniskSoeknadProcessor(
     }
 
     fun opprettFordelingsOppgave(soeknad: KroniskSoeknad): String {
-        val aktoerId = pdlClient.fullPerson(soeknad.identitetsnummer)?.hentIdenter?.trekkUtIdent(PdlIdent.PdlIdentGruppe.AKTORID)
+        val aktoerId = pdlService.hentAktoerId(soeknad.identitetsnummer)
         requireNotNull(aktoerId) { "Fant ikke AktørID for fnr i ${soeknad.id}" }
 
         val request = OpprettOppgaveRequest(

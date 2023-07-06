@@ -3,8 +3,8 @@ package no.nav.helse.fritakagp.datapakke
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.ktor.client.HttpClient
 import io.ktor.client.request.put
-import io.ktor.client.statement.HttpResponse
-import io.ktor.client.statement.readText
+import io.ktor.client.request.setBody
+import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import kotlinx.coroutines.CoroutineScope
@@ -89,12 +89,12 @@ class DatapakkePublisherJob(
         runBlocking {
             jobLogger.info("Populerte datapakke template med data: $populatedDatapakke")
 
-            val response = httpClient.put<HttpResponse>("$datapakkeApiUrl/$datapakkeId") {
+            val response = httpClient.put("$datapakkeApiUrl/$datapakkeId") {
                 contentType(ContentType.Application.Json)
-                body = om.readTree(populatedDatapakke)
+                setBody(om.readTree(populatedDatapakke))
             }
 
-            jobLogger.info("Oppdaterte datapakke $datapakkeId med respons ${response.readText()}")
+            jobLogger.info("Oppdaterte datapakke $datapakkeId med respons ${response.bodyAsText()}")
         }
     }
 }

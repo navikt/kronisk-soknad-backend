@@ -1,6 +1,7 @@
 package no.nav.helse.fritakagp.integration
 
 import io.ktor.client.HttpClient
+import io.ktor.client.call.body
 import io.ktor.client.request.get
 import kotlinx.coroutines.runBlocking
 import no.nav.helsearbeidsgiver.utils.cache.LocalCache
@@ -19,6 +20,7 @@ class GrunnbeloepClient(
         return cache.get(cacheKey) {
             runBlocking {
                 httpClient.get("$url?dato=$dato")
+                    .body()
             }
         }
     }

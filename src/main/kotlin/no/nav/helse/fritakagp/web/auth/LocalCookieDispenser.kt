@@ -1,14 +1,14 @@
 package no.nav.helse.fritakagp.web.auth
 
-import io.ktor.application.Application
-import io.ktor.application.call
 import io.ktor.http.ContentType
 import io.ktor.http.Cookie
 import io.ktor.http.CookieEncoding
 import io.ktor.http.HttpStatusCode
-import io.ktor.response.respondText
-import io.ktor.routing.get
-import io.ktor.routing.routing
+import io.ktor.server.application.Application
+import io.ktor.server.application.call
+import io.ktor.server.response.respondText
+import io.ktor.server.routing.get
+import io.ktor.server.routing.routing
 import no.nav.helse.fritakagp.EnvJwt
 import no.nav.helsearbeidsgiver.utils.log.logger
 import no.nav.security.mock.oauth2.MockOAuth2Server

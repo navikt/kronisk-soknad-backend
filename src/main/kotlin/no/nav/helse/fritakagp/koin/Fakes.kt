@@ -1,7 +1,7 @@
 package no.nav.helse.fritakagp.koin
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
+import io.mockk.coEvery
+import io.mockk.mockk
 import no.nav.helse.arbeidsgiver.integrasjoner.AccessTokenProvider
 import no.nav.helse.arbeidsgiver.integrasjoner.aareg.AaregArbeidsforholdClient
 import no.nav.helse.arbeidsgiver.integrasjoner.aareg.Ansettelsesperiode
@@ -9,7 +9,6 @@ import no.nav.helse.arbeidsgiver.integrasjoner.aareg.Arbeidsforhold
 import no.nav.helse.arbeidsgiver.integrasjoner.aareg.Arbeidsgiver
 import no.nav.helse.arbeidsgiver.integrasjoner.aareg.Opplysningspliktig
 import no.nav.helse.arbeidsgiver.integrasjoner.aareg.Periode
-import no.nav.helse.arbeidsgiver.integrasjoner.altinn.AltinnOrganisasjon
 import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.DokarkivKlient
 import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.JournalpostRequest
 import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.JournalpostResponse
@@ -19,15 +18,6 @@ import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OpprettOppgaveRequest
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OpprettOppgaveResponse
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.Prioritet
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.Status
-import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlClient
-import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlHentFullPerson
-import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlHentPersonNavn
-import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlIdent
-import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlPersonNavnMetadata
-import no.nav.helse.arbeidsgiver.utils.loadFromResources
-import no.nav.helse.arbeidsgiver.web.auth.AltinnOrganisationsRepository
-import no.nav.helse.fritakagp.integration.brreg.BrregClient
-import no.nav.helse.fritakagp.integration.brreg.MockBrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.integration.gcp.MockBucketStorage
 import no.nav.helse.fritakagp.integration.kafka.BrukernotifikasjonBeskjedSender
@@ -38,13 +28,27 @@ import no.nav.helse.fritakagp.integration.norg.Norg2Client
 import no.nav.helse.fritakagp.integration.virusscan.MockVirusScanner
 import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
 import no.nav.helse.fritakagp.service.BehandlendeEnhetService
+import no.nav.helsearbeidsgiver.altinn.AltinnClient
+import no.nav.helsearbeidsgiver.altinn.AltinnOrganisasjon
+import no.nav.helsearbeidsgiver.brreg.BrregClient
+import no.nav.helsearbeidsgiver.pdl.PdlClient
+import no.nav.helsearbeidsgiver.pdl.PdlHentFullPerson
+import no.nav.helsearbeidsgiver.pdl.PdlHentPersonNavn
+import no.nav.helsearbeidsgiver.pdl.PdlIdent
+import no.nav.helsearbeidsgiver.pdl.PdlPersonNavnMetadata
 import org.koin.core.module.Module
 import org.koin.dsl.bind
 import java.time.LocalDate
 import java.time.LocalDateTime
 
 fun Module.mockExternalDependecies() {
-    single { MockAltinnRepo(get()) } bind AltinnOrganisationsRepository::class
+
+    single {
+        mockk<AltinnClient> {
+            coEvery { hentRettighetOrganisasjoner(any()) } returns altinnOrgs
+        }
+    }
+
     single { MockBrukernotifikasjonBeskjedSender() } bind BrukernotifikasjonBeskjedSender::class
     single {
         object : AccessTokenProvider {
@@ -57,7 +61,7 @@ fun Module.mockExternalDependecies() {
     single {
         object : AaregArbeidsforholdClient {
             override suspend fun hentArbeidsforhold(ident: String, callId: String): List<Arbeidsforhold> =
-                listOf<Arbeidsforhold>(
+                listOf(
                     Arbeidsforhold(
                         Arbeidsgiver("test", "810007842"), Opplysningspliktig("Juice", "810007702"), emptyList(),
                         Ansettelsesperiode(
@@ -100,42 +104,20 @@ fun Module.mockExternalDependecies() {
     } bind DokarkivKlient::class
 
     single {
-        object : PdlClient {
-            override fun fullPerson(ident: String) =
-                PdlHentFullPerson(
-                    PdlHentFullPerson.PdlFullPersonliste(
-                        emptyList(),
-                        emptyList(),
-                        emptyList(),
-                        emptyList(),
-                        emptyList(),
-                        emptyList(),
-                        emptyList()
-                    ),
-
-                    PdlHentFullPerson.PdlIdentResponse(listOf(PdlIdent("aktør-id", PdlIdent.PdlIdentGruppe.AKTORID))),
-
-                    PdlHentFullPerson.PdlGeografiskTilknytning(
-                        PdlHentFullPerson.PdlGeografiskTilknytning.PdlGtType.UTLAND,
-                        null,
-                        null,
-                        "SWE"
-                    )
+        mockk<PdlClient> {
+            coEvery { personNavn(any()) } returns PdlHentPersonNavn.PdlPersonNavneliste(
+                listOf(
+                    PdlHentPersonNavn.PdlPersonNavneliste.PdlPersonNavn("Ola", "M", "Avsender", PdlPersonNavnMetadata("freg")),
                 )
+            )
 
-            override fun personNavn(ident: String) =
-                PdlHentPersonNavn.PdlPersonNavneliste(
-                    listOf(
-                        PdlHentPersonNavn.PdlPersonNavneliste.PdlPersonNavn(
-                            "Ola",
-                            "M",
-                            "Avsender",
-                            PdlPersonNavnMetadata("freg")
-                        )
-                    )
-                )
+            coEvery { fullPerson(any()) } returns PdlHentFullPerson(
+                PdlHentFullPerson.PdlFullPersonliste(emptyList(), emptyList(), emptyList(), emptyList(), emptyList(), emptyList(), emptyList()),
+                PdlHentFullPerson.PdlIdentResponse(listOf(PdlIdent("aktør-id", PdlIdent.PdlIdentGruppe.AKTORID))),
+                PdlHentFullPerson.PdlGeografiskTilknytning(PdlHentFullPerson.PdlGeografiskTilknytning.PdlGtType.UTLAND, null, null, "SWE"),
+            )
         }
-    } bind PdlClient::class
+    }
 
     single {
         object : OppgaveKlient {
@@ -158,9 +140,12 @@ fun Module.mockExternalDependecies() {
         }
     } bind OppgaveKlient::class
 
-    single { MockVirusScanner() } bind VirusScanner::class
-    single { MockBucketStorage() } bind BucketStorage::class
-    single { MockBrregClient() } bind BrregClient::class
+    single {
+        mockk<BrregClient> {
+            coEvery { hentVirksomhetNavnOrDefault(any()) } returns "Stark Industries"
+            coEvery { erVirksomhet(any()) } returns true
+        }
+    }
 
     single {
         object : Norg2Client(
@@ -200,10 +185,47 @@ fun Module.mockExternalDependecies() {
     } bind Norg2Client::class
 
     single { BehandlendeEnhetService(get(), get()) }
+
+    single { MockVirusScanner() } bind VirusScanner::class
+    single { MockBucketStorage() } bind BucketStorage::class
 }
 
-class MockAltinnRepo(om: ObjectMapper) : AltinnOrganisationsRepository {
-    private val mockList = "altinn-mock/organisasjoner-med-rettighet.json".loadFromResources()
-    private val mockAcl = om.readValue<Set<AltinnOrganisasjon>>(mockList)
-    override fun hentOrgMedRettigheterForPerson(identitetsnummer: String): Set<AltinnOrganisasjon> = mockAcl
-}
+private val altinnOrgs = setOf(
+    AltinnOrganisasjon(
+        name = "HØNEFOSS OG ØLEN",
+        type = "Enterprise",
+        organizationNumber = "910020102",
+        organizationForm = "AS",
+        status = "Active",
+    ),
+    AltinnOrganisasjon(
+        name = "JØA OG SEL",
+        type = "Business",
+        organizationNumber = "910098896",
+        organizationForm = "BEDR",
+        parentOrganizationNumber = "911366940",
+        status = "Active",
+    ),
+    AltinnOrganisasjon(
+        name = "ELTRODE AS",
+        type = "Business",
+        organizationNumber = "917404437",
+        organizationForm = "BEDR",
+        parentOrganizationNumber = "917346380",
+        status = "Active",
+    ),
+    AltinnOrganisasjon(
+        name = "STADLANDET OG SINGSÅS",
+        type = "Enterprise",
+        organizationNumber = "911366940",
+        organizationForm = "AS",
+        status = "Active",
+    ),
+    AltinnOrganisasjon(
+        name = "SKIKKELIG GJØK",
+        type = "Enterprise",
+        organizationNumber = "947064649",
+        organizationForm = "AS",
+        status = "Active",
+    ),
+)

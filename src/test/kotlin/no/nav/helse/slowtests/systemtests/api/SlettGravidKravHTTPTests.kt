@@ -1,6 +1,6 @@
 package no.nav.helse.slowtests.systemtests.api
 
-import io.ktor.client.features.ClientRequestException
+import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.request.delete
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.ContentType
@@ -23,7 +23,7 @@ class SlettGravidKravHTTPTests : SystemTestBase() {
 
         repo.insert(GravidTestData.gravidKrav)
 
-        val response = httpClient.delete<HttpResponse> {
+        val response = httpClient.delete {
             appUrl("$kravGravidUrl/${GravidTestData.gravidKrav.id}")
             contentType(ContentType.Application.Json)
             loggedInAs(GravidTestData.gravidKrav.identitetsnummer)
@@ -39,7 +39,7 @@ class SlettGravidKravHTTPTests : SystemTestBase() {
         repo.insert(GravidTestData.gravidKrav)
 
         val responseExcepion = assertThrows<ClientRequestException> {
-            httpClient.delete<HttpResponse> {
+            httpClient.delete {
                 appUrl("$kravGravidUrl/${UUID.randomUUID()}")
                 contentType(ContentType.Application.Json)
                 loggedInAs(GravidTestData.gravidKrav.identitetsnummer)
@@ -57,7 +57,7 @@ class SlettGravidKravHTTPTests : SystemTestBase() {
 
         repo.insert(GravidTestData.gravidKrav.copy(virksomhetsnummer = "123456785", id = id))
         val responseExcepion = assertThrows<ClientRequestException> {
-            httpClient.delete<HttpResponse> {
+            httpClient.delete {
                 appUrl("$kravGravidUrl/$id")
                 contentType(ContentType.Application.Json)
                 loggedInAs("123456789")

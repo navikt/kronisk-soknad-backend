@@ -1,6 +1,7 @@
 package no.nav.helse.slowtests.systemtests.api
 
 import io.ktor.client.HttpClient
+import io.ktor.client.call.body
 import io.ktor.client.call.receive
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.get
@@ -59,7 +60,7 @@ open class SystemTestBase : KoinTest {
      * Hjelpefunksjon for å hente ut gyldig JWT-token og legge det til som Auth header på en request
      */
     suspend fun HttpRequestBuilder.loggedInAs(subject: String) {
-        val response = httpClient.get<HttpResponse> {
+        val response = httpClient.get {
             appUrl("/local/cookie-please?subject=$subject")
             contentType(ContentType.Application.Json)
         }
@@ -77,5 +78,5 @@ open class SystemTestBase : KoinTest {
     }
 
     suspend fun extractResponseBody(response: HttpResponse) =
-        response.call.response.receive<Problem>()
+        response.call.response.body<Problem>()
 }

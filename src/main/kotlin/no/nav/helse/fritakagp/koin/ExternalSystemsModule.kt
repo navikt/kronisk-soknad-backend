@@ -126,7 +126,7 @@ fun Module.externalSystemClients(env: Env, envOauth2: EnvOauth2) {
     single { PdlClientImpl(env.pdlUrl, get(qualifier = named("PROXY")), get(), get()) } bind PdlClient::class
     single { DokarkivKlientImpl(env.dokarkivUrl, get(), get(qualifier = named("DOKARKIV"))) } bind DokarkivKlient::class
     single { OppgaveKlientImpl(env.oppgavebehandlingUrl, get(qualifier = named("OPPGAVE")), get()) } bind OppgaveKlient::class
-    single { ArbeidsgiverNotifikasjonKlient(URL(env.arbeidsgiverNotifikasjonUrl), get(qualifier = named("ARBEIDSGIVERNOTIFIKASJON")), get()) }
+    single { ArbeidsgiverNotifikasjonKlient(env.arbeidsgiverNotifikasjonUrl, get()) }
     single {
         ClamavVirusScannerImp(
             get(),

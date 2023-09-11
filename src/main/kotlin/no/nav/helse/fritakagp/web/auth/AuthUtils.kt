@@ -1,10 +1,10 @@
 package no.nav.helse.fritakagp.web.auth
 
-import io.ktor.application.ApplicationCall
-import io.ktor.application.application
-import io.ktor.application.call
-import io.ktor.config.ApplicationConfig
-import io.ktor.request.ApplicationRequest
+import io.ktor.server.application.ApplicationCall
+import io.ktor.server.application.application
+import io.ktor.server.application.call
+import io.ktor.server.config.ApplicationConfig
+import io.ktor.server.request.ApplicationRequest
 import io.ktor.util.pipeline.PipelineContext
 import no.nav.helse.arbeidsgiver.web.auth.AltinnAuthorizer
 import no.nav.helse.fritakagp.integration.altinn.ManglerAltinnRettigheterException

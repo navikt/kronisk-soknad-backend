@@ -1,6 +1,6 @@
 package no.nav.helse.fritakagp
 
-import io.ktor.config.ApplicationConfig
+import io.ktor.server.config.ApplicationConfig
 
 fun readEnv(config: ApplicationConfig): Env =
     when (config.prop("koin.profile")) {

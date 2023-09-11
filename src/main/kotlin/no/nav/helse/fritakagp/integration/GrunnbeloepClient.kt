@@ -1,6 +1,7 @@
 package no.nav.helse.fritakagp.integration
 
 import io.ktor.client.HttpClient
+import io.ktor.client.call.body
 import io.ktor.client.request.get
 import kotlinx.coroutines.runBlocking
 import no.nav.helsearbeidsgiver.utils.cache.LocalCache
@@ -18,25 +19,8 @@ class GrunnbeloepClient(
 
         return cache.get(cacheKey) {
             runBlocking {
-                httpClient.get("$url?dato=$dato")
+                httpClient.get("$url?dato=$dato").body()
             }
         }
     }
 }
-
-/**
- * {
-"dato": "2020-05-01",
-"grunnbeløp": 101351,
-"grunnbeløpPerMåned": 8446,
-"gjennomsnittPerÅr": 100853,
-"omregningsfaktor": 1.014951
-}
- */
-data class GrunnbeløpInfo(
-    val dato: LocalDate,
-    val grunnbeløp: Int,
-    val grunnbeløpPerMåned: Int,
-    val gjennomsnittPerÅr: Int,
-    val omregningsfaktor: Double
-)

@@ -8,7 +8,6 @@ import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbProsesserer
 import no.nav.helse.fritakagp.db.GravidKravRepository
 import no.nav.helse.fritakagp.db.KroniskKravRepository
 import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonKlient
-import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.opprettNySak
 import no.nav.helsearbeidsgiver.utils.log.logger
 import java.util.UUID
 
@@ -38,7 +37,8 @@ class ArbeidsgiverNotifikasjonProcessor(
                 virksomhetsnummer = sak.virkomhetsnummer,
                 tittel = sak.tittel,
                 lenke = sak.lenke,
-                harddeleteOm = sak.harddeleteOm
+                harddeleteOm = sak.harddeleteOm,
+                statusTekst = "status"
             )
         }
         updateSaksId(jobbData, resultat)

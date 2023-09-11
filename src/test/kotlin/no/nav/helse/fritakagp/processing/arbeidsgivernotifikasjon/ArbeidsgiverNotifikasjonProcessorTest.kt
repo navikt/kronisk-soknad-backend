@@ -2,15 +2,16 @@ package no.nav.helse.fritakagp.processing.arbeidsgivernotifikasjon
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.kotlin.KotlinFeature
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
-import io.ktor.client.features.json.JsonFeature
 import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.headersOf
+import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.utils.io.ByteReadChannel
 import io.mockk.every
 import io.mockk.mockk
@@ -36,7 +37,16 @@ internal class ArbeidsgiverNotifikasjonProcessorTest {
     val arbeidsgiverNotifikasjonKlient = buildClientArbeidsgiverNotifikasjonKlient(response)
     val gravidKravRepositoryMock = mockk<GravidKravRepository>(relaxed = true)
     val kroniskKravRepositoryMock = mockk<KroniskKravRepository>(relaxed = true)
-    val objectMapper = ObjectMapper().registerModule(KotlinModule()).registerModule(JavaTimeModule())
+    val objectMapper = ObjectMapper().registerModule(
+        KotlinModule.Builder()
+            .withReflectionCacheSize(512)
+            .configure(KotlinFeature.NullToEmptyCollection, false)
+            .configure(KotlinFeature.NullToEmptyMap, false)
+            .configure(KotlinFeature.NullIsSameAsDefault, false)
+            .configure(KotlinFeature.SingletonSupport, false)
+            .configure(KotlinFeature.StrictNullChecks, false)
+            .build()
+    ).registerModule(JavaTimeModule())
 
     lateinit var gravidKrav: GravidKrav
     lateinit var kroniskKrav: KroniskKrav
@@ -54,6 +64,7 @@ internal class ArbeidsgiverNotifikasjonProcessorTest {
 
     @BeforeEach
     fun setup() {
+
         gravidKrav = GravidTestData.gravidKrav.copy()
         kroniskKrav = KroniskTestData.kroniskKrav.copy()
         gravidJobb = Bakgrunnsjobb(data = objectMapper.writeValueAsString(ArbeidsgiverNotifikasjonProcessor.JobbData(gravidKrav.id, ArbeidsgiverNotifikasjonProcessor.JobbData.SkjemaType.GravidKrav)), type = "test")
@@ -77,8 +88,11 @@ internal class ArbeidsgiverNotifikasjonProcessorTest {
     }
 }
 
-class AccessTokenProviderMock : AccessTokenProvider {
+class AccessTokenProviderMock : AccessTokenProvider, () -> String {
     override fun getToken(): String = "fake token"
+    override fun invoke(): String {
+        return getToken()
+    }
 }
 
 fun buildClientArbeidsgiverNotifikasjonKlient(
@@ -95,8 +109,7 @@ fun buildClientArbeidsgiverNotifikasjonKlient(
     }
 
     return ArbeidsgiverNotifikasjonKlient(
-        URL("https://notifikasjon-fake-produsent-api.labs.nais.io/"),
-        AccessTokenProviderMock(),
-        HttpClient(mockEngine) { install(JsonFeature) }
+        "https://notifikasjon-fake-produsent-api.labs.nais.io/",
+        AccessTokenProviderMock()
     )
 }

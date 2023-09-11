@@ -1,8 +1,10 @@
 package no.nav.helse.slowtests.systemtests.api
 
+import io.ktor.client.call.body
 import io.ktor.client.call.receive
-import io.ktor.client.features.ClientRequestException
+import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.request.post
+import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
@@ -22,12 +24,12 @@ class KroniskKravHTTPTests : SystemTestBase() {
     @Test
     fun `invalid json gives 400 Bad request`() = suspendableTest {
         val responseExcepion = assertThrows<ClientRequestException> {
-            httpClient.post<HttpResponse> {
+            httpClient.post {
                 appUrl(kravKroniskUrl)
                 contentType(ContentType.Application.Json)
                 loggedInAs("123456789")
 
-                body = """
+                setBody("""
                     {
                         "identitetsnummer": "${KroniskTestData.validIdentitetsnummer}",
                         "virksomhetsnummer": "${KroniskTestData.fullValidRequest.virksomhetsnummer}",
@@ -36,7 +38,7 @@ class KroniskKravHTTPTests : SystemTestBase() {
                         "dokumentasjon": ["IKKE GYLDIG"]
                         "kontrollDager": ["IKKE GYLDIG"]
                     }
-                """.trimIndent()
+                """.trimIndent())
             }
         }
 
@@ -47,14 +49,14 @@ class KroniskKravHTTPTests : SystemTestBase() {
 
     @Test
     fun `Skal returnere Created ved feilfritt skjema uten fil`() = suspendableTest {
-        val response = httpClient.post<HttpResponse> {
+        val response = httpClient.post {
             appUrl(kravKroniskUrl)
             contentType(ContentType.Application.Json)
             loggedInAs("123456789")
-            body = KroniskTestData.kroniskKravRequestValid
+            setBody(KroniskTestData.kroniskKravRequestValid)
         }
 
-        val krav = response.receive<KroniskKrav>()
+        val krav = response.body<KroniskKrav>()
         assertThat(response.status).isEqualTo(HttpStatusCode.Created)
         assertThat(krav.identitetsnummer).isEqualTo(KroniskTestData.kroniskKravRequestValid.identitetsnummer)
     }
@@ -62,11 +64,11 @@ class KroniskKravHTTPTests : SystemTestBase() {
     @Test
     fun `Skal returnere forbidden hvis virksomheten ikke er i auth listen fra altinn`() = suspendableTest {
         val responseExcepion = assertThrows<ClientRequestException> {
-            httpClient.post<HttpResponse> {
+            httpClient.post {
                 appUrl(kravKroniskUrl)
                 contentType(ContentType.Application.Json)
                 loggedInAs("123456789")
-                body = KroniskTestData.kroniskKravRequestValid.copy(virksomhetsnummer = "123456785")
+                setBody(KroniskTestData.kroniskKravRequestValid.copy(virksomhetsnummer = "123456785"))
             }
         }
 
@@ -75,14 +77,14 @@ class KroniskKravHTTPTests : SystemTestBase() {
 
     @Test
     fun `Skal returnere Created når fil er vedlagt`() = suspendableTest {
-        val response = httpClient.post<HttpResponse> {
+        val response = httpClient.post {
             appUrl(kravKroniskUrl)
             contentType(ContentType.Application.Json)
             loggedInAs("123456789")
-            body = KroniskTestData.kroniskKravRequestMedFil
+            setBody(KroniskTestData.kroniskKravRequestMedFil)
         }
 
-        val krav = response.receive<KroniskKrav>()
+        val krav = response.body<KroniskKrav>()
         assertThat(response.status).isEqualTo(HttpStatusCode.Created)
         assertThat(krav.harVedlegg).isEqualTo(true)
     }
@@ -90,11 +92,11 @@ class KroniskKravHTTPTests : SystemTestBase() {
     @Test
     fun `Skal returnere full propertypath for periode`() = suspendableTest {
         val responseExcepion = assertThrows<ClientRequestException> {
-            httpClient.post<HttpResponse> {
+            httpClient.post {
                 appUrl(kravKroniskUrl)
                 contentType(ContentType.Application.Json)
                 loggedInAs("123456789")
-                body = KroniskTestData.kroniskKravRequestInValid.copy(
+                setBody(KroniskTestData.kroniskKravRequestInValid.copy(
                     perioder = listOf(
                         Arbeidsgiverperiode(
                             LocalDate.of(2020, 2, 1),
@@ -116,6 +118,7 @@ class KroniskKravHTTPTests : SystemTestBase() {
                         )
                     )
                 )
+                )
             }
         }
         val possiblePropertyPaths = listOf(
@@ -127,7 +130,7 @@ class KroniskKravHTTPTests : SystemTestBase() {
             "perioder[1].månedsinntekt",
             "perioder[2].antallDagerMedRefusjon",
         )
-        val res = responseExcepion.response.call.receive<ValidationProblem>()
+        val res = responseExcepion.response.call.body<ValidationProblem>()
         assertThat(res.violations.size).isEqualTo(7)
         res.violations.forEach {
             assertThat(it.propertyPath).isIn(possiblePropertyPaths)

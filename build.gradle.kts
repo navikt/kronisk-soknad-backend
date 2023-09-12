@@ -193,7 +193,7 @@ dependencies {
     implementation("no.nav.helsearbeidsgiver:utils:$utilsVersion")
     implementation("no.nav.security:mock-oauth2-server:$mockOAuth2ServerVersion")
     implementation("no.nav.security:token-client-core:$tokenSupportVersion")
-    implementation("no.nav.security:token-validation-ktor:$tokenSupportVersion")
+    implementation("no.nav.security:token-validation-ktor-v2:$tokenSupportVersion")
     implementation("no.nav.tjenestespesifikasjoner:altinn-correspondence-agency-external-basic:$altinnCorrespondenceAgencyVersion")
     implementation("org.apache.cxf:cxf-rt-features-logging:$cxfVersion")
     implementation("org.apache.cxf:cxf-rt-frontend-jaxws:$cxfVersion")

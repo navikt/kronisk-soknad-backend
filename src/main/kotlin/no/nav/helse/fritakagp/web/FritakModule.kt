@@ -16,15 +16,19 @@ import io.ktor.server.routing.IgnoreTrailingSlash
 import io.ktor.server.routing.route
 import io.ktor.server.routing.routing
 import no.nav.helse.fritakagp.Env
+import no.nav.helse.fritakagp.web.api.altinnRoutes
 import no.nav.helse.fritakagp.web.api.configureExceptionHandling
+import no.nav.helse.fritakagp.web.api.gravidRoutes
+import no.nav.helse.fritakagp.web.api.kroniskRoutes
 import no.nav.helse.fritakagp.web.api.swaggerRoutes
 import no.nav.helse.fritakagp.web.api.systemRoutes
+import org.koin.ktor.ext.get
+import no.nav.security.token.support.v2.tokenValidationSupport
+
 fun Application.fritakModule(env: Env) {
-
-
     install(IgnoreTrailingSlash)
     install(Authentication) {
-        //  tokenValidationSupport(config = environment.config)
+        tokenValidationSupport(config = env.config)
     }
 
     configureCORSAccess(env)
@@ -38,14 +42,13 @@ fun Application.fritakModule(env: Env) {
         }
     }
 
-
     routing {
         route("${env.ktorBasepath}/api/v1") {
             authenticate {
                 systemRoutes()
-//                kroniskRoutes(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
-//                gravidRoutes(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
-//                altinnRoutes(get())
+                kroniskRoutes(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
+                gravidRoutes(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
+                altinnRoutes(get())
             }
         }
         swaggerRoutes(env.ktorBasepath)

@@ -11,7 +11,7 @@ fun readEnv(config: ApplicationConfig): Env =
         .invoke(config)
 
 sealed class Env private constructor(
-    private val config: ApplicationConfig
+    internal val config: ApplicationConfig
 ) {
     class Prod(config: ApplicationConfig) : Env(config) {
         val oauth2 = EnvOauth2(config)

@@ -1,9 +1,6 @@
 package no.nav.helse.fritakagp.integration
 
-
 import java.time.LocalDate
-
-
 
 data class GrunnbeløpInfo(
     val dato: LocalDate,

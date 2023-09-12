@@ -34,14 +34,13 @@ open class Norg2Client(
      */
     open suspend fun hentAlleArbeidsfordelinger(request: ArbeidsfordelingRequest, callId: String?): List<ArbeidsfordelingResponse> {
         val stsToken = stsClient.getToken()
-        val res :List<ArbeidsfordelingResponse> = runBlocking {
+        val res: List<ArbeidsfordelingResponse> = runBlocking {
             httpClient.post(url) {
                 contentType(ContentType.Application.Json.withCharset(Charsets.UTF_8))
                 header("Authorization", "Bearer $stsToken")
                 header("X-Correlation-ID", callId)
                 setBody(request)
             }.body()
-
         }
         return res
     }

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import io.ktor.server.application.Application
 import io.ktor.server.auth.Authentication
-import io.ktor.auth.authenticate
 import io.ktor.server.plugins.cors.CORS
 import io.ktor.http.ContentType
 import io.ktor.http.HttpMethod
@@ -16,18 +15,10 @@ import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.routing.IgnoreTrailingSlash
 import io.ktor.server.routing.route
 import io.ktor.server.routing.routing
-import io.ktor.util.KtorExperimentalAPI
 import no.nav.helse.fritakagp.Env
-import no.nav.helse.fritakagp.web.api.altinnRoutes
 import no.nav.helse.fritakagp.web.api.configureExceptionHandling
-import no.nav.helse.fritakagp.web.api.gravidRoutes
-import no.nav.helse.fritakagp.web.api.kroniskRoutes
 import no.nav.helse.fritakagp.web.api.swaggerRoutes
 import no.nav.helse.fritakagp.web.api.systemRoutes
-import no.nav.security.token.support.ktor.tokenValidationSupport
-import org.koin.ktor.ext.get
-
-
 fun Application.fritakModule(env: Env) {
 
 

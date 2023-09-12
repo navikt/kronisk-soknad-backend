@@ -1,12 +1,10 @@
 package no.nav.helse.slowtests.systemtests.api
 
 import io.ktor.client.call.body
-import io.ktor.client.call.receive
 import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
-import io.ktor.client.statement.HttpResponse
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
@@ -59,14 +57,16 @@ class GravidKravHTTPTests : SystemTestBase() {
                 contentType(ContentType.Application.Json)
                 loggedInAs("123456789")
 
-                setBody("""
-                {
-                    "fnr": "${GravidTestData.validIdentitetsnummer}",
-                    "orgnr": "${GravidTestData.fullValidSoeknadRequest.virksomhetsnummer}",
-                    "tilrettelegge": true,
-                    "tiltak": ["IKKE GYLDIG"]
-                }
-                """.trimIndent())
+                setBody(
+                    """
+                    {
+                        "fnr": "${GravidTestData.validIdentitetsnummer}",
+                        "orgnr": "${GravidTestData.fullValidSoeknadRequest.virksomhetsnummer}",
+                        "tilrettelegge": true,
+                        "tiltak": ["IKKE GYLDIG"]
+                    }
+                    """.trimIndent()
+                )
             }
         }
 
@@ -83,15 +83,14 @@ class GravidKravHTTPTests : SystemTestBase() {
             loggedInAs("123456789")
             setBody(GravidTestData.gravidKravRequestValid)
         }.body<GravidKrav>()
-
-        //val krav = response.receive()
+        // val krav = response.receive()
         assertThat(response.status).isEqualTo(HttpStatusCode.Created)
         assertThat(response.identitetsnummer).isEqualTo(GravidTestData.gravidKravRequestValid.identitetsnummer)
     }
 
     @Test
     fun `Skal returnere Created ved periode på en dag`() = suspendableTest {
-        val response = httpClient.post{
+        val response = httpClient.post {
             appUrl(kravGravidUrl)
             contentType(ContentType.Application.Json)
             loggedInAs("123456789")
@@ -135,28 +134,29 @@ class GravidKravHTTPTests : SystemTestBase() {
                 appUrl(kravGravidUrl)
                 contentType(ContentType.Application.Json)
                 loggedInAs("123456789")
-                setBody(GravidTestData.gravidKravRequestInValid.copy(
-                    perioder = listOf(
-                        Arbeidsgiverperiode(
-                            LocalDate.of(2020, 1, 15),
-                            LocalDate.of(2020, 1, 10),
-                            2,
-                            månedsinntekt = 2590.8
-                        ),
-                        Arbeidsgiverperiode(
-                            LocalDate.of(2020, 1, 5),
-                            LocalDate.of(2020, 1, 4),
-                            2,
-                            månedsinntekt = 2590.8,
-                        ),
-                        Arbeidsgiverperiode(
-                            LocalDate.of(2020, 1, 5),
-                            LocalDate.of(2020, 1, 14),
-                            12,
-                            månedsinntekt = 2590.8,
+                setBody(
+                    GravidTestData.gravidKravRequestInValid.copy(
+                        perioder = listOf(
+                            Arbeidsgiverperiode(
+                                LocalDate.of(2020, 1, 15),
+                                LocalDate.of(2020, 1, 10),
+                                2,
+                                månedsinntekt = 2590.8
+                            ),
+                            Arbeidsgiverperiode(
+                                LocalDate.of(2020, 1, 5),
+                                LocalDate.of(2020, 1, 4),
+                                2,
+                                månedsinntekt = 2590.8,
+                            ),
+                            Arbeidsgiverperiode(
+                                LocalDate.of(2020, 1, 5),
+                                LocalDate.of(2020, 1, 14),
+                                12,
+                                månedsinntekt = 2590.8,
+                            )
                         )
                     )
-                )
                 )
             }
         }
@@ -173,28 +173,29 @@ class GravidKravHTTPTests : SystemTestBase() {
                 appUrl(kravGravidUrl)
                 contentType(ContentType.Application.Json)
                 loggedInAs("123456789")
-                setBody(GravidTestData.gravidKravRequestInValid.copy(
-                    perioder = listOf(
-                        Arbeidsgiverperiode(
-                            LocalDate.of(2020, 1, 15),
-                            LocalDate.of(2020, 1, 10),
-                            2,
-                            månedsinntekt = 2590.8
-                        ),
-                        Arbeidsgiverperiode(
-                            LocalDate.of(2020, 1, 5),
-                            LocalDate.of(2020, 1, 4),
-                            2,
-                            månedsinntekt = 2590.8,
-                        ),
-                        Arbeidsgiverperiode(
-                            LocalDate.of(2020, 1, 5),
-                            LocalDate.of(2020, 1, 14),
-                            12,
-                            månedsinntekt = 2590.8,
+                setBody(
+                    GravidTestData.gravidKravRequestInValid.copy(
+                        perioder = listOf(
+                            Arbeidsgiverperiode(
+                                LocalDate.of(2020, 1, 15),
+                                LocalDate.of(2020, 1, 10),
+                                2,
+                                månedsinntekt = 2590.8
+                            ),
+                            Arbeidsgiverperiode(
+                                LocalDate.of(2020, 1, 5),
+                                LocalDate.of(2020, 1, 4),
+                                2,
+                                månedsinntekt = 2590.8,
+                            ),
+                            Arbeidsgiverperiode(
+                                LocalDate.of(2020, 1, 5),
+                                LocalDate.of(2020, 1, 14),
+                                12,
+                                månedsinntekt = 2590.8,
+                            )
                         )
                     )
-                )
                 )
             }
         }

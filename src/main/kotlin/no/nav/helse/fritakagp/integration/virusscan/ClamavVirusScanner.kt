@@ -36,22 +36,21 @@ class ClamavVirusScannerImp(private val httpClient: HttpClient, private val scan
     override suspend fun scanDoc(vedlagt: ByteArray): Boolean {
         val scanResult: List<ScanResult> = httpClient.post {
             url(scanUrl)
-            setBody(MultiPartFormDataContent(
-                formData {
-                    append(
-                        "file1",
-                        "vedlagt",
-                        ContentType.parse("application/octet-stream"),
-                        vedlagt.size.toLong()
-                    ) {
-                        writeFully(vedlagt)
+            setBody(
+                MultiPartFormDataContent(
+                    formData {
+                        append(
+                            "file1",
+                            "vedlagt",
+                            ContentType.parse("application/octet-stream"),
+                            vedlagt.size.toLong()
+                        ) {
+                            writeFully(vedlagt)
+                        }
                     }
-                }
-
-            )
+                )
             )
         }.body()
-
         return when (scanResult[0].Result) {
             Result.OK -> true
             Result.FOUND, Result.ERROR -> false

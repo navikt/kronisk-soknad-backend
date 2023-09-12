@@ -56,14 +56,16 @@ class GravidSoeknadHTTPTests : SystemTestBase() {
                 contentType(ContentType.Application.Json)
                 loggedInAs("123456789")
 
-                setBody("""
-                {
-                    "fnr": "${GravidTestData.validIdentitetsnummer}",
-                    "orgnr": "${GravidTestData.fullValidSoeknadRequest.virksomhetsnummer}",
-                    "tilrettelegge": true,
-                    "tiltak": ["IKKE GYLDIG"]
-                }
-                """.trimIndent())
+                setBody(
+                    """
+                    {
+                        "fnr": "${GravidTestData.validIdentitetsnummer}",
+                        "orgnr": "${GravidTestData.fullValidSoeknadRequest.virksomhetsnummer}",
+                        "tilrettelegge": true,
+                        "tiltak": ["IKKE GYLDIG"]
+                    }
+                    """.trimIndent()
+                )
             }
         }
 

@@ -58,13 +58,15 @@ class KroniskSoeknadHTTPTests : SystemTestBase() {
                 contentType(ContentType.Application.Json)
                 loggedInAs("123456789")
 
-                setBody("""
-                {
-                    "fnr": "${GravidTestData.validIdentitetsnummer}",
-                    "orgnr": "${GravidTestData.fullValidSoeknadRequest.virksomhetsnummer}",
-                    "bekreftelse": true,
-                }
-                """.trimIndent())
+                setBody(
+                    """
+                    {
+                        "fnr": "${GravidTestData.validIdentitetsnummer}",
+                        "orgnr": "${GravidTestData.fullValidSoeknadRequest.virksomhetsnummer}",
+                        "bekreftelse": true,
+                    }
+                    """.trimIndent()
+                )
             }
         }
 
@@ -93,15 +95,16 @@ class KroniskSoeknadHTTPTests : SystemTestBase() {
                 appUrl(soeknadKroniskUrl)
                 contentType(ContentType.Application.Json)
                 loggedInAs("123456789")
-                setBody(KroniskSoknadRequest(
-                    virksomhetsnummer = "lkajsbdfv",
-                    identitetsnummer = "lkdf",
-                    antallPerioder = 0,
-                    fravaer = setOf(FravaerData("2001-01", 12F)),
-                    bekreftet = true,
-                    dokumentasjon = null,
-                    ikkeHistoriskFravaer = false
-                )
+                setBody(
+                    KroniskSoknadRequest(
+                        virksomhetsnummer = "lkajsbdfv",
+                        identitetsnummer = "lkdf",
+                        antallPerioder = 0,
+                        fravaer = setOf(FravaerData("2001-01", 12F)),
+                        bekreftet = true,
+                        dokumentasjon = null,
+                        ikkeHistoriskFravaer = false
+                    )
                 )
             }
         }
@@ -115,11 +118,12 @@ class KroniskSoeknadHTTPTests : SystemTestBase() {
             appUrl(soeknadKroniskUrl)
             contentType(ContentType.Application.Json)
             loggedInAs("123456789")
-            setBody(KroniskTestData.fullValidRequest.copy(
-                ikkeHistoriskFravaer = true,
-                fravaer = setOf(),
-                antallPerioder = 0
-            )
+            setBody(
+                KroniskTestData.fullValidRequest.copy(
+                    ikkeHistoriskFravaer = true,
+                    fravaer = setOf(),
+                    antallPerioder = 0
+                )
             )
         }
 

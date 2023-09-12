@@ -4,15 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinFeature
 import com.fasterxml.jackson.module.kotlin.KotlinModule
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.mock.MockEngine
-import io.ktor.client.engine.mock.respond
 import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.headersOf
-import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.utils.io.ByteReadChannel
+import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.helse.GravidTestData
@@ -27,14 +23,13 @@ import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjo
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import java.net.URL
 
 internal class ArbeidsgiverNotifikasjonProcessorTest {
     private fun getResourceAsText(filename: String) =
         this::class.java.classLoader.getResource("responses/$filename")!!.readText()
 
     val response = getResourceAsText("opprettNySak/gyldig.json")
-    val arbeidsgiverNotifikasjonKlient = buildClientArbeidsgiverNotifikasjonKlient(response)
+    val arbeidsgiverNotifikasjonKlient = mockClientArbeidsgiverNotifikasjonKlient(response)
     val gravidKravRepositoryMock = mockk<GravidKravRepository>(relaxed = true)
     val kroniskKravRepositoryMock = mockk<KroniskKravRepository>(relaxed = true)
     val objectMapper = ObjectMapper().registerModule(
@@ -88,28 +83,12 @@ internal class ArbeidsgiverNotifikasjonProcessorTest {
     }
 }
 
-class AccessTokenProviderMock : AccessTokenProvider, () -> String {
-    override fun getToken(): String = "fake token"
-    override fun invoke(): String {
-        return getToken()
-    }
-}
-
-fun buildClientArbeidsgiverNotifikasjonKlient(
+fun mockClientArbeidsgiverNotifikasjonKlient(
     response: String,
     status: HttpStatusCode = HttpStatusCode.OK,
     headers: Headers = headersOf(HttpHeaders.ContentType, "application/json")
 ): ArbeidsgiverNotifikasjonKlient {
-    val mockEngine = MockEngine {
-        respond(
-            content = ByteReadChannel(response),
-            status = status,
-            headers = headers
-        )
-    }
-
-    return ArbeidsgiverNotifikasjonKlient(
-        "https://notifikasjon-fake-produsent-api.labs.nais.io/",
-        AccessTokenProviderMock()
-    )
+    val klient = mockk<ArbeidsgiverNotifikasjonKlient>(relaxed = true)
+    coEvery { klient.opprettNySak(any(), any(), any(), any(), any(), any(), any()) } returns "1"
+    return klient
 }

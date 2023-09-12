@@ -39,7 +39,7 @@ class KroniskKravHTTPTests : SystemTestBase() {
                         "dokumentasjon": ["IKKE GYLDIG"]
                         "kontrollDager": ["IKKE GYLDIG"]
                     }
-                """.trimIndent()
+                    """.trimIndent()
                 )
             }
         }

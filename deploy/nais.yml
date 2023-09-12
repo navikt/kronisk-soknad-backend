@@ -11,6 +11,10 @@ metadata:
 spec:
   image: {{ image }}
   port: 8080
+  idporten:
+    enabled: true
+  sidecar:
+    enabled: true
   replicas:
     max: 1
     min: 1
@@ -85,8 +89,6 @@ spec:
     {{#each envFrom as |secret|}}
     - secret: {{ secret }}
     {{/each}}
-    # tilgjengeliggjør LOGINSERVICE_IDPORTEN_DISCOVERY_URL og LOGINSERVICE_IDPORTEN_AUDIENCE
-    - configmap: loginservice-idporten
 
   env:
     - name: KAFKA_BESKJED_TOPIC_NAME

@@ -29,7 +29,8 @@ class KroniskKravHTTPTests : SystemTestBase() {
                 contentType(ContentType.Application.Json)
                 loggedInAs("123456789")
 
-                setBody("""
+                setBody(
+                    """
                     {
                         "identitetsnummer": "${KroniskTestData.validIdentitetsnummer}",
                         "virksomhetsnummer": "${KroniskTestData.fullValidRequest.virksomhetsnummer}",
@@ -38,7 +39,8 @@ class KroniskKravHTTPTests : SystemTestBase() {
                         "dokumentasjon": ["IKKE GYLDIG"]
                         "kontrollDager": ["IKKE GYLDIG"]
                     }
-                """.trimIndent())
+                """.trimIndent()
+                )
             }
         }
 
@@ -96,28 +98,29 @@ class KroniskKravHTTPTests : SystemTestBase() {
                 appUrl(kravKroniskUrl)
                 contentType(ContentType.Application.Json)
                 loggedInAs("123456789")
-                setBody(KroniskTestData.kroniskKravRequestInValid.copy(
-                    perioder = listOf(
-                        Arbeidsgiverperiode(
-                            LocalDate.of(2020, 2, 1),
-                            LocalDate.of(2020, 1, 31),
-                            29,
-                            månedsinntekt = 34000000.0
-                        ),
-                        Arbeidsgiverperiode(
-                            LocalDate.of(2020, 2, 3),
-                            LocalDate.of(2020, 1, 31),
-                            23,
-                            månedsinntekt = -30.0
-                        ),
-                        Arbeidsgiverperiode(
-                            LocalDate.of(2020, 1, 5),
-                            LocalDate.of(2020, 1, 14),
-                            12,
-                            månedsinntekt = 2590.8,
+                setBody(
+                    KroniskTestData.kroniskKravRequestInValid.copy(
+                        perioder = listOf(
+                            Arbeidsgiverperiode(
+                                LocalDate.of(2020, 2, 1),
+                                LocalDate.of(2020, 1, 31),
+                                29,
+                                månedsinntekt = 34000000.0
+                            ),
+                            Arbeidsgiverperiode(
+                                LocalDate.of(2020, 2, 3),
+                                LocalDate.of(2020, 1, 31),
+                                23,
+                                månedsinntekt = -30.0
+                            ),
+                            Arbeidsgiverperiode(
+                                LocalDate.of(2020, 1, 5),
+                                LocalDate.of(2020, 1, 14),
+                                12,
+                                månedsinntekt = 2590.8,
+                            )
                         )
                     )
-                )
                 )
             }
         }

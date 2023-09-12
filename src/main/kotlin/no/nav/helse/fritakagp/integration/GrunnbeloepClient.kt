@@ -24,3 +24,20 @@ class GrunnbeloepClient(
         }
     }
 }
+
+/**
+ * {
+"dato": "2020-05-01",
+"grunnbeløp": 101351,
+"grunnbeløpPerMåned": 8446,
+"gjennomsnittPerÅr": 100853,
+"omregningsfaktor": 1.014951
+}
+ */
+data class GrunnbeløpInfo(
+    val dato: LocalDate,
+    val grunnbeløp: Int,
+    val grunnbeløpPerMåned: Int,
+    val gjennomsnittPerÅr: Int,
+    val omregningsfaktor: Double
+)

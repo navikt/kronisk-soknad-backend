@@ -117,7 +117,7 @@ class KroniskKravHTTPTests : SystemTestBase() {
                                 LocalDate.of(2020, 1, 5),
                                 LocalDate.of(2020, 1, 14),
                                 12,
-                                månedsinntekt = 2590.8,
+                                månedsinntekt = 2590.8
                             )
                         )
                     )
@@ -131,7 +131,7 @@ class KroniskKravHTTPTests : SystemTestBase() {
             "perioder[1].fom",
             "perioder[1].antallDagerMedRefusjon",
             "perioder[1].månedsinntekt",
-            "perioder[2].antallDagerMedRefusjon",
+            "perioder[2].antallDagerMedRefusjon"
         )
         val res = responseExcepion.response.call.body<ValidationProblem>()
         assertThat(res.violations.size).isEqualTo(7)

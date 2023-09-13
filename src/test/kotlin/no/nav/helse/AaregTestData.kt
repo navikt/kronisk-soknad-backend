@@ -63,7 +63,7 @@ object AaregTestData {
             Ansettelsesperiode(
                 Periode(
                     LocalDate.of(2004, 6, 1),
-                    LocalDate.of(2004, 6, 30),
+                    LocalDate.of(2004, 6, 30)
                 )
             ),
             LocalDateTime.now()

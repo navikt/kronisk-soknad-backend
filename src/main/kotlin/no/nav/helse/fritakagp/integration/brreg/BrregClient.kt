@@ -30,8 +30,9 @@ class BrregClientImpl(private val httpClient: HttpClient, private val brregUnder
         } catch (cause: Throwable) {
             when (cause) {
                 is ClientRequestException -> {
-                    if (404 == cause.response?.status?.value)
+                    if (404 == cause.response?.status?.value) {
                         navn = "Ukjent arbeidsgiver"
+                    }
                 }
                 else -> throw cause
             }

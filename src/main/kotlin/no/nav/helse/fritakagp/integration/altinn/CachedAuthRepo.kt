@@ -7,7 +7,7 @@ import no.nav.helsearbeidsgiver.utils.cache.LocalCache
 import kotlin.time.Duration.Companion.minutes
 
 class CachedAuthRepo(
-    private val sourceRepo: AltinnOrganisationsRepository,
+    private val sourceRepo: AltinnOrganisationsRepository
 ) : AltinnOrganisationsRepository {
     private val cache = LocalCache<Set<AltinnOrganisasjon>>(60.minutes, 100)
 

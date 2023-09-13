@@ -10,7 +10,7 @@ import kotlin.time.Duration.Companion.days
 
 class GrunnbeloepClient(
     private val url: String,
-    private val httpClient: HttpClient,
+    private val httpClient: HttpClient
 ) {
     private val cache = LocalCache<GrunnbeløpInfo>(1.days, 5)
 

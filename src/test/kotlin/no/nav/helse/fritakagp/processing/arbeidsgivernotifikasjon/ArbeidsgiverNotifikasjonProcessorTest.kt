@@ -58,7 +58,6 @@ internal class ArbeidsgiverNotifikasjonProcessorTest {
 
     @BeforeEach
     fun setup() {
-
         gravidKrav = GravidTestData.gravidKrav.copy()
         kroniskKrav = KroniskTestData.kroniskKrav.copy()
         gravidJobb = Bakgrunnsjobb(data = objectMapper.writeValueAsString(ArbeidsgiverNotifikasjonProcessor.JobbData(gravidKrav.id, ArbeidsgiverNotifikasjonProcessor.JobbData.SkjemaType.GravidKrav)), type = "test")

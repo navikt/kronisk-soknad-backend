@@ -15,10 +15,11 @@ class BeloepBeregning(
         perioder.forEach {
             val seksG = grunnbeloepClient.hentGrunnbeløp(it.fom).grunnbeløp * 6.0
             val arslonn = it.månedsinntekt * 12
-            it.dagsats = if (arslonn < seksG)
+            it.dagsats = if (arslonn < seksG) {
                 round2DigitDecimal(arslonn / antallDager)
-            else
+            } else {
                 round2DigitDecimal(seksG / antallDager)
+            }
             it.belop = round2DigitDecimal(it.dagsats * it.antallDagerMedRefusjon * it.gradering)
         }
     }

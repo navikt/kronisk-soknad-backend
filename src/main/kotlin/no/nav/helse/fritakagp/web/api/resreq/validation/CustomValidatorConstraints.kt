@@ -78,10 +78,11 @@ inline fun <reified T : Enum<T>> enumContains(name: String): Boolean {
 fun extractBase64Del(dataUrl: String): String = dataUrl.substringAfter("base64,")
 
 fun extractFilExtDel(dataUrl: String): String {
-    if (!dataUrl.contains(';'))
+    if (!dataUrl.contains(';')) {
         return ""
-    else
+    } else {
         return dataUrl.substring(0, dataUrl.indexOf(';')).substringAfter('/')
+    }
 }
 
 class VirusCheckConstraint : CustomConstraint

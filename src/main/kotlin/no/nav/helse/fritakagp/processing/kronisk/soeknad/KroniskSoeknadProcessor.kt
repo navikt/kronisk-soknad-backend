@@ -137,7 +137,7 @@ class KroniskSoeknadProcessor(
                 avsenderMottaker = AvsenderMottaker(
                     id = soeknad.virksomhetsnummer,
                     idType = IdType.ORGNR,
-                    navn = soeknad.virksomhetsnavn ?: "Ukjent arbeidsgiver",
+                    navn = soeknad.virksomhetsnavn ?: "Ukjent arbeidsgiver"
                 ),
                 dokumenter = createDocuments(soeknad, KroniskSoeknad.tittel),
                 datoMottatt = soeknad.opprettet.toLocalDate()

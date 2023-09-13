@@ -22,7 +22,6 @@ import java.util.Collections
 private val collectorRegistry = CollectorRegistry.defaultRegistry
 
 fun Application.nais() {
-
     DefaultExports.initialize()
 
     routing {

@@ -7,7 +7,6 @@ import io.ktor.server.routing.Route
 import io.ktor.server.routing.route
 
 fun Route.swaggerRoutes(base: String) {
-
     route("$base") {
         static("swagger") {
             defaultResource("swagger-ui/dist/index.html")

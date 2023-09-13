@@ -38,13 +38,13 @@ class GravidSoknadRequestTest {
         validationShouldFailFor(GravidSoknadRequest::tiltakBeskrivelse) {
             GravidTestData.fullValidSoeknadRequest.copy(
                 tiltak = listOf(Tiltak.ANNET),
-                tiltakBeskrivelse = "",
+                tiltakBeskrivelse = ""
             ).validate(true)
         }
 
         GravidTestData.fullValidSoeknadRequest.copy(
             tiltak = listOf(Tiltak.ANNET),
-            tiltakBeskrivelse = "dette går bra",
+            tiltakBeskrivelse = "dette går bra"
         ).validate(true)
     }
 

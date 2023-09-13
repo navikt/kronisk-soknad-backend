@@ -204,7 +204,6 @@ class GravidSoeknadProcessorTest {
 
     @Test
     fun `Ved feil i oppgave skal joarkref lagres, og det skal det kastes exception oppover`() {
-
         coEvery { oppgaveMock.opprettOppgave(any(), any()) } throws IOException()
 
         assertThrows<IOException> { prosessor.prosesser(jobb) }

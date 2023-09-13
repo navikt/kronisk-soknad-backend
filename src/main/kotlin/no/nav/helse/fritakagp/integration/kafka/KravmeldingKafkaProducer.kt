@@ -47,7 +47,9 @@ class KravmeldingKafkaProducer(
                 producer.close()
                 producer = producerFactory.createProducer(props)
                 return sendMelding(melding, type)
-            } else throw ex
+            } else {
+                throw ex
+            }
         }
     }
 }

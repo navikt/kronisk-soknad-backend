@@ -147,13 +147,13 @@ class GravidKravHTTPTests : SystemTestBase() {
                                 LocalDate.of(2020, 1, 5),
                                 LocalDate.of(2020, 1, 4),
                                 2,
-                                månedsinntekt = 2590.8,
+                                månedsinntekt = 2590.8
                             ),
                             Arbeidsgiverperiode(
                                 LocalDate.of(2020, 1, 5),
                                 LocalDate.of(2020, 1, 14),
                                 12,
-                                månedsinntekt = 2590.8,
+                                månedsinntekt = 2590.8
                             )
                         )
                     )
@@ -186,13 +186,13 @@ class GravidKravHTTPTests : SystemTestBase() {
                                 LocalDate.of(2020, 1, 5),
                                 LocalDate.of(2020, 1, 4),
                                 2,
-                                månedsinntekt = 2590.8,
+                                månedsinntekt = 2590.8
                             ),
                             Arbeidsgiverperiode(
                                 LocalDate.of(2020, 1, 5),
                                 LocalDate.of(2020, 1, 14),
                                 12,
-                                månedsinntekt = 2590.8,
+                                månedsinntekt = 2590.8
                             )
                         )
                     )
@@ -204,7 +204,7 @@ class GravidKravHTTPTests : SystemTestBase() {
             "perioder[0].antallDagerMedRefusjon",
             "perioder[1].fom",
             "perioder[1].antallDagerMedRefusjon",
-            "perioder[2].antallDagerMedRefusjon",
+            "perioder[2].antallDagerMedRefusjon"
         )
         val res = responseExcepion.response.call.body<ValidationProblem>()
         assertThat(res.violations.size).isEqualTo(5)

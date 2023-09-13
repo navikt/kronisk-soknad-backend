@@ -81,7 +81,6 @@ class BrukernotifikasjonProcessor(
         hendselstidspunkt: LocalDateTime,
         virksomhetsNavn: String?
     ): BeskjedInput {
-
         val synligFremTil = LocalDateTime.now().plusDays(31)
         val ukjentArbeidsgiver = "Arbeidsgiveren din"
         val hendelsestidsPunktUtc = hendselstidspunkt

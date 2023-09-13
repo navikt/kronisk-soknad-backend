@@ -85,6 +85,7 @@ internal class KroniskSoknadRequestTest {
             ).validate(true)
         }
     }
+
     @Test
     fun `Antall perioder kan ikke være 0`() {
         val invalidAntallPerioder = 0

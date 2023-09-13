@@ -13,7 +13,6 @@ class KroniskSoeknadAntallDagerFloatTest {
 
     @Test
     fun `Skal summere antall dager korrekt`() {
-
         val testData = setOf(
             FravaerData(LocalDate.now().minusMonths(4).toYearMonthString(), 5F),
             FravaerData(LocalDate.now().minusMonths(3).toYearMonthString(), 5.3F)
@@ -24,7 +23,6 @@ class KroniskSoeknadAntallDagerFloatTest {
 
     @Test
     fun `Beskrivelse skal inneholde riktig genererte string `() {
-
         val testData = setOf(
             FravaerData(LocalDate.now().minusMonths(4).toYearMonthString(), 5F),
             FravaerData(LocalDate.now().minusMonths(3).toYearMonthString(), 5.3F)

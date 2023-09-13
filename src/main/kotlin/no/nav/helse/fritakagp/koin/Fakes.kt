@@ -59,26 +59,34 @@ fun Module.mockExternalDependecies() {
             override suspend fun hentArbeidsforhold(ident: String, callId: String): List<Arbeidsforhold> =
                 listOf<Arbeidsforhold>(
                     Arbeidsforhold(
-                        Arbeidsgiver("test", "810007842"), Opplysningspliktig("Juice", "810007702"), emptyList(),
+                        Arbeidsgiver("test", "810007842"),
+                        Opplysningspliktig("Juice", "810007702"),
+                        emptyList(),
                         Ansettelsesperiode(
                             Periode(LocalDate.MIN, null)
                         ),
                         LocalDate.MIN.atStartOfDay()
                     ),
                     Arbeidsforhold(
-                        Arbeidsgiver("test", "910098896"), Opplysningspliktig("Juice", "910098896"), emptyList(),
+                        Arbeidsgiver("test", "910098896"),
+                        Opplysningspliktig("Juice", "910098896"),
+                        emptyList(),
                         Ansettelsesperiode(
                             Periode(
-                                LocalDate.MIN, null
+                                LocalDate.MIN,
+                                null
                             )
                         ),
                         LocalDate.MIN.atStartOfDay()
                     ),
                     Arbeidsforhold(
-                        Arbeidsgiver("test", "917404437"), Opplysningspliktig("Juice", "910098896"), emptyList(),
+                        Arbeidsgiver("test", "917404437"),
+                        Opplysningspliktig("Juice", "910098896"),
+                        emptyList(),
                         Ansettelsesperiode(
                             Periode(
-                                LocalDate.MIN, null
+                                LocalDate.MIN,
+                                null
                             )
                         ),
                         LocalDate.MIN.atStartOfDay()
@@ -147,7 +155,8 @@ fun Module.mockExternalDependecies() {
                 opprettOppgaveRequest: OpprettOppgaveRequest,
                 callId: String
             ): OpprettOppgaveResponse = OpprettOppgaveResponse(
-                1234, "0100",
+                1234,
+                "0100",
                 tema = "KON",
                 oppgavetype = "JFR",
                 versjon = 1,

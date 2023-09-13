@@ -105,7 +105,9 @@ class GravidSoeknadAltinnKvitteringSender(
             } else {
                 kvittering.omplassering.beskrivelse
             }
-        } else ""
+        } else {
+            ""
+        }
     }
 
     fun lagreTiltak(tiltak: List<Tiltak>?): String {

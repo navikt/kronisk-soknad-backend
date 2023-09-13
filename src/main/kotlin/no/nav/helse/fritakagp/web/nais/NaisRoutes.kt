@@ -26,17 +26,17 @@ fun Application.nais() {
     DefaultExports.initialize()
 
     routing {
-//        get("/health/is-alive") {
-//            val kubernetesProbeManager = this@routing.get<KubernetesProbeManager>()
-//            val checkResults = kubernetesProbeManager.runLivenessProbe()
-//            returnResultOfChecks(checkResults)
-//        }
-//
-//        get("/health/is-ready") {
-//            val kubernetesProbeManager = this@routing.get<KubernetesProbeManager>()
-//            val checkResults = kubernetesProbeManager.runReadynessProbe()
-//            returnResultOfChecks(checkResults)
-//        }
+        get("/health/is-alive") {
+            val kubernetesProbeManager = this@routing.get<KubernetesProbeManager>()
+            val checkResults = kubernetesProbeManager.runLivenessProbe()
+            returnResultOfChecks(checkResults)
+        }
+
+        get("/health/is-ready") {
+            val kubernetesProbeManager = this@routing.get<KubernetesProbeManager>()
+            val checkResults = kubernetesProbeManager.runReadynessProbe()
+            returnResultOfChecks(checkResults)
+        }
 
         get("/metrics") {
             val names = call.request.queryParameters.getAll("name[]")?.toSet() ?: Collections.emptySet()

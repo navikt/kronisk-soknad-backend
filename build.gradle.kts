@@ -136,7 +136,7 @@ dependencies {
     val koinVersion: String by project
     val ktorVersion: String by project
     val logback_version: String by project
-    val logBackEncoderVersion: String by project
+    val logbackEncoderVersion: String by project
     val mockkVersion: String by project
     val mockOAuth2ServerVersion: String by project
     val pdfboxVersion: String by project
@@ -149,7 +149,7 @@ dependencies {
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
     implementation("ch.qos.logback:logback-classic:$logback_version")
-    implementation("net.logstash.logback:logstash-logback-encoder:$logBackEncoderVersion")
+    implementation("net.logstash.logback:logstash-logback-encoder:$logbackEncoderVersion")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jacksonVersion")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonModuleKotlinVersion")

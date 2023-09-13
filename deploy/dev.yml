@@ -14,6 +14,7 @@ accessOutbound:
     - tt02.altinn.no
     - data.brreg.no
     - g.nav.no
+    - test.idporten.no
 envFrom:
   # servicebrukerens passord som er  hentet fra vault og lagt inn slik: https://doc.nais.io/security/secrets/kubernetes-secrets/
   - service-user-password

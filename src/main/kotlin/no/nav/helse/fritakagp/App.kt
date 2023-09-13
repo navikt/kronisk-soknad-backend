@@ -42,7 +42,6 @@ import org.koin.core.context.stopKoin
 import org.slf4j.LoggerFactory
 
 class FritakAgpApplication(val port: Int = 8080) : KoinComponent {
-    // private val logger = this.logger()
     private val logger = LoggerFactory.getLogger(this.javaClass)
     private val appConfig = HoconApplicationConfig(ConfigFactory.load())
     private val env = readEnv(appConfig)
@@ -148,7 +147,7 @@ class FritakAgpApplication(val port: Int = 8080) : KoinComponent {
 }
 
 fun main() {
-    //val logger = "main".logger()
+    // val logger = "main".logger()
     val logger = LoggerFactory.getLogger("fritakagp")
     Thread.currentThread().setUncaughtExceptionHandler { thread, err ->
         logger.error("uncaught exception in thread ${thread.name}: ${err.message}", err)

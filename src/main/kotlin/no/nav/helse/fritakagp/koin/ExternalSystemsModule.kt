@@ -49,7 +49,6 @@ import org.koin.core.module.Module
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import java.net.URI
-import java.net.URL
 
 fun Module.externalSystemClients(env: Env, envOauth2: EnvOauth2) {
     single {

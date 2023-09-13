@@ -115,6 +115,5 @@ fun localConfig(env: Env.Local): Module = module {
 
     single { DatapakkePublisherJob(get(), get(), env.datapakkeUrl, env.datapakkeId, get()) }
     single { StatsRepoImpl(get()) } bind IStatsRepo::class
-
-    single { ArbeidsgiverNotifikasjonKlient(env.arbeidsgiverNotifikasjonUrl, get()) }
+    single { ArbeidsgiverNotifikasjonKlient(env.arbeidsgiverNotifikasjonUrl, getAccessToken = { "token" }) }
 }

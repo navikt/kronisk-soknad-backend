@@ -134,12 +134,9 @@ dependencies {
     val kformatVersion: String by project
     val koinVersion: String by project
     val ktorVersion: String by project
-    val logbackEncoderVersion: String by project
-    val logback_contrib_version: String by project
     val logback_version: String by project
     val mockkVersion: String by project
     val mockOAuth2ServerVersion: String by project
-    val navCommonLogVersion: String by project
     val pdfboxVersion: String by project
     val postgresqlVersion: String by project
     val prometheusVersion: String by project
@@ -147,18 +144,14 @@ dependencies {
     val tokenSupportVersion: String by project
     val utilsVersion: String by project
     val valiktorVersion: String by project
-    val wiremockStandaloneVersion: String by project
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
-    implementation("ch.qos.logback.contrib:logback-jackson:$logback_contrib_version")
-    implementation("ch.qos.logback.contrib:logback-json-classic:$logback_contrib_version")
     implementation("ch.qos.logback:logback-classic:$logback_version")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jacksonVersion")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonModuleKotlinVersion")
     implementation("com.github.javafaker:javafaker:$javafakerVersion") // flytt denne til test når generatorene ikke er nødvendige i prod-koden lenger
     implementation("com.github.navikt:brukernotifikasjon-schemas:$brukernotifikasjonSchemasVersion")
-    implementation("com.github.tomakehurst:wiremock-standalone:$wiremockStandaloneVersion")
     implementation("com.google.cloud:google-cloud-storage:$gcpStorageVersion")
     implementation("com.sun.activation:javax.activation:$javaxActivationVersion")
     implementation("com.sun.xml.ws:jaxws-tools:$jaxwsToolsVersion") {
@@ -186,12 +179,18 @@ dependencies {
     implementation("io.prometheus:simpleclient_hotspot:$prometheusVersion")
     implementation("javax.ws.rs:javax.ws.rs-api:$javaxWsRsApiVersion")
     implementation("javax.xml.ws:jaxws-api:$jaxwsVersion")
-    implementation("net.logstash.logback:logstash-logback-encoder:$logbackEncoderVersion")
-    implementation("no.nav.common:log:$navCommonLogVersion")
-    implementation("no.nav.helsearbeidsgiver:helse-arbeidsgiver-felles-backend:$fellesBackendVersion")
+    implementation("no.nav.helsearbeidsgiver:helse-arbeidsgiver-felles-backend:$fellesBackendVersion") {
+        exclude(group = "ch.qos.logback", module = "logback-classic")
+        exclude(group = "ch.qos.logback.contrib", module = "*")
+        exclude(group = "net.logstash.logback", module = "logstash-logback-encoder")
+        exclude(group = "org.slf4j", module = "slf4j-api")
+    }
     implementation("no.nav.helsearbeidsgiver:arbeidsgiver-notifikasjon-klient:$arbeidsgiverNotifikasjonKlientVersion")
     implementation("no.nav.helsearbeidsgiver:utils:$utilsVersion")
-    implementation("no.nav.security:mock-oauth2-server:$mockOAuth2ServerVersion")
+    implementation("no.nav.security:mock-oauth2-server:$mockOAuth2ServerVersion") {
+        exclude(group = "ch.qos.logback", module = "logback-classic")
+        exclude(group = "org.slf4j", module = "slf4j-api")
+    }
     implementation("no.nav.security:token-client-core:$tokenSupportVersion")
     implementation("no.nav.security:token-validation-ktor-v2:$tokenSupportVersion")
     implementation("no.nav.tjenestespesifikasjoner:altinn-correspondence-agency-external-basic:$altinnCorrespondenceAgencyVersion")

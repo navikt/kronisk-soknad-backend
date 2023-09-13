@@ -16,9 +16,8 @@ class GrunnbeloepClient(
 
     fun hentGrunnbeløp(dato: LocalDate): GrunnbeløpInfo {
         val cacheKey = if (dato.month.value >= 5) "${dato.year}-05" else "${dato.year - 1}-05"
-
-        return cache.get(cacheKey) {
-            runBlocking {
+        return runBlocking {
+            cache.get(cacheKey) {
                 httpClient.get("$url?dato=$dato").body()
             }
         }

@@ -44,19 +44,19 @@ fun Application.nais() {
             }
         }
 
-//        get("/healthcheck") {
-//            val kubernetesProbeManager = this@routing.get<KubernetesProbeManager>()
-//            val readyResults = kubernetesProbeManager.runReadynessProbe()
-//            val liveResults = kubernetesProbeManager.runLivenessProbe()
-//            val combinedResults = ProbeResult(
-//                liveResults.healthyComponents +
-//                    liveResults.unhealthyComponents +
-//                    readyResults.healthyComponents +
-//                    readyResults.unhealthyComponents
-//            )
-//
-//            returnResultOfChecks(combinedResults)
-//        }
+        get("/healthcheck") {
+            val kubernetesProbeManager = this@routing.get<KubernetesProbeManager>()
+            val readyResults = kubernetesProbeManager.runReadynessProbe()
+            val liveResults = kubernetesProbeManager.runLivenessProbe()
+            val combinedResults = ProbeResult(
+                liveResults.healthyComponents +
+                    liveResults.unhealthyComponents +
+                    readyResults.healthyComponents +
+                    readyResults.unhealthyComponents
+            )
+
+            returnResultOfChecks(combinedResults)
+        }
     }
 }
 

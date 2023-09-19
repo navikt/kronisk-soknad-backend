@@ -54,6 +54,7 @@ import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadPDFGenera
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadProcessor
 import no.nav.helse.fritakagp.service.PdlService
 import org.koin.core.module.Module
+import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import javax.sql.DataSource
@@ -140,7 +141,7 @@ fun preprodConfig(env: Env.Preprod): Module = module {
     single { KroniskKravKafkaProcessor(get(), get(), get()) }
 
     single { BrukernotifikasjonProcessor(get(), get(), get(), get(), get(), get(), 3, env.frontendUrl) }
-    single { ArbeidsgiverNotifikasjonProcessor(get(), get(), get(), env.frontendUrl, get()) }
+    single { ArbeidsgiverNotifikasjonProcessor(get(), get(), get(), env.frontendUrl, get(qualifier = named("ARBEIDSGIVERNOTIFIKASJON"))) }
     single { PdlService(get()) }
 
     single { DefaultAltinnAuthorizer(get()) } bind AltinnAuthorizer::class

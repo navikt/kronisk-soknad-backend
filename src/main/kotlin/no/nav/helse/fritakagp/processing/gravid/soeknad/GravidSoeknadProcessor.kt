@@ -114,8 +114,8 @@ class GravidSoeknadProcessor(
                 avsender = Avsender.Organisasjon(soeknad.virksomhetsnummer, soeknad.virksomhetsnavn ?: "Ukjent arbeidsgiver"),
                 datoMottatt = soeknad.opprettet.toLocalDate(),
                 dokumenter = createDocuments(soeknad, GravidSoeknad.tittel),
-                soeknad.id.toString(),
-                UUID.randomUUID().toString()
+                eksternReferanseId = soeknad.id.toString(),
+                callId = UUID.randomUUID().toString()
             )
             logger.debug("Journalført ${soeknad.id} med ref $journalpostId")
             return@runBlocking journalpostId.journalpostId

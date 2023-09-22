@@ -6,14 +6,6 @@ import kotlinx.coroutines.runBlocking
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.Bakgrunnsjobb
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbProsesserer
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbRepository
-import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.AvsenderMottaker
-import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.Bruker
-import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.DokarkivKlient
-import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.Dokument
-import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.DokumentVariant
-import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.IdType
-import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.JournalpostRequest
-import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.Journalposttype
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OPPGAVETYPE_FORDELINGSOPPGAVE
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OppgaveKlient
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OpprettOppgaveRequest
@@ -22,12 +14,18 @@ import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlIdent
 import no.nav.helse.fritakagp.GravidKravMetrics
 import no.nav.helse.fritakagp.db.GravidKravRepository
 import no.nav.helse.fritakagp.domain.GravidKrav
+import no.nav.helse.fritakagp.domain.GravidSoeknad
 import no.nav.helse.fritakagp.domain.generereGravidkKravBeskrivelse
 import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.journalførOgFerdigstillDokument
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor.Jobbdata.SkjemaType
+import no.nav.helsearbeidsgiver.dokarkiv.DokArkivClient
+import no.nav.helsearbeidsgiver.dokarkiv.domene.Avsender
+import no.nav.helsearbeidsgiver.dokarkiv.domene.Dokument
+import no.nav.helsearbeidsgiver.dokarkiv.domene.DokumentVariant
+import no.nav.helsearbeidsgiver.dokarkiv.domene.GjelderPerson
 import no.nav.helsearbeidsgiver.utils.log.logger
 import java.time.LocalDate
 import java.util.Base64
@@ -35,7 +33,7 @@ import java.util.UUID
 
 class GravidKravProcessor(
     private val gravidKravRepo: GravidKravRepository,
-    private val dokarkivKlient: DokarkivKlient,
+    private val dokarkivKlient: DokArkivClient,
     private val oppgaveKlient: OppgaveKlient,
     private val pdlClient: PdlClient,
     private val bakgrunnsjobbRepo: BakgrunnsjobbRepository,
@@ -125,28 +123,21 @@ class GravidKravProcessor(
     }
 
     fun journalfør(krav: GravidKrav): String {
-        val journalpostId = dokarkivKlient.journalførOgFerdigstillDokument(
-            JournalpostRequest(
+        val id = runBlocking {
+            val journalpostId = dokarkivKlient.opprettOgFerdigstillJournalpost(
                 tittel = GravidKrav.tittel,
-                journalposttype = Journalposttype.INNGAAENDE,
-                kanal = "NAV_NO",
-                bruker = Bruker(krav.identitetsnummer, IdType.FNR),
-                eksternReferanseId = krav.id.toString(),
-                avsenderMottaker = AvsenderMottaker(
-                    id = krav.virksomhetsnummer,
-                    idType = IdType.ORGNR,
-                    navn = krav.virksomhetsnavn ?: "Arbeidsgiver Ukjent"
-                ),
+                gjelderPerson = GjelderPerson(krav.identitetsnummer),
+                avsender = Avsender.Organisasjon(krav.virksomhetsnummer, krav.virksomhetsnavn ?: "Ukjent arbeidsgiver"),
+                datoMottatt = krav.opprettet.toLocalDate(),
                 dokumenter = createDocuments(krav, GravidKrav.tittel),
-                datoMottatt = krav.opprettet.toLocalDate()
-            ),
-            UUID.randomUUID().toString(),
-            om,
-            logger
-        )
+                eksternReferanseId = krav.id.toString(),
+                callId = UUID.randomUUID().toString()
+            )
 
-        logger.debug("Journalført ${krav.id} med ref $journalpostId")
-        return journalpostId
+            logger.debug("Journalført ${krav.id} med ref $journalpostId")
+            return@runBlocking journalpostId.journalpostId
+        }
+        return id
     }
 
     private fun createDocuments(
@@ -160,12 +151,16 @@ class GravidKravProcessor(
             Dokument(
                 dokumentVarianter = listOf(
                     DokumentVariant(
-                        fysiskDokument = base64EnkodetPdf
+                        fysiskDokument = base64EnkodetPdf,
+                        filtype = "PDF",
+                        variantFormat = "ARKIV",
+                        filnavn = null
                     ),
                     DokumentVariant(
                         filtype = "JSON",
                         fysiskDokument = jsonOrginalDokument,
-                        variantFormat = "ORIGINAL"
+                        variantFormat = "ORIGINAL",
+                        filnavn = null
                     )
                 ),
                 brevkode = "krav_om_fritak_fra_agp_gravid",
@@ -179,12 +174,15 @@ class GravidKravProcessor(
                     dokumentVarianter = listOf(
                         DokumentVariant(
                             fysiskDokument = it.base64Data,
-                            filtype = if (it.extension == "jpg") "JPEG" else it.extension.uppercase()
+                            filtype = if (it.extension == "jpg") "JPEG" else it.extension.uppercase(),
+                            variantFormat = "ARKIV",
+                            filnavn = null
                         ),
                         DokumentVariant(
                             filtype = "JSON",
                             fysiskDokument = jsonOrginalDokument,
-                            variantFormat = "ORIGINAL"
+                            variantFormat = "ORIGINAL",
+                            filnavn = null
                         )
                     ),
                     brevkode = dokumentasjonBrevkode,

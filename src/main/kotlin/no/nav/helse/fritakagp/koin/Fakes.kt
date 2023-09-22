@@ -10,9 +10,6 @@ import no.nav.helse.arbeidsgiver.integrasjoner.aareg.Arbeidsgiver
 import no.nav.helse.arbeidsgiver.integrasjoner.aareg.Opplysningspliktig
 import no.nav.helse.arbeidsgiver.integrasjoner.aareg.Periode
 import no.nav.helse.arbeidsgiver.integrasjoner.altinn.AltinnOrganisasjon
-import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.DokarkivKlient
-import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.JournalpostRequest
-import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.JournalpostResponse
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OppgaveKlient
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OppgaveResponse
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OpprettOppgaveRequest
@@ -38,6 +35,10 @@ import no.nav.helse.fritakagp.integration.norg.Norg2Client
 import no.nav.helse.fritakagp.integration.virusscan.MockVirusScanner
 import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
 import no.nav.helse.fritakagp.service.BehandlendeEnhetService
+import no.nav.helsearbeidsgiver.dokarkiv.DokArkivClient
+import no.nav.helsearbeidsgiver.dokarkiv.domene.Avsender
+import no.nav.helsearbeidsgiver.dokarkiv.domene.Dokument
+import no.nav.helsearbeidsgiver.dokarkiv.domene.GjelderPerson
 import org.koin.core.module.Module
 import org.koin.dsl.bind
 import java.time.LocalDate
@@ -95,17 +96,21 @@ fun Module.mockExternalDependecies() {
         }
     } bind AaregArbeidsforholdClient::class
 
-    single {
-        object : DokarkivKlient {
-            override fun journalførDokument(
-                journalpost: JournalpostRequest,
-                forsoekFerdigstill: Boolean,
-                callId: String
-            ): JournalpostResponse {
-                return JournalpostResponse("arkiv-ref", true, "J", null, emptyList())
-            }
-        }
-    } bind DokarkivKlient::class
+//    single {
+//        object : DokArkivClient {
+//            override fun opprettOgFerdigstillJournalpost (
+//                tittel: String,
+//                gjelderPerson: GjelderPerson,
+//                avsender: Avsender,
+//                datoMottatt: LocalDate,
+//                dokumenter: List<Dokument>,
+//                eksternReferanseId: String,
+//                callId: String
+//            ): String {
+//                return "123"
+//            }
+//        }
+//    } bind DokarkivKlient::class
 
     single {
         object : PdlClient {

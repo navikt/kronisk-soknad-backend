@@ -142,8 +142,8 @@ fun preprodConfig(env: Env.Preprod): Module = module {
     single { KroniskKravKafkaProcessor(get(), get(), get()) }
 
     single { BrukernotifikasjonProcessor(get(), get(), get(), get(), get(), get(), 3, env.frontendUrl) }
-    single { ArbeidsgiverNotifikasjonProcessor(get(), get(), get(), env.frontendUrl, get()) }
     single { ArbeidsgiverNotifikasjonKlient(env.arbeidsgiverNotifikasjonUrl, get(qualifier = named("ARBEIDSGIVERNOTIFIKASJON"))) }
+    single { ArbeidsgiverNotifikasjonProcessor(get(), get(), get(), env.frontendUrl, get()) }
     single { PdlService(get()) }
 
     single { DefaultAltinnAuthorizer(get()) } bind AltinnAuthorizer::class

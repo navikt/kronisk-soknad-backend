@@ -147,6 +147,7 @@ dependencies {
     val utilsVersion: String by project
     val valiktorVersion: String by project
     val tokenProviderVersion: String by project
+    val dokarkivKlientVersion: String by project
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
     implementation("ch.qos.logback:logback-classic:$logback_version")
@@ -190,6 +191,7 @@ dependencies {
         exclude(group = "org.slf4j", module = "slf4j-api")
     }
     implementation("no.nav.helsearbeidsgiver:arbeidsgiver-notifikasjon-klient:$arbeidsgiverNotifikasjonKlientVersion")
+    implementation("no.nav.helsearbeidsgiver:dokarkiv-client:$dokarkivKlientVersion")
     implementation("no.nav.helsearbeidsgiver:utils:$utilsVersion")
     implementation("no.nav.security:mock-oauth2-server:$mockOAuth2ServerVersion") {
         exclude(group = "ch.qos.logback", module = "logback-classic")

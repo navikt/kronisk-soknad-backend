@@ -6,14 +6,6 @@ import kotlinx.coroutines.runBlocking
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.Bakgrunnsjobb
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbProsesserer
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbRepository
-import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.AvsenderMottaker
-import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.Bruker
-import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.DokarkivKlient
-import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.Dokument
-import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.DokumentVariant
-import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.IdType
-import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.JournalpostRequest
-import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.Journalposttype
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OPPGAVETYPE_FORDELINGSOPPGAVE
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OppgaveKlient
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OpprettOppgaveRequest
@@ -25,10 +17,13 @@ import no.nav.helse.fritakagp.domain.KroniskSoeknad
 import no.nav.helse.fritakagp.domain.generereKroniskSoeknadBeskrivelse
 import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
-import no.nav.helse.fritakagp.journalførOgFerdigstillDokument
+import no.nav.helsearbeidsgiver.dokarkiv.domene.Dokument
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor.Jobbdata.SkjemaType
-import no.nav.helse.fritakagp.service.BehandlendeEnhetService
+import no.nav.helsearbeidsgiver.dokarkiv.DokArkivClient
+import no.nav.helsearbeidsgiver.dokarkiv.domene.Avsender
+import no.nav.helsearbeidsgiver.dokarkiv.domene.DokumentVariant
+import no.nav.helsearbeidsgiver.dokarkiv.domene.GjelderPerson
 import no.nav.helsearbeidsgiver.utils.log.logger
 import java.time.LocalDate
 import java.util.Base64
@@ -36,15 +31,14 @@ import java.util.UUID
 
 class KroniskSoeknadProcessor(
     private val kroniskSoeknadRepo: KroniskSoeknadRepository,
-    private val dokarkivKlient: DokarkivKlient,
+    private val dokarkivKlient: DokArkivClient,
     private val oppgaveKlient: OppgaveKlient,
     private val bakgrunnsjobbRepo: BakgrunnsjobbRepository,
     private val pdlClient: PdlClient,
     private val pdfGenerator: KroniskSoeknadPDFGenerator,
     private val om: ObjectMapper,
     private val bucketStorage: BucketStorage,
-    private val brregClient: BrregClient,
-    private val behandlendeEnhetService: BehandlendeEnhetService
+    private val brregClient: BrregClient
 ) : BakgrunnsjobbProsesserer {
     companion object {
         val dokumentasjonBrevkode = "soeknad_om_fritak_fra_agp_dokumentasjon"
@@ -127,31 +121,23 @@ class KroniskSoeknadProcessor(
     }
 
     fun journalfør(soeknad: KroniskSoeknad): String {
-        val journalpostId = dokarkivKlient.journalførOgFerdigstillDokument(
-            JournalpostRequest(
+        val id = runBlocking {
+            val journalpostId = dokarkivKlient.opprettOgFerdigstillJournalpost(
                 tittel = KroniskSoeknad.tittel,
-                journalposttype = Journalposttype.INNGAAENDE,
-                kanal = "NAV_NO",
-                bruker = Bruker(soeknad.identitetsnummer, IdType.FNR),
-                eksternReferanseId = soeknad.id.toString(),
-                avsenderMottaker = AvsenderMottaker(
-                    id = soeknad.virksomhetsnummer,
-                    idType = IdType.ORGNR,
-                    navn = soeknad.virksomhetsnavn ?: "Ukjent arbeidsgiver"
-                ),
+                gjelderPerson = GjelderPerson(soeknad.identitetsnummer),
+                avsender = Avsender.Organisasjon(soeknad.virksomhetsnummer, soeknad.virksomhetsnavn ?: "Ukjent arbeidsgiver"),
+                datoMottatt = soeknad.opprettet.toLocalDate(),
                 dokumenter = createDocuments(soeknad, KroniskSoeknad.tittel),
-                datoMottatt = soeknad.opprettet.toLocalDate()
-            ),
-            UUID.randomUUID().toString(),
-            om,
-            logger
-        )
-
-        logger.debug("Journalført ${soeknad.id} med ref $journalpostId")
-        return journalpostId
+                soeknad.id.toString(),
+                UUID.randomUUID().toString()
+            )
+            logger.debug("Journalført ${soeknad.id} med ref $journalpostId")
+            return@runBlocking journalpostId.journalpostId
+        }
+        return id
     }
 
-    private fun createDocuments(
+    fun createDocuments(
         soeknad: KroniskSoeknad,
         journalfoeringsTittel: String
     ): List<Dokument> {
@@ -161,7 +147,10 @@ class KroniskSoeknadProcessor(
             Dokument(
                 dokumentVarianter = listOf(
                     DokumentVariant(
-                        fysiskDokument = base64EnkodetPdf
+                        fysiskDokument = base64EnkodetPdf,
+                        filtype = "PDF",
+                        variantFormat = "ARKIV",
+                        filnavn = null
                     )
                 ),
                 brevkode = "soeknad_om_fritak_fra_agp_kronisk",
@@ -175,12 +164,15 @@ class KroniskSoeknadProcessor(
                     dokumentVarianter = listOf(
                         DokumentVariant(
                             fysiskDokument = it.base64Data,
-                            filtype = if (it.extension == "jpg") "JPEG" else it.extension.uppercase()
+                            filtype = if (it.extension == "jpg") "JPEG" else it.extension.uppercase(),
+                            filnavn = null,
+                            variantFormat = "ARKIV"
                         ),
                         DokumentVariant(
                             variantFormat = "ORIGINAL",
                             fysiskDokument = jsonOrginalDokument,
-                            filtype = "JSON"
+                            filtype = "JSON",
+                            filnavn = null
                         )
                     ),
                     brevkode = dokumentasjonBrevkode,

@@ -64,8 +64,7 @@ class GravidSoeknadProcessorTest {
         pdfGeneratorMock,
         objectMapper,
         bucketStorageMock,
-        berregServiceMock,
-        behandlendeEnhetService
+        berregServiceMock
     )
 
     lateinit var soeknad: GravidSoeknad

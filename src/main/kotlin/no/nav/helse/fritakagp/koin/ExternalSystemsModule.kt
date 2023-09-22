@@ -46,6 +46,7 @@ import no.nav.security.token.support.client.core.oauth2.OnBehalfOfTokenClient
 import no.nav.security.token.support.client.core.oauth2.TokenExchangeClient
 import org.koin.core.module.Module
 import org.koin.core.qualifier.named
+import org.koin.core.qualifier.qualifier
 import org.koin.dsl.bind
 import java.net.URI
 
@@ -116,15 +117,20 @@ fun Module.externalSystemClients(env: Env, envOauth2: EnvOauth2) {
             ClientCredentialsTokenClient(oauthHttpClient),
             TokenExchangeClient(oauthHttpClient)
         )
-
         OAuth2TokenProvider(accessTokenService, azureAdConfig)
     } bind AccessTokenProvider::class
 
     single { AaregArbeidsforholdClientImpl(env.aaregUrl, get(qualifier = named("PROXY")), get()) } bind AaregArbeidsforholdClient::class
     single { PdlClientImpl(env.pdlUrl, get(qualifier = named("PROXY")), get(), get()) } bind PdlClient::class
-    single { DokArkivClient(env.dokarkivUrl, get(qualifier = named("DOKARKIV"))) }
+    single {
+        val tokenProvider: AccessTokenProvider = get(qualifier = named("DOKARKIV"))
+        DokArkivClient(env.dokarkivUrl, tokenProvider::getToken)
+    }
     single { OppgaveKlientImpl(env.oppgavebehandlingUrl, get(qualifier = named("OPPGAVE")), get()) } bind OppgaveKlient::class
-    single { ArbeidsgiverNotifikasjonKlient(env.arbeidsgiverNotifikasjonUrl, get(qualifier = named("ARBEIDSGIVERNOTIFIKASJON"))) }
+    single {
+        val tokenProvider: AccessTokenProvider = get(qualifier = named("ARBEIDSGIVERNOTIFIKASJON"))
+        ArbeidsgiverNotifikasjonKlient(env.arbeidsgiverNotifikasjonUrl, tokenProvider::getToken)
+    }
     single {
         ClamavVirusScannerImp(
             get(),

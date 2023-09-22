@@ -88,7 +88,7 @@ fun preprodConfig(env: Env.Preprod): Module = module {
 
     single { KroniskSoeknadProcessor(get(), get(), get(), get(), get(), KroniskSoeknadPDFGenerator(), get(), get(), get()) }
     single { KroniskKravProcessor(get(), get(), get(), get(), get(), KroniskKravPDFGenerator(), get(), get(), get(), get()) }
-    single { KroniskKravSlettProcessor(get(), get(), get(), get(), get(), KroniskKravPDFGenerator(), get(), get(), get(), get()) }
+    single { KroniskKravSlettProcessor(get(), get(), get(), get(), KroniskKravPDFGenerator(), get(), get()) }
     single { OpprettRobotOppgaveGravidProcessor(get(), get(), get(), get(), get()) }
 
     single { Clients.iCorrespondenceExternalBasic(env.altinnMeldingUrl) }

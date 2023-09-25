@@ -53,9 +53,7 @@ import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadKvitterin
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadPDFGenerator
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadProcessor
 import no.nav.helse.fritakagp.service.PdlService
-import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonKlient
 import org.koin.core.module.Module
-import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import javax.sql.DataSource
@@ -142,7 +140,7 @@ fun preprodConfig(env: Env.Preprod): Module = module {
     single { KroniskKravKafkaProcessor(get(), get(), get()) }
 
     single { BrukernotifikasjonProcessor(get(), get(), get(), get(), get(), get(), 3, env.frontendUrl) }
-    single { ArbeidsgiverNotifikasjonKlient(env.arbeidsgiverNotifikasjonUrl, get(qualifier = named("ARBEIDSGIVERNOTIFIKASJON"))) }
+    // single { ArbeidsgiverNotifikasjonKlient(env.arbeidsgiverNotifikasjonUrl, get(qualifier = named("ARBEIDSGIVERNOTIFIKASJON"))) }
     single { ArbeidsgiverNotifikasjonProcessor(get(), get(), get(), env.frontendUrl, get()) }
     single { PdlService(get()) }
 

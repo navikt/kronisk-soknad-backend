@@ -10,6 +10,7 @@ import no.nav.helse.arbeidsgiver.integrasjoner.aareg.Arbeidsgiver
 import no.nav.helse.arbeidsgiver.integrasjoner.aareg.Opplysningspliktig
 import no.nav.helse.arbeidsgiver.integrasjoner.aareg.Periode
 import no.nav.helse.arbeidsgiver.integrasjoner.altinn.AltinnOrganisasjon
+
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OppgaveKlient
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OppgaveResponse
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OpprettOppgaveRequest
@@ -36,10 +37,8 @@ import no.nav.helse.fritakagp.integration.virusscan.MockVirusScanner
 import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
 import no.nav.helse.fritakagp.service.BehandlendeEnhetService
 import no.nav.helsearbeidsgiver.dokarkiv.DokArkivClient
-import no.nav.helsearbeidsgiver.dokarkiv.domene.Avsender
-import no.nav.helsearbeidsgiver.dokarkiv.domene.Dokument
-import no.nav.helsearbeidsgiver.dokarkiv.domene.GjelderPerson
 import org.koin.core.module.Module
+import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -47,7 +46,7 @@ import java.time.LocalDateTime
 fun Module.mockExternalDependecies() {
     single { MockAltinnRepo(get()) } bind AltinnOrganisationsRepository::class
     single { MockBrukernotifikasjonBeskjedSender() } bind BrukernotifikasjonBeskjedSender::class
-    single {
+    single(named("TOKENPROVIDER")) {
         object : AccessTokenProvider {
             override fun getToken(): String {
                 return "fake token"
@@ -96,21 +95,10 @@ fun Module.mockExternalDependecies() {
         }
     } bind AaregArbeidsforholdClient::class
 
-//    single {
-//        object : DokArkivClient {
-//            override fun opprettOgFerdigstillJournalpost (
-//                tittel: String,
-//                gjelderPerson: GjelderPerson,
-//                avsender: Avsender,
-//                datoMottatt: LocalDate,
-//                dokumenter: List<Dokument>,
-//                eksternReferanseId: String,
-//                callId: String
-//            ): String {
-//                return "123"
-//            }
-//        }
-//    } bind DokarkivKlient::class
+    single {
+        val tokenProvider: AccessTokenProvider = get(qualifier = named("TOKENPROVIDER"))
+        DokArkivClient("url", tokenProvider::getToken)
+    } bind DokArkivClient::class
 
     single {
         object : PdlClient {

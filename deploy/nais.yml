@@ -61,10 +61,10 @@ spec:
         uniformBucketLevelAccess: true
     {{/if}}
 
-    ingresses:
-    {{#each ingresses as |ingress|}}
-      - {{ ingress }}
-    {{/each}}
+  ingresses:
+  {{#each ingresses as |ingress|}}
+    - {{ ingress }}
+  {{/each}}
 
   accessPolicy:
     outbound:

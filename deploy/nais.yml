@@ -72,9 +72,9 @@ spec:
     inbound:
       rules:
         {{#each accessInbound.apps as |app|}}
-        - application: { { app.application } }
-          namespace: { { app.namespace } }
-          cluster: { { app.cluster } }
+        - application: {{ app.application }}
+          namespace: {{ app.namespace }}
+          cluster: {{ app.cluster }}
         {{/each }}
         - application: fritak-agp-frontend
     outbound:

@@ -1,7 +1,6 @@
 context: prod
 bucketName: helse-arbeidsgiver-fritakagb-bucket-prod
-ingresses:
-  - https://fritakagp-api.intern.nav.no
+ingress: https://fritakagp-api.intern.nav.no
 accessOutbound:
   external:
     - kafka-schema-registry.nais.adeo.no

@@ -64,9 +64,9 @@ spec:
   {{#if ingresses}
     ingresses:
     {{#each ingresses as |ingress|}}
-      - {{ ingress }}
-    {{/each}}
-  {{/if}}
+    - {{ ingress }}
+    {{/each } }
+  {{/if } }
 
   accessPolicy:
     outbound:

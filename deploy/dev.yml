@@ -15,6 +15,14 @@ accessOutbound:
     - data.brreg.no
     - g.nav.no
     - test.idporten.no
+accessInbound:
+  apps:
+    - application: debug-dings
+      namespace: plattformsikkerhet
+      cluster: dev-gcp
+    - application: tokenx-token-generator
+      namespace: aura
+      cluster: dev-gcp
 envFrom:
   # servicebrukerens passord som er  hentet fra vault og lagt inn slik: https://doc.nais.io/security/secrets/kubernetes-secrets/
   - service-user-password

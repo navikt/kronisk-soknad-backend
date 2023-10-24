@@ -10,12 +10,14 @@ metadata:
     nais.io/read-only-file-system: "false"
 
 spec:
+  tokenx:
+    enabled: true
   image: {{ image }}
   port: 8080
-  idporten:
-    enabled: true
-    sidecar:
-      enabled: true
+#  idporten:
+#    enabled: true
+#    sidecar:
+#      enabled: true
   replicas:
     max: 1
     min: 1
@@ -67,6 +69,14 @@ spec:
   {{/if}}
 
   accessPolicy:
+    inbound:
+      rules:
+        { { #each accessInbound.apps as |app|}}
+        - application: { { app.application } }
+          namespace: { { app.namespace } }
+          cluster: { { app.cluster } }
+        {{/each } }
+        - application: fritak-agp-frontend
     outbound:
       rules:
         - application: helsearbeidsgiver-proxy

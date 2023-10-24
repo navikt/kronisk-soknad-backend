@@ -1,6 +1,8 @@
 context: dev
 bucketName: helse-arbeidsgiver-fritakagb-bucket
-ingress: https://fritakagp-api.intern.dev.nav.no
+ingresses:
+  - https://fritakagp-api.intern.dev.nav.no
+  - https://arbeidsgiver.intern.dev.nav.no
 accessOutbound:
   apps:
     - name: notifikasjon-produsent-api

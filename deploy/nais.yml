@@ -75,7 +75,7 @@ spec:
         - application: {{ app.application }}
           namespace: {{ app.namespace }}
           cluster: {{ app.cluster }}
-        {{/each }}
+        {{/each}}
         - application: fritak-agp-frontend
     outbound:
       rules:

@@ -43,7 +43,6 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 fun Module.mockExternalDependecies() {
-
     single { MockAltinnRepo(get()) } bind AltinnRepo::class
 
     single { MockBrukernotifikasjonBeskjedSender() } bind BrukernotifikasjonBeskjedSender::class

@@ -69,7 +69,6 @@ fun Module.externalSystemClients(env: Env, envOauth2: EnvOauth2) {
         )
     } bind AltinnRepo::class
 
-
     single {
         DefaultAltinnAuthorizer(get())
     } bind AltinnAuthorizer::class

@@ -1,6 +1,5 @@
 package no.nav.helse.fritakagp.integration.altinn
 
-
 interface AltinnAuthorizer {
     /**
      * MB: Kopiert og inlinet fra hag-felles-backend
@@ -9,7 +8,6 @@ interface AltinnAuthorizer {
      * organisasjonsledd.
      */
     fun hasAccess(identitetsnummer: String, arbeidsgiverId: String): Boolean
-
 }
 
 class DefaultAltinnAuthorizer(private val authListRepo: AltinnRepo) : AltinnAuthorizer {
@@ -21,8 +19,8 @@ class DefaultAltinnAuthorizer(private val authListRepo: AltinnRepo) : AltinnAuth
     }
 }
 
-//class HentEgneOrgnrAltinnAuthorizer(private val authListRepo: AltinnRepo) : AltinnAuthorizer {
+// class HentEgneOrgnrAltinnAuthorizer(private val authListRepo: AltinnRepo) : AltinnAuthorizer {
 //    override fun hasAccess(identitetsnummer: String, arbeidsgiverId: String): Boolean {
 //        return authListRepo.hentOrgMedRettigheterForPerson(identitetsnummer).size > 0
 //    }
-//}
+// }

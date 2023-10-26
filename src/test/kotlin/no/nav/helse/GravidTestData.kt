@@ -48,6 +48,23 @@ aąbcćdeęfghijlłmnńoóprsśtuwź
         navn = validNavn
     )
 
+    val gravidSoeknadSomString = """
+        {
+          "identitetsnummer": "19429007936",
+          "virksomhetsnummer": "810007842",
+          "tilrettelegge": true,
+          "tiltak": [
+            "ANNET",
+            "HJEMMEKONTOR"
+          ],
+          "tiltakBeskrivelse": "Kjefting",
+          "omplassering": "NEI",
+          "dokumentasjon": "",
+          "bekreftet": true,
+          "termindato": "2023-12-24"
+        }
+    """.trimIndent()
+
     val fullValidSoeknadRequest = GravidSoknadRequest(
         virksomhetsnummer = validOrgNr,
         identitetsnummer = validIdentitetsnummer,

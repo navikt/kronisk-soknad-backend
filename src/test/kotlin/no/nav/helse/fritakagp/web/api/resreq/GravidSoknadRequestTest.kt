@@ -1,6 +1,8 @@
 package no.nav.helse.fritakagp.web.api.resreq
 
+import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.helse.GravidTestData
+import no.nav.helse.fritakagp.customObjectMapper
 import no.nav.helse.fritakagp.domain.Omplassering
 import no.nav.helse.fritakagp.domain.OmplasseringAarsak
 import no.nav.helse.fritakagp.domain.Tiltak
@@ -17,6 +19,13 @@ class GravidSoknadRequestTest {
         validationShouldFailFor(GravidSoknadRequest::identitetsnummer) {
             GravidTestData.fullValidSoeknadRequest.copy(identitetsnummer = "01020312345").validate(true)
         }
+    }
+
+    @Test
+    fun `parse gyldig json`() {
+        val om = customObjectMapper()
+        val req = om.readValue<GravidSoknadRequest>(GravidTestData.gravidSoeknadSomString)
+        req.validate(true)
     }
 
     @Test

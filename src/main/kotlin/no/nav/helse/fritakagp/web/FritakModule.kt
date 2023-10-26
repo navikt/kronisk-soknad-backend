@@ -1,29 +1,29 @@
 package no.nav.helse.fritakagp.web
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import io.ktor.server.application.Application
-import io.ktor.server.auth.Authentication
-import io.ktor.server.plugins.cors.CORS
 import io.ktor.http.ContentType
 import io.ktor.http.HttpMethod
 import io.ktor.serialization.jackson.JacksonConverter
 import io.ktor.serialization.jackson.jackson
+import io.ktor.server.application.Application
 import io.ktor.server.application.install
+import io.ktor.server.auth.Authentication
 import io.ktor.server.auth.authenticate
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.server.plugins.cors.CORS
 import io.ktor.server.routing.IgnoreTrailingSlash
 import io.ktor.server.routing.route
 import io.ktor.server.routing.routing
 import no.nav.helse.fritakagp.Env
+import no.nav.helse.fritakagp.customObjectMapper
 import no.nav.helse.fritakagp.web.api.altinnRoutes
 import no.nav.helse.fritakagp.web.api.configureExceptionHandling
 import no.nav.helse.fritakagp.web.api.gravidRoutes
 import no.nav.helse.fritakagp.web.api.kroniskRoutes
 import no.nav.helse.fritakagp.web.api.swaggerRoutes
 import no.nav.helse.fritakagp.web.api.systemRoutes
-import org.koin.ktor.ext.get
 import no.nav.security.token.support.v2.tokenValidationSupport
+import org.koin.ktor.ext.get
 
 fun Application.fritakModule(env: Env) {
     install(IgnoreTrailingSlash)
@@ -35,7 +35,7 @@ fun Application.fritakModule(env: Env) {
     configureExceptionHandling()
 
     install(ContentNegotiation) {
-        val commonObjectMapper = ObjectMapper()
+        val commonObjectMapper = customObjectMapper()
         register(ContentType.Application.Json, JacksonConverter(commonObjectMapper))
         jackson {
             registerModule(JavaTimeModule())

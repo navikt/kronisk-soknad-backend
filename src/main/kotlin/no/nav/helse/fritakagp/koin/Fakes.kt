@@ -9,8 +9,6 @@ import no.nav.helse.arbeidsgiver.integrasjoner.aareg.Arbeidsforhold
 import no.nav.helse.arbeidsgiver.integrasjoner.aareg.Arbeidsgiver
 import no.nav.helse.arbeidsgiver.integrasjoner.aareg.Opplysningspliktig
 import no.nav.helse.arbeidsgiver.integrasjoner.aareg.Periode
-import no.nav.helse.arbeidsgiver.integrasjoner.altinn.AltinnOrganisasjon
-
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OppgaveKlient
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OppgaveResponse
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OpprettOppgaveRequest
@@ -23,7 +21,7 @@ import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlHentPersonNavn
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlIdent
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlPersonNavnMetadata
 import no.nav.helse.arbeidsgiver.utils.loadFromResources
-import no.nav.helse.arbeidsgiver.web.auth.AltinnOrganisationsRepository
+import no.nav.helse.fritakagp.integration.altinn.AltinnRepo
 import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.brreg.MockBrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
@@ -36,6 +34,7 @@ import no.nav.helse.fritakagp.integration.norg.Norg2Client
 import no.nav.helse.fritakagp.integration.virusscan.MockVirusScanner
 import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
 import no.nav.helse.fritakagp.service.BehandlendeEnhetService
+import no.nav.helsearbeidsgiver.altinn.AltinnOrganisasjon
 import no.nav.helsearbeidsgiver.dokarkiv.DokArkivClient
 import org.koin.core.module.Module
 import org.koin.core.qualifier.named
@@ -44,7 +43,9 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 fun Module.mockExternalDependecies() {
-    single { MockAltinnRepo(get()) } bind AltinnOrganisationsRepository::class
+
+    single { MockAltinnRepo(get()) } bind AltinnRepo::class
+
     single { MockBrukernotifikasjonBeskjedSender() } bind BrukernotifikasjonBeskjedSender::class
     single(named("TOKENPROVIDER")) {
         object : AccessTokenProvider {
@@ -57,7 +58,7 @@ fun Module.mockExternalDependecies() {
     single {
         object : AaregArbeidsforholdClient {
             override suspend fun hentArbeidsforhold(ident: String, callId: String): List<Arbeidsforhold> =
-                listOf<Arbeidsforhold>(
+                listOf(
                     Arbeidsforhold(
                         Arbeidsgiver("test", "810007842"),
                         Opplysningspliktig("Juice", "810007702"),
@@ -97,7 +98,7 @@ fun Module.mockExternalDependecies() {
 
     single {
         val tokenProvider: AccessTokenProvider = get(qualifier = named("TOKENPROVIDER"))
-        DokArkivClient("url", tokenProvider::getToken)
+        DokArkivClient("url", 3, tokenProvider::getToken)
     } bind DokArkivClient::class
 
     single {
@@ -204,7 +205,7 @@ fun Module.mockExternalDependecies() {
     single { BehandlendeEnhetService(get(), get()) }
 }
 
-class MockAltinnRepo(om: ObjectMapper) : AltinnOrganisationsRepository {
+class MockAltinnRepo(om: ObjectMapper) : AltinnRepo {
     private val mockList = "altinn-mock/organisasjoner-med-rettighet.json".loadFromResources()
     private val mockAcl = om.readValue<Set<AltinnOrganisasjon>>(mockList)
     override fun hentOrgMedRettigheterForPerson(identitetsnummer: String): Set<AltinnOrganisasjon> = mockAcl

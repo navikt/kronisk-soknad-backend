@@ -10,6 +10,10 @@ Backend for mottak av søknader om fritak fra AGP ved sykepenger.
 
 For å kjøre lokalt kan du starte  `docker-compose up` fra docker/local før du starter prosjektet. 
 
+http://localhost:8080/local/cookie-please?subject=12345678910
+
+http://localhost:8080/fritak-agp-api/api/v1/arbeidsgivere
+
 # Koble til Databasen i GCP
 
 Følg oppskriften for Cloud SQL proxy her: https://doc.nais.io/persistence/postgres/

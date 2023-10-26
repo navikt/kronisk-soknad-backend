@@ -30,7 +30,7 @@ repositories {
     val githubPassword: String by project
 
     mavenCentral()
-    google()
+//    google()
     maven(url = "https://packages.confluent.io/maven/")
     maven(url = "https://jitpack.io") {
         content {
@@ -98,7 +98,7 @@ tasks.test {
 }
 
 tasks.withType<Wrapper> {
-    gradleVersion = "7.3"
+    gradleVersion = "8.3"
 }
 
 sonarqube {
@@ -125,7 +125,6 @@ dependencies {
     val jacksonModuleKotlinVersion: String by project
     val jacksonVersion: String by project
     val janinoVersion: String by project
-    val javafakerVersion: String by project
     val javaxActivationVersion: String by project
     val javaxWsRsApiVersion: String by project
     val jaxwsToolsVersion: String by project
@@ -146,7 +145,7 @@ dependencies {
     val tokenSupportVersion: String by project
     val utilsVersion: String by project
     val valiktorVersion: String by project
-    val tokenProviderVersion: String by project
+    val altinnClientVersion: String by project
     val dokarkivKlientVersion: String by project
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
@@ -155,7 +154,6 @@ dependencies {
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jacksonVersion")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonModuleKotlinVersion")
-    implementation("com.github.javafaker:javafaker:$javafakerVersion") // flytt denne til test når generatorene ikke er nødvendige i prod-koden lenger
     implementation("com.github.navikt:brukernotifikasjon-schemas:$brukernotifikasjonSchemasVersion")
     implementation("com.google.cloud:google-cloud-storage:$gcpStorageVersion")
     implementation("com.sun.activation:javax.activation:$javaxActivationVersion")
@@ -199,6 +197,7 @@ dependencies {
     }
     implementation("no.nav.security:token-client-core:$tokenSupportVersion")
     implementation("no.nav.security:token-validation-ktor-v2:$tokenSupportVersion")
+    implementation("no.nav.helsearbeidsgiver:altinn-client:$altinnClientVersion")
     // implementation("no.nav.helsearbeidsgiver:tokenprovider:$tokenProviderVersion")
     implementation("no.nav.tjenestespesifikasjoner:altinn-correspondence-agency-external-basic:$altinnCorrespondenceAgencyVersion")
     implementation("org.apache.cxf:cxf-rt-features-logging:$cxfVersion")

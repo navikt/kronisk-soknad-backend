@@ -4,8 +4,6 @@ import com.zaxxer.hikari.HikariDataSource
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbRepository
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbService
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.PostgresBakgrunnsjobbRepository
-import no.nav.helse.arbeidsgiver.web.auth.AltinnAuthorizer
-import no.nav.helse.arbeidsgiver.web.auth.DefaultAltinnAuthorizer
 import no.nav.helse.fritakagp.Env
 import no.nav.helse.fritakagp.datapakke.DatapakkePublisherJob
 import no.nav.helse.fritakagp.db.GravidKravRepository
@@ -21,6 +19,8 @@ import no.nav.helse.fritakagp.db.StatsRepoImpl
 import no.nav.helse.fritakagp.db.createHikariConfig
 import no.nav.helse.fritakagp.domain.BeloepBeregning
 import no.nav.helse.fritakagp.integration.GrunnbeloepClient
+import no.nav.helse.fritakagp.integration.altinn.AltinnAuthorizer
+import no.nav.helse.fritakagp.integration.altinn.DefaultAltinnAuthorizer
 import no.nav.helse.fritakagp.integration.kafka.KravmeldingKafkaProducer
 import no.nav.helse.fritakagp.integration.kafka.KravmeldingSender
 import no.nav.helse.fritakagp.integration.kafka.SoeknadmeldingKafkaProducer

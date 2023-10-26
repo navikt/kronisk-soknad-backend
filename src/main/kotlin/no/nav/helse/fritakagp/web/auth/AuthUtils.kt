@@ -6,7 +6,7 @@ import io.ktor.server.application.call
 import io.ktor.server.config.ApplicationConfig
 import io.ktor.server.request.ApplicationRequest
 import io.ktor.util.pipeline.PipelineContext
-import no.nav.helse.arbeidsgiver.web.auth.AltinnAuthorizer
+import no.nav.helse.fritakagp.integration.altinn.AltinnAuthorizer
 import no.nav.helse.fritakagp.integration.altinn.ManglerAltinnRettigheterException
 import no.nav.security.token.support.core.jwt.JwtToken
 import java.time.Instant

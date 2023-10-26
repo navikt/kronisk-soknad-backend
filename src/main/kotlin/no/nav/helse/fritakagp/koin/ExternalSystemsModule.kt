@@ -60,8 +60,8 @@ fun Module.externalSystemClients(env: Env, envOauth2: EnvOauth2) {
     single {
         CachedAuthRepo(
             AltinnClient(
-                url = env.altinnMeldingUrl,
-                serviceCode = env.altinnMeldingServiceId,
+                url = env.altinnServiceOwnerUrl,
+                serviceCode = env.altinnServiceOwnerServiceId,
                 apiGwApiKey = env.altinnServiceOwnerGatewayApiKey,
                 altinnApiKey = env.altinnServiceOwnerApiKey,
                 cacheConfig = CacheConfig(Duration.ofMinutes(60).toKotlinDuration(), 100)

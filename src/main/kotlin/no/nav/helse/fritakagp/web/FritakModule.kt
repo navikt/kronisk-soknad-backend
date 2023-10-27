@@ -35,8 +35,7 @@ fun Application.fritakModule(env: Env) {
     configureExceptionHandling()
 
     install(ContentNegotiation) {
-        val commonObjectMapper = customObjectMapper()
-        register(ContentType.Application.Json, JacksonConverter(commonObjectMapper))
+        register(ContentType.Application.Json, JacksonConverter(customObjectMapper()))
         jackson {
             registerModule(JavaTimeModule())
         }

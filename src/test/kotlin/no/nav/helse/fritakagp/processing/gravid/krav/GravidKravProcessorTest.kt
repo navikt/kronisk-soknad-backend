@@ -1,7 +1,5 @@
 package no.nav.helse.fritakagp.processing.gravid.krav
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import io.mockk.CapturingSlot
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -25,6 +23,7 @@ import no.nav.helse.fritakagp.processing.BakgrunnsJobbUtils.testJob
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
 import no.nav.helse.fritakagp.service.PdlService
 import no.nav.helse.arbeidsgiver.utils.loadFromResources
+import no.nav.helse.fritakagp.customObjectMapper
 import no.nav.helse.fritakagp.readToObjectNode
 import no.nav.helsearbeidsgiver.dokarkiv.DokArkivClient
 import no.nav.helsearbeidsgiver.dokarkiv.domene.OpprettOgFerdigstillResponse
@@ -43,13 +42,12 @@ class GravidKravProcessorTest {
     val oppgaveMock = mockk<OppgaveKlient>(relaxed = true)
     val repositoryMock = mockk<GravidKravRepository>(relaxed = true)
     val pdlServiceMock = mockk<PdlService>(relaxed = true)
-    val objectMapper = ObjectMapper() // .registerKotlinModule()
+    val objectMapper = customObjectMapper()
     val pdfGeneratorMock = mockk<GravidKravPDFGenerator>(relaxed = true)
     val bucketStorageMock = mockk<BucketStorage>(relaxed = true)
     val bakgrunnsjobbRepomock = mockk<BakgrunnsjobbRepository>(relaxed = true)
     val berregServiceMock = mockk<BrregClient>(relaxed = true)
 
-    // val behandlendeEnhetService = mockk<BehandlendeEnhetService>(relaxed = true)
     val prosessor = GravidKravProcessor(repositoryMock, joarkMock, oppgaveMock, pdlServiceMock, bakgrunnsjobbRepomock, pdfGeneratorMock, objectMapper, bucketStorageMock, berregServiceMock)
     lateinit var krav: GravidKrav
 
@@ -61,7 +59,6 @@ class GravidKravProcessorTest {
     fun setup() {
         krav = GravidTestData.gravidKrav.copy()
         jobb = testJob(objectMapper.writeValueAsString(GravidKravProcessor.JobbData(krav.id)))
-        objectMapper.registerModule(JavaTimeModule())
         every { repositoryMock.getById(krav.id) } returns krav
         every { bucketStorageMock.getDocAsString(any()) } returns null
         every { pdlServiceMock.hentAktoerId(krav.identitetsnummer) } returns "aktør-id"

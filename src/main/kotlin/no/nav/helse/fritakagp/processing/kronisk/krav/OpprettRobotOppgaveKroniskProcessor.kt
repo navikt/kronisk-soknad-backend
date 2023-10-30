@@ -13,6 +13,7 @@ import no.nav.helse.fritakagp.KroniskKravMetrics
 import no.nav.helse.fritakagp.db.KroniskKravRepository
 import no.nav.helse.fritakagp.domain.KroniskKrav
 import no.nav.helse.fritakagp.service.BehandlendeEnhetService
+import no.nav.helse.fritakagp.service.PdlService
 import no.nav.helsearbeidsgiver.utils.log.logger
 import java.time.LocalDate
 import java.util.UUID
@@ -20,7 +21,7 @@ import java.util.UUID
 class OpprettRobotOppgaveKroniskProcessor(
     private val kroniskKravRepo: KroniskKravRepository,
     private val oppgaveKlient: OppgaveKlient,
-    private val pdlClient: PdlClient,
+    private val pdlService: PdlService,
     private val om: ObjectMapper,
     private val behandlendeEnhetService: BehandlendeEnhetService
 ) : BakgrunnsjobbProsesserer {
@@ -74,7 +75,7 @@ class OpprettRobotOppgaveKroniskProcessor(
     }
 
     fun opprettOppgave(krav: KroniskKrav): String {
-        val aktoerId = pdlClient.fullPerson(krav.identitetsnummer)?.hentIdenter?.trekkUtIdent(PdlIdent.PdlIdentGruppe.AKTORID)
+        val aktoerId = pdlService.hentAktoerId(krav.identitetsnummer)
         val enhetsNr = behandlendeEnhetService.hentBehandlendeEnhet(krav.identitetsnummer, krav.id.toString())
         requireNotNull(aktoerId) { "Fant ikke AktørID for fnr i ${krav.id}" }
         logger.info("Fant aktørid")

@@ -24,6 +24,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 class AaregConstraintsKtTest {
+    @Disabled
     @Test
     fun `Rådata fra aareg (Brukes for å feilsøke med respons fra AA-reg)`() {
         val objectMapper = customObjectMapper()

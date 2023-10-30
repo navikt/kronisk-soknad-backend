@@ -14,7 +14,7 @@ import io.ktor.server.routing.route
 import io.ktor.server.routing.Route
 import kotlinx.coroutines.runBlocking
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbService
-import no.nav.helse.arbeidsgiver.integrasjoner.aareg.AaregArbeidsforholdClient
+import no.nav.helse.arbeidsgiver.integrasjoner.aareg2.AaregArbeidsforholdClient
 import no.nav.helse.fritakagp.KroniskKravMetrics
 import no.nav.helse.fritakagp.KroniskSoeknadMetrics
 import no.nav.helse.fritakagp.db.KroniskKravRepository

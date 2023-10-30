@@ -5,8 +5,8 @@ package no.nav.helse.fritakagp.koin
 import com.nimbusds.oauth2.sdk.auth.ClientAuthenticationMethod
 import no.nav.helse.arbeidsgiver.integrasjoner.AccessTokenProvider
 import no.nav.helse.arbeidsgiver.integrasjoner.OAuth2TokenProvider
-import no.nav.helse.arbeidsgiver.integrasjoner.aareg.AaregArbeidsforholdClient
-import no.nav.helse.arbeidsgiver.integrasjoner.aareg.AaregArbeidsforholdClientImpl
+import no.nav.helse.arbeidsgiver.integrasjoner.aareg2.AaregArbeidsforholdClient
+import no.nav.helse.arbeidsgiver.integrasjoner.aareg2.AaregArbeidsforholdClientImpl
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OppgaveKlient
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OppgaveKlientImpl
 import no.nav.helse.fritakagp.Env

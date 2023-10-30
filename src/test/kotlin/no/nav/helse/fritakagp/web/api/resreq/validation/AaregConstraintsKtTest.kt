@@ -3,11 +3,11 @@ package no.nav.helse.fritakagp.web.dto.validation
 import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.helse.AaregTestData
 import no.nav.helse.GravidTestData
-import no.nav.helse.arbeidsgiver.integrasjoner.aareg.Ansettelsesperiode
-import no.nav.helse.arbeidsgiver.integrasjoner.aareg.Arbeidsforhold
-import no.nav.helse.arbeidsgiver.integrasjoner.aareg.Arbeidsgiver
-import no.nav.helse.arbeidsgiver.integrasjoner.aareg.Opplysningspliktig
-import no.nav.helse.arbeidsgiver.integrasjoner.aareg.Periode
+import no.nav.helse.arbeidsgiver.integrasjoner.aareg2.Ansettelsesperiode
+import no.nav.helse.arbeidsgiver.integrasjoner.aareg2.Arbeidsforhold
+import no.nav.helse.arbeidsgiver.integrasjoner.aareg2.Arbeidsgiver
+import no.nav.helse.arbeidsgiver.integrasjoner.aareg2.Opplysningspliktig
+import no.nav.helse.arbeidsgiver.integrasjoner.aareg2.Periode
 import no.nav.helse.arbeidsgiver.utils.loadFromResources
 import no.nav.helse.fritakagp.customObjectMapper
 import no.nav.helse.fritakagp.domain.Arbeidsgiverperiode

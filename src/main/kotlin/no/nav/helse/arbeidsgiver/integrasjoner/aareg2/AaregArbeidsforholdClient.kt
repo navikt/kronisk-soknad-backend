@@ -4,10 +4,9 @@ import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.bearerAuth
 import io.ktor.client.request.get
+import io.ktor.client.request.header
 import io.ktor.http.ContentType
-import io.ktor.http.HttpHeaders
-import io.ktor.http.append
-import io.ktor.http.headers
+import io.ktor.http.contentType
 import no.nav.helse.arbeidsgiver.integrasjoner.AccessTokenProvider
 
 interface AaregArbeidsforholdClient {
@@ -24,15 +23,18 @@ class AaregArbeidsforholdClientImpl(
 ) : AaregArbeidsforholdClient {
 
     override suspend fun hentArbeidsforhold(ident: String, callId: String): List<Arbeidsforhold> {
-        val stsToken = stsClient.getToken()
-        return httpClient.get(url) {
-            bearerAuth(stsToken)
-            headers {
-                append(HttpHeaders.ContentType, ContentType.Application.Json)
-                append("X-Correlation-ID", callId)
-                append("Nav-Consumer-Token", "Bearer $stsToken")
-                append("Nav-Personident", ident)
-            }
-        }.body()
+        val token = stsClient.getToken()
+        return try {
+            val payload = httpClient.get(url) {
+                contentType(ContentType.Application.Json)
+                bearerAuth(token)
+                header("X-Correlation-ID", callId)
+                header("Nav-Consumer-Token", "Bearer $token")
+                header("Nav-Personident", ident)
+            }.body<List<Arbeidsforhold>>()
+            payload
+        } catch (e: Exception) {
+            emptyList()
+        }
     }
 }

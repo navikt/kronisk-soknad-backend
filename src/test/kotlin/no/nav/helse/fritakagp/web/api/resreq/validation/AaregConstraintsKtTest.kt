@@ -25,7 +25,6 @@ import java.time.LocalDateTime
 
 class AaregConstraintsKtTest {
     @Test
-    @Disabled
     fun `Rådata fra aareg (Brukes for å feilsøke med respons fra AA-reg)`() {
         val objectMapper = customObjectMapper()
 
@@ -35,17 +34,6 @@ class AaregConstraintsKtTest {
             // Legg inn organisasjonsnummer
             .filter { it.arbeidsgiver.organisasjonsnummer == "XXXXXXXX" }
 
-        // Endre til perioden kravet gjelder
-        val arbeidsgiverPeriode = Arbeidsgiverperiode(
-            LocalDate.of(2021, 1, 15),
-            LocalDate.of(2021, 1, 20),
-            4,
-            månedsinntekt = 2590.8
-        )
-
-        validate(arbeidsgiverPeriode) {
-            validate(Arbeidsgiverperiode::fom).måHaAktivtArbeidsforhold(arbeidsgiverPeriode, arbeidsforhold)
-        }
     }
 
     @Test

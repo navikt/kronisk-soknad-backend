@@ -33,7 +33,6 @@ class AaregConstraintsKtTest {
         val arbeidsforhold = objectMapper.readValue<List<Arbeidsforhold>>(aaregFile)
             // Legg inn organisasjonsnummer
             .filter { it.arbeidsgiver.organisasjonsnummer == "XXXXXXXX" }
-
     }
 
     @Test

@@ -156,7 +156,6 @@ class GravidKravSlettProcessor(
     }
 
     fun opprettOppgave(krav: GravidKrav): String {
-
         val aktoerId = pdlService.hentAktoerId(krav.identitetsnummer)
         requireNotNull(aktoerId) { "Fant ikke AktørID for fnr i ${krav.id}" }
         logger.info("Fant aktørid")

@@ -12,7 +12,7 @@ const val SYKEPENGER = "SYK"
 
 class BehandlendeEnhetService(
     private val pdlService: PdlService,
-    private val norg2Client: Norg2Client,
+    private val norg2Client: Norg2Client
 ) {
 
     private val logger = this.logger()

@@ -131,15 +131,13 @@ fun Module.externalSystemClients(env: Env, envOauth2: EnvOauth2) {
     } bind AccessTokenProvider::class
 
     single { AaregArbeidsforholdClientImpl(env.aaregUrl, get(qualifier = named("PROXY")), get()) } bind AaregArbeidsforholdClient::class
-    single { PdlClientImpl(env.pdlUrl, get(qualifier = named("PROXY")), get(), get()) } bind PdlClient::class
-    single {
-        val accessTokenProvider = oAuth2TokenProvider(config, AuthScope.PROXY)
-        PdlClient(
-            config.prop("pdl_url"),
-            accessTokenProvider::getToken,
-        )
-    }
 
+    single {
+        val tokenProvider: AccessTokenProvider = get(qualifier = named("PROXY"))
+        PdlClient(env.pdlUrl, tokenProvider::getToken)
+    } bind PdlClient::class
+
+    single {
         val tokenProvider: AccessTokenProvider = get(qualifier = named("DOKARKIV"))
         DokArkivClient(env.dokarkivUrl, 3, tokenProvider::getToken)
     }

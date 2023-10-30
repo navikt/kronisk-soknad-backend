@@ -15,7 +15,7 @@ class PdlService(
         return listOf(
             personNavn?.fornavn,
             personNavn?.mellomnavn,
-            personNavn?.etternavn,
+            personNavn?.etternavn
         )
             .filterNot(String?::isNullOrEmpty)
             .joinToString(" ")
@@ -31,12 +31,12 @@ class PdlService(
             .let {
                 GeografiskTilknytning(
                     diskresjonskode = it?.hentPerson?.trekkUtDiskresjonskode(),
-                    geografiskTilknytning = it?.hentGeografiskTilknytning?.hentTilknytning(),
+                    geografiskTilknytning = it?.hentGeografiskTilknytning?.hentTilknytning()
                 )
             }
 }
 
 data class GeografiskTilknytning(
     var diskresjonskode: String?,
-    var geografiskTilknytning: String?,
+    var geografiskTilknytning: String?
 )

@@ -15,19 +15,16 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
 class ArbeidsgivereHTTPTests : SystemTestBase() {
-    private val arbeidsgivereUrl = "/api/v1/arbeidsgivere"
+    private val arbeidsgivereUrl = "/fritak-agp-api/api/v1/arbeidsgivere"
 
     @Test
     fun `Skal returnere 401 når man ikke er logget inn`() = suspendableTest {
-        val exception = assertThrows<ClientRequestException>
-        {
-            httpClient.get {
-                appUrl(arbeidsgivereUrl)
-                contentType(ContentType.Application.Json)
-            }
-        }
+        val status = httpClient.get {
+            appUrl(arbeidsgivereUrl)
+            contentType(ContentType.Application.Json)
+        }.status
 
-        Assertions.assertThat(exception.response.status).isEqualTo(HttpStatusCode.Unauthorized)
+        Assertions.assertThat(status).isEqualTo(HttpStatusCode.Unauthorized)
     }
 
     @Test

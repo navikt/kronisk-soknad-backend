@@ -12,6 +12,7 @@ import no.nav.helse.GravidTestData
 import no.nav.helse.fritakagp.db.GravidKravRepository
 import no.nav.helse.fritakagp.domain.Arbeidsgiverperiode
 import no.nav.helse.fritakagp.domain.GravidKrav
+import no.nav.helse.fritakagp.domain.KravStatus
 import no.nav.helse.fritakagp.web.api.resreq.ValidationProblem
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Disabled
@@ -21,7 +22,7 @@ import org.koin.test.inject
 import java.time.LocalDate
 
 class GravidKravHTTPTests : SystemTestBase() {
-    private val kravGravidUrl = "/api/v1/gravid/krav"
+    private val kravGravidUrl = "/fritak-agp-api/api/v1/gravid/krav"
 
     @Test
     @Disabled
@@ -29,16 +30,14 @@ class GravidKravHTTPTests : SystemTestBase() {
         val repo by inject<GravidKravRepository>()
 
         repo.insert(GravidTestData.gravidKrav)
-        val exception = assertThrows<ClientRequestException>
-        {
+        val response =
             httpClient.get {
                 appUrl("$kravGravidUrl/${GravidTestData.gravidKrav.id}")
                 contentType(ContentType.Application.Json)
                 loggedInAs("123456789")
             }
-        }
 
-        assertThat(exception.response.status).isEqualTo(HttpStatusCode.Forbidden)
+        assertThat(response.status).isEqualTo(HttpStatusCode.Forbidden)
 
         val accessGrantedForm = httpClient.get {
             appUrl("$kravGravidUrl/${GravidTestData.gravidKrav.id}")
@@ -51,7 +50,7 @@ class GravidKravHTTPTests : SystemTestBase() {
 
     @Test
     fun `invalid json gives 400 Bad request`() = suspendableTest {
-        val responseExcepion = assertThrows<ClientRequestException> {
+        val response =
             httpClient.post {
                 appUrl(kravGravidUrl)
                 contentType(ContentType.Application.Json)
@@ -68,10 +67,9 @@ class GravidKravHTTPTests : SystemTestBase() {
                     """.trimIndent()
                 )
             }
-        }
 
-        assertThat(responseExcepion.response.status).isEqualTo(HttpStatusCode.BadRequest)
-        val res = extractResponseBody(responseExcepion.response)
+        assertThat(response.status).isEqualTo(HttpStatusCode.BadRequest)
+        val res = extractResponseBody(response)
         assertThat(res.title).contains("Feil ved prosessering av JSON-dataene som ble oppgitt")
     }
 
@@ -84,7 +82,7 @@ class GravidKravHTTPTests : SystemTestBase() {
             setBody(GravidTestData.gravidKravRequestValid)
         }.body<GravidKrav>()
         // val krav = response.receive()
-        assertThat(response.status).isEqualTo(HttpStatusCode.Created)
+        assertThat(response.status).isEqualTo(KravStatus.OPPRETTET)
         assertThat(response.identitetsnummer).isEqualTo(GravidTestData.gravidKravRequestValid.identitetsnummer)
     }
 
@@ -104,15 +102,15 @@ class GravidKravHTTPTests : SystemTestBase() {
 
     @Test
     fun `Skal returnere forbidden hvis virksomheten ikke er i auth listen fra altinn`() = suspendableTest {
-        val responseExcepion = assertThrows<ClientRequestException> {
+        val response =
             httpClient.post {
                 appUrl(kravGravidUrl)
                 contentType(ContentType.Application.Json)
                 loggedInAs("123456789")
                 setBody(GravidTestData.gravidKravRequestValid.copy(virksomhetsnummer = "123456785"))
             }
-        }
-        assertThat(responseExcepion.response.status).isEqualTo(HttpStatusCode.Forbidden)
+
+        assertThat(response.status).isEqualTo(HttpStatusCode.Forbidden)
     }
 
     @Test
@@ -129,7 +127,7 @@ class GravidKravHTTPTests : SystemTestBase() {
 
     @Test
     fun `Skal returnere en valideringfeil`() = suspendableTest {
-        val responseExcepion = assertThrows<ClientRequestException> {
+        val response =
             httpClient.post {
                 appUrl(kravGravidUrl)
                 contentType(ContentType.Application.Json)
@@ -159,16 +157,15 @@ class GravidKravHTTPTests : SystemTestBase() {
                     )
                 )
             }
-        }
 
-        assertThat(responseExcepion.response.status).isEqualTo(HttpStatusCode.UnprocessableEntity)
-        val res = responseExcepion.response.call.body<ValidationProblem>()
+        assertThat(response.status).isEqualTo(HttpStatusCode.UnprocessableEntity)
+        val res = response.call.body<ValidationProblem>()
         assertThat(res.violations.size).isEqualTo(5)
     }
 
     @Test
     fun `Skal returnere full propertypath for periode`() = suspendableTest {
-        val responseExcepion = assertThrows<ClientRequestException> {
+        val response =
             httpClient.post {
                 appUrl(kravGravidUrl)
                 contentType(ContentType.Application.Json)
@@ -198,7 +195,7 @@ class GravidKravHTTPTests : SystemTestBase() {
                     )
                 )
             }
-        }
+
         val possiblePropertyPaths = setOf(
             "perioder[0].fom",
             "perioder[0].antallDagerMedRefusjon",
@@ -206,7 +203,7 @@ class GravidKravHTTPTests : SystemTestBase() {
             "perioder[1].antallDagerMedRefusjon",
             "perioder[2].antallDagerMedRefusjon"
         )
-        val res = responseExcepion.response.call.body<ValidationProblem>()
+        val res = response.call.body<ValidationProblem>()
         assertThat(res.violations.size).isEqualTo(5)
         res.violations.forEach {
             assertThat(it.propertyPath).isIn(possiblePropertyPaths)

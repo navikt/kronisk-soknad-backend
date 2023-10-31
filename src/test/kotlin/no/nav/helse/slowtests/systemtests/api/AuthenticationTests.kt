@@ -13,20 +13,18 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
 class AuthenticationTests : SystemTestBase() {
-    private val soeknadGravidUrl = "/api/v1/gravid/soeknad"
+    private val soeknadGravidUrl = "/fritak-agp-api/api/v1/gravid/soeknad"
 
     @Test
     fun `posting application with no JWT returns 401 Unauthorized`() = suspendableTest {
-        val exception = assertThrows<ClientRequestException>
-        {
+        val response =
             httpClient.post {
                 appUrl(soeknadGravidUrl)
                 contentType(ContentType.Application.Json)
                 setBody(GravidTestData.fullValidSoeknadRequest)
             }
-        }
 
-        assertThat(exception.response.status).isEqualTo(HttpStatusCode.Unauthorized)
+        assertThat(response.status).isEqualTo(HttpStatusCode.Unauthorized)
     }
 
     @Test

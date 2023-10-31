@@ -7,6 +7,7 @@ import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.install
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
+import io.ktor.server.plugins.BadRequestException
 import io.ktor.server.plugins.ParameterConversionException
 import io.ktor.server.plugins.statuspages.StatusPages
 import io.ktor.server.response.respond
@@ -83,6 +84,24 @@ fun Application.configureExceptionHandling() {
                 )
             )
             logger.warn("${cause.parameterName} kunne ikke konverteres")
+        }
+
+        exception<BadRequestException> { call, cause ->
+            val userAgent = call.request.headers.get(HttpHeaders.UserAgent) ?: "Ukjent"
+            call.respond(
+                HttpStatusCode.BadRequest,
+                ValidationProblem(
+                    setOf(
+                        ValidationProblemDetail(
+                            "BadInput",
+                            "Feil input",
+                            "",
+                            "null"
+                        )
+                    )
+                )
+            )
+            logger.warn("Feil med validering av ${call.request.rawQueryParameters} for $userAgent: ${cause.message}")
         }
 
         exception<MissingKotlinParameterException> { call, cause ->

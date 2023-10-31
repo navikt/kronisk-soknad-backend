@@ -1,16 +1,13 @@
 package no.nav.helse.slowtests.systemtests.api
 
-import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
-import io.ktor.client.statement.HttpResponse
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import no.nav.helse.GravidTestData
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 
 class AuthenticationTests : SystemTestBase() {
     private val soeknadGravidUrl = "/fritak-agp-api/api/v1/gravid/soeknad"

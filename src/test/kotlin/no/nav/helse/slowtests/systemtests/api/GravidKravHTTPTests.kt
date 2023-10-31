@@ -17,7 +17,6 @@ import no.nav.helse.fritakagp.web.api.resreq.ValidationProblem
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 import org.koin.test.inject
 import java.time.LocalDate
 
@@ -70,7 +69,7 @@ class GravidKravHTTPTests : SystemTestBase() {
 
         assertThat(response.status).isEqualTo(HttpStatusCode.BadRequest)
         val res = extractResponseBody(response)
-        assertThat(res.title).contains("Feil ved prosessering av JSON-dataene som ble oppgitt")
+        assertThat(res.title).contains("Valideringen av input feilet")
     }
 
     @Test

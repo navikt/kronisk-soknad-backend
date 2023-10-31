@@ -1,12 +1,9 @@
 package no.nav.helse.slowtests.systemtests.api
 
 import io.ktor.client.call.body
-import io.ktor.client.call.receive
-import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
-import io.ktor.client.statement.HttpResponse
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
@@ -18,41 +15,37 @@ import no.nav.helse.fritakagp.domain.KroniskSoeknad
 import no.nav.helse.fritakagp.web.api.resreq.KroniskSoknadRequest
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 import org.koin.test.inject
 
 class KroniskSoeknadHTTPTests : SystemTestBase() {
-    private val soeknadKroniskUrl = "/api/v1/kronisk/soeknad"
+    private val soeknadKroniskUrl = "/fritak-agp-api/api/v1/kronisk/soeknad"
 
     @Test
     internal fun `Returnerer søknaden når korrekt bruker er innlogget, 404 når ikke`() = suspendableTest {
         val repo by inject<KroniskSoeknadRepository>()
 
         repo.insert(KroniskTestData.soeknadKronisk)
-        val exception = assertThrows<ClientRequestException>
-        {
+        val response =
             httpClient.get {
                 appUrl("$soeknadKroniskUrl/${KroniskTestData.soeknadKronisk.id}")
                 contentType(ContentType.Application.Json)
                 loggedInAs("123456789")
             }
-        }
 
-        Assertions.assertThat(exception.response.status).isEqualTo(HttpStatusCode.NotFound)
+        Assertions.assertThat(response.status).isEqualTo(HttpStatusCode.NotFound)
 
         val accessGrantedForm = httpClient.get {
             appUrl("$soeknadKroniskUrl/${KroniskTestData.soeknadKronisk.id}")
             contentType(ContentType.Application.Json)
             loggedInAs(KroniskTestData.soeknadKronisk.identitetsnummer)
-        }
+        }.body<KroniskSoeknad>()
 
         Assertions.assertThat(accessGrantedForm).isEqualToIgnoringGivenFields(KroniskTestData.soeknadKronisk, "referansenummer")
     }
 
     @Test
     fun `invalid enum fields gives 400 Bad request`() = suspendableTest {
-        val exception = assertThrows<ClientRequestException>
-        {
+        val response =
             httpClient.post {
                 appUrl(soeknadKroniskUrl)
                 contentType(ContentType.Application.Json)
@@ -68,9 +61,8 @@ class KroniskSoeknadHTTPTests : SystemTestBase() {
                     """.trimIndent()
                 )
             }
-        }
 
-        Assertions.assertThat(exception.response.status).isEqualTo(HttpStatusCode.BadRequest)
+        Assertions.assertThat(response.status).isEqualTo(HttpStatusCode.BadRequest)
     }
 
     @Test
@@ -89,8 +81,7 @@ class KroniskSoeknadHTTPTests : SystemTestBase() {
 
     @Test
     fun `Skal validere feil ved ugyldig data`() = suspendableTest {
-        val exception = assertThrows<ClientRequestException>
-        {
+        val response =
             httpClient.post {
                 appUrl(soeknadKroniskUrl)
                 contentType(ContentType.Application.Json)
@@ -107,9 +98,7 @@ class KroniskSoeknadHTTPTests : SystemTestBase() {
                     )
                 )
             }
-        }
-
-        Assertions.assertThat(exception.response.status).isEqualTo(HttpStatusCode.UnprocessableEntity)
+        Assertions.assertThat(response.status).isEqualTo(HttpStatusCode.UnprocessableEntity)
     }
 
     @Test

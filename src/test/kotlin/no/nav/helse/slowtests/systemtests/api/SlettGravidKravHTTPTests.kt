@@ -1,8 +1,6 @@
 package no.nav.helse.slowtests.systemtests.api
 
-import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.request.delete
-import io.ktor.client.statement.HttpResponse
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
@@ -10,12 +8,11 @@ import no.nav.helse.GravidTestData
 import no.nav.helse.fritakagp.db.GravidKravRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 import org.koin.test.inject
 import java.util.UUID
 
 class SlettGravidKravHTTPTests : SystemTestBase() {
-    private val kravGravidUrl = "/api/v1/gravid/krav"
+    private val kravGravidUrl = "/fritak-agp-api/api/v1/gravid/krav"
 
     @Test
     internal fun `Skal returnere 200 OK når vi sletter med korrekt bruker innlogget`() = suspendableTest {
@@ -38,15 +35,13 @@ class SlettGravidKravHTTPTests : SystemTestBase() {
 
         repo.insert(GravidTestData.gravidKrav)
 
-        val responseExcepion = assertThrows<ClientRequestException> {
+        val response =
             httpClient.delete {
                 appUrl("$kravGravidUrl/${UUID.randomUUID()}")
                 contentType(ContentType.Application.Json)
                 loggedInAs(GravidTestData.gravidKrav.identitetsnummer)
             }
-        }
-
-        assertThat(responseExcepion.response.status).isEqualTo(HttpStatusCode.NotFound)
+        assertThat(response.status).isEqualTo(HttpStatusCode.NotFound)
     }
 
     @Test
@@ -56,13 +51,12 @@ class SlettGravidKravHTTPTests : SystemTestBase() {
         val id = UUID.randomUUID()
 
         repo.insert(GravidTestData.gravidKrav.copy(virksomhetsnummer = "123456785", id = id))
-        val responseExcepion = assertThrows<ClientRequestException> {
+        val response =
             httpClient.delete {
                 appUrl("$kravGravidUrl/$id")
                 contentType(ContentType.Application.Json)
                 loggedInAs("123456789")
             }
-        }
-        assertThat(responseExcepion.response.status).isEqualTo(HttpStatusCode.Forbidden)
+        assertThat(response.status).isEqualTo(HttpStatusCode.Forbidden)
     }
 }

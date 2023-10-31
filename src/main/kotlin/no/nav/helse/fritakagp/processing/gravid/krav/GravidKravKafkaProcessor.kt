@@ -2,8 +2,8 @@ package no.nav.helse.fritakagp.processing.gravid.krav
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import no.nav.helse.arbeidsgiver.bakgrunnsjobb.Bakgrunnsjobb
-import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbProsesserer
+import no.nav.helse.arbeidsgiver.bakgrunnsjobb2.Bakgrunnsjobb
+import no.nav.helse.arbeidsgiver.bakgrunnsjobb2.BakgrunnsjobbProsesserer
 import no.nav.helse.fritakagp.db.GravidKravRepository
 import no.nav.helse.fritakagp.integration.kafka.KravmeldingSender
 import no.nav.helsearbeidsgiver.utils.log.logger

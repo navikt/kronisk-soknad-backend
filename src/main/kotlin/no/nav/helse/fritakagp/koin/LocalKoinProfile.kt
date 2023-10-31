@@ -1,9 +1,9 @@
 package no.nav.helse.fritakagp.koin
 
 import com.zaxxer.hikari.HikariDataSource
-import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbRepository
-import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbService
-import no.nav.helse.arbeidsgiver.bakgrunnsjobb.PostgresBakgrunnsjobbRepository
+import no.nav.helse.arbeidsgiver.bakgrunnsjobb2.BakgrunnsjobbRepository
+import no.nav.helse.arbeidsgiver.bakgrunnsjobb2.BakgrunnsjobbService
+import no.nav.helse.arbeidsgiver.bakgrunnsjobb2.PostgresBakgrunnsjobbRepository
 import no.nav.helse.fritakagp.Env
 import no.nav.helse.fritakagp.datapakke.DatapakkePublisherJob
 import no.nav.helse.fritakagp.db.GravidKravRepository

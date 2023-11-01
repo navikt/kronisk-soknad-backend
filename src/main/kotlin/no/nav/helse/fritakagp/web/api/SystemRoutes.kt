@@ -1,6 +1,5 @@
 package no.nav.helse.fritakagp.web.api
 
-import io.ktor.server.application.application
 import io.ktor.server.application.call
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.response.respond
@@ -12,7 +11,7 @@ import no.nav.helse.fritakagp.web.auth.hentUtløpsdatoFraLoginToken
 fun Route.systemRoutes() {
     route("/login-expiry") {
         get {
-            call.respond(HttpStatusCode.OK, hentUtløpsdatoFraLoginToken(application.environment.config, call.request))
+            call.respond(HttpStatusCode.OK, hentUtløpsdatoFraLoginToken(call.request))
         }
     }
 }

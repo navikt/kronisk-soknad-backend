@@ -107,7 +107,6 @@ class EnvJwt(mainConfig: ApplicationConfig) {
 
     val issuerName = "issuer_name".prop()
     val audience = "accepted_audience".prop()
-    val cookieName = "cookie_name".prop()
 
     private fun String.prop(): String =
         jwtIssuerConfig.prop(this)

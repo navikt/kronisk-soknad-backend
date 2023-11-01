@@ -1,7 +1,6 @@
 package no.nav.helse.fritakagp.web.api
 
 import io.ktor.http.HttpStatusCode
-import io.ktor.server.application.application
 import io.ktor.server.application.call
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
@@ -16,7 +15,7 @@ fun Route.altinnRoutes(authRepo: AltinnRepo) {
     val logger = "AltinnRoutes".logger()
     route("/arbeidsgivere") {
         get("/") {
-            val id = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
+            val id = hentIdentitetsnummerFraLoginToken(call.request)
             if (id.isEmpty()) {
                 // Denne sjekken er ikke strengt nødvendig, da tokenValidation som gjøres først, ikke skal tillate at vi kommer hit
                 logger.warn("Bruker er ikke innlogget")

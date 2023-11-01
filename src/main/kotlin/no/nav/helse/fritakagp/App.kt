@@ -30,7 +30,7 @@ import no.nav.helse.fritakagp.processing.kronisk.krav.OpprettRobotOppgaveKronisk
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadKafkaProcessor
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadKvitteringProcessor
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadProcessor
-import no.nav.helse.fritakagp.web.auth.localCookieDispenser
+import no.nav.helse.fritakagp.web.auth.localAuthTokenDispenser
 import no.nav.helse.fritakagp.web.fritakModule
 import no.nav.helse.fritakagp.web.nais.nais
 import org.flywaydb.core.Flyway
@@ -81,12 +81,9 @@ class FritakAgpApplication(val port: Int = 8080) : KoinComponent {
                 }
 
                 module {
-                    if (env is Env.Preprod) {
-                        localCookieDispenser(env.jwt, "dev.nav.no")
-                    } else if (env is Env.Local) {
-                        localCookieDispenser(env.jwt, "localhost")
+                    if (env is Env.Local) {
+                        localAuthTokenDispenser(env.jwt)
                     }
-
                     nais()
                     fritakModule(env)
                 }
@@ -147,7 +144,6 @@ class FritakAgpApplication(val port: Int = 8080) : KoinComponent {
 }
 
 fun main() {
-    // val logger = "main".logger()
     val logger = LoggerFactory.getLogger("fritakagp")
     Thread.currentThread().setUncaughtExceptionHandler { thread, err ->
         logger.error("uncaught exception in thread ${thread.name}: ${err.message}", err)

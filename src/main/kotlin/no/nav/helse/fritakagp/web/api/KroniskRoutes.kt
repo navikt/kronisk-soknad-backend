@@ -63,7 +63,7 @@ fun Route.kroniskRoutes(
         route("/soeknad") {
             get("/{id}") {
                 logger.info("KSG: Hent kronisk søknad.")
-                val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
+                val innloggetFnr = hentIdentitetsnummerFraLoginToken(call.request)
 
                 logger.info("KSG: Hent søknad fra db.")
                 val form = kroniskSoeknadRepo.getById(UUID.fromString(call.parameters["id"]))
@@ -91,7 +91,7 @@ fun Route.kroniskRoutes(
                 }
                 request.validate(isVirksomhet)
 
-                val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
+                val innloggetFnr = hentIdentitetsnummerFraLoginToken(call.request)
 
                 logger.info("KSP: Hent personinfo fra pdl.")
                 val sendtAvNavn = pdlService.hentNavn(innloggetFnr)
@@ -125,7 +125,7 @@ fun Route.kroniskRoutes(
         route("/krav") {
             get("/{id}") {
                 logger.info("KKG: Hent kronisk krav.")
-                val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
+                val innloggetFnr = hentIdentitetsnummerFraLoginToken(call.request)
 
                 logger.info("KKG: Hent krav fra db.")
                 val form = kroniskKravRepo.getById(UUID.fromString(call.parameters["id"]))
@@ -158,7 +158,7 @@ fun Route.kroniskRoutes(
 
                 request.validate(arbeidsforhold)
 
-                val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
+                val innloggetFnr = hentIdentitetsnummerFraLoginToken(call.request)
 
                 logger.info("KKPo: Hent personinfo fra pdl.")
                 val sendtAvNavn = pdlService.hentNavn(innloggetFnr)
@@ -203,7 +203,7 @@ fun Route.kroniskRoutes(
 
                 authorize(authorizer, request.virksomhetsnummer)
 
-                val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
+                val innloggetFnr = hentIdentitetsnummerFraLoginToken(call.request)
                 val sendtAvNavn = pdlService.hentNavn(innloggetFnr)
                 val navn = pdlService.hentNavn(request.identitetsnummer)
 
@@ -275,7 +275,7 @@ fun Route.kroniskRoutes(
             delete("/{id}") {
                 logger.info("KKD: Slett kronisk krav.")
 
-                val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
+                val innloggetFnr = hentIdentitetsnummerFraLoginToken(call.request)
                 val slettetAv = pdlService.hentNavn(innloggetFnr)
                 val kravId = UUID.fromString(call.parameters["id"])
                 val form = kroniskKravRepo.getById(kravId)

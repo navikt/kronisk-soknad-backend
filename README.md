@@ -10,7 +10,10 @@ Backend for mottak av søknader om fritak fra AGP ved sykepenger.
 
 For å kjøre lokalt kan du starte  `docker-compose up` fra docker/local før du starter prosjektet. 
 
-http://localhost:8080/local/cookie-please?subject=12345678910
+http://localhost:8080/local/token-please?subject=12345678910
+
+Kopier token og sett som bearer token i feks Postman. 
+Deretter kan du kalle: 
 
 http://localhost:8080/fritak-agp-api/api/v1/arbeidsgivere
 

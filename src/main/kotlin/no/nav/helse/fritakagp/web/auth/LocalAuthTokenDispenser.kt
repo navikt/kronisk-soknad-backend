@@ -3,8 +3,6 @@ package no.nav.helse.fritakagp.web.auth
 import io.ktor.server.application.Application
 import io.ktor.server.application.call
 import io.ktor.http.ContentType
-import io.ktor.http.Cookie
-import io.ktor.http.CookieEncoding
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.response.respondText
 import io.ktor.server.routing.get
@@ -13,9 +11,9 @@ import no.nav.helse.fritakagp.EnvJwt
 import no.nav.helsearbeidsgiver.utils.log.logger
 import no.nav.security.mock.oauth2.MockOAuth2Server
 
-private val logger = "LocalCookieDispenser".logger()
+private val logger = "LocalAuthTokenDispenser".logger()
 
-fun Application.localCookieDispenser(env: EnvJwt, domain: String) {
+fun Application.localAuthTokenDispenser(env: EnvJwt) {
     logger.info("Starter OAuth2-mock")
 
     val server = MockOAuth2Server().apply { start(port = 6666) }
@@ -23,28 +21,13 @@ fun Application.localCookieDispenser(env: EnvJwt, domain: String) {
     logger.info("Startet OAuth2-mock på ${server.jwksUrl(env.issuerName)}")
 
     routing {
-        get("/local/cookie-please") {
+        get("/local/token-please") {
             val token = server.issueToken(
                 subject = call.request.queryParameters["subject"].toString(),
                 issuerId = env.issuerName,
                 audience = env.audience
             )
-
-            val cookie = Cookie(
-                name = env.cookieName,
-                value = token.serialize(),
-                encoding = CookieEncoding.RAW,
-                domain = domain,
-                path = "/"
-            )
-
-            call.response.cookies.append(cookie)
-
-            if (call.request.queryParameters["redirect"] != null) {
-                call.respondText("<script>window.location.href='" + call.request.queryParameters["redirect"] + "';</script>", ContentType.Text.Html, HttpStatusCode.OK)
-            } else {
-                call.respondText("Cookie Set", ContentType.Text.Plain, HttpStatusCode.OK)
-            }
+            call.respondText(token.serialize(), ContentType.Text.Plain, HttpStatusCode.OK)
         }
     }
 }

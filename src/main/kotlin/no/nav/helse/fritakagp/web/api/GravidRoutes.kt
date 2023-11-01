@@ -65,7 +65,7 @@ fun Route.gravidRoutes(
     route("/gravid") {
         route("/soeknad") {
             get("/{id}") {
-                val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
+                val innloggetFnr = hentIdentitetsnummerFraLoginToken(call.request)
                 val form = gravidSoeknadRepo.getById(UUID.fromString(call.parameters["id"]))
                 if (form == null || form.identitetsnummer != innloggetFnr) {
                     call.respond(HttpStatusCode.NotFound)
@@ -78,7 +78,7 @@ fun Route.gravidRoutes(
             }
 
             post {
-                val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
+                val innloggetFnr = hentIdentitetsnummerFraLoginToken(call.request)
                 val request = call.receive<GravidSoknadRequest>()
 
                 val isVirksomhet = if (application.environment.config.property("koin.profile").getString() == "PREPROD") true else breegClient.erVirksomhet(request.virksomhetsnummer)
@@ -112,7 +112,7 @@ fun Route.gravidRoutes(
 
         route("/krav") {
             get("/{id}") {
-                val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
+                val innloggetFnr = hentIdentitetsnummerFraLoginToken(call.request)
                 val form = gravidKravRepo.getById(UUID.fromString(call.parameters["id"]))
                 if (form == null) {
                     call.respond(HttpStatusCode.NotFound)
@@ -136,7 +136,7 @@ fun Route.gravidRoutes(
 
                 request.validate(arbeidsforhold)
 
-                val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
+                val innloggetFnr = hentIdentitetsnummerFraLoginToken(call.request)
                 val sendtAvNavn = pdlService.hentNavn(innloggetFnr)
                 val navn = pdlService.hentNavn(request.identitetsnummer)
 
@@ -172,7 +172,7 @@ fun Route.gravidRoutes(
 
                 authorize(authorizer, request.virksomhetsnummer)
 
-                val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
+                val innloggetFnr = hentIdentitetsnummerFraLoginToken(call.request)
                 val sendtAvNavn = pdlService.hentNavn(innloggetFnr)
                 val navn = pdlService.hentNavn(request.identitetsnummer)
 
@@ -236,7 +236,7 @@ fun Route.gravidRoutes(
             }
 
             delete("/{id}") {
-                val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
+                val innloggetFnr = hentIdentitetsnummerFraLoginToken(call.request)
                 val slettetAv = pdlService.hentNavn(innloggetFnr)
                 val kravId = UUID.fromString(call.parameters["id"])
                 val form = gravidKravRepo.getById(kravId)

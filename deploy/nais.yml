@@ -54,7 +54,7 @@ spec:
       - type: POSTGRES_11
         databases:
           - name: fritakagp-db
-            diskAutoresize: true
+        diskAutoresize: true
     {{#if bucketName}}
     buckets:
       - name: {{ bucketName }}

@@ -18,6 +18,7 @@ import no.nav.helse.fritakagp.integration.altinn.CachedAuthRepo
 import no.nav.helse.fritakagp.integration.altinn.DefaultAltinnAuthorizer
 import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.brreg.BrregClientImpl
+import no.nav.helse.fritakagp.integration.brreg.MockBrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.integration.gcp.BucketStorageImpl
 import no.nav.helse.fritakagp.integration.kafka.BrukernotifikasjonBeskjedKafkaProducer
@@ -182,7 +183,13 @@ fun Module.externalSystemClients(env: Env, envOauth2: EnvOauth2) {
             env.kafkaTopicNameBrukernotifikasjon
         )
     } bind BrukernotifikasjonBeskjedSender::class
-    single { BrregClientImpl(get(), env.brregUrl) } bind BrregClient::class
+    single {
+        if (env is Env.Preprod) {
+            MockBrregClient()
+        } else {
+            BrregClientImpl(get(), env.brregUrl)
+        }
+    } bind BrregClient::class
 
     single { Norg2Client(env.norg2Url, get(qualifier = named("PROXY")), get()) }
     single { BehandlendeEnhetService(get(), get()) }

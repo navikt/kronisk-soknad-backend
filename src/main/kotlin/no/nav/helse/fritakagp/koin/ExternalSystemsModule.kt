@@ -7,8 +7,8 @@ import no.nav.helse.arbeidsgiver.integrasjoner.AccessTokenProvider
 import no.nav.helse.arbeidsgiver.integrasjoner.OAuth2TokenProvider
 import no.nav.helse.arbeidsgiver.integrasjoner.aareg2.AaregArbeidsforholdClient
 import no.nav.helse.arbeidsgiver.integrasjoner.aareg2.AaregArbeidsforholdClientImpl
-import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OppgaveKlient
-import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OppgaveKlientImpl
+import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.OppgaveKlient
+import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.OppgaveKlientImpl
 import no.nav.helse.fritakagp.Env
 import no.nav.helse.fritakagp.EnvOauth2
 import no.nav.helse.fritakagp.integration.GrunnbeloepClient

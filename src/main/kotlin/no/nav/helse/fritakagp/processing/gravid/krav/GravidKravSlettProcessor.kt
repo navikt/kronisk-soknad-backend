@@ -5,9 +5,9 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import kotlinx.coroutines.runBlocking
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb2.Bakgrunnsjobb
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb2.BakgrunnsjobbProsesserer
-import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OPPGAVETYPE_FORDELINGSOPPGAVE
-import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OppgaveKlient
-import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OpprettOppgaveRequest
+import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.OPPGAVETYPE_FORDELINGSOPPGAVE
+import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.OppgaveKlient
+import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.OpprettOppgaveRequest
 import no.nav.helse.fritakagp.db.GravidKravRepository
 import no.nav.helse.fritakagp.domain.GravidKrav
 import no.nav.helse.fritakagp.domain.generereSlettGravidKravBeskrivelse

@@ -9,9 +9,9 @@ import io.mockk.verify
 import no.nav.helse.GravidTestData
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb2.Bakgrunnsjobb
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb2.BakgrunnsjobbRepository
-import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OPPGAVETYPE_FORDELINGSOPPGAVE
-import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OppgaveKlient
-import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OpprettOppgaveRequest
+import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.OPPGAVETYPE_FORDELINGSOPPGAVE
+import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.OppgaveKlient
+import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.OpprettOppgaveRequest
 import no.nav.helse.fritakagp.db.GravidKravRepository
 import no.nav.helse.fritakagp.domain.GravidKrav
 import no.nav.helse.fritakagp.integration.brreg.BrregClient

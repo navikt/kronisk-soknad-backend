@@ -1,8 +1,8 @@
 package no.nav.helse
 
-import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OpprettOppgaveResponse
-import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.Prioritet
-import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.Status
+import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.OpprettOppgaveResponse
+import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.Prioritet
+import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.Status
 import no.nav.helse.fritakagp.domain.Arbeidsgiverperiode
 import no.nav.helse.fritakagp.domain.GravidKrav
 import no.nav.helse.fritakagp.domain.GravidSoeknad

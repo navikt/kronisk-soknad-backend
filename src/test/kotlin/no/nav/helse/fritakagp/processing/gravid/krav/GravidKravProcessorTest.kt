@@ -29,10 +29,10 @@ import no.nav.helsearbeidsgiver.dokarkiv.DokArkivClient
 import no.nav.helsearbeidsgiver.dokarkiv.domene.OpprettOgFerdigstillResponse
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.io.IOException
+import java.util.Base64
 import kotlin.test.assertEquals
 import kotlin.test.fail
 
@@ -87,25 +87,23 @@ class GravidKravProcessorTest {
     }
 
     @Test
-    @Disabled("må se på senere")
     fun `Om det finnes ekstra dokumentasjon skal den journalføres og så slettes`() {
         val dokumentData = "test"
         val filtypeArkiv = "pdf"
-        val filtypeOrginal = "JSON"
         every { bucketStorageMock.getDocAsString(krav.id) } returns BucketDocument(dokumentData, filtypeArkiv)
 
-//        val joarkRequest = slot<JournalpostRequest>()
-//        every { joarkMock.journalførDokument(capture(joarkRequest), any(), any()) } returns JournalpostResponse(arkivReferanse, true, "M", null, emptyList())
-//
-//        Base64.getEncoder().encodeToString(objectMapper.writeValueAsBytes(krav))
-//        prosessor.prosesser(jobb)
-//
-//        verify(exactly = 1) { bucketStorageMock.getDocAsString(krav.id) }
-//        verify(exactly = 1) { bucketStorageMock.deleteDoc(krav.id) }
-//
+        // val joarkRequest = slot<OpprettOgFerdigstillRequest>()
+        coEvery { joarkMock.opprettOgFerdigstillJournalpost(any(), any(), any(), any(), any(), any(), any()) } returns OpprettOgFerdigstillResponse(arkivReferanse, true, "M", emptyList())
+
+        Base64.getEncoder().encodeToString(objectMapper.writeValueAsBytes(krav))
+        prosessor.prosesser(jobb)
+
+        verify(exactly = 1) { bucketStorageMock.getDocAsString(krav.id) }
+        verify(exactly = 1) { bucketStorageMock.deleteDoc(krav.id) }
+
 //        assertThat((joarkRequest.captured.dokumenter)).hasSize(2)
 //        val dokumentasjon = joarkRequest.captured.dokumenter.filter { it.brevkode == GravidKravProcessor.dokumentasjonBrevkode }.first()
-//
+
 //        assertThat(dokumentasjon.dokumentVarianter[0].fysiskDokument).isEqualTo(dokumentData)
 //        assertThat(dokumentasjon.dokumentVarianter[0].filtype).isEqualTo(filtypeArkiv.uppercase())
 //        assertThat(dokumentasjon.dokumentVarianter[0].variantFormat).isEqualTo("ARKIV")

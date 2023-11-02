@@ -14,8 +14,6 @@ spec:
   port: 8080
   idporten:
     enabled: true
-    sidecar:
-      enabled: true
   replicas:
     max: 1
     min: 1
@@ -54,7 +52,7 @@ spec:
       - type: POSTGRES_11
         databases:
           - name: fritakagp-db
-            diskAutoresize: true
+        diskAutoresize: true
     {{#if bucketName}}
     buckets:
       - name: {{ bucketName }}

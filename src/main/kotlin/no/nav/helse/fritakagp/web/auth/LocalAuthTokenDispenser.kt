@@ -22,6 +22,7 @@ fun Application.localAuthTokenDispenser(env: EnvJwt) {
 
     routing {
         get("/local/token-please") {
+            logger.warn("token-please skal kun kalles lokalt!")
             val token = server.issueToken(
                 subject = call.request.queryParameters["subject"].toString(),
                 issuerId = env.issuerName,

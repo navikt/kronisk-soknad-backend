@@ -12,6 +12,8 @@ import no.nav.helse.arbeidsgiver.bakgrunnsjobb2.BakgrunnsjobbRepository
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.OPPGAVETYPE_FORDELINGSOPPGAVE
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.OppgaveKlient
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.OpprettOppgaveRequest
+import no.nav.helse.arbeidsgiver.utils.loadFromResources
+import no.nav.helse.fritakagp.customObjectMapper
 import no.nav.helse.fritakagp.db.KroniskKravRepository
 import no.nav.helse.fritakagp.domain.KroniskKrav
 import no.nav.helse.fritakagp.integration.brreg.BrregClient
@@ -25,8 +27,6 @@ import no.nav.helse.fritakagp.readToObjectNode
 import no.nav.helse.fritakagp.service.BehandlendeEnhetService
 import no.nav.helse.fritakagp.service.GeografiskTilknytning
 import no.nav.helse.fritakagp.service.PdlService
-import no.nav.helse.arbeidsgiver.utils.loadFromResources
-import no.nav.helse.fritakagp.customObjectMapper
 import no.nav.helsearbeidsgiver.dokarkiv.DokArkivClient
 import no.nav.helsearbeidsgiver.dokarkiv.domene.OpprettOgFerdigstillResponse
 import org.assertj.core.api.Assertions.assertThat

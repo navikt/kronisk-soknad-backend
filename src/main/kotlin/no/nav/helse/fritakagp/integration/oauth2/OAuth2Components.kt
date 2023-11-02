@@ -12,7 +12,6 @@ import no.nav.security.token.support.client.core.http.OAuth2HttpClient
 import no.nav.security.token.support.client.core.http.OAuth2HttpRequest
 import no.nav.security.token.support.client.core.oauth2.OAuth2AccessTokenResponse
 import no.nav.security.token.support.v2.TokenValidationContextPrincipal
-
 import java.util.Optional
 
 class DefaultOAuth2HttpClient(private val httpClient: HttpClient) : OAuth2HttpClient {

@@ -1,10 +1,8 @@
 package no.nav.helse.slowtests.systemtests.api
 
 import io.ktor.client.call.body
-import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.request.get
 import io.ktor.client.request.setBody
-import io.ktor.client.statement.HttpResponse
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
@@ -12,7 +10,6 @@ import no.nav.helse.KroniskTestData
 import no.nav.helse.arbeidsgiver.integrasjoner.altinn.AltinnOrganisasjon
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 
 class ArbeidsgivereHTTPTests : SystemTestBase() {
     private val arbeidsgivereUrl = "/fritak-agp-api/api/v1/arbeidsgivere"

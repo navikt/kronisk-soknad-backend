@@ -81,11 +81,7 @@ class FritakAgpApplication(val port: Int = 8080) : KoinComponent {
                 }
 
                 module {
-                    if (env is Env.Local) {
-                        localAuthTokenDispenser(env.jwt)
-                    } else if (env is Env.Preprod) {
-                        localAuthTokenDispenser(env.jwt)
-                    }
+                    localAuthTokenDispenser(env)
                     nais()
                     fritakModule(env)
                 }

@@ -9,7 +9,7 @@ import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.http.withCharset
 import kotlinx.coroutines.runBlocking
-import no.nav.helse.arbeidsgiver.integrasjoner.AccessTokenProvider
+import no.nav.helsearbeidsgiver.tokenprovider.AccessTokenProvider
 import java.time.LocalDate
 
 /**

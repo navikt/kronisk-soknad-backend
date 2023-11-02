@@ -7,7 +7,7 @@ import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
-import no.nav.helse.arbeidsgiver.integrasjoner.AccessTokenProvider
+import no.nav.helsearbeidsgiver.tokenprovider.AccessTokenProvider
 
 interface AaregArbeidsforholdClient {
     suspend fun hentArbeidsforhold(ident: String, callId: String): List<Arbeidsforhold>

@@ -143,6 +143,7 @@ dependencies {
     val postgresqlVersion: String by project
     val prometheusVersion: String by project
     val slf4jVersion: String by project
+    val tokenProviderVersion: String by project
     val tokenSupportVersion: String by project
     val utilsVersion: String by project
     val valiktorVersion: String by project
@@ -200,7 +201,7 @@ dependencies {
     implementation("no.nav.security:token-client-core:$tokenSupportVersion")
     implementation("no.nav.security:token-validation-ktor-v2:$tokenSupportVersion")
     implementation("no.nav.helsearbeidsgiver:altinn-client:$altinnClientVersion")
-    // implementation("no.nav.helsearbeidsgiver:tokenprovider:$tokenProviderVersion")
+    implementation("no.nav.helsearbeidsgiver:tokenprovider:$tokenProviderVersion")
     implementation("no.nav.tjenestespesifikasjoner:altinn-correspondence-agency-external-basic:$altinnCorrespondenceAgencyVersion")
     implementation("org.apache.cxf:cxf-rt-features-logging:$cxfVersion")
     implementation("org.apache.cxf:cxf-rt-frontend-jaxws:$cxfVersion")

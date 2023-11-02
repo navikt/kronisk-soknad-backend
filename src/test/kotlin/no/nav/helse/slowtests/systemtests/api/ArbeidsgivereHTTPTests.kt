@@ -7,7 +7,7 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import no.nav.helse.KroniskTestData
-import no.nav.helse.arbeidsgiver.integrasjoner.altinn.AltinnOrganisasjon
+import no.nav.helsearbeidsgiver.altinn.AltinnOrganisasjon
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 

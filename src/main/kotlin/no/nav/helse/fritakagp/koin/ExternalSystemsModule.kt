@@ -1,10 +1,6 @@
 package no.nav.helse.fritakagp.koin
 
-// import no.nav.helsearbeidsgiver.tokenprovider.AccessTokenProvider
-// import no.nav.helsearbeidsgiver.tokenprovider.OAuth2TokenProvider
 import com.nimbusds.oauth2.sdk.auth.ClientAuthenticationMethod
-import no.nav.helse.arbeidsgiver.integrasjoner.AccessTokenProvider
-import no.nav.helse.arbeidsgiver.integrasjoner.OAuth2TokenProvider
 import no.nav.helse.arbeidsgiver.integrasjoner.aareg2.AaregArbeidsforholdClient
 import no.nav.helse.arbeidsgiver.integrasjoner.aareg2.AaregArbeidsforholdClientImpl
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.OppgaveKlient
@@ -42,6 +38,8 @@ import no.nav.helsearbeidsgiver.altinn.CacheConfig
 import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonKlient
 import no.nav.helsearbeidsgiver.dokarkiv.DokArkivClient
 import no.nav.helsearbeidsgiver.pdl.PdlClient
+import no.nav.helsearbeidsgiver.tokenprovider.AccessTokenProvider
+import no.nav.helsearbeidsgiver.tokenprovider.OAuth2TokenProvider
 import no.nav.security.token.support.client.core.ClientAuthenticationProperties
 import no.nav.security.token.support.client.core.ClientProperties
 import no.nav.security.token.support.client.core.OAuth2GrantType

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import io.mockk.coEvery
 import io.mockk.mockk
-import no.nav.helse.arbeidsgiver.integrasjoner.AccessTokenProvider
 import no.nav.helse.arbeidsgiver.integrasjoner.aareg2.AaregArbeidsforholdClient
 import no.nav.helse.arbeidsgiver.integrasjoner.aareg2.Ansettelsesperiode
 import no.nav.helse.arbeidsgiver.integrasjoner.aareg2.Arbeidsforhold
@@ -38,6 +37,7 @@ import no.nav.helsearbeidsgiver.pdl.PdlHentFullPerson
 import no.nav.helsearbeidsgiver.pdl.PdlHentPersonNavn
 import no.nav.helsearbeidsgiver.pdl.PdlIdent
 import no.nav.helsearbeidsgiver.pdl.PdlPersonNavnMetadata
+import no.nav.helsearbeidsgiver.tokenprovider.AccessTokenProvider
 import org.koin.core.module.Module
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind

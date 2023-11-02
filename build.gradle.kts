@@ -30,7 +30,6 @@ repositories {
     val githubPassword: String by project
 
     mavenCentral()
-//    google()
     maven(url = "https://packages.confluent.io/maven/")
     maven(url = "https://jitpack.io") {
         content {
@@ -136,11 +135,9 @@ dependencies {
     val koinVersion: String by project
     val ktorVersion: String by project
     val logbackEncoderVersion: String by project
-    val logback_contrib_version: String by project
     val logback_version: String by project
     val mockkVersion: String by project
     val mockOAuth2ServerVersion: String by project
-    // val navCommonLogVersion: String by project
     val pdfboxVersion: String by project
     val pdlClientVersion: String by project
     val postgresqlVersion: String by project

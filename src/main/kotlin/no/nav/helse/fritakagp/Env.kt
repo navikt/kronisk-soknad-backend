@@ -19,11 +19,13 @@ sealed class Env private constructor(
 
     class Preprod(config: ApplicationConfig) : Env(config) {
         val oauth2 = EnvOauth2(config)
+        val jwt = EnvJwt(config)
     }
 
-    class Local(config: ApplicationConfig) : Env(config)
+    class Local(config: ApplicationConfig) : Env(config) {
+        val jwt = EnvJwt(config)
+    }
 
-    val jwt = EnvJwt(config)
     val ktorBasepath = "ktor.application.basepath".prop()
 
     val frontendUrl = "frontend_app_url".prop()

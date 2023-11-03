@@ -79,7 +79,6 @@ class GravidKravHTTPTests : SystemTestBase() {
             loggedInAs("123456789")
             setBody(GravidTestData.gravidKravRequestValid)
         }.body<GravidKrav>()
-        // val krav = response.receive()
         assertThat(response.status).isEqualTo(KravStatus.OPPRETTET)
         assertThat(response.identitetsnummer).isEqualTo(GravidTestData.gravidKravRequestValid.identitetsnummer)
     }

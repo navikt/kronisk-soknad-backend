@@ -92,8 +92,6 @@ spec:
     {{/each}}
 
   env:
-    - name: NPM_CONFIG_CACHE
-      value: /tmp
     - name: KAFKA_BESKJED_TOPIC_NAME
       value: min-side.aapen-brukernotifikasjon-beskjed-v1
     - name: CLAM_AV_URL

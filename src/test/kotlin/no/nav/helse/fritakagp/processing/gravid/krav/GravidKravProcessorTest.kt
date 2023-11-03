@@ -23,6 +23,8 @@ import no.nav.helse.fritakagp.jsonEquals
 import no.nav.helse.fritakagp.processing.BakgrunnsJobbUtils.emptyJob
 import no.nav.helse.fritakagp.processing.BakgrunnsJobbUtils.testJob
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
+import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravProcessor.Companion.brevkode
+import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravProcessor.Companion.dokumentasjonBrevkode
 import no.nav.helse.fritakagp.readToObjectNode
 import no.nav.helse.fritakagp.service.PdlService
 import no.nav.helsearbeidsgiver.dokarkiv.DokArkivClient
@@ -92,7 +94,6 @@ class GravidKravProcessorTest {
         val filtypeArkiv = "pdf"
         every { bucketStorageMock.getDocAsString(krav.id) } returns BucketDocument(dokumentData, filtypeArkiv)
 
-        // val joarkRequest = slot<OpprettOgFerdigstillRequest>()
         coEvery { joarkMock.opprettOgFerdigstillJournalpost(any(), any(), any(), any(), any(), any(), any()) } returns OpprettOgFerdigstillResponse(arkivReferanse, true, "M", emptyList())
 
         Base64.getEncoder().encodeToString(objectMapper.writeValueAsBytes(krav))
@@ -101,14 +102,28 @@ class GravidKravProcessorTest {
         verify(exactly = 1) { bucketStorageMock.getDocAsString(krav.id) }
         verify(exactly = 1) { bucketStorageMock.deleteDoc(krav.id) }
 
-//        assertThat((joarkRequest.captured.dokumenter)).hasSize(2)
-//        val dokumentasjon = joarkRequest.captured.dokumenter.filter { it.brevkode == GravidKravProcessor.dokumentasjonBrevkode }.first()
-
-//        assertThat(dokumentasjon.dokumentVarianter[0].fysiskDokument).isEqualTo(dokumentData)
-//        assertThat(dokumentasjon.dokumentVarianter[0].filtype).isEqualTo(filtypeArkiv.uppercase())
-//        assertThat(dokumentasjon.dokumentVarianter[0].variantFormat).isEqualTo("ARKIV")
-//        assertThat(dokumentasjon.dokumentVarianter[1].filtype).isEqualTo(filtypeOrginal)
-//        assertThat(dokumentasjon.dokumentVarianter[1].variantFormat).isEqualTo("ORIGINAL")
+        coVerify(exactly = 1) {
+            joarkMock.opprettOgFerdigstillJournalpost(
+                GravidKrav.tittel,
+                any(),
+                any(),
+                any(),
+                withArg {
+                    assertEquals(2, it.size)
+                    assertEquals(brevkode, it.first().brevkode)
+                    assertEquals(dokumentasjonBrevkode, it[1].brevkode)
+                    assertEquals("ARKIV", it[0].dokumentVarianter[0].variantFormat)
+                    assertEquals("PDF", it[0].dokumentVarianter[0].filtype)
+                    assertEquals("JSON", it[0].dokumentVarianter[1].filtype)
+                    assertEquals("ORIGINAL", it[0].dokumentVarianter[1].variantFormat)
+                    assertEquals(dokumentData, it[1].dokumentVarianter[0].fysiskDokument)
+                    assertEquals("ARKIV", it[1].dokumentVarianter[0].variantFormat)
+                    assertEquals("ORIGINAL", it[1].dokumentVarianter[1].variantFormat)
+                },
+                any(),
+                any()
+            )
+        }
     }
 
     @Test

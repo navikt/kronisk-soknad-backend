@@ -42,6 +42,7 @@ class GravidKravProcessor(
 ) : BakgrunnsjobbProsesserer {
     companion object {
         val JOB_TYPE = "gravid-krav-formidling"
+        val brevkode = "krav_om_fritak_fra_agp_gravid"
         val dokumentasjonBrevkode = "krav_om_fritak_fra_agp_dokumentasjon"
     }
 
@@ -160,7 +161,7 @@ class GravidKravProcessor(
                         filnavn = null
                     )
                 ),
-                brevkode = "krav_om_fritak_fra_agp_gravid",
+                brevkode = brevkode,
                 tittel = journalfoeringsTittel
             )
         )
@@ -171,7 +172,7 @@ class GravidKravProcessor(
                     dokumentVarianter = listOf(
                         DokumentVariant(
                             fysiskDokument = it.base64Data,
-                            filtype = if (it.extension == "jpg") "JPEG" else it.extension.uppercase(),
+                            filtype = it.extension.uppercase(),
                             variantFormat = "ARKIV",
                             filnavn = null
                         ),

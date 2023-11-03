@@ -22,6 +22,8 @@ import no.nav.helse.fritakagp.domain.BeloepBeregning
 import no.nav.helse.fritakagp.integration.altinn.AltinnAuthorizer
 import no.nav.helse.fritakagp.integration.altinn.DefaultAltinnAuthorizer
 import no.nav.helse.fritakagp.integration.altinn.message.Clients
+import no.nav.helse.fritakagp.integration.brreg.BrregClient
+import no.nav.helse.fritakagp.integration.brreg.MockBrregClient
 import no.nav.helse.fritakagp.processing.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravAltinnKvitteringSender
@@ -140,9 +142,10 @@ fun preprodConfig(env: Env.Preprod): Module = module {
     single { KroniskKravKafkaProcessor(get(), get(), get()) }
 
     single { BrukernotifikasjonProcessor(get(), get(), get(), get(), get(), get(), 3, env.frontendUrl) }
-    // single { ArbeidsgiverNotifikasjonKlient(env.arbeidsgiverNotifikasjonUrl, get(qualifier = named("ARBEIDSGIVERNOTIFIKASJON"))) }
     single { ArbeidsgiverNotifikasjonProcessor(get(), get(), get(), env.frontendUrl, get()) }
     single { PdlService(get()) }
+
+    single { MockBrregClient() } bind BrregClient::class
 
     single { DefaultAltinnAuthorizer(get()) } bind AltinnAuthorizer::class
     single { BeloepBeregning(get()) }

@@ -131,7 +131,7 @@ class GravidKravSlettProcessor(
                     dokumentVarianter = listOf(
                         DokumentVariant(
                             fysiskDokument = it.base64Data,
-                            filtype = if (it.extension == "jpg") "JPEG" else it.extension.uppercase(),
+                            filtype = it.extension.uppercase(),
                             variantFormat = "ARKIV",
                             filnavn = null
                         ),

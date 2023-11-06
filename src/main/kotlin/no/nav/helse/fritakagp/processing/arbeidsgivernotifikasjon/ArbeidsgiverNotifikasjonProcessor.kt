@@ -38,7 +38,7 @@ class ArbeidsgiverNotifikasjonProcessor(
                 tittel = sak.tittel,
                 lenke = sak.lenke,
                 harddeleteOm = sak.harddeleteOm,
-                statusTekst = "status"
+                statusTekst = "Under behandling"
             )
         }
         updateSaksId(jobbData, resultat)

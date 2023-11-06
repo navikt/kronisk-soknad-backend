@@ -41,6 +41,7 @@ class KroniskSoeknadProcessor(
 ) : BakgrunnsjobbProsesserer {
     companion object {
         val dokumentasjonBrevkode = "soeknad_om_fritak_fra_agp_dokumentasjon"
+        val brevkode = "soeknad_om_fritak_fra_agp_kronisk"
     }
 
     override val type: String get() = "kronisk-søknad-formidling"
@@ -152,7 +153,7 @@ class KroniskSoeknadProcessor(
                         filnavn = null
                     )
                 ),
-                brevkode = "soeknad_om_fritak_fra_agp_kronisk",
+                brevkode = brevkode,
                 tittel = journalfoeringsTittel
             )
         )

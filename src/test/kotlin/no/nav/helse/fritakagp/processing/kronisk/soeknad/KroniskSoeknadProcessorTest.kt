@@ -32,6 +32,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.io.IOException
 import java.util.Base64
+import kotlin.test.assertEquals
 
 class KroniskSoeknadProcessorTest {
 
@@ -95,15 +96,11 @@ class KroniskSoeknadProcessorTest {
 
     @Test
     fun `Om det finnes ekstra dokumentasjon skal den journalføres og så slettes`() {
-        // TODO Må se på denne
         val dokumentData = "test"
         val filtypeArkiv = "pdf"
-        val filtypeOrginal = "JSON"
         every { bucketStorageMock.getDocAsString(soeknad.id) } returns BucketDocument(dokumentData, filtypeArkiv)
 
-        // val joarkRequest = slot<JournalpostRequest>()
         coEvery { joarkMock.opprettOgFerdigstillJournalpost(any(), any(), any(), any(), any(), any(), any()) } returns OpprettOgFerdigstillResponse(arkivReferanse, true, null, emptyList())
-        // every { joarkMock.journalførDokument(capture(joarkRequest), any(), any()) } returns JournalpostResponse(arkivReferanse, true, "M", null, emptyList())
 
         Base64.getEncoder().encodeToString(objectMapper.writeValueAsBytes(soeknad))
         prosessor.prosesser(jobb)
@@ -111,14 +108,26 @@ class KroniskSoeknadProcessorTest {
         verify(exactly = 1) { bucketStorageMock.getDocAsString(soeknad.id) }
         verify(exactly = 1) { bucketStorageMock.deleteDoc(soeknad.id) }
 
-//        assertThat((joarkRequest.captured.dokumenter)).hasSize(2)
-//        val dokumentasjon = joarkRequest.captured.dokumenter.filter { it.brevkode == KroniskSoeknadProcessor.dokumentasjonBrevkode }.first()
-//
-//        assertThat(dokumentasjon.dokumentVarianter[0].fysiskDokument).isEqualTo(dokumentData)
-//        assertThat(dokumentasjon.dokumentVarianter[0].filtype).isEqualTo(filtypeArkiv.uppercase())
-//        assertThat(dokumentasjon.dokumentVarianter[0].variantFormat).isEqualTo("ARKIV")
-//        assertThat(dokumentasjon.dokumentVarianter[1].filtype).isEqualTo(filtypeOrginal)
-//        assertThat(dokumentasjon.dokumentVarianter[1].variantFormat).isEqualTo("ORIGINAL")
+        coVerify(exactly = 1) {
+            joarkMock.opprettOgFerdigstillJournalpost(
+                KroniskSoeknad.tittel,
+                any(),
+                any(),
+                any(),
+                withArg {
+                    assertEquals(2, it.size)
+                    assertEquals(KroniskSoeknadProcessor.brevkode, it.first().brevkode)
+                    assertEquals(KroniskSoeknadProcessor.dokumentasjonBrevkode, it[1].brevkode)
+                    assertEquals("ARKIV", it[0].dokumentVarianter[0].variantFormat)
+                    assertEquals("PDF", it[0].dokumentVarianter[0].filtype)
+                    assertEquals(dokumentData, it[1].dokumentVarianter[0].fysiskDokument)
+                    assertEquals("ARKIV", it[1].dokumentVarianter[0].variantFormat)
+                    assertEquals("ORIGINAL", it[1].dokumentVarianter[1].variantFormat)
+                },
+                any(),
+                any()
+            )
+        }
     }
 
     @Test

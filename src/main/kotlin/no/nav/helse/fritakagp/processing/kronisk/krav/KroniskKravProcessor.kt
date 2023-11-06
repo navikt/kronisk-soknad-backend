@@ -45,6 +45,7 @@ class KroniskKravProcessor(
     companion object {
         val JOB_TYPE = "kronisk-krav-formidling"
         val dokumentasjonBrevkode = "krav_om_fritak_fra_agp_dokumentasjon"
+        val brevkode = "krav_om_fritak_fra_agp_kronisk"
     }
 
     override val type: String get() = JOB_TYPE
@@ -128,7 +129,7 @@ class KroniskKravProcessor(
     fun journalfør(krav: KroniskKrav): String {
         val id = runBlocking {
             val journalpostId = dokarkivKlient.opprettOgFerdigstillJournalpost(
-                tittel = KroniskSoeknad.tittel,
+                tittel = KroniskKrav.tittel,
                 gjelderPerson = GjelderPerson(krav.identitetsnummer),
                 avsender = Avsender.Organisasjon(krav.virksomhetsnummer, krav.virksomhetsnavn ?: "Ukjent arbeidsgiver"),
                 datoMottatt = krav.opprettet.toLocalDate(),
@@ -164,7 +165,7 @@ class KroniskKravProcessor(
                         filnavn = null
                     )
                 ),
-                brevkode = "krav_om_fritak_fra_agp_kronisk",
+                brevkode = brevkode,
                 tittel = journalfoeringsTittel
             )
         )

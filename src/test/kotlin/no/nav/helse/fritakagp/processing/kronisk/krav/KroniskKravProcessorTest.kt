@@ -31,10 +31,10 @@ import no.nav.helsearbeidsgiver.dokarkiv.DokArkivClient
 import no.nav.helsearbeidsgiver.dokarkiv.domene.OpprettOgFerdigstillResponse
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.io.IOException
+import java.util.Base64
 import kotlin.test.assertEquals
 import kotlin.test.fail
 
@@ -90,14 +90,41 @@ class KroniskKravProcessorTest {
     }
 
     @Test
-    @Disabled("må se på senere")
     fun `Om det finnes ekstra dokumentasjon skal den journalføres og så slettes`() {
         val dokumentData = "test"
         val filtypeArkiv = "pdf"
-        val filtypeOrginal = "JSON"
 
         every { bucketStorageMock.getDocAsString(krav.id) } returns BucketDocument(dokumentData, filtypeArkiv)
+        coEvery { joarkMock.opprettOgFerdigstillJournalpost(any(), any(), any(), any(), any(), any(), any()) } returns OpprettOgFerdigstillResponse(arkivReferanse, true, "M", emptyList())
 
+        Base64.getEncoder().encodeToString(objectMapper.writeValueAsBytes(krav))
+        prosessor.prosesser(jobb)
+
+        verify(exactly = 1) { bucketStorageMock.getDocAsString(krav.id) }
+        verify(exactly = 1) { bucketStorageMock.deleteDoc(krav.id) }
+
+        coVerify(exactly = 1) {
+            joarkMock.opprettOgFerdigstillJournalpost(
+                KroniskKrav.tittel,
+                any(),
+                any(),
+                any(),
+                withArg {
+                    assertEquals(2, it.size)
+                    assertEquals(KroniskKravProcessor.brevkode, it.first().brevkode)
+                    assertEquals(KroniskKravProcessor.dokumentasjonBrevkode, it[1].brevkode)
+                    assertEquals("ARKIV", it[0].dokumentVarianter[0].variantFormat)
+                    assertEquals("PDF", it[0].dokumentVarianter[0].filtype)
+                    assertEquals("JSON", it[0].dokumentVarianter[1].filtype)
+                    assertEquals("ORIGINAL", it[0].dokumentVarianter[1].variantFormat)
+                    assertEquals(dokumentData, it[1].dokumentVarianter[0].fysiskDokument)
+                    assertEquals("ARKIV", it[1].dokumentVarianter[0].variantFormat)
+                    assertEquals("ORIGINAL", it[1].dokumentVarianter[1].variantFormat)
+                },
+                any(),
+                any()
+            )
+        }
 //        val joarkRequest = slot<JournalpostRequest>()
 //        every { joarkMock.journalførDokument(capture(joarkRequest), any(), any()) } returns JournalpostResponse(arkivReferanse, true, "M", null, emptyList())
 //

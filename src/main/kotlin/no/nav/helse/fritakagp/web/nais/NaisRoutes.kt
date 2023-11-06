@@ -20,7 +20,8 @@ import org.koin.ktor.ext.get
 import java.util.Collections
 
 private val collectorRegistry = CollectorRegistry.defaultRegistry
-//private val logger = LoggerFactory.getLogger("NaisRoutes")
+
+// private val logger = LoggerFactory.getLogger("NaisRoutes")
 fun Application.nais() {
     DefaultExports.initialize()
 

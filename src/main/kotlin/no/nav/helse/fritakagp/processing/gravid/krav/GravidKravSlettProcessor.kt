@@ -82,7 +82,6 @@ class GravidKravSlettProcessor(
 
     fun journalførSletting(krav: GravidKrav): String {
         val journalfoeringsTittel = "Annuller ${GravidKrav.tittel}"
-        // TODO: tidligere håndterte vi 409-konflikter - må se på
         val id = runBlocking {
             val journalpostId = dokarkivKlient.opprettOgFerdigstillJournalpost(
                 tittel = journalfoeringsTittel,

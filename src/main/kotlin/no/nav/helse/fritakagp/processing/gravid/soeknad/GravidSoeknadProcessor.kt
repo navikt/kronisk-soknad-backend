@@ -42,6 +42,7 @@ class GravidSoeknadProcessor(
     companion object {
         val JOB_TYPE = "gravid-søknad-formidling"
         val dokumentasjonBrevkode = "soeknad_om_fritak_fra_agp_dokumentasjon"
+        val brevkode = "soeknad_om_fritak_fra_agp_gravid"
     }
 
     override val type: String get() = JOB_TYPE
@@ -154,7 +155,7 @@ class GravidSoeknadProcessor(
                         filnavn = null
                     )
                 ),
-                brevkode = "soeknad_om_fritak_fra_agp_gravid",
+                brevkode = brevkode,
                 tittel = journalfoeringsTittel
             )
         )
@@ -165,7 +166,7 @@ class GravidSoeknadProcessor(
                     dokumentVarianter = listOf(
                         DokumentVariant(
                             fysiskDokument = it.base64Data,
-                            filtype = if (it.extension == "jpg") "JPEG" else it.extension.uppercase(),
+                            filtype = it.extension.uppercase(),
                             variantFormat = "ARKIV",
                             filnavn = null
                         ),

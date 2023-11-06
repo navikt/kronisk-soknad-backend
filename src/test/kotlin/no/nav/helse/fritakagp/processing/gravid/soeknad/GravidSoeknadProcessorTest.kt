@@ -19,6 +19,7 @@ import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.OpprettOppgaveRequest
 import no.nav.helse.fritakagp.db.GravidSoeknadRepository
 import no.nav.helse.fritakagp.domain.GravidSoeknad
 import no.nav.helse.fritakagp.integration.brreg.BrregClient
+import no.nav.helse.fritakagp.integration.gcp.BucketDocument
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor.Jobbdata.SkjemaType
@@ -27,10 +28,11 @@ import no.nav.helsearbeidsgiver.dokarkiv.DokArkivClient
 import no.nav.helsearbeidsgiver.dokarkiv.domene.OpprettOgFerdigstillResponse
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.io.IOException
+import java.util.Base64
+import kotlin.test.assertEquals
 
 class GravidSoeknadProcessorTest {
 
@@ -87,38 +89,38 @@ class GravidSoeknadProcessorTest {
     }
 
     @Test
-    @Disabled
     fun `Om det finnes ekstra dokumentasjon skal den journalføres og så slettes`() {
         val dokumentData = "test"
         val filtypeArkiv = "pdf"
-        val filtypeOrginal = "JSON"
-//        every { bucketStorageMock.getDocAsString(soeknad.id) } returns BucketDocument(dokumentData, filtypeArkiv)
-//
-//        val joarkRequest = slot<JournalpostRequest>()
-//        every { joarkMock.journalførDokument(capture(joarkRequest), any(), any()) } returns JournalpostResponse(
-//            arkivReferanse,
-//            true,
-//            "M",
-//            null,
-//            emptyList()
-//        )
-//
-//        Base64.getEncoder().encodeToString(objectMapper.writeValueAsBytes(soeknad))
-//        prosessor.prosesser(jobb)
-//
-//        verify(exactly = 1) { bucketStorageMock.getDocAsString(soeknad.id) }
-//        verify(exactly = 1) { bucketStorageMock.deleteDoc(soeknad.id) }
-//
-//        assertThat((joarkRequest.captured.dokumenter)).hasSize(2)
-//        val dokumentasjon =
-//            joarkRequest.captured.dokumenter.filter { it.brevkode == GravidSoeknadProcessor.dokumentasjonBrevkode }
-//                .first()
-//
-//        assertThat(dokumentasjon.dokumentVarianter[0].fysiskDokument).isEqualTo(dokumentData)
-//        assertThat(dokumentasjon.dokumentVarianter[0].filtype).isEqualTo(filtypeArkiv.uppercase())
-//        assertThat(dokumentasjon.dokumentVarianter[0].variantFormat).isEqualTo("ARKIV")
-//        assertThat(dokumentasjon.dokumentVarianter[1].filtype).isEqualTo(filtypeOrginal)
-//        assertThat(dokumentasjon.dokumentVarianter[1].variantFormat).isEqualTo("ORIGINAL")
+        every { bucketStorageMock.getDocAsString(soeknad.id) } returns BucketDocument(dokumentData, filtypeArkiv)
+
+        coEvery { joarkMock.opprettOgFerdigstillJournalpost(any(), any(), any(), any(), any(), any(), any()) } returns OpprettOgFerdigstillResponse(arkivReferanse, true, "M", emptyList())
+
+        Base64.getEncoder().encodeToString(objectMapper.writeValueAsBytes(soeknad))
+        prosessor.prosesser(jobb)
+
+        verify(exactly = 1) { bucketStorageMock.getDocAsString(soeknad.id) }
+        verify(exactly = 1) { bucketStorageMock.deleteDoc(soeknad.id) }
+        coVerify(exactly = 1) {
+            joarkMock.opprettOgFerdigstillJournalpost(
+                GravidSoeknad.tittel,
+                any(),
+                any(),
+                any(),
+                withArg {
+                    assertEquals(2, it.size)
+                    assertEquals(GravidSoeknadProcessor.brevkode, it.first().brevkode)
+                    assertEquals(GravidSoeknadProcessor.dokumentasjonBrevkode, it[1].brevkode)
+                    assertEquals("ARKIV", it[0].dokumentVarianter[0].variantFormat)
+                    assertEquals("PDF", it[0].dokumentVarianter[0].filtype)
+                    assertEquals(dokumentData, it[1].dokumentVarianter[0].fysiskDokument)
+                    assertEquals("ARKIV", it[1].dokumentVarianter[0].variantFormat)
+                    assertEquals("ORIGINAL", it[1].dokumentVarianter[1].variantFormat)
+                },
+                any(),
+                any()
+            )
+        }
     }
 
     @Test

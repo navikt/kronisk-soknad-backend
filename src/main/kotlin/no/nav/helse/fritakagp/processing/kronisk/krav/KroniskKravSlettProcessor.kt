@@ -82,7 +82,6 @@ class KroniskKravSlettProcessor(
 
     fun journalførSletting(krav: KroniskKrav): String {
         val journalfoeringsTittel = "Annuller ${KroniskKrav.tittel}"
-        // TODO: tidligere håndterte vi 409-konflikter - må se på
         val id = runBlocking {
             val journalpostId = dokarkivKlient.opprettOgFerdigstillJournalpost(
                 tittel = journalfoeringsTittel,

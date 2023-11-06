@@ -3,52 +3,28 @@ package no.nav.helse.fritakagp.web.nais
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.Application
-import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.call
 import io.ktor.server.response.respond
 import io.ktor.server.response.respondTextWriter
 import io.ktor.server.routing.get
 import io.ktor.server.routing.routing
-import io.ktor.util.pipeline.PipelineContext
 import io.prometheus.client.CollectorRegistry
 import io.prometheus.client.exporter.common.TextFormat
 import io.prometheus.client.hotspot.DefaultExports
-import no.nav.helse.arbeidsgiver.kubernetes.KubernetesProbeManager
-import no.nav.helse.arbeidsgiver.kubernetes.ProbeResult
-import no.nav.helse.arbeidsgiver.kubernetes.ProbeState
-import org.koin.ktor.ext.get
 import java.util.Collections
 
 private val collectorRegistry = CollectorRegistry.defaultRegistry
 
-// private val logger = LoggerFactory.getLogger("NaisRoutes")
 fun Application.nais() {
     DefaultExports.initialize()
 
     routing {
         get("/health/alive") {
-            val kubernetesProbeManager = this@routing.get<KubernetesProbeManager>()
-            val checkResults = kubernetesProbeManager.runLivenessProbe()
-
-            checkResults.unhealthyComponents.forEach {
-                println(
-                    "Isalive:" +
-                        "${it.componentName} - ${it.state} - ${it.error}"
-                )
-            }
-            returnResultOfChecks(checkResults)
+            call.respond(HttpStatusCode(200, "OK"))
         }
 
         get("/health/ready") {
-            val kubernetesProbeManager = this@routing.get<KubernetesProbeManager>()
-            val checkResults = kubernetesProbeManager.runReadynessProbe()
-            checkResults.unhealthyComponents.forEach {
-                println(
-                    "Isready:" +
-                        "${it.componentName} - ${it.state} - ${it.error}"
-                )
-            }
-            returnResultOfChecks(checkResults)
+            call.respond(HttpStatusCode(200, "OK"))
         }
 
         get("/metrics") {
@@ -59,25 +35,7 @@ fun Application.nais() {
         }
 
         get("/healthcheck") {
-            val kubernetesProbeManager = this@routing.get<KubernetesProbeManager>()
-            val readyResults = kubernetesProbeManager.runReadynessProbe()
-            val liveResults = kubernetesProbeManager.runLivenessProbe()
-            val combinedResults = ProbeResult(
-                liveResults.healthyComponents +
-                    liveResults.unhealthyComponents +
-                    readyResults.healthyComponents +
-                    readyResults.unhealthyComponents
-            )
-
-            returnResultOfChecks(combinedResults)
+            call.respond(HttpStatusCode(200, "OK"))
         }
     }
-}
-
-private suspend fun PipelineContext<Unit, ApplicationCall>.returnResultOfChecks(checkResults: ProbeResult) {
-    val httpResult = if (checkResults.state == ProbeState.UN_HEALTHY) HttpStatusCode.InternalServerError else HttpStatusCode.OK
-    checkResults.unhealthyComponents.forEach { r ->
-        r.error?.let { call.application.environment.log.error(r.toString()) }
-    }
-    call.respond(httpResult, checkResults)
 }

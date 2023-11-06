@@ -196,6 +196,7 @@ dependencies {
     implementation("no.nav.security:mock-oauth2-server:$mockOAuth2ServerVersion") {
         exclude(group = "ch.qos.logback", module = "logback-classic")
         exclude(group = "org.slf4j", module = "slf4j-api")
+        exclude(group = "io.netty", module = "netty-all")
     }
     implementation("no.nav.helsearbeidsgiver:pdl-client:$pdlClientVersion")
     implementation("no.nav.security:token-client-core:$tokenSupportVersion")

@@ -8,9 +8,6 @@ import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import io.ktor.server.netty.NettyApplicationEngine
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb2.BakgrunnsjobbService
-import no.nav.helse.arbeidsgiver.kubernetes.KubernetesProbeManager
-import no.nav.helse.arbeidsgiver.kubernetes.LivenessComponent
-import no.nav.helse.arbeidsgiver.kubernetes.ReadynessComponent
 import no.nav.helse.fritakagp.koin.profileModules
 import no.nav.helse.fritakagp.processing.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
@@ -57,12 +54,11 @@ class FritakAgpApplication(val port: Int = 8080) : KoinComponent {
         startKoin { modules(profileModules(env)) }
         migrateDatabase()
 
-        configAndStartBackgroundWorker()
-        autoDetectProbeableComponents()
-
         webserver = createWebserver().also {
-            it.start(wait = false)
+            it.start(wait = true)
         }
+
+        configAndStartBackgroundWorker()
     }
 
     fun shutdown() {
@@ -84,9 +80,6 @@ class FritakAgpApplication(val port: Int = 8080) : KoinComponent {
                     if (env is Env.Local) {
                         localAuthTokenDispenser(env.jwt)
                     }
-//                    else if (env is Env.Preprod) {
-//                        localAuthTokenDispenser(env.jwt)
-//                    }
                     nais()
                     fritakModule(env)
                 }
@@ -131,18 +124,6 @@ class FritakAgpApplication(val port: Int = 8080) : KoinComponent {
             .migrate()
 
         logger.info("Databasemigrering slutt")
-    }
-
-    private fun autoDetectProbeableComponents() {
-        val kubernetesProbeManager = get<KubernetesProbeManager>()
-
-        getKoin().getAll<LivenessComponent>()
-            .forEach { kubernetesProbeManager.registerLivenessComponent(it) }
-
-        getKoin().getAll<ReadynessComponent>()
-            .forEach { kubernetesProbeManager.registerReadynessComponent(it) }
-
-        logger.debug("La til probeable komponenter")
     }
 }
 

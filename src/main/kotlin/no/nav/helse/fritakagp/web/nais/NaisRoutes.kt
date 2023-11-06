@@ -17,10 +17,11 @@ import no.nav.helse.arbeidsgiver.kubernetes.KubernetesProbeManager
 import no.nav.helse.arbeidsgiver.kubernetes.ProbeResult
 import no.nav.helse.arbeidsgiver.kubernetes.ProbeState
 import org.koin.ktor.ext.get
+import org.slf4j.LoggerFactory
 import java.util.Collections
 
 private val collectorRegistry = CollectorRegistry.defaultRegistry
-
+private val logger = LoggerFactory.getLogger("NaisRoutes")
 fun Application.nais() {
     DefaultExports.initialize()
 
@@ -28,12 +29,25 @@ fun Application.nais() {
         get("/health/is-alive") {
             val kubernetesProbeManager = this@routing.get<KubernetesProbeManager>()
             val checkResults = kubernetesProbeManager.runLivenessProbe()
+
+            checkResults.unhealthyComponents.forEach {
+                logger.info(
+                    "Isalive:" +
+                        "${it.componentName} - ${it.state} - ${it.error}"
+                )
+            }
             returnResultOfChecks(checkResults)
         }
 
         get("/health/is-ready") {
             val kubernetesProbeManager = this@routing.get<KubernetesProbeManager>()
             val checkResults = kubernetesProbeManager.runReadynessProbe()
+            checkResults.unhealthyComponents.forEach {
+                logger.info(
+                    "Isready:" +
+                        "${it.componentName} - ${it.state} - ${it.error}"
+                )
+            }
             returnResultOfChecks(checkResults)
         }
 

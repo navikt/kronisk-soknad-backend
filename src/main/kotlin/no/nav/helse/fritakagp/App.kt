@@ -38,7 +38,7 @@ import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.slf4j.LoggerFactory
 
-class FritakAgpApplication(val port: Int = 8080) : KoinComponent {
+class FritakAgpApplication(val port: Int = 8080, val runAsDeamon: Boolean = true) : KoinComponent {
     private val logger = LoggerFactory.getLogger(this.javaClass)
     private val appConfig = HoconApplicationConfig(ConfigFactory.load())
     private val env = readEnv(appConfig)
@@ -57,7 +57,7 @@ class FritakAgpApplication(val port: Int = 8080) : KoinComponent {
         configAndStartBackgroundWorker()
 
         webserver = createWebserver().also {
-            it.start(wait = true)
+            it.start(wait = runAsDeamon)
         }
     }
 

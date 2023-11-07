@@ -41,7 +41,7 @@ open class SystemTestBase : KoinTest {
     @BeforeAll
     fun before() {
         if (app == null) {
-            app = FritakAgpApplication(port = testServerPort)
+            app = FritakAgpApplication(port = testServerPort, false)
             Thread.sleep(200)
         }
     }

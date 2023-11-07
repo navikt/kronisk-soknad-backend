@@ -54,11 +54,11 @@ class FritakAgpApplication(val port: Int = 8080) : KoinComponent {
         startKoin { modules(profileModules(env)) }
         migrateDatabase()
 
+        configAndStartBackgroundWorker()
+
         webserver = createWebserver().also {
             it.start(wait = true)
         }
-
-        configAndStartBackgroundWorker()
     }
 
     fun shutdown() {

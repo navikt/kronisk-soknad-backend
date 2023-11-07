@@ -11,20 +11,23 @@ import io.ktor.server.routing.routing
 import io.prometheus.client.CollectorRegistry
 import io.prometheus.client.exporter.common.TextFormat
 import io.prometheus.client.hotspot.DefaultExports
+import org.koin.ktor.ext.get
 import java.util.Collections
+import javax.sql.DataSource
 
 private val collectorRegistry = CollectorRegistry.defaultRegistry
 
 fun Application.nais() {
     DefaultExports.initialize()
+    val ds = get<DataSource>() // TODO: alive-sjekk
 
     routing {
         get("/health/alive") {
-            call.respond(HttpStatusCode(200, "OK"))
+            call.respond(HttpStatusCode(200, "OK"), "Alive")
         }
 
         get("/health/ready") {
-            call.respond(HttpStatusCode(200, "OK"))
+            call.respond(HttpStatusCode(200, "OK"), "Ready")
         }
 
         get("/metrics") {

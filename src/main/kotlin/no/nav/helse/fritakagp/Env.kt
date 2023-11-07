@@ -1,6 +1,6 @@
 package no.nav.helse.fritakagp
 
-import io.ktor.config.ApplicationConfig
+import io.ktor.server.config.ApplicationConfig
 
 fun readEnv(config: ApplicationConfig): Env =
     when (config.prop("koin.profile")) {
@@ -11,7 +11,7 @@ fun readEnv(config: ApplicationConfig): Env =
         .invoke(config)
 
 sealed class Env private constructor(
-    private val config: ApplicationConfig
+    internal val config: ApplicationConfig
 ) {
     class Prod(config: ApplicationConfig) : Env(config) {
         val oauth2 = EnvOauth2(config)
@@ -107,7 +107,6 @@ class EnvJwt(mainConfig: ApplicationConfig) {
 
     val issuerName = "issuer_name".prop()
     val audience = "accepted_audience".prop()
-    val cookieName = "cookie_name".prop()
 
     private fun String.prop(): String =
         jwtIssuerConfig.prop(this)

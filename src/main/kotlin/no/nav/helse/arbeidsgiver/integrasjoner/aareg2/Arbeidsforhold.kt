@@ -1,0 +1,36 @@
+package no.nav.helse.arbeidsgiver.integrasjoner.aareg2
+
+import java.time.LocalDate
+import java.time.LocalDateTime
+
+data class Arbeidsforhold(
+    val arbeidsgiver: Arbeidsgiver,
+    val opplysningspliktig: Opplysningspliktig,
+    val arbeidsavtaler: List<Arbeidsavtale>,
+    val ansettelsesperiode: Ansettelsesperiode,
+    val registrert: LocalDateTime
+)
+
+data class Arbeidsavtale(
+    val stillingsprosent: Double,
+    val gyldighetsperiode: Periode
+)
+
+data class Ansettelsesperiode(
+    val periode: Periode
+)
+
+data class Arbeidsgiver(
+    val type: String,
+    val organisasjonsnummer: String?
+)
+
+data class Periode(
+    val fom: LocalDate?,
+    val tom: LocalDate?
+)
+
+data class Opplysningspliktig(
+    val type: String,
+    val organisasjonsnummer: String?
+)

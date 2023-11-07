@@ -7,10 +7,15 @@ metadata:
     team: helsearbeidsgiver
   annotations:
     nginx.ingress.kubernetes.io/proxy-body-size: 50M
+    nais.io/read-only-file-system: "false"
 
 spec:
   image: {{ image }}
   port: 8080
+  idporten:
+    enabled: true
+    sidecar:
+      enabled: true
   replicas:
     max: 1
     min: 1
@@ -22,13 +27,13 @@ spec:
       cpu: 400m
       memory: 200Mi
   liveness:
-    path: /health/is-alive
+    path: /health/alive
     initialDelay: 10
     timeout: 2
     periodSeconds: 30
     failureThreshold: 10
   readiness:
-    path: /health/is-ready
+    path: /health/ready
     initialDelay: 10
     timeout: 2
     periodSeconds: 5
@@ -49,17 +54,17 @@ spec:
       - type: POSTGRES_11
         databases:
           - name: fritakagp-db
-            diskAutoresize: true
+        diskAutoresize: true
     {{#if bucketName}}
     buckets:
       - name: {{ bucketName }}
         uniformBucketLevelAccess: true
     {{/if}}
 
-  {{#if ingress}}
   ingresses:
+  {{#each ingresses as |ingress|}}
     - {{ ingress }}
-  {{/if}}
+  {{/each}}
 
   accessPolicy:
     outbound:
@@ -85,8 +90,6 @@ spec:
     {{#each envFrom as |secret|}}
     - secret: {{ secret }}
     {{/each}}
-    # tilgjengeliggjør LOGINSERVICE_IDPORTEN_DISCOVERY_URL og LOGINSERVICE_IDPORTEN_AUDIENCE
-    - configmap: loginservice-idporten
 
   env:
     - name: KAFKA_BESKJED_TOPIC_NAME

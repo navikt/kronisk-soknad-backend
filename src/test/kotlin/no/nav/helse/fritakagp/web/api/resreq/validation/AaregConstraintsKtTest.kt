@@ -3,11 +3,11 @@ package no.nav.helse.fritakagp.web.dto.validation
 import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.helse.AaregTestData
 import no.nav.helse.GravidTestData
-import no.nav.helse.arbeidsgiver.integrasjoner.aareg.Ansettelsesperiode
-import no.nav.helse.arbeidsgiver.integrasjoner.aareg.Arbeidsforhold
-import no.nav.helse.arbeidsgiver.integrasjoner.aareg.Arbeidsgiver
-import no.nav.helse.arbeidsgiver.integrasjoner.aareg.Opplysningspliktig
-import no.nav.helse.arbeidsgiver.integrasjoner.aareg.Periode
+import no.nav.helse.arbeidsgiver.integrasjoner.aareg2.Ansettelsesperiode
+import no.nav.helse.arbeidsgiver.integrasjoner.aareg2.Arbeidsforhold
+import no.nav.helse.arbeidsgiver.integrasjoner.aareg2.Arbeidsgiver
+import no.nav.helse.arbeidsgiver.integrasjoner.aareg2.Opplysningspliktig
+import no.nav.helse.arbeidsgiver.integrasjoner.aareg2.Periode
 import no.nav.helse.arbeidsgiver.utils.loadFromResources
 import no.nav.helse.fritakagp.customObjectMapper
 import no.nav.helse.fritakagp.domain.Arbeidsgiverperiode
@@ -24,6 +24,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 class AaregConstraintsKtTest {
+
     @Test
     @Disabled
     fun `Rådata fra aareg (Brukes for å feilsøke med respons fra AA-reg)`() {
@@ -34,7 +35,6 @@ class AaregConstraintsKtTest {
         val arbeidsforhold = objectMapper.readValue<List<Arbeidsforhold>>(aaregFile)
             // Legg inn organisasjonsnummer
             .filter { it.arbeidsgiver.organisasjonsnummer == "XXXXXXXX" }
-
         // Endre til perioden kravet gjelder
         val arbeidsgiverPeriode = Arbeidsgiverperiode(
             LocalDate.of(2021, 1, 15),

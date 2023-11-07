@@ -5,25 +5,13 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.slot
 import io.mockk.verify
 import no.nav.helse.KroniskTestData
-import no.nav.helse.arbeidsgiver.bakgrunnsjobb.Bakgrunnsjobb
-import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbRepository
-import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.DokarkivKlient
-import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.JournalpostRequest
-import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.JournalpostResponse
-import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OPPGAVETYPE_FORDELINGSOPPGAVE
-import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OppgaveKlient
-import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OpprettOppgaveRequest
-import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlClient
-import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlHentFullPerson
-import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlHentFullPerson.PdlFullPersonliste
-import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlHentFullPerson.PdlGeografiskTilknytning.PdlGtType.UTLAND
-import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlHentFullPerson.PdlIdentResponse
-import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlHentPersonNavn
-import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlIdent
-import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlPersonNavnMetadata
+import no.nav.helse.arbeidsgiver.bakgrunnsjobb2.Bakgrunnsjobb
+import no.nav.helse.arbeidsgiver.bakgrunnsjobb2.BakgrunnsjobbRepository
+import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.OPPGAVETYPE_FORDELINGSOPPGAVE
+import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.OppgaveKlient
+import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.OpprettOppgaveRequest
 import no.nav.helse.arbeidsgiver.utils.loadFromResources
 import no.nav.helse.fritakagp.customObjectMapper
 import no.nav.helse.fritakagp.db.KroniskKravRepository
@@ -37,6 +25,10 @@ import no.nav.helse.fritakagp.processing.BakgrunnsJobbUtils.testJob
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
 import no.nav.helse.fritakagp.readToObjectNode
 import no.nav.helse.fritakagp.service.BehandlendeEnhetService
+import no.nav.helse.fritakagp.service.GeografiskTilknytning
+import no.nav.helse.fritakagp.service.PdlService
+import no.nav.helsearbeidsgiver.dokarkiv.DokArkivClient
+import no.nav.helsearbeidsgiver.dokarkiv.domene.OpprettOgFerdigstillResponse
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -48,17 +40,17 @@ import kotlin.test.fail
 
 class KroniskKravProcessorTest {
 
-    val joarkMock = mockk<DokarkivKlient>(relaxed = true)
+    val joarkMock = mockk<DokArkivClient>(relaxed = true)
     val oppgaveMock = mockk<OppgaveKlient>(relaxed = true)
     val repositoryMock = mockk<KroniskKravRepository>(relaxed = true)
-    val pdlClientMock = mockk<PdlClient>(relaxed = true)
+    val pdlServiceMock = mockk<PdlService>(relaxed = true)
     val objectMapper = customObjectMapper()
     val pdfGeneratorMock = mockk<KroniskKravPDFGenerator>(relaxed = true)
     val bucketStorageMock = mockk<BucketStorage>(relaxed = true)
     val bakgrunnsjobbRepomock = mockk<BakgrunnsjobbRepository>(relaxed = true)
     val berregServiceMock = mockk<BrregClient>(relaxed = true)
     val behandlendeEnhetService = mockk<BehandlendeEnhetService>(relaxed = true)
-    val prosessor = KroniskKravProcessor(repositoryMock, joarkMock, oppgaveMock, pdlClientMock, bakgrunnsjobbRepomock, pdfGeneratorMock, objectMapper, bucketStorageMock, berregServiceMock, behandlendeEnhetService)
+    val prosessor = KroniskKravProcessor(repositoryMock, joarkMock, oppgaveMock, pdlServiceMock, bakgrunnsjobbRepomock, pdfGeneratorMock, objectMapper, bucketStorageMock, berregServiceMock, behandlendeEnhetService)
     lateinit var krav: KroniskKrav
 
     private val oppgaveId = 9999
@@ -71,17 +63,9 @@ class KroniskKravProcessorTest {
         jobb = testJob(objectMapper.writeValueAsString(KroniskKravProcessor.JobbData(krav.id)))
         every { repositoryMock.getById(krav.id) } returns krav
         every { bucketStorageMock.getDocAsString(any()) } returns null
-        every { pdlClientMock.personNavn(krav.sendtAv) } returns PdlHentPersonNavn.PdlPersonNavneliste(
-            listOf(
-                PdlHentPersonNavn.PdlPersonNavneliste.PdlPersonNavn("Ola", "M", "Avsender", PdlPersonNavnMetadata("freg"))
-            )
-        )
-        every { pdlClientMock.fullPerson(krav.identitetsnummer) } returns PdlHentFullPerson(
-            PdlFullPersonliste(emptyList(), emptyList(), emptyList(), emptyList(), emptyList(), emptyList(), emptyList()),
-            PdlIdentResponse(listOf(PdlIdent("aktør-id", PdlIdent.PdlIdentGruppe.AKTORID))),
-            PdlHentFullPerson.PdlGeografiskTilknytning(UTLAND, null, null, "SWE")
-        )
-        every { joarkMock.journalførDokument(any(), any(), any()) } returns JournalpostResponse(arkivReferanse, true, "M", null, emptyList())
+        every { pdlServiceMock.hentAktoerId(krav.identitetsnummer) } returns "aktør-id"
+        every { pdlServiceMock.hentGeografiskTilknytning(krav.identitetsnummer) } returns GeografiskTilknytning(diskresjonskode = null, geografiskTilknytning = "SWE")
+        coEvery { joarkMock.opprettOgFerdigstillJournalpost(any(), any(), any(), any(), any(), any(), any()) } returns OpprettOgFerdigstillResponse(arkivReferanse, true, null, emptyList())
         coEvery { oppgaveMock.opprettOppgave(any(), any()) } returns KroniskTestData.kroniskOpprettOppgaveResponse.copy(id = oppgaveId)
         coEvery { berregServiceMock.getVirksomhetsNavn(krav.virksomhetsnummer) } returns "Stark Industries"
     }
@@ -91,7 +75,7 @@ class KroniskKravProcessorTest {
         krav.journalpostId = "joark"
         prosessor.prosesser(jobb)
 
-        verify(exactly = 0) { joarkMock.journalførDokument(any(), any(), any()) }
+        coVerify(exactly = 0) { joarkMock.opprettOgFerdigstillJournalpost(any(), any(), any(), any(), any(), any(), any()) }
         verify(exactly = 1) { bucketStorageMock.deleteDoc(krav.id) }
     }
 
@@ -109,12 +93,9 @@ class KroniskKravProcessorTest {
     fun `Om det finnes ekstra dokumentasjon skal den journalføres og så slettes`() {
         val dokumentData = "test"
         val filtypeArkiv = "pdf"
-        val filtypeOrginal = "JSON"
 
         every { bucketStorageMock.getDocAsString(krav.id) } returns BucketDocument(dokumentData, filtypeArkiv)
-
-        val joarkRequest = slot<JournalpostRequest>()
-        every { joarkMock.journalførDokument(capture(joarkRequest), any(), any()) } returns JournalpostResponse(arkivReferanse, true, "M", null, emptyList())
+        coEvery { joarkMock.opprettOgFerdigstillJournalpost(any(), any(), any(), any(), any(), any(), any()) } returns OpprettOgFerdigstillResponse(arkivReferanse, true, "M", emptyList())
 
         Base64.getEncoder().encodeToString(objectMapper.writeValueAsBytes(krav))
         prosessor.prosesser(jobb)
@@ -122,14 +103,45 @@ class KroniskKravProcessorTest {
         verify(exactly = 1) { bucketStorageMock.getDocAsString(krav.id) }
         verify(exactly = 1) { bucketStorageMock.deleteDoc(krav.id) }
 
-        assertThat((joarkRequest.captured.dokumenter)).hasSize(2)
-        val dokumentasjon = joarkRequest.captured.dokumenter.filter { it.brevkode == KroniskKravProcessor.dokumentasjonBrevkode }.first()
-
-        assertThat(dokumentasjon.dokumentVarianter[0].fysiskDokument).isEqualTo(dokumentData)
-        assertThat(dokumentasjon.dokumentVarianter[0].filtype).isEqualTo(filtypeArkiv.uppercase())
-        assertThat(dokumentasjon.dokumentVarianter[0].variantFormat).isEqualTo("ARKIV")
-        assertThat(dokumentasjon.dokumentVarianter[1].filtype).isEqualTo(filtypeOrginal)
-        assertThat(dokumentasjon.dokumentVarianter[1].variantFormat).isEqualTo("ORIGINAL")
+        coVerify(exactly = 1) {
+            joarkMock.opprettOgFerdigstillJournalpost(
+                KroniskKrav.tittel,
+                any(),
+                any(),
+                any(),
+                withArg {
+                    assertEquals(2, it.size)
+                    assertEquals(KroniskKravProcessor.brevkode, it.first().brevkode)
+                    assertEquals(KroniskKravProcessor.dokumentasjonBrevkode, it[1].brevkode)
+                    assertEquals("ARKIV", it[0].dokumentVarianter[0].variantFormat)
+                    assertEquals("PDF", it[0].dokumentVarianter[0].filtype)
+                    assertEquals("JSON", it[0].dokumentVarianter[1].filtype)
+                    assertEquals("ORIGINAL", it[0].dokumentVarianter[1].variantFormat)
+                    assertEquals(dokumentData, it[1].dokumentVarianter[0].fysiskDokument)
+                    assertEquals("ARKIV", it[1].dokumentVarianter[0].variantFormat)
+                    assertEquals("ORIGINAL", it[1].dokumentVarianter[1].variantFormat)
+                },
+                any(),
+                any()
+            )
+        }
+//        val joarkRequest = slot<JournalpostRequest>()
+//        every { joarkMock.journalførDokument(capture(joarkRequest), any(), any()) } returns JournalpostResponse(arkivReferanse, true, "M", null, emptyList())
+//
+//        Base64.getEncoder().encodeToString(objectMapper.writeValueAsBytes(krav))
+//        prosessor.prosesser(jobb)
+//
+//        verify(exactly = 1) { bucketStorageMock.getDocAsString(krav.id) }
+//        verify(exactly = 1) { bucketStorageMock.deleteDoc(krav.id) }
+//
+//        assertThat((joarkRequest.captured.dokumenter)).hasSize(2)
+//        val dokumentasjon = joarkRequest.captured.dokumenter.filter { it.brevkode == KroniskKravProcessor.dokumentasjonBrevkode }.first()
+//
+//        assertThat(dokumentasjon.dokumentVarianter[0].fysiskDokument).isEqualTo(dokumentData)
+//        assertThat(dokumentasjon.dokumentVarianter[0].filtype).isEqualTo(filtypeArkiv.uppercase())
+//        assertThat(dokumentasjon.dokumentVarianter[0].variantFormat).isEqualTo("ARKIV")
+//        assertThat(dokumentasjon.dokumentVarianter[1].filtype).isEqualTo(filtypeOrginal)
+//        assertThat(dokumentasjon.dokumentVarianter[1].variantFormat).isEqualTo("ORIGINAL")
     }
 
     @Test
@@ -148,7 +160,7 @@ class KroniskKravProcessorTest {
         assertThat(krav.journalpostId).isEqualTo(arkivReferanse)
         assertThat(krav.oppgaveId).isEqualTo(oppgaveId.toString())
 
-        verify(exactly = 1) { joarkMock.journalførDokument(any(), true, any()) }
+        coVerify(exactly = 1) { joarkMock.opprettOgFerdigstillJournalpost(any(), any(), any(), any(), any(), any(), any()) }
         coVerify(exactly = 1) {
             oppgaveMock.opprettOppgave(
                 withArg {
@@ -195,7 +207,7 @@ class KroniskKravProcessorTest {
         assertThat(krav.journalpostId).isEqualTo(arkivReferanse)
         assertThat(krav.oppgaveId).isNull()
 
-        verify(exactly = 1) { joarkMock.journalførDokument(any(), true, any()) }
+        coVerify(exactly = 1) { joarkMock.opprettOgFerdigstillJournalpost(any(), any(), any(), any(), any(), any(), any()) }
         coVerify(exactly = 1) { oppgaveMock.opprettOppgave(any(), any()) }
         verify(exactly = 1) { repositoryMock.update(krav) }
     }

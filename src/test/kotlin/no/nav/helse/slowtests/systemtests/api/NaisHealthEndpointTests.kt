@@ -1,9 +1,9 @@
 package no.nav.helse.slowtests.systemtests.api
 
 import io.ktor.client.request.get
-import io.ktor.http.ContentType
-import io.ktor.http.contentType
-import no.nav.helse.GravidTestData
+import io.ktor.client.statement.bodyAsText
+import io.ktor.http.HttpStatusCode
+import junit.framework.TestCase.assertEquals
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 
@@ -11,23 +11,20 @@ class NaisHealthEndpointTests : SystemTestBase() {
 
     @Test
     fun `nais isalive endpoint with no JWT returns ProbeResult OK`() = suspendableTest {
-        val response = httpClient.get<String> {
-            appUrl("/health/is-alive")
-            contentType(ContentType.Application.Json)
-            body = GravidTestData.fullValidSoeknadRequest
+        val response = httpClient.get {
+            appUrl("/health/alive")
         }
 
-        Assertions.assertThat(response).isNotBlank()
+        Assertions.assertThat(response.bodyAsText()).isNotBlank()
+        assertEquals(HttpStatusCode.OK, response.status)
     }
 
     @Test
     fun `nais isready endpoint with no JWT returns 200 OK`() = suspendableTest {
-        val response = httpClient.get<String> {
-            appUrl("/health/is-ready")
-            contentType(ContentType.Application.Json)
-            body = GravidTestData.fullValidSoeknadRequest
+        val response = httpClient.get {
+            appUrl("/health/ready")
         }
-
-        Assertions.assertThat(response).isNotBlank()
+        assertEquals(HttpStatusCode.OK, response.status)
+        Assertions.assertThat(response.bodyAsText()).isNotBlank()
     }
 }

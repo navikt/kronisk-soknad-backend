@@ -1,8 +1,8 @@
 package no.nav.helse
 
-import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OpprettOppgaveResponse
-import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.Prioritet
-import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.Status
+import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.OpprettOppgaveResponse
+import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.Prioritet
+import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.Status
 import no.nav.helse.fritakagp.domain.Arbeidsgiverperiode
 import no.nav.helse.fritakagp.domain.GravidKrav
 import no.nav.helse.fritakagp.domain.GravidSoeknad
@@ -47,6 +47,23 @@ aąbcćdeęfghijlłmnńoóprsśtuwź
         sendtAvNavn = validSendtAvNavn,
         navn = validNavn
     )
+
+    val gravidSoeknadSomString = """
+        {
+          "identitetsnummer": "19429007936",
+          "virksomhetsnummer": "810007842",
+          "tilrettelegge": true,
+          "tiltak": [
+            "ANNET",
+            "HJEMMEKONTOR"
+          ],
+          "tiltakBeskrivelse": "Kjefting",
+          "omplassering": "NEI",
+          "dokumentasjon": "",
+          "bekreftet": true,
+          "termindato": "2023-12-24"
+        }
+    """.trimIndent()
 
     val fullValidSoeknadRequest = GravidSoknadRequest(
         virksomhetsnummer = validOrgNr,
@@ -142,19 +159,19 @@ aąbcćdeęfghijlłmnńoóprsśtuwź
                 LocalDate.of(2020, 1, 15),
                 LocalDate.of(2020, 1, 10),
                 2,
-                månedsinntekt = 2590.8,
+                månedsinntekt = 2590.8
             ),
             Arbeidsgiverperiode(
                 LocalDate.of(2020, 1, 5),
                 LocalDate.of(2020, 1, 4),
                 2,
-                månedsinntekt = 3590.8,
+                månedsinntekt = 3590.8
             ),
             Arbeidsgiverperiode(
                 LocalDate.of(2020, 1, 5),
                 LocalDate.of(2020, 1, 14),
                 12,
-                månedsinntekt = 1590.8,
+                månedsinntekt = 1590.8
             )
         ),
 

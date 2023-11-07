@@ -1,6 +1,7 @@
 context: prod
 bucketName: helse-arbeidsgiver-fritakagb-bucket-prod
-ingress: https://fritakagp-api.intern.nav.no
+ingresses:
+  - https://fritakagp-api.intern.nav.no
 accessOutbound:
   external:
     - kafka-schema-registry.nais.adeo.no
@@ -12,6 +13,7 @@ accessOutbound:
     - www.altinn.no
     - data.brreg.no
     - g.nav.no
+    - idporten.no
 envFrom:
   # servicebrukerens passord som er  hentet fra vault og lagt inn slik: https://doc.nais.io/security/secrets/kubernetes-secrets/
   - service-user-password-prod
@@ -42,7 +44,7 @@ env:
   - name: ARBEIDSGIVER_NOTIFIKASJON_API_URL
     value: https://ag-notifikasjon-produsent-api.intern.nav.no/api/graphql
   - name: DOKARKIV_URL
-    value: https://dokarkiv.prod-fss-pub.nais.io
+    value: https://dokarkiv.prod-fss-pub.nais.io/rest/journalpostapi/v1
   - name: GRUNNBELOEP_URL
     value: https://g.nav.no/api/v1/grunnbeløp
   - name: NORG2_URL

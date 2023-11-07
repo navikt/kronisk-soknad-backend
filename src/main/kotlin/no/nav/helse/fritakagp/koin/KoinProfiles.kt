@@ -1,10 +1,12 @@
 package no.nav.helse.fritakagp.koin
 
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.apache.Apache
-import io.ktor.client.features.json.JacksonSerializer
-import io.ktor.client.features.json.JsonFeature
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.http.ContentType
+import io.ktor.serialization.jackson.JacksonConverter
+import io.ktor.serialization.jackson.jackson
 import no.nav.helse.arbeidsgiver.kubernetes.KubernetesProbeManager
 import no.nav.helse.fritakagp.Env
 import no.nav.helse.fritakagp.customObjectMapper
@@ -26,10 +28,10 @@ private val common = module {
 
     single {
         HttpClient(Apache) {
-            install(JsonFeature) {
-                val objectMapper = customObjectMapper(false)
-                serializer = JacksonSerializer(objectMapper) {
-                    accept(ContentType.Application.Json)
+            install(ContentNegotiation) {
+                register(ContentType.Application.Json, JacksonConverter(customObjectMapper()))
+                jackson {
+                    registerModule(JavaTimeModule())
                 }
             }
         }

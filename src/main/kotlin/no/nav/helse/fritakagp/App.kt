@@ -1,16 +1,13 @@
 package no.nav.helse.fritakagp
 
 import com.typesafe.config.ConfigFactory
-import io.ktor.config.HoconApplicationConfig
+import io.ktor.server.config.HoconApplicationConfig
 import io.ktor.server.engine.applicationEngineEnvironment
 import io.ktor.server.engine.connector
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import io.ktor.server.netty.NettyApplicationEngine
-import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbService
-import no.nav.helse.arbeidsgiver.kubernetes.KubernetesProbeManager
-import no.nav.helse.arbeidsgiver.kubernetes.LivenessComponent
-import no.nav.helse.arbeidsgiver.kubernetes.ReadynessComponent
+import no.nav.helse.arbeidsgiver.bakgrunnsjobb2.BakgrunnsjobbService
 import no.nav.helse.fritakagp.koin.profileModules
 import no.nav.helse.fritakagp.processing.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
@@ -30,19 +27,19 @@ import no.nav.helse.fritakagp.processing.kronisk.krav.OpprettRobotOppgaveKronisk
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadKafkaProcessor
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadKvitteringProcessor
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadProcessor
-import no.nav.helse.fritakagp.web.auth.localCookieDispenser
+import no.nav.helse.fritakagp.web.auth.localAuthTokenDispenser
 import no.nav.helse.fritakagp.web.fritakModule
 import no.nav.helse.fritakagp.web.nais.nais
-import no.nav.helsearbeidsgiver.utils.log.logger
 import org.flywaydb.core.Flyway
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import org.koin.core.context.GlobalContext
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
+import org.slf4j.LoggerFactory
 
-class FritakAgpApplication(val port: Int = 8080) : KoinComponent {
-    private val logger = this.logger()
+class FritakAgpApplication(val port: Int = 8080, val runAsDeamon: Boolean = true) : KoinComponent {
+    private val logger = LoggerFactory.getLogger(this.javaClass)
     private val appConfig = HoconApplicationConfig(ConfigFactory.load())
     private val env = readEnv(appConfig)
 
@@ -58,10 +55,9 @@ class FritakAgpApplication(val port: Int = 8080) : KoinComponent {
         migrateDatabase()
 
         configAndStartBackgroundWorker()
-        autoDetectProbeableComponents()
 
         webserver = createWebserver().also {
-            it.start(wait = false)
+            it.start(wait = runAsDeamon)
         }
     }
 
@@ -81,12 +77,9 @@ class FritakAgpApplication(val port: Int = 8080) : KoinComponent {
                 }
 
                 module {
-                    if (env is Env.Preprod) {
-                        localCookieDispenser(env.jwt, "dev.nav.no")
-                    } else if (env is Env.Local) {
-                        localCookieDispenser(env.jwt, "localhost")
+                    if (env is Env.Local) {
+                        localAuthTokenDispenser(env.jwt)
                     }
-
                     nais()
                     fritakModule(env)
                 }
@@ -132,23 +125,10 @@ class FritakAgpApplication(val port: Int = 8080) : KoinComponent {
 
         logger.info("Databasemigrering slutt")
     }
-
-    private fun autoDetectProbeableComponents() {
-        val kubernetesProbeManager = get<KubernetesProbeManager>()
-
-        getKoin().getAll<LivenessComponent>()
-            .forEach { kubernetesProbeManager.registerLivenessComponent(it) }
-
-        getKoin().getAll<ReadynessComponent>()
-            .forEach { kubernetesProbeManager.registerReadynessComponent(it) }
-
-        logger.debug("La til probeable komponenter")
-    }
 }
 
 fun main() {
-    val logger = "main".logger()
-
+    val logger = LoggerFactory.getLogger("fritakagp")
     Thread.currentThread().setUncaughtExceptionHandler { thread, err ->
         logger.error("uncaught exception in thread ${thread.name}: ${err.message}", err)
     }

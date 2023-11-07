@@ -3,32 +3,28 @@ package no.nav.helse.fritakagp.processing.kronisk.krav
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import kotlinx.coroutines.runBlocking
-import no.nav.helse.arbeidsgiver.bakgrunnsjobb.Bakgrunnsjobb
-import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbProsesserer
-import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbRepository
-import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.AvsenderMottaker
-import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.Bruker
-import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.DokarkivKlient
-import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.Dokument
-import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.DokumentVariant
-import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.IdType
-import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.JournalpostRequest
-import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.Journalposttype
-import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OPPGAVETYPE_FORDELINGSOPPGAVE
-import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OppgaveKlient
-import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OpprettOppgaveRequest
-import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlClient
-import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlIdent
+import no.nav.helse.arbeidsgiver.bakgrunnsjobb2.Bakgrunnsjobb
+import no.nav.helse.arbeidsgiver.bakgrunnsjobb2.BakgrunnsjobbProsesserer
+import no.nav.helse.arbeidsgiver.bakgrunnsjobb2.BakgrunnsjobbRepository
+import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.OPPGAVETYPE_FORDELINGSOPPGAVE
+import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.OppgaveKlient
+import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.OpprettOppgaveRequest
 import no.nav.helse.fritakagp.KroniskKravMetrics
 import no.nav.helse.fritakagp.db.KroniskKravRepository
 import no.nav.helse.fritakagp.domain.KroniskKrav
+import no.nav.helse.fritakagp.domain.KroniskSoeknad
 import no.nav.helse.fritakagp.domain.generereKroniskKravBeskrivelse
 import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
-import no.nav.helse.fritakagp.journalførOgFerdigstillDokument
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor.Jobbdata.SkjemaType
 import no.nav.helse.fritakagp.service.BehandlendeEnhetService
+import no.nav.helse.fritakagp.service.PdlService
+import no.nav.helsearbeidsgiver.dokarkiv.DokArkivClient
+import no.nav.helsearbeidsgiver.dokarkiv.domene.Avsender
+import no.nav.helsearbeidsgiver.dokarkiv.domene.Dokument
+import no.nav.helsearbeidsgiver.dokarkiv.domene.DokumentVariant
+import no.nav.helsearbeidsgiver.dokarkiv.domene.GjelderPerson
 import no.nav.helsearbeidsgiver.utils.log.logger
 import java.time.LocalDate
 import java.util.Base64
@@ -36,9 +32,9 @@ import java.util.UUID
 
 class KroniskKravProcessor(
     private val kroniskKravRepo: KroniskKravRepository,
-    private val dokarkivKlient: DokarkivKlient,
+    private val dokarkivKlient: DokArkivClient,
     private val oppgaveKlient: OppgaveKlient,
-    private val pdlClient: PdlClient,
+    private val pdlService: PdlService,
     private val bakgrunnsjobbRepo: BakgrunnsjobbRepository,
     private val pdfGenerator: KroniskKravPDFGenerator,
     private val om: ObjectMapper,
@@ -49,6 +45,7 @@ class KroniskKravProcessor(
     companion object {
         val JOB_TYPE = "kronisk-krav-formidling"
         val dokumentasjonBrevkode = "krav_om_fritak_fra_agp_dokumentasjon"
+        val brevkode = "krav_om_fritak_fra_agp_kronisk"
     }
 
     override val type: String get() = JOB_TYPE
@@ -130,28 +127,20 @@ class KroniskKravProcessor(
     }
 
     fun journalfør(krav: KroniskKrav): String {
-        val journalpostId = dokarkivKlient.journalførOgFerdigstillDokument(
-            JournalpostRequest(
+        val id = runBlocking {
+            val journalpostId = dokarkivKlient.opprettOgFerdigstillJournalpost(
                 tittel = KroniskKrav.tittel,
-                journalposttype = Journalposttype.INNGAAENDE,
-                kanal = "NAV_NO",
-                bruker = Bruker(krav.identitetsnummer, IdType.FNR),
-                eksternReferanseId = krav.id.toString(),
-                avsenderMottaker = AvsenderMottaker(
-                    id = krav.virksomhetsnummer,
-                    idType = IdType.ORGNR,
-                    navn = krav.virksomhetsnavn ?: "Ukjent arbeidsgiver"
-                ),
-                dokumenter = createDocuments(krav, KroniskKrav.tittel),
-                datoMottatt = krav.opprettet.toLocalDate()
-            ),
-            UUID.randomUUID().toString(),
-            om,
-            logger
-        )
-
-        logger.info("Journalført ${krav.id} med ref $journalpostId")
-        return journalpostId
+                gjelderPerson = GjelderPerson(krav.identitetsnummer),
+                avsender = Avsender.Organisasjon(krav.virksomhetsnummer, krav.virksomhetsnavn ?: "Ukjent arbeidsgiver"),
+                datoMottatt = krav.opprettet.toLocalDate(),
+                dokumenter = createDocuments(krav, KroniskSoeknad.tittel),
+                krav.id.toString(),
+                UUID.randomUUID().toString()
+            )
+            logger.info("Journalført ${krav.id} med ref $journalpostId")
+            return@runBlocking journalpostId.journalpostId
+        }
+        return id
     }
 
     private fun createDocuments(
@@ -164,15 +153,19 @@ class KroniskKravProcessor(
             Dokument(
                 dokumentVarianter = listOf(
                     DokumentVariant(
-                        fysiskDokument = base64EnkodetPdf
+                        fysiskDokument = base64EnkodetPdf,
+                        filtype = "PDF",
+                        variantFormat = "ARKIV",
+                        filnavn = null
                     ),
                     DokumentVariant(
                         filtype = "JSON",
                         fysiskDokument = jsonOrginalDokument,
-                        variantFormat = "ORIGINAL"
+                        variantFormat = "ORIGINAL",
+                        filnavn = null
                     )
                 ),
-                brevkode = "krav_om_fritak_fra_agp_kronisk",
+                brevkode = brevkode,
                 tittel = journalfoeringsTittel
             )
         )
@@ -183,12 +176,15 @@ class KroniskKravProcessor(
                     dokumentVarianter = listOf(
                         DokumentVariant(
                             fysiskDokument = it.base64Data,
-                            filtype = if (it.extension == "jpg") "JPEG" else it.extension.uppercase()
+                            filtype = it.extension.uppercase(),
+                            variantFormat = "ARKIV",
+                            filnavn = null
                         ),
                         DokumentVariant(
                             filtype = "JSON",
                             fysiskDokument = jsonOrginalDokument,
-                            variantFormat = "ORIGINAL"
+                            variantFormat = "ORIGINAL",
+                            filnavn = null
                         )
                     ),
                     brevkode = dokumentasjonBrevkode,
@@ -201,7 +197,7 @@ class KroniskKravProcessor(
     }
 
     fun opprettOppgave(krav: KroniskKrav): String {
-        val aktoerId = pdlClient.fullPerson(krav.identitetsnummer)?.hentIdenter?.trekkUtIdent(PdlIdent.PdlIdentGruppe.AKTORID)
+        val aktoerId = pdlService.hentAktoerId(krav.identitetsnummer)
         val enhetsNr = behandlendeEnhetService.hentBehandlendeEnhet(krav.identitetsnummer, krav.id.toString())
         requireNotNull(aktoerId) { "Fant ikke AktørID for fnr i ${krav.id}" }
         logger.info("Fant aktørid")
@@ -225,7 +221,7 @@ class KroniskKravProcessor(
     }
 
     fun opprettFordelingsOppgave(krav: KroniskKrav): String {
-        val aktoerId = pdlClient.fullPerson(krav.identitetsnummer)?.hentIdenter?.trekkUtIdent(PdlIdent.PdlIdentGruppe.AKTORID)
+        val aktoerId = pdlService.hentAktoerId(krav.identitetsnummer)
         val enhetsNr = behandlendeEnhetService.hentBehandlendeEnhet(krav.identitetsnummer, krav.id.toString())
         requireNotNull(aktoerId) { "Fant ikke AktørID for fnr i ${krav.id}" }
 

@@ -1,24 +1,17 @@
 package no.nav.helse.fritakagp.koin
 
 import com.nimbusds.oauth2.sdk.auth.ClientAuthenticationMethod
-import no.nav.helse.arbeidsgiver.integrasjoner.AccessTokenProvider
-import no.nav.helse.arbeidsgiver.integrasjoner.OAuth2TokenProvider
-import no.nav.helse.arbeidsgiver.integrasjoner.aareg.AaregArbeidsforholdClient
-import no.nav.helse.arbeidsgiver.integrasjoner.aareg.AaregArbeidsforholdClientImpl
-import no.nav.helse.arbeidsgiver.integrasjoner.altinn.AltinnRestClient
-import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.DokarkivKlient
-import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.DokarkivKlientImpl
-import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OppgaveKlient
-import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OppgaveKlientImpl
-import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlClient
-import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlClientImpl
-import no.nav.helse.arbeidsgiver.web.auth.AltinnOrganisationsRepository
+import no.nav.helse.arbeidsgiver.integrasjoner.aareg2.AaregArbeidsforholdClient
+import no.nav.helse.arbeidsgiver.integrasjoner.aareg2.AaregArbeidsforholdClientImpl
+import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.OppgaveKlient
+import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.OppgaveKlientImpl
 import no.nav.helse.fritakagp.Env
 import no.nav.helse.fritakagp.EnvOauth2
 import no.nav.helse.fritakagp.integration.GrunnbeloepClient
+import no.nav.helse.fritakagp.integration.altinn.AltinnAuthorizer
+import no.nav.helse.fritakagp.integration.altinn.AltinnRepo
 import no.nav.helse.fritakagp.integration.altinn.CachedAuthRepo
-import no.nav.helse.fritakagp.integration.brreg.BrregClient
-import no.nav.helse.fritakagp.integration.brreg.BrregClientImpl
+import no.nav.helse.fritakagp.integration.altinn.DefaultAltinnAuthorizer
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.integration.gcp.BucketStorageImpl
 import no.nav.helse.fritakagp.integration.kafka.BrukernotifikasjonBeskjedKafkaProducer
@@ -37,7 +30,13 @@ import no.nav.helse.fritakagp.integration.oauth2.TokenResolver
 import no.nav.helse.fritakagp.integration.virusscan.ClamavVirusScannerImp
 import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
 import no.nav.helse.fritakagp.service.BehandlendeEnhetService
+import no.nav.helsearbeidsgiver.altinn.AltinnClient
+import no.nav.helsearbeidsgiver.altinn.CacheConfig
 import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonKlient
+import no.nav.helsearbeidsgiver.dokarkiv.DokArkivClient
+import no.nav.helsearbeidsgiver.pdl.PdlClient
+import no.nav.helsearbeidsgiver.tokenprovider.AccessTokenProvider
+import no.nav.helsearbeidsgiver.tokenprovider.OAuth2TokenProvider
 import no.nav.security.token.support.client.core.ClientAuthenticationProperties
 import no.nav.security.token.support.client.core.ClientProperties
 import no.nav.security.token.support.client.core.OAuth2GrantType
@@ -49,20 +48,25 @@ import org.koin.core.module.Module
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import java.net.URI
-import java.net.URL
+import java.time.Duration
+import kotlin.time.toKotlinDuration
 
 fun Module.externalSystemClients(env: Env, envOauth2: EnvOauth2) {
     single {
         CachedAuthRepo(
-            AltinnRestClient(
-                env.altinnServiceOwnerUrl,
-                env.altinnServiceOwnerGatewayApiKey,
-                env.altinnServiceOwnerApiKey,
-                env.altinnServiceOwnerServiceId,
-                get()
+            AltinnClient(
+                url = env.altinnServiceOwnerUrl,
+                serviceCode = env.altinnServiceOwnerServiceId,
+                apiGwApiKey = env.altinnServiceOwnerGatewayApiKey,
+                altinnApiKey = env.altinnServiceOwnerApiKey,
+                cacheConfig = CacheConfig(Duration.ofMinutes(60).toKotlinDuration(), 100)
             )
         )
-    } bind AltinnOrganisationsRepository::class
+    } bind AltinnRepo::class
+
+    single {
+        DefaultAltinnAuthorizer(get())
+    } bind AltinnAuthorizer::class
 
     single { GrunnbeloepClient(env.grunnbeloepUrl, get()) }
 
@@ -118,15 +122,25 @@ fun Module.externalSystemClients(env: Env, envOauth2: EnvOauth2) {
             ClientCredentialsTokenClient(oauthHttpClient),
             TokenExchangeClient(oauthHttpClient)
         )
-
         OAuth2TokenProvider(accessTokenService, azureAdConfig)
     } bind AccessTokenProvider::class
 
     single { AaregArbeidsforholdClientImpl(env.aaregUrl, get(qualifier = named("PROXY")), get()) } bind AaregArbeidsforholdClient::class
-    single { PdlClientImpl(env.pdlUrl, get(qualifier = named("PROXY")), get(), get()) } bind PdlClient::class
-    single { DokarkivKlientImpl(env.dokarkivUrl, get(), get(qualifier = named("DOKARKIV"))) } bind DokarkivKlient::class
+
+    single {
+        val tokenProvider: AccessTokenProvider = get(qualifier = named("PROXY"))
+        PdlClient(env.pdlUrl, tokenProvider::getToken)
+    } bind PdlClient::class
+
+    single {
+        val tokenProvider: AccessTokenProvider = get(qualifier = named("DOKARKIV"))
+        DokArkivClient(env.dokarkivUrl, 3, tokenProvider::getToken)
+    }
     single { OppgaveKlientImpl(env.oppgavebehandlingUrl, get(qualifier = named("OPPGAVE")), get()) } bind OppgaveKlient::class
-    single { ArbeidsgiverNotifikasjonKlient(URL(env.arbeidsgiverNotifikasjonUrl), get(qualifier = named("ARBEIDSGIVERNOTIFIKASJON")), get()) }
+    single {
+        val tokenProvider: AccessTokenProvider = get(qualifier = named("ARBEIDSGIVERNOTIFIKASJON"))
+        ArbeidsgiverNotifikasjonKlient(env.arbeidsgiverNotifikasjonUrl, tokenProvider::getToken)
+    }
     single {
         ClamavVirusScannerImp(
             get(),
@@ -164,7 +178,6 @@ fun Module.externalSystemClients(env: Env, envOauth2: EnvOauth2) {
             env.kafkaTopicNameBrukernotifikasjon
         )
     } bind BrukernotifikasjonBeskjedSender::class
-    single { BrregClientImpl(get(), env.brregUrl) } bind BrregClient::class
 
     single { Norg2Client(env.norg2Url, get(qualifier = named("PROXY")), get()) }
     single { BehandlendeEnhetService(get(), get()) }

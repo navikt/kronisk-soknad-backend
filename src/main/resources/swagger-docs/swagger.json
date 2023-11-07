@@ -201,7 +201,7 @@
         },
         "security": [
           {
-            "bearer-key": ["selvbetjening-idtoken"]
+            "bearerAuth": []
           }
         ]
       }
@@ -858,11 +858,9 @@
       }
     },
     "securitySchemes": {
-      "bearer-key": {
-        "type": "apiKey",
-        "in": "cookie",
-        "name": "selvbetjening-idtoken",
-        "scheme": "cookie",
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
         "bearerFormat": "JWT"
       }
     }

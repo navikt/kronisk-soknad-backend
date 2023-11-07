@@ -1,10 +1,9 @@
 ### Hent autorisasjonstoken
-# @no-cookie-jar
-GET localhost:8080/local/cookie-please?subject=123456789
+GET localhost:8080/local/token-please?subject=123456789
 
 > {%
 const jwtRgx =  /(?:[\w-_]+\.){2}[\w-_]+/
-const authToken = response.headers.valueOf("Set-Cookie").match(jwtRgx).pop()
+const authToken = response.body.match(jwtRgx).pop()
 
 client.test("Auth-token ble funnet", () => {
     client.assert(authToken !== undefined)

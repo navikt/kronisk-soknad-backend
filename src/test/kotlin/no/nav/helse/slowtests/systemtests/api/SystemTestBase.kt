@@ -1,7 +1,7 @@
 package no.nav.helse.slowtests.systemtests.api
 
 import io.ktor.client.HttpClient
-import io.ktor.client.call.receive
+import io.ktor.client.call.body
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.get
 import io.ktor.client.request.header
@@ -9,13 +9,11 @@ import io.ktor.client.request.url
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
-import io.ktor.http.setCookie
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.runBlocking
 import no.nav.helse.fritakagp.FritakAgpApplication
 import no.nav.helse.fritakagp.customObjectMapper
 import no.nav.helse.fritakagp.web.api.resreq.Problem
-import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.TestInstance
 import org.koin.test.KoinTest
@@ -43,7 +41,7 @@ open class SystemTestBase : KoinTest {
     @BeforeAll
     fun before() {
         if (app == null) {
-            app = FritakAgpApplication(port = testServerPort)
+            app = FritakAgpApplication(port = testServerPort, false)
             Thread.sleep(200)
         }
     }
@@ -59,12 +57,12 @@ open class SystemTestBase : KoinTest {
      * Hjelpefunksjon for å hente ut gyldig JWT-token og legge det til som Auth header på en request
      */
     suspend fun HttpRequestBuilder.loggedInAs(subject: String) {
-        val response = httpClient.get<HttpResponse> {
-            appUrl("/local/cookie-please?subject=$subject")
+        val response = httpClient.get {
+            appUrl("/local/token-please?subject=$subject")
             contentType(ContentType.Application.Json)
-        }
+        }.body<String>()
 
-        header("Authorization", "Bearer ${response.setCookie()[0].value}")
+        header("Authorization", "Bearer $response")
     }
 
     /**
@@ -77,5 +75,5 @@ open class SystemTestBase : KoinTest {
     }
 
     suspend fun extractResponseBody(response: HttpResponse) =
-        response.call.response.receive<Problem>()
+        response.call.response.body<Problem>()
 }

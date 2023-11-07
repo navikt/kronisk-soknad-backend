@@ -1,13 +1,15 @@
 package no.nav.helse.fritakagp.integration.norg
 
 import io.ktor.client.HttpClient
+import io.ktor.client.call.body
 import io.ktor.client.request.header
 import io.ktor.client.request.post
+import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.http.withCharset
 import kotlinx.coroutines.runBlocking
-import no.nav.helse.arbeidsgiver.integrasjoner.AccessTokenProvider
+import no.nav.helsearbeidsgiver.tokenprovider.AccessTokenProvider
 import java.time.LocalDate
 
 /**
@@ -31,14 +33,15 @@ open class Norg2Client(
      */
     open suspend fun hentAlleArbeidsfordelinger(request: ArbeidsfordelingRequest, callId: String?): List<ArbeidsfordelingResponse> {
         val stsToken = stsClient.getToken()
-        return runBlocking {
-            httpClient.post<List<ArbeidsfordelingResponse>>(url) {
+        val res: List<ArbeidsfordelingResponse> = runBlocking {
+            httpClient.post(url) {
                 contentType(ContentType.Application.Json.withCharset(Charsets.UTF_8))
                 header("Authorization", "Bearer $stsToken")
                 header("X-Correlation-ID", callId)
-                body = request
-            }
+                setBody(request)
+            }.body()
         }
+        return res
     }
 }
 

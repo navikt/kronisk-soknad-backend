@@ -6,10 +6,10 @@ import no.altinn.schemas.services.serviceengine.correspondence._2010._10.InsertC
 import no.altinn.services.serviceengine.correspondence._2009._10.ICorrespondenceAgencyExternalBasic
 import no.altinn.services.serviceengine.correspondence._2009._10.ICorrespondenceAgencyExternalBasicInsertCorrespondenceBasicV2AltinnFaultFaultFaultMessage
 import no.nav.helse.fritakagp.domain.GravidSoeknad
-import no.nav.helse.fritakagp.domain.sladdFnr
-import no.nav.helse.fritakagp.domain.TIMESTAMP_FORMAT_MED_KL
 import no.nav.helse.fritakagp.domain.Omplassering
+import no.nav.helse.fritakagp.domain.TIMESTAMP_FORMAT_MED_KL
 import no.nav.helse.fritakagp.domain.Tiltak
+import no.nav.helse.fritakagp.domain.sladdFnr
 
 interface GravidSoeknadKvitteringSender {
     fun send(kvittering: GravidSoeknad)
@@ -105,7 +105,9 @@ class GravidSoeknadAltinnKvitteringSender(
             } else {
                 kvittering.omplassering.beskrivelse
             }
-        } else ""
+        } else {
+            ""
+        }
     }
 
     fun lagreTiltak(tiltak: List<Tiltak>?): String {

@@ -12,7 +12,7 @@ data class GravidSoeknadTiltak(
     val hjemmekontor: Int,
     val tilpassede_arbeidsoppgaver: Int,
     val tipasset_arbeidstid: Int,
-    val annet: Int,
+    val annet: Int
 )
 
 data class AntallType(
@@ -110,7 +110,7 @@ class StatsRepoImpl(
                         res.getInt("hjemmekontor"),
                         res.getInt("tilpassede_arbeidsoppgaver"),
                         res.getInt("tilpasset_arbeidstid"),
-                        res.getInt("annet"),
+                        res.getInt("annet")
                     )
                 )
             }
@@ -144,6 +144,7 @@ class StatsRepoImpl(
             return returnValue
         }
     }
+
     // Depricated
     override fun getKroniskSoeknadPaakjenningstyper(): List<AntallType> {
         val query = """

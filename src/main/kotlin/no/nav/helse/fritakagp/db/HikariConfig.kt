@@ -18,11 +18,5 @@ fun createHikariConfig(jdbcUrl: String, username: String? = null, password: Stri
         prometheusMetricsTrackerFactory?.let { metricsTrackerFactory = prometheusMetricsTrackerFactory }
     }
 
-enum class Role {
-    admin, user, readonly;
-
-    override fun toString() = name.lowercase()
-}
-
 fun createTestHikariConfig() =
     createHikariConfig("jdbc:postgresql://localhost:5432/fritakagp_db", "fritakagp", "fritakagp", null)

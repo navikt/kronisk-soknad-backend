@@ -1,27 +1,27 @@
 package no.nav.helse.fritakagp.web.api
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import io.ktor.application.application
-import io.ktor.application.call
 import io.ktor.http.HttpStatusCode
-import io.ktor.request.receive
-import io.ktor.response.respond
-import io.ktor.routing.Route
-import io.ktor.routing.delete
-import io.ktor.routing.get
-import io.ktor.routing.patch
-import io.ktor.routing.post
-import io.ktor.routing.route
+import io.ktor.server.application.application
+import io.ktor.server.application.call
+import io.ktor.server.request.receive
+import io.ktor.server.response.respond
+import io.ktor.server.routing.Route
+import io.ktor.server.routing.delete
+import io.ktor.server.routing.get
+import io.ktor.server.routing.patch
+import io.ktor.server.routing.post
+import io.ktor.server.routing.route
 import kotlinx.coroutines.runBlocking
-import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbService
-import no.nav.helse.arbeidsgiver.integrasjoner.aareg.AaregArbeidsforholdClient
-import no.nav.helse.arbeidsgiver.web.auth.AltinnAuthorizer
+import no.nav.helse.arbeidsgiver.bakgrunnsjobb2.BakgrunnsjobbService
+import no.nav.helse.arbeidsgiver.integrasjoner.aareg2.AaregArbeidsforholdClient
 import no.nav.helse.fritakagp.KroniskKravMetrics
 import no.nav.helse.fritakagp.KroniskSoeknadMetrics
 import no.nav.helse.fritakagp.db.KroniskKravRepository
 import no.nav.helse.fritakagp.db.KroniskSoeknadRepository
 import no.nav.helse.fritakagp.domain.BeloepBeregning
 import no.nav.helse.fritakagp.domain.KravStatus
+import no.nav.helse.fritakagp.integration.altinn.AltinnAuthorizer
 import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
@@ -37,8 +37,6 @@ import no.nav.helse.fritakagp.web.api.resreq.KroniskSoknadRequest
 import no.nav.helse.fritakagp.web.auth.authorize
 import no.nav.helse.fritakagp.web.auth.hentIdentitetsnummerFraLoginToken
 import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonKlient
-import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.hardDeleteSak
-import no.nav.helsearbeidsgiver.utils.log.MdcUtils
 import no.nav.helsearbeidsgiver.utils.log.logger
 import java.time.LocalDateTime
 import java.util.UUID
@@ -65,7 +63,7 @@ fun Route.kroniskRoutes(
         route("/soeknad") {
             get("/{id}") {
                 logger.info("KSG: Hent kronisk søknad.")
-                val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
+                val innloggetFnr = hentIdentitetsnummerFraLoginToken(call.request)
 
                 logger.info("KSG: Hent søknad fra db.")
                 val form = kroniskSoeknadRepo.getById(UUID.fromString(call.parameters["id"]))
@@ -74,8 +72,8 @@ fun Route.kroniskRoutes(
                     call.respond(HttpStatusCode.NotFound)
                 } else {
                     logger.info("KSG: Hent personinfo fra pdl.")
-                    form.sendtAvNavn = form.sendtAvNavn ?: pdlService.finnNavn(innloggetFnr)
-                    form.navn = form.navn ?: pdlService.finnNavn(form.identitetsnummer)
+                    form.sendtAvNavn = form.sendtAvNavn ?: pdlService.hentNavn(innloggetFnr)
+                    form.navn = form.navn ?: pdlService.hentNavn(form.identitetsnummer)
 
                     call.respond(HttpStatusCode.OK, form)
                 }
@@ -93,11 +91,11 @@ fun Route.kroniskRoutes(
                 }
                 request.validate(isVirksomhet)
 
-                val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
+                val innloggetFnr = hentIdentitetsnummerFraLoginToken(call.request)
 
                 logger.info("KSP: Hent personinfo fra pdl.")
-                val sendtAvNavn = pdlService.finnNavn(innloggetFnr)
-                val navn = pdlService.finnNavn(request.identitetsnummer)
+                val sendtAvNavn = pdlService.hentNavn(innloggetFnr)
+                val navn = pdlService.hentNavn(request.identitetsnummer)
 
                 val soeknad = request.toDomain(innloggetFnr, sendtAvNavn, navn)
 
@@ -127,7 +125,7 @@ fun Route.kroniskRoutes(
         route("/krav") {
             get("/{id}") {
                 logger.info("KKG: Hent kronisk krav.")
-                val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
+                val innloggetFnr = hentIdentitetsnummerFraLoginToken(call.request)
 
                 logger.info("KKG: Hent krav fra db.")
                 val form = kroniskKravRepo.getById(UUID.fromString(call.parameters["id"]))
@@ -140,8 +138,8 @@ fun Route.kroniskRoutes(
                     }
 
                     logger.info("KKG: Hent personinfo fra pdl.")
-                    form.sendtAvNavn = form.sendtAvNavn ?: pdlService.finnNavn(innloggetFnr)
-                    form.navn = form.navn ?: pdlService.finnNavn(form.identitetsnummer)
+                    form.sendtAvNavn = form.sendtAvNavn ?: pdlService.hentNavn(innloggetFnr)
+                    form.navn = form.navn ?: pdlService.hentNavn(form.identitetsnummer)
 
                     call.respond(HttpStatusCode.OK, form)
                 }
@@ -160,11 +158,11 @@ fun Route.kroniskRoutes(
 
                 request.validate(arbeidsforhold)
 
-                val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
+                val innloggetFnr = hentIdentitetsnummerFraLoginToken(call.request)
 
                 logger.info("KKPo: Hent personinfo fra pdl.")
-                val sendtAvNavn = pdlService.finnNavn(innloggetFnr)
-                val navn = pdlService.finnNavn(request.identitetsnummer)
+                val sendtAvNavn = pdlService.hentNavn(innloggetFnr)
+                val navn = pdlService.hentNavn(request.identitetsnummer)
 
                 val krav = request.toDomain(innloggetFnr, sendtAvNavn, navn)
 
@@ -205,9 +203,9 @@ fun Route.kroniskRoutes(
 
                 authorize(authorizer, request.virksomhetsnummer)
 
-                val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
-                val sendtAvNavn = pdlService.finnNavn(innloggetFnr)
-                val navn = pdlService.finnNavn(request.identitetsnummer)
+                val innloggetFnr = hentIdentitetsnummerFraLoginToken(call.request)
+                val sendtAvNavn = pdlService.hentNavn(innloggetFnr)
+                val navn = pdlService.hentNavn(request.identitetsnummer)
 
                 logger.info("KKPa: Hent arbeidsforhold fra aareg.")
                 val arbeidsforhold = aaregClient
@@ -277,8 +275,8 @@ fun Route.kroniskRoutes(
             delete("/{id}") {
                 logger.info("KKD: Slett kronisk krav.")
 
-                val innloggetFnr = hentIdentitetsnummerFraLoginToken(application.environment.config, call.request)
-                val slettetAv = pdlService.finnNavn(innloggetFnr)
+                val innloggetFnr = hentIdentitetsnummerFraLoginToken(call.request)
+                val slettetAv = pdlService.hentNavn(innloggetFnr)
                 val kravId = UUID.fromString(call.parameters["id"])
                 val form = kroniskKravRepo.getById(kravId)
                     ?: return@delete call.respond(HttpStatusCode.NotFound)

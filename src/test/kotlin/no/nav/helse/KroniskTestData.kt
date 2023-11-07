@@ -1,8 +1,8 @@
 package no.nav.helse
 
-import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.OpprettOppgaveResponse
-import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.Prioritet
-import no.nav.helse.arbeidsgiver.integrasjoner.oppgave.Status
+import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.OpprettOppgaveResponse
+import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.Prioritet
+import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.Status
 import no.nav.helse.fritakagp.domain.Arbeidsgiverperiode
 import no.nav.helse.fritakagp.domain.FravaerData
 import no.nav.helse.fritakagp.domain.KroniskKrav
@@ -73,19 +73,19 @@ object KroniskTestData {
                 LocalDate.of(2020, 1, 15),
                 LocalDate.of(2020, 1, 10),
                 2,
-                månedsinntekt = 2590.8,
+                månedsinntekt = 2590.8
             ),
             Arbeidsgiverperiode(
                 LocalDate.of(2020, 1, 5),
                 LocalDate.of(2020, 1, 4),
                 2,
-                månedsinntekt = 3590.8,
+                månedsinntekt = 3590.8
             ),
             Arbeidsgiverperiode(
                 LocalDate.of(2020, 1, 5),
                 LocalDate.of(2020, 1, 14),
                 12,
-                månedsinntekt = 1590.8,
+                månedsinntekt = 1590.8
             )
         ),
 

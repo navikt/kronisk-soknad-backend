@@ -144,7 +144,7 @@ fun preprodConfig(env: Env.Preprod): Module = module {
 
     single { BrukernotifikasjonProcessor(get(), get(), get(), get(), get(), get(), 3, env.frontendUrl) }
     single { ArbeidsgiverNotifikasjonProcessor(get(), get(), get(), env.frontendUrl, get()) }
-    single { ArbeidsgiverOppdaterNotifikasjonProcessor(get(), get(), get(), get()) }
+    single { ArbeidsgiverOppdaterNotifikasjonProcessor(get(), get()) }
     single { PdlService(get()) }
 
     single { MockBrregClient() } bind BrregClient::class

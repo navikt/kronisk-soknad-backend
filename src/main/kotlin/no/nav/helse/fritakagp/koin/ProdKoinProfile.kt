@@ -143,7 +143,7 @@ fun prodConfig(env: Env.Prod): Module = module {
 
     single { BrukernotifikasjonProcessor(get(), get(), get(), get(), get(), get(), 4, env.frontendUrl) }
     single { ArbeidsgiverNotifikasjonProcessor(get(), get(), get(), env.frontendUrl, get()) }
-    single { ArbeidsgiverOppdaterNotifikasjonProcessor(get(), get(), get(), get()) }
+    single { ArbeidsgiverOppdaterNotifikasjonProcessor(get(), get()) }
     single { PdlService(get()) }
 
     single { BrregClientImpl(get(), env.brregUrl) } bind BrregClient::class

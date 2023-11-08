@@ -47,8 +47,6 @@ class ArbeidsgiverOppdaterNotifikasjonProcessorTest {
     private var kroniskJobb = Bakgrunnsjobb(data = "", type = "arbeidsgiveroppdaternotifikasjon")
 
     val prosessor = ArbeidsgiverOppdaterNotifikasjonProcessor(
-        gravidKravRepositoryMock,
-        kroniskKravRepositoryMock,
         objectMapper,
         arbeidsgiverNotifikasjonKlient
     )

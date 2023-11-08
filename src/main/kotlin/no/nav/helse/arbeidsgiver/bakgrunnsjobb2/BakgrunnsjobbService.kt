@@ -1,9 +1,5 @@
 package no.nav.helse.arbeidsgiver.bakgrunnsjobb2
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.databind.util.StdDateFormat
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import io.ktor.client.plugins.ResponseException
 import io.ktor.util.InternalAPI
 import io.prometheus.client.Counter
@@ -13,6 +9,7 @@ import kotlinx.coroutines.runBlocking
 import no.nav.helse.arbeidsgiver.processing.AutoCleanJobbProcessor
 import no.nav.helse.arbeidsgiver.processing.AutoCleanJobbProcessor.Companion.JOB_TYPE
 import no.nav.helse.arbeidsgiver.utils.RecurringJob
+import no.nav.helse.fritakagp.customObjectMapper
 import java.sql.Connection
 import java.time.LocalDateTime
 import kotlin.collections.HashMap
@@ -28,11 +25,7 @@ class BakgrunnsjobbService(
     val prossesserere = HashMap<String, BakgrunnsjobbProsesserer>()
 
     fun startAutoClean(frekvensITimer: Int, slettEldreEnnMaaneder: Long) {
-        val om = ObjectMapper().apply {
-            registerKotlinModule()
-            disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-            dateFormat = StdDateFormat()
-        }
+        val om = customObjectMapper()
         if (frekvensITimer < 1 || slettEldreEnnMaaneder < 0) {
             logger.info("startautoclean forsøkt startet med ugyldige parametre.")
             throw java.lang.IllegalArgumentException("start autoclean må ha en frekvens støtte enn 1 og slettEldreEnnMaander større enn 0")

@@ -1,8 +1,5 @@
 package no.nav.helse.fritakagp.processing.kronisk.soeknad
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.KotlinModule
 import io.mockk.CapturingSlot
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -15,6 +12,7 @@ import no.nav.helse.arbeidsgiver.bakgrunnsjobb2.BakgrunnsjobbRepository
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.OPPGAVETYPE_FORDELINGSOPPGAVE
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.OppgaveKlient
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.OpprettOppgaveRequest
+import no.nav.helse.fritakagp.customObjectMapper
 import no.nav.helse.fritakagp.db.KroniskSoeknadRepository
 import no.nav.helse.fritakagp.domain.KroniskSoeknad
 import no.nav.helse.fritakagp.integration.brreg.BrregClient
@@ -40,7 +38,7 @@ class KroniskSoeknadProcessorTest {
     val oppgaveMock = mockk<OppgaveKlient>(relaxed = true)
     val repositoryMock = mockk<KroniskSoeknadRepository>(relaxed = true)
     val pdlServiceMock = mockk<PdlService>(relaxed = true)
-    val objectMapper = ObjectMapper().registerModule(KotlinModule())
+    val objectMapper = customObjectMapper()
     val pdfGeneratorMock = mockk<KroniskSoeknadPDFGenerator>(relaxed = true)
     val bucketStorageMock = mockk<BucketStorage>(relaxed = true)
     val bakgrunnsjobbRepomock = mockk<BakgrunnsjobbRepository>(relaxed = true)
@@ -66,7 +64,6 @@ class KroniskSoeknadProcessorTest {
     fun setup() {
         soeknad = KroniskTestData.soeknadKronisk.copy()
         jobb = testJob(objectMapper.writeValueAsString(KroniskSoeknadProcessor.JobbData(soeknad.id)))
-        objectMapper.registerModule(JavaTimeModule())
         every { repositoryMock.getById(soeknad.id) } returns soeknad
         every { bucketStorageMock.getDocAsString(any()) } returns null
         every { pdlServiceMock.hentAktoerId(soeknad.identitetsnummer) } returns "aktør-id"

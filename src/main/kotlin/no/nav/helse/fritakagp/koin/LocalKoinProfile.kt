@@ -70,10 +70,10 @@ fun localConfig(env: Env.Local): Module = module {
     single { GrunnbeloepClient(env.grunnbeloepUrl, get()) }
     single { BeloepBeregning(get()) }
     single { HikariDataSource(createHikariConfig(env.databaseUrl, env.databaseUsername, env.databasePassword)) } bind DataSource::class
-    single { PostgresGravidSoeknadRepository(get(), get()) } bind GravidSoeknadRepository::class
-    single { PostgresGravidKravRepository(get(), get()) } bind GravidKravRepository::class
-    single { PostgresKroniskSoeknadRepository(get(), get()) } bind KroniskSoeknadRepository::class
-    single { PostgresKroniskKravRepository(get(), get()) } bind KroniskKravRepository::class
+    single { PostgresGravidSoeknadRepository(get()) } bind GravidSoeknadRepository::class
+    single { PostgresGravidKravRepository(get()) } bind GravidKravRepository::class
+    single { PostgresKroniskSoeknadRepository(get()) } bind KroniskSoeknadRepository::class
+    single { PostgresKroniskKravRepository(get()) } bind KroniskKravRepository::class
 
     single { SoeknadmeldingKafkaProducer(localCommonKafkaProps(), env.kafkaTopicNameSoeknad, get(), StringKafkaProducerFactory()) } bind SoeknadmeldingSender::class
     single { KravmeldingKafkaProducer(localCommonKafkaProps(), env.kafkaTopicNameKrav, get(), StringKafkaProducerFactory()) } bind KravmeldingSender::class

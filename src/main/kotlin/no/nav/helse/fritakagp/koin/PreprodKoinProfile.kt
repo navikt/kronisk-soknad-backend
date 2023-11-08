@@ -74,10 +74,10 @@ fun preprodConfig(env: Env.Preprod): Module = module {
         )
     } bind DataSource::class
 
-    single { PostgresGravidSoeknadRepository(get()) } bind GravidSoeknadRepository::class
-    single { PostgresKroniskSoeknadRepository(get()) } bind KroniskSoeknadRepository::class
-    single { PostgresGravidKravRepository(get()) } bind GravidKravRepository::class
-    single { PostgresKroniskKravRepository(get()) } bind KroniskKravRepository::class
+    single { PostgresGravidSoeknadRepository(get(), get()) } bind GravidSoeknadRepository::class
+    single { PostgresKroniskSoeknadRepository(get(), get()) } bind KroniskSoeknadRepository::class
+    single { PostgresGravidKravRepository(get(), get()) } bind GravidKravRepository::class
+    single { PostgresKroniskKravRepository(get(), get()) } bind KroniskKravRepository::class
 
     single { PostgresBakgrunnsjobbRepository(get()) } bind BakgrunnsjobbRepository::class
     single { BakgrunnsjobbService(get(), bakgrunnsvarsler = MetrikkVarsler()) }
@@ -144,7 +144,7 @@ fun preprodConfig(env: Env.Preprod): Module = module {
 
     single { BrukernotifikasjonProcessor(get(), get(), get(), get(), get(), get(), 3, env.frontendUrl) }
     single { ArbeidsgiverNotifikasjonProcessor(get(), get(), get(), env.frontendUrl, get()) }
-    single { ArbeidsgiverOppdaterNotifikasjonProcessor(get(), get(), get()) }
+    single { ArbeidsgiverOppdaterNotifikasjonProcessor(get(), get(), get(), get()) }
     single { PdlService(get()) }
 
     single { MockBrregClient() } bind BrregClient::class

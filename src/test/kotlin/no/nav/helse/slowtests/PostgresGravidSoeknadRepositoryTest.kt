@@ -9,6 +9,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.koin.core.component.get
 import kotlin.test.assertNotNull
 
 class PostgresGravidSoeknadRepositoryTest : SystemTestBase() {
@@ -20,7 +21,7 @@ class PostgresGravidSoeknadRepositoryTest : SystemTestBase() {
     internal fun setUp() {
         val ds = HikariDataSource(createTestHikariConfig())
 
-        repo = PostgresGravidSoeknadRepository(ds)
+        repo = PostgresGravidSoeknadRepository(ds, get())
         repo.insert(testSoeknad)
     }
 

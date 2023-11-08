@@ -49,6 +49,7 @@ class ArbeidsgiverOppdaterNotifikasjonProcessorTest {
     val prosessor = ArbeidsgiverOppdaterNotifikasjonProcessor(
         gravidKravRepositoryMock,
         kroniskKravRepositoryMock,
+        objectMapper,
         arbeidsgiverNotifikasjonKlient
     )
 

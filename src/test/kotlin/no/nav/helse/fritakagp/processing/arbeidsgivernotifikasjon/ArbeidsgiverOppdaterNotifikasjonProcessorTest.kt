@@ -26,7 +26,7 @@ class ArbeidsgiverOppdaterNotifikasjonProcessorTest {
         this::class.java.classLoader.getResource("responses/$filename")!!.readText()
 
     val response = getResourceAsText("opprettNySak/gyldig.json")
-    val arbeidsgiverNotifikasjonKlient = mockClientArbeidsgiverNotifikasjonKlient2()
+    val arbeidsgiverNotifikasjonKlient = mockClientArbeidsgiverNotifikasjonKlient()
     val gravidKravRepositoryMock = mockk<GravidKravRepository>(relaxed = true)
     val kroniskKravRepositoryMock = mockk<KroniskKravRepository>(relaxed = true)
     val objectMapper = ObjectMapper().registerModule(
@@ -74,7 +74,7 @@ class ArbeidsgiverOppdaterNotifikasjonProcessorTest {
     }
 }
 
-fun mockClientArbeidsgiverNotifikasjonKlient2(): ArbeidsgiverNotifikasjonKlient {
+fun mockClientArbeidsgiverNotifikasjonKlient(): ArbeidsgiverNotifikasjonKlient {
     val klient = mockk<ArbeidsgiverNotifikasjonKlient>(relaxed = true)
     coEvery { klient.nyStatusSakByGrupperingsid(any(), any(), any()) } returns "313"
     return klient

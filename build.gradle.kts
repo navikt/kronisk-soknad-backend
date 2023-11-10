@@ -4,8 +4,8 @@ val mainClassFritakAgp = "no.nav.helse.fritakagp.AppKt"
 
 plugins {
     application
-    kotlin("jvm") version "1.9.0" // or kotlin("multiplatform") or any other kotlin plugin
-    kotlin("plugin.serialization") version "1.9.0"
+    kotlin("jvm") version "1.9.20" // or kotlin("multiplatform") or any other kotlin plugin
+    kotlin("plugin.serialization") version "1.9.20"
     id("org.jlleitschuh.gradle.ktlint")
     id("com.github.ben-manes.versions")
     id("com.autonomousapps.dependency-analysis")

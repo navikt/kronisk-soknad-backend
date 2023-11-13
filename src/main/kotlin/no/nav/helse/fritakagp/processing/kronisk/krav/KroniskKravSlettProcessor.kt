@@ -89,7 +89,7 @@ class KroniskKravSlettProcessor(
                 avsender = Avsender.Organisasjon(krav.virksomhetsnummer, krav.virksomhetsnavn ?: "Ukjent arbeidsgiver"),
                 datoMottatt = krav.opprettet.toLocalDate(),
                 dokumenter = createDocuments(krav, journalfoeringsTittel),
-                eksternReferanseId = krav.id.toString(),
+                eksternReferanseId = "${krav.id}-annul",
                 callId = UUID.randomUUID().toString()
             )
             logger.debug("Journalført ${krav.id} med ref $journalpostId")

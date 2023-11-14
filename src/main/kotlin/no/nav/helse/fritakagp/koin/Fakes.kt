@@ -29,7 +29,6 @@ import no.nav.helse.fritakagp.integration.norg.ArbeidsfordelingResponse
 import no.nav.helse.fritakagp.integration.norg.Norg2Client
 import no.nav.helse.fritakagp.integration.virusscan.MockVirusScanner
 import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
-import no.nav.helse.fritakagp.processing.arbeidsgivernotifikasjon.ArbeidsgiverOppdaterNotifikasjonProcessor
 import no.nav.helse.fritakagp.service.BehandlendeEnhetService
 import no.nav.helsearbeidsgiver.altinn.AltinnOrganisasjon
 import no.nav.helsearbeidsgiver.dokarkiv.DokArkivClient
@@ -183,8 +182,6 @@ fun Module.mockExternalDependecies() {
     } bind Norg2Client::class
 
     single { BehandlendeEnhetService(get(), get()) }
-
-    single { mockk<ArbeidsgiverOppdaterNotifikasjonProcessor>(relaxed = true) }
 }
 
 class MockAltinnRepo(om: ObjectMapper) : AltinnRepo {

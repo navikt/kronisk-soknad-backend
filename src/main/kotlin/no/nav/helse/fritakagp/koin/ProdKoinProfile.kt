@@ -25,7 +25,6 @@ import no.nav.helse.fritakagp.integration.altinn.message.Clients
 import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.brreg.BrregClientImpl
 import no.nav.helse.fritakagp.processing.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonProcessor
-import no.nav.helse.fritakagp.processing.arbeidsgivernotifikasjon.ArbeidsgiverOppdaterNotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravAltinnKvitteringSender
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravKafkaProcessor
@@ -143,7 +142,6 @@ fun prodConfig(env: Env.Prod): Module = module {
 
     single { BrukernotifikasjonProcessor(get(), get(), get(), get(), get(), get(), 4, env.frontendUrl) }
     single { ArbeidsgiverNotifikasjonProcessor(get(), get(), get(), env.frontendUrl, get()) }
-    single { ArbeidsgiverOppdaterNotifikasjonProcessor(get(), get()) }
     single { PdlService(get()) }
 
     single { BrregClientImpl(get(), env.brregUrl) } bind BrregClient::class

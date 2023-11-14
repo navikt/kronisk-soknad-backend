@@ -12,7 +12,6 @@ import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.OpprettOppgaveRequest
 import no.nav.helse.fritakagp.KroniskKravMetrics
 import no.nav.helse.fritakagp.db.KroniskKravRepository
 import no.nav.helse.fritakagp.domain.KroniskKrav
-import no.nav.helse.fritakagp.domain.KroniskSoeknad
 import no.nav.helse.fritakagp.domain.generereKroniskKravBeskrivelse
 import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
@@ -133,7 +132,7 @@ class KroniskKravProcessor(
                 gjelderPerson = GjelderPerson(krav.identitetsnummer),
                 avsender = Avsender.Organisasjon(krav.virksomhetsnummer, krav.virksomhetsnavn ?: "Ukjent arbeidsgiver"),
                 datoMottatt = krav.opprettet.toLocalDate(),
-                dokumenter = createDocuments(krav, KroniskSoeknad.tittel),
+                dokumenter = createDocuments(krav, KroniskKrav.tittel),
                 krav.id.toString(),
                 UUID.randomUUID().toString()
             )

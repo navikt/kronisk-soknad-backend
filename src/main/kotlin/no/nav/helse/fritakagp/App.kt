@@ -10,6 +10,7 @@ import io.ktor.server.netty.NettyApplicationEngine
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb2.BakgrunnsjobbService
 import no.nav.helse.fritakagp.koin.profileModules
 import no.nav.helse.fritakagp.processing.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonProcessor
+import no.nav.helse.fritakagp.processing.arbeidsgivernotifikasjon.ArbeidsgiverOppdaterNotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravKafkaProcessor
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravKvitteringProcessor
@@ -110,6 +111,7 @@ class FritakAgpApplication(val port: Int = 8080, val runAsDeamon: Boolean = true
 
             registrer(get<BrukernotifikasjonProcessor>())
             registrer(get<ArbeidsgiverNotifikasjonProcessor>())
+            registrer(get<ArbeidsgiverOppdaterNotifikasjonProcessor>())
 
             startAsync(true)
         }

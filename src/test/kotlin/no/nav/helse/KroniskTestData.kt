@@ -10,6 +10,7 @@ import no.nav.helse.fritakagp.domain.KroniskSoeknad
 import no.nav.helse.fritakagp.web.api.resreq.KroniskKravRequest
 import no.nav.helse.fritakagp.web.api.resreq.KroniskSoknadRequest
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.random.Random
 
@@ -102,6 +103,7 @@ object KroniskTestData {
     )
 
     val kroniskKrav = KroniskKrav(
+        opprettet = LocalDateTime.of(2023, 12, 24, 10, 0),
         sendtAv = validIdentitetsnummer,
         virksomhetsnummer = validOrgNr,
         identitetsnummer = validIdentitetsnummer,

@@ -12,6 +12,7 @@ import no.nav.helse.fritakagp.domain.Tiltak
 import no.nav.helse.fritakagp.web.api.resreq.GravidKravRequest
 import no.nav.helse.fritakagp.web.api.resreq.GravidSoknadRequest
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 object GravidTestData {
     val validNavn = "Personliga Person"
@@ -207,6 +208,7 @@ aąbcćdeęfghijlłmnńoóprsśtuwź
     )
 
     val gravidKrav = GravidKrav(
+        opprettet = LocalDateTime.of(2023, 12, 24, 10, 0),
         sendtAv = validIdentitetsnummer,
         virksomhetsnummer = validOrgNr,
 

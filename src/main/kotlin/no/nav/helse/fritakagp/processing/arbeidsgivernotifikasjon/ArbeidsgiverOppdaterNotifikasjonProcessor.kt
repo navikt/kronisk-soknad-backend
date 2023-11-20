@@ -45,7 +45,7 @@ class ArbeidsgiverOppdaterNotifikasjonProcessor(
             arbeidsgiverNotifikasjonKlient.nyStatusSakByGrupperingsid(
                 grupperingsid = jobbData.skjemaId.toString(),
                 merkelapp = "Fritak arbeidsgiverperiode",
-                nyStatus = SaksStatus.MOTTATT,
+                nyStatus = SaksStatus.UNDER_BEHANDLING,
                 tidspunkt = tidspunkt.atOffset(ZoneOffset.of("+1")).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)
             )
         }

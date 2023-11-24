@@ -8,6 +8,7 @@ import java.sql.Timestamp
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.UUID
+import java.util.concurrent.ConcurrentHashMap
 import javax.sql.DataSource
 
 interface BakgrunnsjobbRepository {
@@ -26,43 +27,38 @@ interface BakgrunnsjobbRepository {
 
 class MockBakgrunnsjobbRepository : BakgrunnsjobbRepository {
 
-    private val jobs = mutableListOf<Bakgrunnsjobb>()
+    private val jobs = ConcurrentHashMap<UUID, Bakgrunnsjobb>()
 
     override fun getById(id: UUID): Bakgrunnsjobb? {
-        if (jobs.filter { it.uuid.equals(id) }.size.equals(1)) {
-            return jobs.filter { it.uuid.equals(id) }.get(0)
-        } else {
-            return null
-        }
+        return jobs.get(id)
     }
 
     override fun save(bakgrunnsjobb: Bakgrunnsjobb) {
-        jobs.add(bakgrunnsjobb)
+        jobs.put(bakgrunnsjobb.uuid, bakgrunnsjobb)
     }
 
     override fun save(bakgrunnsjobb: Bakgrunnsjobb, connection: Connection) {
-        jobs.add(bakgrunnsjobb)
+        save(bakgrunnsjobb)
     }
 
     override fun findAutoCleanJobs(): List<Bakgrunnsjobb> {
-        return jobs.filter { it.type.equals(AutoCleanJobbProcessor.JOB_TYPE) }
+        return jobs.filterValues { it.type.equals(AutoCleanJobbProcessor.JOB_TYPE) }.values.toList()
     }
 
     override fun findOkAutoCleanJobs(): List<Bakgrunnsjobb> {
-        return jobs.filter { it.type.equals(AutoCleanJobbProcessor.JOB_TYPE) }
+        return findAutoCleanJobs().filter { it.status == BakgrunnsjobbStatus.OK }
     }
 
     override fun findByKjoeretidBeforeAndStatusIn(timeout: LocalDateTime, tilstander: Set<BakgrunnsjobbStatus>): List<Bakgrunnsjobb> {
-        return jobs.filter { tilstander.contains(it.status) }
-            .filter { it.kjoeretid.isBefore(timeout) }
+        return jobs.filterValues { tilstander.contains(it.status) && it.kjoeretid.isBefore(timeout) }.values.toList()
     }
 
     override fun delete(uuid: UUID) {
-        jobs.removeIf { it.uuid == uuid }
+        jobs.remove(uuid)
     }
 
     override fun deleteAll() {
-        jobs.removeAll { true }
+        jobs.clear()
     }
 
     override fun update(bakgrunnsjobb: Bakgrunnsjobb) {
@@ -76,7 +72,9 @@ class MockBakgrunnsjobbRepository : BakgrunnsjobbRepository {
 
     override fun deleteOldOkJobs(months: Long) {
         val someMonthsAgo = LocalDateTime.now().minusMonths(months)
-        jobs.removeIf { it.behandlet?.isBefore(someMonthsAgo)!! && it.status.equals(BakgrunnsjobbStatus.OK) }
+        jobs.values.filter { it.behandlet?.isBefore(someMonthsAgo)!! && it.status.equals(BakgrunnsjobbStatus.OK) }.forEach {
+            jobs.remove(it.uuid)
+        }
     }
 }
 

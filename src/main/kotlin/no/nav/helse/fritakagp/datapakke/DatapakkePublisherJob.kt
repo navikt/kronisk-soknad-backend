@@ -9,7 +9,7 @@ import io.ktor.http.ContentType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
-import no.nav.helse.arbeidsgiver.utils.RecurringJob
+import no.nav.helse.arbeidsgiver.bakgrunnsjobb2.utils.RecurringJob
 import no.nav.helse.arbeidsgiver.utils.loadFromResources
 import no.nav.helse.fritakagp.db.IStatsRepo
 import no.nav.helsearbeidsgiver.utils.log.logger

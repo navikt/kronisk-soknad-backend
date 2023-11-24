@@ -52,7 +52,7 @@ class BakgrunnsjobbServiceTest {
             data = "fail"
         )
         repoMock.save(testJobb)
-        testCoroutineScope.testScheduler.apply { advanceTimeBy(1); runCurrent() }
+        testCoroutineScope.testScheduler.apply { advanceTimeBy(5); runCurrent() }
 
         // Den går rett til stoppet i denne testen
         assertThat(repoMock.findByKjoeretidBeforeAndStatusIn(now.plusMinutes(1), setOf(BakgrunnsjobbStatus.STOPPET)))

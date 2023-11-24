@@ -80,11 +80,12 @@ class ParallellBakgrunnsjobbServiceTest {
         }
         runBlocking {
             delay(5000)
-            coVerify(exactly = 2000) { klient.nyStatusSakByGrupperingsid(any(), any(), any(), any()) }
-            verify(exactly = 2000) { kroniskRepository.getById(any()) }
         }
+        coVerify(exactly = 2000) { klient.nyStatusSakByGrupperingsid(any(), any(), any(), any()) }
+        verify(exactly = 2000) { kroniskRepository.getById(any()) }
         // kjøretid for jobb oppdateres til *neste* kjøringstidspunkt også når den er kjørt OK, så legger på en dag for å hente ut alle:
         assertEquals(2000, repo.findByKjoeretidBeforeAndStatusIn(LocalDateTime.now().plusDays(1), setOf(BakgrunnsjobbStatus.OK)).size)
         assertEquals(1, repo.findByKjoeretidBeforeAndStatusIn(LocalDateTime.now().plusDays(1), setOf(BakgrunnsjobbStatus.FEILET)).size)
+        service.stop()
     }
 }

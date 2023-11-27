@@ -10,9 +10,9 @@ import kotlinx.coroutines.runBlocking
 import no.nav.helse.KroniskTestData
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb2.Bakgrunnsjobb
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb2.BakgrunnsjobbRepository
+import no.nav.helse.arbeidsgiver.bakgrunnsjobb2.BakgrunnsjobbService
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb2.BakgrunnsjobbStatus
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb2.MockBakgrunnsjobbRepository
-import no.nav.helse.arbeidsgiver.bakgrunnsjobb2.ParallellBakgrunnsjobbService
 import no.nav.helse.fritakagp.customObjectMapper
 import no.nav.helse.fritakagp.db.GravidKravRepository
 import no.nav.helse.fritakagp.db.KroniskKravRepository
@@ -24,7 +24,7 @@ import java.sql.SQLException
 import java.time.LocalDateTime
 import java.util.UUID
 
-class ParallellBakgrunnsjobbServiceTest {
+class BakgrunnsjobbServiceTest {
 
     @Test
     fun doJob() {
@@ -40,7 +40,7 @@ class ParallellBakgrunnsjobbServiceTest {
 
         every { gravidRepo.getById(any()) } throws SQLException()
 
-        val service = ParallellBakgrunnsjobbService(repo, 1000)
+        val service = BakgrunnsjobbService(repo, 1000)
         for (i in 1..1000) {
             repo.save(
                 Bakgrunnsjobb(

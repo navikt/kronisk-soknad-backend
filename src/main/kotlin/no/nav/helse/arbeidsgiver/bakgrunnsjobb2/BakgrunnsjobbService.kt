@@ -9,6 +9,7 @@ import io.ktor.util.InternalAPI
 import io.prometheus.client.Counter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb2.utils.RecurringJob
 import no.nav.helse.arbeidsgiver.processing.AutoCleanJobbProcessor
@@ -23,7 +24,6 @@ class BakgrunnsjobbService(
     val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.IO),
     val bakgrunnsvarsler: Bakgrunnsvarsler = TomVarsler()
 ) : RecurringJob(coroutineScope, delayMillis) {
-    // private val logger = LoggerFactory.getLogger(this::class.java)
 
     val prossesserere = HashMap<String, BakgrunnsjobbProsesserer>()
 
@@ -55,12 +55,6 @@ class BakgrunnsjobbService(
             startAutoClean(frekvensITimer, slettEldreEnnMaaneder)
         }
     }
-
-    @Deprecated("Bruk registrer(..)")
-    fun leggTilBakgrunnsjobbProsesserer(type: String, prosesserer: BakgrunnsjobbProsesserer) {
-        prossesserere[type] = prosesserer
-    }
-
     fun registrer(prosesserer: BakgrunnsjobbProsesserer) {
         prossesserere[prosesserer.type] = prosesserer
     }
@@ -86,14 +80,14 @@ class BakgrunnsjobbService(
             connection
         )
     }
-
     override fun doJob() {
-        do {
-            val wasEmpty = finnVentende()
-                .also { logger.debug("Fant ${it.size} bakgrunnsjobber å kjøre") }
-                .onEach { prosesser(it) }
-                .isEmpty()
-        } while (!wasEmpty)
+        finnVentende()
+            .also { logger.debug("Fant ${it.size} bakgrunnsjobber å kjøre") }
+            .onEach {
+                coroutineScope.launch {
+                    prosesser(it)
+                }
+            }
     }
 
     fun prosesser(jobb: Bakgrunnsjobb) {

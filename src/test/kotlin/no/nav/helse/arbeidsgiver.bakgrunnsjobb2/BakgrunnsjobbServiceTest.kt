@@ -2,6 +2,7 @@ package no.nav.helse.arbeidsgiver.bakgrunnsjobb2
 
 import com.zaxxer.hikari.HikariDataSource
 import kotlinx.coroutines.test.TestCoroutineScope
+import no.nav.helse.fritakagp.db.createTestHikariConfig
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Ignore
@@ -14,7 +15,7 @@ import java.util.UUID
 
 class BakgrunnsjobbServiceTest {
 
-    private val dataSource = HikariDataSource(createLocalHikariConfig())
+    private val dataSource = HikariDataSource(createTestHikariConfig())
     private val repository = PostgresBakgrunnsjobbRepository(dataSource)
     private val testCoroutineScope = TestCoroutineScope()
     private val service = BakgrunnsjobbService(repository, 1, testCoroutineScope)

@@ -8,6 +8,7 @@ import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import io.ktor.server.netty.NettyApplicationEngine
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb2.BakgrunnsjobbService
+import no.nav.helse.arbeidsgiver.bakgrunnsjobb2.ParallellBakgrunnsjobbService
 import no.nav.helse.fritakagp.koin.profileModules
 import no.nav.helse.fritakagp.processing.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.arbeidsgivernotifikasjon.ArbeidsgiverOppdaterNotifikasjonProcessor
@@ -111,6 +112,10 @@ class FritakAgpApplication(val port: Int = 8080, val runAsDeamon: Boolean = true
 
             registrer(get<BrukernotifikasjonProcessor>())
             registrer(get<ArbeidsgiverNotifikasjonProcessor>())
+
+            startAsync(true)
+        }
+        get<ParallellBakgrunnsjobbService>().apply {
             registrer(get<ArbeidsgiverOppdaterNotifikasjonProcessor>())
             startAsync(true)
         }

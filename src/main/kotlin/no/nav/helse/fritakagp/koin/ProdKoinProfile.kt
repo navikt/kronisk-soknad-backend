@@ -3,6 +3,7 @@ package no.nav.helse.fritakagp.koin
 import com.zaxxer.hikari.HikariDataSource
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb2.BakgrunnsjobbRepository
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb2.BakgrunnsjobbService
+import no.nav.helse.arbeidsgiver.bakgrunnsjobb2.ParallellBakgrunnsjobbService
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb2.PostgresBakgrunnsjobbRepository
 import no.nav.helse.fritakagp.Env
 import no.nav.helse.fritakagp.MetrikkVarsler
@@ -81,6 +82,7 @@ fun prodConfig(env: Env.Prod): Module = module {
 
     single { PostgresBakgrunnsjobbRepository(get()) } bind BakgrunnsjobbRepository::class
     single { BakgrunnsjobbService(get(), bakgrunnsvarsler = MetrikkVarsler()) }
+    single { ParallellBakgrunnsjobbService(get(), bakgrunnsvarsler = MetrikkVarsler()) }
 
     single { GravidSoeknadProcessor(get(), get(), get(), get(), get(), GravidSoeknadPDFGenerator(), get(), get(), get()) }
     single { GravidKravProcessor(get(), get(), get(), get(), get(), GravidKravPDFGenerator(), get(), get(), get()) }

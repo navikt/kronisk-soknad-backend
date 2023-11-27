@@ -112,6 +112,7 @@ class FritakAgpApplication(val port: Int = 8080, val runAsDeamon: Boolean = true
             registrer(get<BrukernotifikasjonProcessor>())
             registrer(get<ArbeidsgiverNotifikasjonProcessor>())
             registrer(get<ArbeidsgiverOppdaterNotifikasjonProcessor>())
+
             startAsync(true)
         }
     }

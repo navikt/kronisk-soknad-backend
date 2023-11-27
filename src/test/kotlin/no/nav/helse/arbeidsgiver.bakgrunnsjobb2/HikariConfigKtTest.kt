@@ -15,17 +15,17 @@ internal class HikariConfigKtTest {
     fun createLocalHikariConfigWithCorrectParametersOKTest() {
         val localHiariConfig = createLocalHikariConfig()
         Assertions.assertEquals("org.postgresql.Driver", localHiariConfig.driverClassName)
-        Assertions.assertEquals("jdbc:postgresql://localhost:5432/harbeidsgiverbackend", localHiariConfig.jdbcUrl)
-        Assertions.assertEquals("harbeidsgiverbackend", localHiariConfig.username)
-        Assertions.assertEquals("harbeidsgiverbackend", localHiariConfig.password)
+        Assertions.assertEquals("jdbc:postgresql://localhost:5432/fritakagp_db", localHiariConfig.jdbcUrl)
+        Assertions.assertEquals("fritakagp", localHiariConfig.username)
+        Assertions.assertEquals("fritakagp", localHiariConfig.password)
     }
 
     @Test
     fun createLocalHikariConfigWithIncorrectUserKOTest() {
         val localHiariConfig = createLocalHikariConfig()
         Assertions.assertEquals("org.postgresql.Driver", localHiariConfig.driverClassName)
-        Assertions.assertEquals("jdbc:postgresql://localhost:5432/harbeidsgiverbackend", localHiariConfig.jdbcUrl)
+        Assertions.assertEquals("jdbc:postgresql://localhost:5432/fritakagp_db", localHiariConfig.jdbcUrl)
         Assertions.assertNotEquals("feilbruker", localHiariConfig.username)
-        Assertions.assertEquals("harbeidsgiverbackend", localHiariConfig.password)
+        Assertions.assertEquals("fritakagp", localHiariConfig.password)
     }
 }

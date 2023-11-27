@@ -89,7 +89,7 @@ class BakgrunnsjobbService(
 
     override fun doJob() {
         do {
-            val wasEmpty = finnVentende()
+            val wasEmpty = finnVentende(false)
                 .also { logger.debug("Fant ${it.size} bakgrunnsjobber å kjøre") }
                 .onEach { prosesser(it) }
                 .isEmpty()
@@ -126,10 +126,11 @@ class BakgrunnsjobbService(
         }
     }
 
-    fun finnVentende(): List<Bakgrunnsjobb> =
+    fun finnVentende(alle: Boolean = false): List<Bakgrunnsjobb> =
         bakgrunnsjobbRepository.findByKjoeretidBeforeAndStatusIn(
             LocalDateTime.now(),
-            setOf(BakgrunnsjobbStatus.OPPRETTET, BakgrunnsjobbStatus.FEILET)
+            setOf(BakgrunnsjobbStatus.OPPRETTET, BakgrunnsjobbStatus.FEILET),
+            alle
         )
 
     private fun tryStopAction(prossessorForType: BakgrunnsjobbProsesserer, jobb: Bakgrunnsjobb) {

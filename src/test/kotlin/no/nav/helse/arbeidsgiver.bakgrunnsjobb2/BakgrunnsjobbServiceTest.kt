@@ -1,41 +1,64 @@
 package no.nav.helse.arbeidsgiver.bakgrunnsjobb2
 
-import io.mockk.mockk
+import com.zaxxer.hikari.HikariDataSource
 import kotlinx.coroutines.test.TestCoroutineScope
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.After
+import org.junit.Ignore
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.lang.IllegalArgumentException
-import java.sql.Connection
 import java.time.LocalDateTime
+import java.util.UUID
 
 class BakgrunnsjobbServiceTest {
 
-    val repoMock = MockBakgrunnsjobbRepository()
-    val testCoroutineScope = TestCoroutineScope()
-    val service = BakgrunnsjobbService(repoMock, 1, testCoroutineScope)
+    private val dataSource = HikariDataSource(createLocalHikariConfig())
+    private val repository = PostgresBakgrunnsjobbRepository(dataSource)
+    private val testCoroutineScope = TestCoroutineScope()
+    private val service = BakgrunnsjobbService(repository, 1, testCoroutineScope)
 
-    val now = LocalDateTime.now()
+    private val now = LocalDateTime.now()
     private val eksempelProsesserer = EksempelProsesserer()
 
     @BeforeEach
     internal fun setup() {
         service.registrer(eksempelProsesserer)
-        repoMock.deleteAll()
+        repository.deleteAll()
         service.startAsync(true)
+    }
+
+    @Ignore
+    @Test
+    fun `sjekk ytelse `() {
+        for (i in 1..1000) {
+            val uuid = UUID.randomUUID()
+            val data = """{"status": "ok", "uuid": "$uuid" }"""
+            val testJobb = Bakgrunnsjobb(
+                type = EksempelProsesserer.JOBB_TYPE,
+                data = data
+            )
+            repository.save(testJobb)
+        }
+        testCoroutineScope.testScheduler.apply { advanceTimeBy(1); runCurrent() }
+
+        val resultSet = repository.findByKjoeretidBeforeAndStatusIn(LocalDateTime.now(), setOf(BakgrunnsjobbStatus.OK), true)
+        assertThat(resultSet)
+            .hasSize(1000)
     }
 
     @Test
     fun `sett jobb til ok hvis ingen feil `() {
+        val data = """{"status": "ok"}"""
         val testJobb = Bakgrunnsjobb(
             type = EksempelProsesserer.JOBB_TYPE,
-            data = "ok"
+            data = data
         )
-        repoMock.save(testJobb)
+        repository.save(testJobb)
         testCoroutineScope.testScheduler.apply { advanceTimeBy(1); runCurrent() }
 
-        val resultSet = repoMock.findByKjoeretidBeforeAndStatusIn(LocalDateTime.now(), setOf(BakgrunnsjobbStatus.OK))
+        val resultSet = repository.findByKjoeretidBeforeAndStatusIn(LocalDateTime.now(), setOf(BakgrunnsjobbStatus.OK), false)
         assertThat(resultSet)
             .hasSize(1)
 
@@ -49,13 +72,13 @@ class BakgrunnsjobbServiceTest {
             type = EksempelProsesserer.JOBB_TYPE,
             opprettet = now.minusHours(1),
             maksAntallForsoek = 3,
-            data = "fail"
+            data = """{"status": "fail"}"""
         )
-        repoMock.save(testJobb)
+        repository.save(testJobb)
         testCoroutineScope.testScheduler.apply { advanceTimeBy(1); runCurrent() }
 
         // Den går rett til stoppet i denne testen
-        assertThat(repoMock.findByKjoeretidBeforeAndStatusIn(now.plusMinutes(1), setOf(BakgrunnsjobbStatus.STOPPET)))
+        assertThat(repository.findByKjoeretidBeforeAndStatusIn(now.plusMinutes(1), setOf(BakgrunnsjobbStatus.STOPPET), false))
             .hasSize(1)
 
         assertThat(eksempelProsesserer.bleStoppet).isTrue()
@@ -71,34 +94,41 @@ class BakgrunnsjobbServiceTest {
             service.startAutoClean(1, -1)
         }
         Assertions.assertEquals("start autoclean må ha en frekvens støtte enn 1 og slettEldreEnnMaander større enn 0", exception.message)
-        assertThat(repoMock.findAutoCleanJobs()).hasSize(0)
+        assertThat(repository.findAutoCleanJobs()).hasSize(0)
     }
 
     @Test
     fun `autoClean opprettes med riktig kjøretid`() {
         service.startAutoClean(2, 3)
-        assertThat(repoMock.findAutoCleanJobs()).hasSize(1)
+        assertThat(repository.findAutoCleanJobs()).hasSize(1)
         assert(
-            repoMock.findAutoCleanJobs().get(0).kjoeretid > now.plusHours(1) &&
-                repoMock.findAutoCleanJobs().get(0).kjoeretid < now.plusHours(3)
+            repository.findAutoCleanJobs().get(0).kjoeretid > now.plusHours(1) &&
+                repository.findAutoCleanJobs().get(0).kjoeretid < now.plusHours(3)
         )
     }
 
     @Test
     fun `autoClean oppretter jobb med riktig antall måneder`() {
         service.startAutoClean(2, 3)
-        assertThat(repoMock.findAutoCleanJobs()).hasSize(1)
+        assertThat(repository.findAutoCleanJobs()).hasSize(1)
     }
 
     @Test
     fun `opprett lager korrekt jobb`() {
-        val connectionMock = mockk<Connection>()
-        service.opprettJobb<EksempelProsesserer>(data = "test", connection = connectionMock)
+        val data = """{"status": "ok"}"""
+        dataSource.connection.use {
+            service.opprettJobb<EksempelProsesserer>(data = data, connection = it)
+        }
         val jobber =
-            repoMock.findByKjoeretidBeforeAndStatusIn(LocalDateTime.MAX, setOf(BakgrunnsjobbStatus.OPPRETTET))
+            repository.findByKjoeretidBeforeAndStatusIn(LocalDateTime.now().plusDays(1), setOf(BakgrunnsjobbStatus.OPPRETTET), false)
         assertThat(jobber).hasSize(1)
         assertThat(jobber[0].type).isEqualTo(EksempelProsesserer.JOBB_TYPE)
-        assertThat(jobber[0].data).isEqualTo("test")
+        assertThat(jobber[0].data).isEqualTo(data)
+    }
+
+    @After
+    fun teardown() {
+        repository.deleteAll()
     }
 }
 
@@ -112,7 +142,7 @@ class EksempelProsesserer : BakgrunnsjobbProsesserer {
     override val type = JOBB_TYPE
 
     override fun prosesser(jobb: Bakgrunnsjobb) {
-        if (jobb.data == "fail") {
+        if (jobb.data == """{"status": "fail"}""") {
             throw RuntimeException()
         }
     }

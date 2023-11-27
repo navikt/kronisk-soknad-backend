@@ -16,4 +16,4 @@ fun createHikariConfig(jdbcUrl: String, username: String? = null, password: Stri
     }
 
 fun createLocalHikariConfig() =
-    createHikariConfig("jdbc:postgresql://localhost:5432/harbeidsgiverbackend", "harbeidsgiverbackend", "harbeidsgiverbackend")
+    createHikariConfig("jdbc:postgresql://localhost:5432/fritakagp_db", "fritakagp", "fritakagp")

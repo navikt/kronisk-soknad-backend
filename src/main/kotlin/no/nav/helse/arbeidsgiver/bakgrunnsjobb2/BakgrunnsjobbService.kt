@@ -10,9 +10,9 @@ import io.prometheus.client.Counter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
-import no.nav.helse.arbeidsgiver.bakgrunnsjobb2.utils.RecurringJob
 import no.nav.helse.arbeidsgiver.processing.AutoCleanJobbProcessor
 import no.nav.helse.arbeidsgiver.processing.AutoCleanJobbProcessor.Companion.JOB_TYPE
+import no.nav.helse.arbeidsgiver.utils.RecurringJob
 import java.sql.Connection
 import java.time.LocalDateTime
 import kotlin.collections.HashMap

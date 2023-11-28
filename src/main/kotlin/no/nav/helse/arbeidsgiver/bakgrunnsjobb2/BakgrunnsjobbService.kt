@@ -126,10 +126,11 @@ class BakgrunnsjobbService(
         }
     }
 
-    fun finnVentende(): List<Bakgrunnsjobb> =
+    fun finnVentende(alle: Boolean = false): List<Bakgrunnsjobb> =
         bakgrunnsjobbRepository.findByKjoeretidBeforeAndStatusIn(
             LocalDateTime.now(),
-            setOf(BakgrunnsjobbStatus.OPPRETTET, BakgrunnsjobbStatus.FEILET)
+            setOf(BakgrunnsjobbStatus.OPPRETTET, BakgrunnsjobbStatus.FEILET),
+            alle
         )
 
     private fun tryStopAction(prossessorForType: BakgrunnsjobbProsesserer, jobb: Bakgrunnsjobb) {

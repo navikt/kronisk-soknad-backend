@@ -16,7 +16,7 @@ interface BakgrunnsjobbRepository {
     fun save(bakgrunnsjobb: Bakgrunnsjobb, connection: Connection)
     fun findAutoCleanJobs(): List<Bakgrunnsjobb>
     fun findOkAutoCleanJobs(): List<Bakgrunnsjobb>
-    fun findByKjoeretidBeforeAndStatusIn(timeout: LocalDateTime, tilstander: Set<BakgrunnsjobbStatus>): List<Bakgrunnsjobb>
+    fun findByKjoeretidBeforeAndStatusIn(timeout: LocalDateTime, tilstander: Set<BakgrunnsjobbStatus>, alle: Boolean): List<Bakgrunnsjobb>
     fun delete(uuid: UUID)
     fun deleteAll()
     fun deleteOldOkJobs(months: Long)
@@ -52,7 +52,7 @@ class MockBakgrunnsjobbRepository : BakgrunnsjobbRepository {
         return jobs.filter { it.type.equals(AutoCleanJobbProcessor.JOB_TYPE) }
     }
 
-    override fun findByKjoeretidBeforeAndStatusIn(timeout: LocalDateTime, tilstander: Set<BakgrunnsjobbStatus>): List<Bakgrunnsjobb> {
+    override fun findByKjoeretidBeforeAndStatusIn(timeout: LocalDateTime, tilstander: Set<BakgrunnsjobbStatus>, alle: Boolean): List<Bakgrunnsjobb> {
         return jobs.filter { tilstander.contains(it.status) }
             .filter { it.kjoeretid.isBefore(timeout) }
     }
@@ -98,6 +98,8 @@ class PostgresBakgrunnsjobbRepository(val dataSource: DataSource) : Bakgrunnsjob
     private val selectStatement = """
         select * from $tableName where kjoeretid < ? and status = ANY(?)
     """.trimIndent()
+
+    private val selectStatementWithLimit = selectStatement + " limit 100".trimIndent()
 
     private val selectByIdStatement = """select * from $tableName where jobb_id = ?""".trimIndent()
 
@@ -184,9 +186,14 @@ class PostgresBakgrunnsjobbRepository(val dataSource: DataSource) : Bakgrunnsjob
         }
     }
 
-    override fun findByKjoeretidBeforeAndStatusIn(timeout: LocalDateTime, tilstander: Set<BakgrunnsjobbStatus>): List<Bakgrunnsjobb> {
+    override fun findByKjoeretidBeforeAndStatusIn(timeout: LocalDateTime, tilstander: Set<BakgrunnsjobbStatus>, alle: Boolean): List<Bakgrunnsjobb> {
+        val selectString = if (alle) {
+            selectStatement
+        } else {
+            selectStatementWithLimit
+        }
         dataSource.connection.use {
-            val res = it.prepareStatement(selectStatement).apply {
+            val res = it.prepareStatement(selectString).apply {
                 setTimestamp(1, Timestamp.valueOf(timeout))
                 setArray(2, it.createArrayOf("VARCHAR", tilstander.map { it.toString() }.toTypedArray()))
             }.executeQuery()

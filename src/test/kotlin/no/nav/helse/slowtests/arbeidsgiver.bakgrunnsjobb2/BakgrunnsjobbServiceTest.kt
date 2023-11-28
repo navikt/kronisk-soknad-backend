@@ -1,12 +1,16 @@
-package no.nav.helse.arbeidsgiver.bakgrunnsjobb2
+package no.nav.helse.slowtests.arbeidsgiver.bakgrunnsjobb2
 
 import com.zaxxer.hikari.HikariDataSource
-import kotlinx.coroutines.test.TestCoroutineScope
+import kotlinx.coroutines.test.TestScope
+import no.nav.helse.arbeidsgiver.bakgrunnsjobb2.Bakgrunnsjobb
+import no.nav.helse.arbeidsgiver.bakgrunnsjobb2.BakgrunnsjobbProsesserer
+import no.nav.helse.arbeidsgiver.bakgrunnsjobb2.BakgrunnsjobbService
+import no.nav.helse.arbeidsgiver.bakgrunnsjobb2.BakgrunnsjobbStatus
+import no.nav.helse.arbeidsgiver.bakgrunnsjobb2.PostgresBakgrunnsjobbRepository
 import no.nav.helse.fritakagp.db.createTestHikariConfig
 import no.nav.helse.slowtests.systemtests.api.SystemTestBase
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.After
-import org.junit.Ignore
+import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -17,7 +21,7 @@ class BakgrunnsjobbServiceTest : SystemTestBase() {
 
     private val dataSource = HikariDataSource(createTestHikariConfig())
     private val repository = PostgresBakgrunnsjobbRepository(dataSource)
-    private val testCoroutineScope = TestCoroutineScope()
+    private val testCoroutineScope = TestScope()
     private val service = BakgrunnsjobbService(repository, 1, testCoroutineScope)
 
     private val now = LocalDateTime.now()
@@ -30,7 +34,6 @@ class BakgrunnsjobbServiceTest : SystemTestBase() {
         service.startAsync(true)
     }
 
-    @Ignore
     @Test
     fun `sjekk ytelse `() {
         for (i in 1..1000) {
@@ -127,7 +130,7 @@ class BakgrunnsjobbServiceTest : SystemTestBase() {
         assertThat(jobber[0].data).isEqualTo(data)
     }
 
-    @After
+    @AfterAll
     fun teardown() {
         repository.deleteAll()
     }

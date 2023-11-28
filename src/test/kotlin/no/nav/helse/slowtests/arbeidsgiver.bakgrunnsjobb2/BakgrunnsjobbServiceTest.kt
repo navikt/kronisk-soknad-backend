@@ -3,17 +3,17 @@ package no.nav.helse.arbeidsgiver.bakgrunnsjobb2
 import com.zaxxer.hikari.HikariDataSource
 import kotlinx.coroutines.test.TestCoroutineScope
 import no.nav.helse.fritakagp.db.createTestHikariConfig
+import no.nav.helse.slowtests.systemtests.api.SystemTestBase
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Ignore
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import java.lang.IllegalArgumentException
 import java.time.LocalDateTime
 import java.util.UUID
 
-class BakgrunnsjobbServiceTest {
+class BakgrunnsjobbServiceTest : SystemTestBase() {
 
     private val dataSource = HikariDataSource(createTestHikariConfig())
     private val repository = PostgresBakgrunnsjobbRepository(dataSource)

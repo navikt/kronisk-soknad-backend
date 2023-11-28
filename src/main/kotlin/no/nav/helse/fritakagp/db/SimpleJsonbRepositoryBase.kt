@@ -13,14 +13,11 @@ interface SimpleJsonbEntity {
 interface SimpleJsonbRepository<T : SimpleJsonbEntity> {
     fun getById(id: UUID): T?
 
-    fun insert(soeknad: T): T
-    fun insert(soeknad: T, connection: Connection): T
+    fun insert(entity: T): T
 
     fun delete(id: UUID): Int
-    fun delete(id: UUID, connection: Connection): Int
 
-    fun update(soeknad: T)
-    fun update(soeknad: T, connection: Connection)
+    fun update(entity: T)
 }
 
 /**
@@ -58,18 +55,6 @@ abstract class SimpleJsonbRepositoryBase<T : SimpleJsonbEntity>(
         }
     }
 
-    override fun insert(entity: T, connection: Connection): T {
-        val referansenummer = getNesteReferanse(connection)
-        val json = mapper.convertValue(entity, ObjectNode::class.java).apply {
-            put("referansenummer", referansenummer)
-        }.let { mapper.writeValueAsString(it) }
-
-        connection.prepareStatement(saveStatement).apply {
-            setString(1, json)
-        }.executeUpdate()
-        return entity
-    }
-
     private fun getNesteReferanse(connection: Connection): Int? {
         val res = connection.prepareStatement(getNesteReferanseStatement).executeQuery()
         if (res.next()) {
@@ -80,35 +65,33 @@ abstract class SimpleJsonbRepositoryBase<T : SimpleJsonbEntity>(
 
     override fun insert(entity: T): T {
         ds.connection.use {
-            return insert(entity, it)
-        }
-    }
+            val referansenummer = getNesteReferanse(it)
+            val json = mapper.convertValue(entity, ObjectNode::class.java).apply {
+                put("referansenummer", referansenummer)
+            }.let { mapper.writeValueAsString(it) }
 
-    override fun delete(id: UUID, connection: Connection): Int {
-        return connection.prepareStatement(deleteStatement).apply {
-            setString(1, id.toString())
-        }.executeUpdate()
+            it.prepareStatement(saveStatement).apply {
+                setString(1, json)
+            }.executeUpdate()
+            return entity
+        }
     }
 
     override fun delete(id: UUID): Int {
         ds.connection.use {
-            return delete(id, it)
+            return it.prepareStatement(deleteStatement).apply {
+                setString(1, id.toString())
+            }.executeUpdate()
         }
     }
 
-    override fun update(entity: T, connection: Connection) {
+    override fun update(entity: T) {
         val json = mapper.writeValueAsString(entity)
         ds.connection.use {
             it.prepareStatement(updateStatement).apply {
                 setString(1, json)
                 setString(2, entity.id.toString())
             }.executeUpdate()
-        }
-    }
-
-    override fun update(entity: T) {
-        ds.connection.use {
-            return update(entity, it)
         }
     }
 }

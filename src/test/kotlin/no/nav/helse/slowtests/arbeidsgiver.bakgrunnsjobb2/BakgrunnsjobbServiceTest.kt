@@ -121,7 +121,7 @@ class BakgrunnsjobbServiceTest : SystemTestBase() {
     fun `opprett lager korrekt jobb`() {
         val data = """{"status": "ok"}"""
         dataSource.connection.use {
-            service.opprettJobb<EksempelProsesserer>(data = data, connection = it)
+            service.opprettJobb<EksempelProsesserer>(data = data)
         }
         val jobber =
             repository.findByKjoeretidBeforeAndStatusIn(LocalDateTime.now().plusDays(1), setOf(BakgrunnsjobbStatus.OPPRETTET), false)

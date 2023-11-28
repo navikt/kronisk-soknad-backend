@@ -89,7 +89,7 @@ class BakgrunnsjobbService(
 
     override fun doJob() {
         do {
-            val wasEmpty = finnVentende(false)
+            val wasEmpty = finnVentende()
                 .also { logger.debug("Fant ${it.size} bakgrunnsjobber å kjøre") }
                 .onEach { prosesser(it) }
                 .isEmpty()

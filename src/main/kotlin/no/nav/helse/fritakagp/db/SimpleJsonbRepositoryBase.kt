@@ -13,14 +13,11 @@ interface SimpleJsonbEntity {
 interface SimpleJsonbRepository<T : SimpleJsonbEntity> {
     fun getById(id: UUID): T?
 
-    fun insert(soeknad: T): T
-    fun insert(soeknad: T, connection: Connection): T
+    fun insert(entity: T): T
 
     fun delete(id: UUID): Int
-    fun delete(id: UUID, connection: Connection): Int
 
-    fun update(soeknad: T)
-    fun update(soeknad: T, connection: Connection)
+    fun update(entity: T)
 }
 
 /**
@@ -43,72 +40,67 @@ abstract class SimpleJsonbRepositoryBase<T : SimpleJsonbEntity>(
     private val getNesteReferanseStatement = "SELECT nextval('referanse_seq')"
 
     override fun getById(id: UUID): T? {
-        ds.connection.use {
-            val existingList = ArrayList<T>()
-            val res = it.prepareStatement(getByIdStatement).apply {
+        val existingList = ArrayList<T>()
+        ds.connection.use { con ->
+            con.prepareStatement(getByIdStatement).apply {
                 setString(1, id.toString())
-            }.executeQuery()
-
-            while (res.next()) {
-                val sg = mapper.readValue(res.getString("data"), clazz)
-                existingList.add(sg)
+            }.use {
+                val res = it.executeQuery()
+                while (res.next()) {
+                    val sg = mapper.readValue(res.getString("data"), clazz)
+                    existingList.add(sg)
+                }
+                res.close()
             }
-
-            return existingList.firstOrNull()
         }
-    }
-
-    override fun insert(entity: T, connection: Connection): T {
-        val referansenummer = getNesteReferanse(connection)
-        val json = mapper.convertValue(entity, ObjectNode::class.java).apply {
-            put("referansenummer", referansenummer)
-        }.let { mapper.writeValueAsString(it) }
-
-        connection.prepareStatement(saveStatement).apply {
-            setString(1, json)
-        }.executeUpdate()
-        return entity
+        return existingList.firstOrNull()
     }
 
     private fun getNesteReferanse(connection: Connection): Int? {
-        val res = connection.prepareStatement(getNesteReferanseStatement).executeQuery()
-        if (res.next()) {
-            return res.getInt(1)
+        connection.prepareStatement(getNesteReferanseStatement).use {
+            val res = it.executeQuery()
+            if (res.next()) {
+                return res.getInt(1)
+            }
         }
         return null
     }
 
     override fun insert(entity: T): T {
-        ds.connection.use {
-            return insert(entity, it)
-        }
-    }
+        ds.connection.use { connection ->
 
-    override fun delete(id: UUID, connection: Connection): Int {
-        return connection.prepareStatement(deleteStatement).apply {
-            setString(1, id.toString())
-        }.executeUpdate()
+            val referansenummer = getNesteReferanse(connection)
+            val json = mapper.convertValue(entity, ObjectNode::class.java).apply {
+                put("referansenummer", referansenummer)
+            }.let { mapper.writeValueAsString(it) }
+            connection.prepareStatement(saveStatement).use {
+                it.apply {
+                    setString(1, json)
+                }.executeUpdate()
+            }
+        }
+        return entity
     }
 
     override fun delete(id: UUID): Int {
-        ds.connection.use {
-            return delete(id, it)
-        }
-    }
-
-    override fun update(entity: T, connection: Connection) {
-        val json = mapper.writeValueAsString(entity)
-        ds.connection.use {
-            it.prepareStatement(updateStatement).apply {
-                setString(1, json)
-                setString(2, entity.id.toString())
-            }.executeUpdate()
+        ds.connection.use { connection ->
+            connection.prepareStatement(deleteStatement).use {
+                return it.apply {
+                    setString(1, id.toString())
+                }.executeUpdate()
+            }
         }
     }
 
     override fun update(entity: T) {
-        ds.connection.use {
-            return update(entity, it)
+        val json = mapper.writeValueAsString(entity)
+        ds.connection.use { connection ->
+            connection.prepareStatement(updateStatement).use {
+                it.apply {
+                    setString(1, json)
+                    setString(2, entity.id.toString())
+                }.executeUpdate()
+            }
         }
     }
 }

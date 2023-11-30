@@ -13,7 +13,6 @@ import kotlinx.coroutines.runBlocking
 import no.nav.helse.arbeidsgiver.processing.AutoCleanJobbProcessor
 import no.nav.helse.arbeidsgiver.processing.AutoCleanJobbProcessor.Companion.JOB_TYPE
 import no.nav.helse.arbeidsgiver.utils.RecurringJob
-import java.sql.Connection
 import java.time.LocalDateTime
 import kotlin.collections.HashMap
 
@@ -23,7 +22,6 @@ class BakgrunnsjobbService(
     val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.IO),
     val bakgrunnsvarsler: Bakgrunnsvarsler = TomVarsler()
 ) : RecurringJob(coroutineScope, delayMillis) {
-    // private val logger = LoggerFactory.getLogger(this::class.java)
 
     val prossesserere = HashMap<String, BakgrunnsjobbProsesserer>()
 
@@ -69,8 +67,7 @@ class BakgrunnsjobbService(
         kjoeretid: LocalDateTime = LocalDateTime.now(),
         forsoek: Int = 0,
         maksAntallForsoek: Int = 3,
-        data: String,
-        connection: Connection
+        data: String
     ) {
         val prosesserer = prossesserere.values.filterIsInstance<T>().firstOrNull()
             ?: throw IllegalArgumentException("Denne prosessereren er ukjent")
@@ -82,8 +79,7 @@ class BakgrunnsjobbService(
                 forsoek = forsoek,
                 maksAntallForsoek = maksAntallForsoek,
                 data = data
-            ),
-            connection
+            )
         )
     }
 

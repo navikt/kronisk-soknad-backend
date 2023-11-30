@@ -45,11 +45,9 @@ import org.valiktor.ConstraintViolationException
 import org.valiktor.DefaultConstraintViolation
 import java.time.LocalDateTime
 import java.util.UUID
-import javax.sql.DataSource
 
 fun Route.gravidRoutes(
     breegClient: BrregClient,
-    datasource: DataSource,
     gravidSoeknadRepo: GravidSoeknadRepository,
     gravidKravRepo: GravidKravRepository,
     bakgunnsjobbService: BakgrunnsjobbService,
@@ -91,19 +89,15 @@ fun Route.gravidRoutes(
 
                 processDocumentForGCPStorage(request.dokumentasjon, virusScanner, bucket, soeknad.id)
 
-                datasource.connection.use { connection ->
-                    gravidSoeknadRepo.insert(soeknad, connection)
-                    bakgunnsjobbService.opprettJobb<GravidSoeknadProcessor>(
-                        maksAntallForsoek = 10,
-                        data = om.writeValueAsString(GravidSoeknadProcessor.JobbData(soeknad.id)),
-                        connection = connection
-                    )
-                    bakgunnsjobbService.opprettJobb<GravidSoeknadKvitteringProcessor>(
-                        maksAntallForsoek = 10,
-                        data = om.writeValueAsString(GravidSoeknadKvitteringProcessor.Jobbdata(soeknad.id)),
-                        connection = connection
-                    )
-                }
+                gravidSoeknadRepo.insert(soeknad)
+                bakgunnsjobbService.opprettJobb<GravidSoeknadProcessor>(
+                    maksAntallForsoek = 10,
+                    data = om.writeValueAsString(GravidSoeknadProcessor.JobbData(soeknad.id))
+                )
+                bakgunnsjobbService.opprettJobb<GravidSoeknadKvitteringProcessor>(
+                    maksAntallForsoek = 10,
+                    data = om.writeValueAsString(GravidSoeknadKvitteringProcessor.Jobbdata(soeknad.id))
+                )
 
                 call.respond(HttpStatusCode.Created, soeknad)
                 GravidSoeknadMetrics.tellMottatt()
@@ -144,24 +138,19 @@ fun Route.gravidRoutes(
                 belopBeregning.beregnBeløpGravid(krav)
                 processDocumentForGCPStorage(request.dokumentasjon, virusScanner, bucket, krav.id)
 
-                datasource.connection.use { connection ->
-                    gravidKravRepo.insert(krav, connection)
-                    bakgunnsjobbService.opprettJobb<GravidKravProcessor>(
-                        maksAntallForsoek = 10,
-                        data = om.writeValueAsString(GravidKravProcessor.JobbData(krav.id)),
-                        connection = connection
-                    )
-                    bakgunnsjobbService.opprettJobb<GravidKravKvitteringProcessor>(
-                        maksAntallForsoek = 10,
-                        data = om.writeValueAsString(GravidKravKvitteringProcessor.Jobbdata(krav.id)),
-                        connection = connection
-                    )
-                    bakgunnsjobbService.opprettJobb<ArbeidsgiverNotifikasjonProcessor>(
-                        maksAntallForsoek = 10,
-                        data = om.writeValueAsString(ArbeidsgiverNotifikasjonProcessor.JobbData(krav.id, ArbeidsgiverNotifikasjonProcessor.JobbData.SkjemaType.GravidKrav)),
-                        connection = connection
-                    )
-                }
+                gravidKravRepo.insert(krav)
+                bakgunnsjobbService.opprettJobb<GravidKravProcessor>(
+                    maksAntallForsoek = 10,
+                    data = om.writeValueAsString(GravidKravProcessor.JobbData(krav.id))
+                )
+                bakgunnsjobbService.opprettJobb<GravidKravKvitteringProcessor>(
+                    maksAntallForsoek = 10,
+                    data = om.writeValueAsString(GravidKravKvitteringProcessor.Jobbdata(krav.id))
+                )
+                bakgunnsjobbService.opprettJobb<ArbeidsgiverNotifikasjonProcessor>(
+                    maksAntallForsoek = 10,
+                    data = om.writeValueAsString(ArbeidsgiverNotifikasjonProcessor.JobbData(krav.id, ArbeidsgiverNotifikasjonProcessor.JobbData.SkjemaType.GravidKrav))
+                )
 
                 call.respond(HttpStatusCode.Created, krav)
                 GravidKravMetrics.tellMottatt()
@@ -203,34 +192,26 @@ fun Route.gravidRoutes(
                     runBlocking { arbeidsgiverNotifikasjonKlient.hardDeleteSak(it) }
                 }
 
-                datasource.connection.use { connection ->
-                    gravidKravRepo.update(kravTilSletting, connection)
-                    bakgunnsjobbService.opprettJobb<GravidKravSlettProcessor>(
-                        maksAntallForsoek = 10,
-                        data = om.writeValueAsString(GravidKravProcessor.JobbData(kravTilSletting.id)),
-                        connection = connection
-                    )
-                }
+                gravidKravRepo.update(kravTilSletting)
+                bakgunnsjobbService.opprettJobb<GravidKravSlettProcessor>(
+                    maksAntallForsoek = 10,
+                    data = om.writeValueAsString(GravidKravProcessor.JobbData(kravTilSletting.id))
+                )
 
                 // Oppretter nytt krav
-                datasource.connection.use { connection ->
-                    gravidKravRepo.insert(kravTilOppdatering, connection)
-                    bakgunnsjobbService.opprettJobb<GravidKravProcessor>(
-                        maksAntallForsoek = 10,
-                        data = om.writeValueAsString(GravidKravProcessor.JobbData(kravTilOppdatering.id)),
-                        connection = connection
-                    )
-                    bakgunnsjobbService.opprettJobb<GravidKravKvitteringProcessor>(
-                        maksAntallForsoek = 10,
-                        data = om.writeValueAsString(GravidKravKvitteringProcessor.Jobbdata(kravTilOppdatering.id)),
-                        connection = connection
-                    )
-                    bakgunnsjobbService.opprettJobb<ArbeidsgiverNotifikasjonProcessor>(
-                        maksAntallForsoek = 10,
-                        data = om.writeValueAsString(ArbeidsgiverNotifikasjonProcessor.JobbData(kravTilOppdatering.id, ArbeidsgiverNotifikasjonProcessor.JobbData.SkjemaType.GravidKrav)),
-                        connection = connection
-                    )
-                }
+                gravidKravRepo.insert(kravTilOppdatering)
+                bakgunnsjobbService.opprettJobb<GravidKravProcessor>(
+                    maksAntallForsoek = 10,
+                    data = om.writeValueAsString(GravidKravProcessor.JobbData(kravTilOppdatering.id))
+                )
+                bakgunnsjobbService.opprettJobb<GravidKravKvitteringProcessor>(
+                    maksAntallForsoek = 10,
+                    data = om.writeValueAsString(GravidKravKvitteringProcessor.Jobbdata(kravTilOppdatering.id))
+                )
+                bakgunnsjobbService.opprettJobb<ArbeidsgiverNotifikasjonProcessor>(
+                    maksAntallForsoek = 10,
+                    data = om.writeValueAsString(ArbeidsgiverNotifikasjonProcessor.JobbData(kravTilOppdatering.id, ArbeidsgiverNotifikasjonProcessor.JobbData.SkjemaType.GravidKrav))
+                )
 
                 call.respond(HttpStatusCode.OK, kravTilOppdatering)
             }
@@ -251,14 +232,11 @@ fun Route.gravidRoutes(
                 form.slettetAv = innloggetFnr
                 form.slettetAvNavn = slettetAv
                 form.endretDato = LocalDateTime.now()
-                datasource.connection.use { connection ->
-                    gravidKravRepo.update(form, connection)
-                    bakgunnsjobbService.opprettJobb<GravidKravSlettProcessor>(
-                        maksAntallForsoek = 10,
-                        data = om.writeValueAsString(GravidKravProcessor.JobbData(form.id)),
-                        connection = connection
-                    )
-                }
+                gravidKravRepo.update(form)
+                bakgunnsjobbService.opprettJobb<GravidKravSlettProcessor>(
+                    maksAntallForsoek = 10,
+                    data = om.writeValueAsString(GravidKravProcessor.JobbData(form.id))
+                )
                 call.respond(HttpStatusCode.OK)
             }
         }

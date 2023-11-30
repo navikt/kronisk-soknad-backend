@@ -45,8 +45,8 @@ fun Application.fritakModule(env: Env) {
         route("${env.ktorBasepath}/api/v1") {
             authenticate {
                 systemRoutes()
-                kroniskRoutes(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
-                gravidRoutes(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
+                kroniskRoutes(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
+                gravidRoutes(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
                 altinnRoutes(get())
             }
         }

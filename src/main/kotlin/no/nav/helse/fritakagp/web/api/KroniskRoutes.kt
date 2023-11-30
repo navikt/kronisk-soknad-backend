@@ -40,11 +40,9 @@ import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjo
 import no.nav.helsearbeidsgiver.utils.log.logger
 import java.time.LocalDateTime
 import java.util.UUID
-import javax.sql.DataSource
 
 fun Route.kroniskRoutes(
     breegClient: BrregClient,
-    datasource: DataSource,
     kroniskSoeknadRepo: KroniskSoeknadRepository,
     kroniskKravRepo: KroniskKravRepository,
     bakgunnsjobbService: BakgrunnsjobbService,
@@ -103,19 +101,15 @@ fun Route.kroniskRoutes(
                 processDocumentForGCPStorage(request.dokumentasjon, virusScanner, bucket, soeknad.id)
 
                 logger.info("KSP: Lagre søknad i db.")
-                datasource.connection.use { connection ->
-                    kroniskSoeknadRepo.insert(soeknad, connection)
-                    bakgunnsjobbService.opprettJobb<KroniskSoeknadProcessor>(
-                        maksAntallForsoek = 10,
-                        data = om.writeValueAsString(KroniskSoeknadProcessor.JobbData(soeknad.id)),
-                        connection = connection
-                    )
-                    bakgunnsjobbService.opprettJobb<KroniskSoeknadKvitteringProcessor>(
-                        maksAntallForsoek = 10,
-                        data = om.writeValueAsString(KroniskSoeknadKvitteringProcessor.Jobbdata(soeknad.id)),
-                        connection = connection
-                    )
-                }
+                kroniskSoeknadRepo.insert(soeknad)
+                bakgunnsjobbService.opprettJobb<KroniskSoeknadProcessor>(
+                    maksAntallForsoek = 10,
+                    data = om.writeValueAsString(KroniskSoeknadProcessor.JobbData(soeknad.id))
+                )
+                bakgunnsjobbService.opprettJobb<KroniskSoeknadKvitteringProcessor>(
+                    maksAntallForsoek = 10,
+                    data = om.writeValueAsString(KroniskSoeknadKvitteringProcessor.Jobbdata(soeknad.id))
+                )
 
                 call.respond(HttpStatusCode.Created, soeknad)
                 KroniskSoeknadMetrics.tellMottatt()
@@ -173,24 +167,19 @@ fun Route.kroniskRoutes(
                 processDocumentForGCPStorage(request.dokumentasjon, virusScanner, bucket, krav.id)
 
                 logger.info("KKPo: Legg til krav i db.")
-                datasource.connection.use { connection ->
-                    kroniskKravRepo.insert(krav, connection)
-                    bakgunnsjobbService.opprettJobb<KroniskKravProcessor>(
-                        maksAntallForsoek = 10,
-                        data = om.writeValueAsString(KroniskKravProcessor.JobbData(krav.id)),
-                        connection = connection
-                    )
-                    bakgunnsjobbService.opprettJobb<KroniskKravKvitteringProcessor>(
-                        maksAntallForsoek = 10,
-                        data = om.writeValueAsString(KroniskKravKvitteringProcessor.Jobbdata(krav.id)),
-                        connection = connection
-                    )
-                    bakgunnsjobbService.opprettJobb<ArbeidsgiverNotifikasjonProcessor>(
-                        maksAntallForsoek = 10,
-                        data = om.writeValueAsString(ArbeidsgiverNotifikasjonProcessor.JobbData(krav.id, ArbeidsgiverNotifikasjonProcessor.JobbData.SkjemaType.KroniskKrav)),
-                        connection = connection
-                    )
-                }
+                kroniskKravRepo.insert(krav)
+                bakgunnsjobbService.opprettJobb<KroniskKravProcessor>(
+                    maksAntallForsoek = 10,
+                    data = om.writeValueAsString(KroniskKravProcessor.JobbData(krav.id))
+                )
+                bakgunnsjobbService.opprettJobb<KroniskKravKvitteringProcessor>(
+                    maksAntallForsoek = 10,
+                    data = om.writeValueAsString(KroniskKravKvitteringProcessor.Jobbdata(krav.id))
+                )
+                bakgunnsjobbService.opprettJobb<ArbeidsgiverNotifikasjonProcessor>(
+                    maksAntallForsoek = 10,
+                    data = om.writeValueAsString(ArbeidsgiverNotifikasjonProcessor.JobbData(krav.id, ArbeidsgiverNotifikasjonProcessor.JobbData.SkjemaType.KroniskKrav))
+                )
 
                 call.respond(HttpStatusCode.Created, krav)
                 KroniskKravMetrics.tellMottatt()
@@ -239,35 +228,27 @@ fun Route.kroniskRoutes(
                 }
 
                 logger.info("KKPa: Oppdater gammelt krav til slettet i db.")
-                datasource.connection.use { connection ->
-                    kroniskKravRepo.update(kravTilSletting, connection)
-                    bakgunnsjobbService.opprettJobb<KroniskKravSlettProcessor>(
-                        maksAntallForsoek = 10,
-                        data = om.writeValueAsString(KroniskKravProcessor.JobbData(kravTilSletting.id)),
-                        connection = connection
-                    )
-                }
+                kroniskKravRepo.update(kravTilSletting)
+                bakgunnsjobbService.opprettJobb<KroniskKravSlettProcessor>(
+                    maksAntallForsoek = 10,
+                    data = om.writeValueAsString(KroniskKravProcessor.JobbData(kravTilSletting.id))
+                )
 
                 // Oppretter nytt krav
                 logger.info("KKPa: Legg til nytt krav i db.")
-                datasource.connection.use { connection ->
-                    kroniskKravRepo.insert(kravTilOppdatering, connection)
-                    bakgunnsjobbService.opprettJobb<KroniskKravProcessor>(
-                        maksAntallForsoek = 10,
-                        data = om.writeValueAsString(KroniskKravProcessor.JobbData(kravTilOppdatering.id)),
-                        connection = connection
-                    )
-                    bakgunnsjobbService.opprettJobb<KroniskKravKvitteringProcessor>(
-                        maksAntallForsoek = 10,
-                        data = om.writeValueAsString(KroniskKravKvitteringProcessor.Jobbdata(kravTilOppdatering.id)),
-                        connection = connection
-                    )
-                    bakgunnsjobbService.opprettJobb<ArbeidsgiverNotifikasjonProcessor>(
-                        maksAntallForsoek = 10,
-                        data = om.writeValueAsString(ArbeidsgiverNotifikasjonProcessor.JobbData(kravTilOppdatering.id, ArbeidsgiverNotifikasjonProcessor.JobbData.SkjemaType.KroniskKrav)),
-                        connection = connection
-                    )
-                }
+                kroniskKravRepo.insert(kravTilOppdatering)
+                bakgunnsjobbService.opprettJobb<KroniskKravProcessor>(
+                    maksAntallForsoek = 10,
+                    data = om.writeValueAsString(KroniskKravProcessor.JobbData(kravTilOppdatering.id))
+                )
+                bakgunnsjobbService.opprettJobb<KroniskKravKvitteringProcessor>(
+                    maksAntallForsoek = 10,
+                    data = om.writeValueAsString(KroniskKravKvitteringProcessor.Jobbdata(kravTilOppdatering.id))
+                )
+                bakgunnsjobbService.opprettJobb<ArbeidsgiverNotifikasjonProcessor>(
+                    maksAntallForsoek = 10,
+                    data = om.writeValueAsString(ArbeidsgiverNotifikasjonProcessor.JobbData(kravTilOppdatering.id, ArbeidsgiverNotifikasjonProcessor.JobbData.SkjemaType.KroniskKrav))
+                )
 
                 call.respond(HttpStatusCode.OK, kravTilOppdatering)
             }
@@ -293,14 +274,11 @@ fun Route.kroniskRoutes(
                 form.endretDato = LocalDateTime.now()
 
                 logger.info("KKD: Oppdater krav til slettet i db.")
-                datasource.connection.use { connection ->
-                    kroniskKravRepo.update(form, connection)
-                    bakgunnsjobbService.opprettJobb<KroniskKravSlettProcessor>(
-                        maksAntallForsoek = 10,
-                        data = om.writeValueAsString(KroniskKravProcessor.JobbData(form.id)),
-                        connection = connection
-                    )
-                }
+                kroniskKravRepo.update(form)
+                bakgunnsjobbService.opprettJobb<KroniskKravSlettProcessor>(
+                    maksAntallForsoek = 10,
+                    data = om.writeValueAsString(KroniskKravProcessor.JobbData(form.id))
+                )
                 call.respond(HttpStatusCode.OK)
             }
         }

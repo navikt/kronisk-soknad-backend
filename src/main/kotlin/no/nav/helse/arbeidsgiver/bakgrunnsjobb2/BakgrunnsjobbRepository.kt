@@ -122,13 +122,14 @@ class PostgresBakgrunnsjobbRepository(val dataSource: DataSource) : Bakgrunnsjob
     }
 
     fun getById(id: UUID, connection: Connection): Bakgrunnsjobb? {
-        val statement = connection.prepareStatement("select * from $tableName where jobb_id = '$id'")
-        val rs = statement.executeQuery()
-        val resultList = resultsetTilResultatliste(rs)
-        if (resultList.size == 0) {
-            return null
-        } else {
-            return resultList[0]
+        connection.prepareStatement("select * from $tableName where jobb_id = '$id'").use {
+            val rs = it.executeQuery()
+            val resultList = resultsetTilResultatliste(rs)
+            if (resultList.size == 0) {
+                return null
+            } else {
+                return resultList[0]
+            }
         }
     }
 
@@ -139,7 +140,7 @@ class PostgresBakgrunnsjobbRepository(val dataSource: DataSource) : Bakgrunnsjob
     }
 
     override fun save(bakgrunnsjobb: Bakgrunnsjobb, connection: Connection) {
-        val statement = connection.prepareStatement(insertStatement).apply {
+        connection.prepareStatement(insertStatement).apply {
             setString(1, bakgrunnsjobb.uuid.toString())
             setString(2, bakgrunnsjobb.type)
             setTimestamp(3, bakgrunnsjobb.behandlet?.let(Timestamp::valueOf))
@@ -149,8 +150,9 @@ class PostgresBakgrunnsjobbRepository(val dataSource: DataSource) : Bakgrunnsjob
             setInt(7, bakgrunnsjobb.forsoek)
             setInt(8, bakgrunnsjobb.maksAntallForsoek)
             setString(9, bakgrunnsjobb.data)
+        }.use {
+            it.execute()
         }
-        statement.execute()
     }
 
     override fun update(bakgrunnsjobb: Bakgrunnsjobb) {
@@ -167,22 +169,26 @@ class PostgresBakgrunnsjobbRepository(val dataSource: DataSource) : Bakgrunnsjob
             setInt(4, bakgrunnsjobb.forsoek)
             setString(5, bakgrunnsjobb.data)
             setString(6, bakgrunnsjobb.uuid.toString())
-        }.executeUpdate()
+        }.use {
+            it.executeUpdate()
+        }
     }
 
     override fun findAutoCleanJobs(): List<Bakgrunnsjobb> {
-        dataSource.connection.use {
-            val res = it.prepareStatement(selectAutoClean).executeQuery()
-
-            return resultsetTilResultatliste(res)
+        dataSource.connection.use { con ->
+            con.prepareStatement(selectAutoClean).use {
+                val res = it.executeQuery()
+                return resultsetTilResultatliste(res)
+            }
         }
     }
 
     override fun findOkAutoCleanJobs(): List<Bakgrunnsjobb> {
-        dataSource.connection.use {
-            val res = it.prepareStatement(selectOkAutoClean).executeQuery()
-
-            return resultsetTilResultatliste(res)
+        dataSource.connection.use { con ->
+            con.prepareStatement(selectOkAutoClean).use {
+                val res = it.executeQuery()
+                return resultsetTilResultatliste(res)
+            }
         }
     }
 
@@ -192,56 +198,64 @@ class PostgresBakgrunnsjobbRepository(val dataSource: DataSource) : Bakgrunnsjob
         } else {
             selectStatementWithLimit
         }
-        dataSource.connection.use {
-            val res = it.prepareStatement(selectString).apply {
+        dataSource.connection.use { con ->
+            con.prepareStatement(selectString).apply {
                 setTimestamp(1, Timestamp.valueOf(timeout))
-                setArray(2, it.createArrayOf("VARCHAR", tilstander.map { it.toString() }.toTypedArray()))
-            }.executeQuery()
-
-            return resultsetTilResultatliste(res)
+                setArray(2, con.createArrayOf("VARCHAR", tilstander.map { it.toString() }.toTypedArray()))
+            }.use {
+                val res = it.executeQuery()
+                return resultsetTilResultatliste(res)
+            }
         }
     }
 
     private fun resultsetTilResultatliste(res: ResultSet): MutableList<Bakgrunnsjobb> {
         val resultatListe = mutableListOf<Bakgrunnsjobb>()
-
-        while (res.next()) {
-            resultatListe.add(
-                Bakgrunnsjobb(
-                    UUID.fromString(res.getString("jobb_id")),
-                    res.getString("type"),
-                    res.getTimestamp("behandlet")?.toLocalDateTime(),
-                    res.getTimestamp("opprettet").toLocalDateTime(),
-                    BakgrunnsjobbStatus.valueOf(res.getString("status")),
-                    res.getTimestamp("kjoeretid").toLocalDateTime(),
-                    res.getInt("forsoek"),
-                    res.getInt("maks_forsoek"),
-                    res.getString("data")
+        res.use {
+            while (it.next()) {
+                resultatListe.add(
+                    Bakgrunnsjobb(
+                        UUID.fromString(it.getString("jobb_id")),
+                        it.getString("type"),
+                        it.getTimestamp("behandlet")?.toLocalDateTime(),
+                        it.getTimestamp("opprettet").toLocalDateTime(),
+                        BakgrunnsjobbStatus.valueOf(it.getString("status")),
+                        it.getTimestamp("kjoeretid").toLocalDateTime(),
+                        it.getInt("forsoek"),
+                        it.getInt("maks_forsoek"),
+                        it.getString("data")
+                    )
                 )
-            )
+            }
         }
         return resultatListe
     }
 
     override fun delete(uuid: UUID) {
-        dataSource.connection.use {
-            it.prepareStatement(deleteStatement).apply {
+        dataSource.connection.use { con ->
+            con.prepareStatement(deleteStatement).apply {
                 setString(1, uuid.toString())
-            }.executeUpdate()
+            }.use {
+                it.executeUpdate()
+            }
         }
     }
 
     override fun deleteAll() {
-        dataSource.connection.use {
-            it.prepareStatement(deleteAllStatement).executeUpdate()
+        dataSource.connection.use { con ->
+            con.prepareStatement(deleteAllStatement).use {
+                it.executeUpdate()
+            }
         }
     }
 
     override fun deleteOldOkJobs(months: Long) {
-        dataSource.connection.use {
-            it.prepareStatement(deleteOldJobsStatement).apply {
+        dataSource.connection.use { con ->
+            con.prepareStatement(deleteOldJobsStatement).apply {
                 setDate(1, Date.valueOf(LocalDate.now().minusMonths(months)))
-            }.executeUpdate()
+            }.use {
+                it.executeUpdate()
+            }
         }
     }
 }

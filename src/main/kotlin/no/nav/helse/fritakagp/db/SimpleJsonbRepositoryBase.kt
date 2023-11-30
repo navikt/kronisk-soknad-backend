@@ -40,58 +40,67 @@ abstract class SimpleJsonbRepositoryBase<T : SimpleJsonbEntity>(
     private val getNesteReferanseStatement = "SELECT nextval('referanse_seq')"
 
     override fun getById(id: UUID): T? {
-        ds.connection.use {
-            val existingList = ArrayList<T>()
-            val res = it.prepareStatement(getByIdStatement).apply {
+        val existingList = ArrayList<T>()
+        ds.connection.use { con ->
+            con.prepareStatement(getByIdStatement).apply {
                 setString(1, id.toString())
-            }.executeQuery()
-
-            while (res.next()) {
-                val sg = mapper.readValue(res.getString("data"), clazz)
-                existingList.add(sg)
+            }.use {
+                val res = it.executeQuery()
+                while (res.next()) {
+                    val sg = mapper.readValue(res.getString("data"), clazz)
+                    existingList.add(sg)
+                }
+                res.close()
             }
-
-            return existingList.firstOrNull()
         }
+        return existingList.firstOrNull()
     }
 
     private fun getNesteReferanse(connection: Connection): Int? {
-        val res = connection.prepareStatement(getNesteReferanseStatement).executeQuery()
-        if (res.next()) {
-            return res.getInt(1)
+        connection.prepareStatement(getNesteReferanseStatement).use {
+            val res = it.executeQuery()
+            if (res.next()) {
+                return res.getInt(1)
+            }
         }
         return null
     }
 
     override fun insert(entity: T): T {
-        ds.connection.use {
-            val referansenummer = getNesteReferanse(it)
+        ds.connection.use { connection ->
+
+            val referansenummer = getNesteReferanse(connection)
             val json = mapper.convertValue(entity, ObjectNode::class.java).apply {
                 put("referansenummer", referansenummer)
             }.let { mapper.writeValueAsString(it) }
-
-            it.prepareStatement(saveStatement).apply {
-                setString(1, json)
-            }.executeUpdate()
-            return entity
+            connection.prepareStatement(saveStatement).use {
+                it.apply {
+                    setString(1, json)
+                }.executeUpdate()
+            }
         }
+        return entity
     }
 
     override fun delete(id: UUID): Int {
-        ds.connection.use {
-            return it.prepareStatement(deleteStatement).apply {
-                setString(1, id.toString())
-            }.executeUpdate()
+        ds.connection.use { connection ->
+            connection.prepareStatement(deleteStatement).use {
+                return it.apply {
+                    setString(1, id.toString())
+                }.executeUpdate()
+            }
         }
     }
 
     override fun update(entity: T) {
         val json = mapper.writeValueAsString(entity)
-        ds.connection.use {
-            it.prepareStatement(updateStatement).apply {
-                setString(1, json)
-                setString(2, entity.id.toString())
-            }.executeUpdate()
+        ds.connection.use { connection ->
+            connection.prepareStatement(updateStatement).use {
+                it.apply {
+                    setString(1, json)
+                    setString(2, entity.id.toString())
+                }.executeUpdate()
+            }
         }
     }
 }

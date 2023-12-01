@@ -1,6 +1,3 @@
-[![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=navikt_fritakagp)](https://sonarcloud.io/dashboard?id=navikt_fritakagp)
-
-
 Fritak Arbeidsgiverperiode (AGP) 
 ================
 

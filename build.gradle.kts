@@ -10,7 +10,6 @@ plugins {
     id("com.github.ben-manes.versions")
     id("com.autonomousapps.dependency-analysis")
     jacoco
-    id("org.sonarqube")
 }
 
 application {
@@ -98,15 +97,6 @@ tasks.test {
 
 tasks.withType<Wrapper> {
     gradleVersion = "8.3"
-}
-
-sonarqube {
-    properties {
-        property("sonar.projectKey", "navikt_fritakagp")
-        property("sonar.organization", "navikt")
-        property("sonar.host.url", "https://sonarcloud.io")
-        property("sonar.sourceEncoding", "UTF-8")
-    }
 }
 
 dependencies {

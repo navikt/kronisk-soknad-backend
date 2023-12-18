@@ -82,13 +82,6 @@ class GravidSoeknadProcessor(
             bakgrunnsjobbRepo.save(
                 Bakgrunnsjobb(
                     maksAntallForsoek = 10,
-                    data = om.writeValueAsString(GravidSoeknadKafkaProcessor.JobbData(soeknad.id)),
-                    type = GravidSoeknadKafkaProcessor.JOB_TYPE
-                )
-            )
-            bakgrunnsjobbRepo.save(
-                Bakgrunnsjobb(
-                    maksAntallForsoek = 10,
                     data = om.writeValueAsString(BrukernotifikasjonProcessor.Jobbdata(soeknad.id, GravidSøknad)),
                     type = BrukernotifikasjonProcessor.JOB_TYPE
                 )

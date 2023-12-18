@@ -28,7 +28,6 @@ import no.nav.helse.fritakagp.processing.arbeidsgivernotifikasjon.ArbeidsgiverNo
 import no.nav.helse.fritakagp.processing.arbeidsgivernotifikasjon.ArbeidsgiverOppdaterNotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravAltinnKvitteringSender
-import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravKafkaProcessor
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravKvitteringProcessor
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravKvitteringSender
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravPDFGenerator
@@ -36,13 +35,11 @@ import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravProcessor
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravSlettProcessor
 import no.nav.helse.fritakagp.processing.gravid.krav.OpprettRobotOppgaveGravidProcessor
 import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadAltinnKvitteringSender
-import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadKafkaProcessor
 import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadKvitteringProcessor
 import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadKvitteringSender
 import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadPDFGenerator
 import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadProcessor
 import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravAltinnKvitteringSender
-import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravKafkaProcessor
 import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravKvitteringProcessor
 import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravKvitteringSender
 import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravPDFGenerator
@@ -50,7 +47,6 @@ import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravProcessor
 import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravSlettProcessor
 import no.nav.helse.fritakagp.processing.kronisk.krav.OpprettRobotOppgaveKroniskProcessor
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadAltinnKvitteringSender
-import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadKafkaProcessor
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadKvitteringProcessor
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadKvitteringSender
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadPDFGenerator
@@ -135,11 +131,6 @@ fun prodConfig(env: Env.Prod): Module = module {
         )
     } bind KroniskKravKvitteringSender::class
     single { KroniskKravKvitteringProcessor(get(), get(), get()) }
-
-    single { GravidSoeknadKafkaProcessor(get(), get(), get()) }
-    single { GravidKravKafkaProcessor(get(), get(), get()) }
-    single { KroniskSoeknadKafkaProcessor(get(), get(), get()) }
-    single { KroniskKravKafkaProcessor(get(), get(), get()) }
 
     single { BrukernotifikasjonProcessor(get(), get(), get(), get(), get(), get(), 4, env.frontendUrl) }
     single { ArbeidsgiverNotifikasjonProcessor(get(), get(), get(), env.frontendUrl, get()) }

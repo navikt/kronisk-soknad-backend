@@ -80,13 +80,6 @@ class GravidKravProcessor(
             bakgrunnsjobbRepo.save(
                 Bakgrunnsjobb(
                     maksAntallForsoek = 10,
-                    data = om.writeValueAsString(GravidKravKafkaProcessor.JobbData(krav.id)),
-                    type = GravidKravKafkaProcessor.JOB_TYPE
-                )
-            )
-            bakgrunnsjobbRepo.save(
-                Bakgrunnsjobb(
-                    maksAntallForsoek = 10,
                     data = om.writeValueAsString(BrukernotifikasjonProcessor.Jobbdata(krav.id, SkjemaType.GravidKrav)),
                     type = BrukernotifikasjonProcessor.JOB_TYPE
                 )

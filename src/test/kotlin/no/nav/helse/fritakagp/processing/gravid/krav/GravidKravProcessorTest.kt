@@ -169,12 +169,9 @@ class GravidKravProcessorTest {
 
         val opprettetJobber = mutableListOf<Bakgrunnsjobb>()
 
-        verify(exactly = 2) {
+        verify(exactly = 1) {
             bakgrunnsjobbRepomock.save(capture(opprettetJobber))
         }
-
-        val kafkajobb = opprettetJobber.find { it.type == GravidKravKafkaProcessor.JOB_TYPE }
-        assertThat(kafkajobb?.data).contains(krav.id.toString())
 
         val beskjedJobb = opprettetJobber.find { it.type == BrukernotifikasjonProcessor.JOB_TYPE }
         assertThat(beskjedJobb?.data).contains(BrukernotifikasjonProcessor.Jobbdata.SkjemaType.GravidKrav.name)

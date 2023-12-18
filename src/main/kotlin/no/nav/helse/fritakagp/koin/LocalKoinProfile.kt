@@ -21,15 +21,8 @@ import no.nav.helse.fritakagp.domain.BeloepBeregning
 import no.nav.helse.fritakagp.integration.GrunnbeloepClient
 import no.nav.helse.fritakagp.integration.altinn.AltinnAuthorizer
 import no.nav.helse.fritakagp.integration.altinn.DefaultAltinnAuthorizer
-import no.nav.helse.fritakagp.integration.kafka.KravmeldingKafkaProducer
-import no.nav.helse.fritakagp.integration.kafka.KravmeldingSender
-import no.nav.helse.fritakagp.integration.kafka.SoeknadmeldingKafkaProducer
-import no.nav.helse.fritakagp.integration.kafka.SoeknadmeldingSender
-import no.nav.helse.fritakagp.integration.kafka.StringKafkaProducerFactory
-import no.nav.helse.fritakagp.integration.kafka.localCommonKafkaProps
 import no.nav.helse.fritakagp.processing.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
-import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravKafkaProcessor
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravKvitteringProcessor
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravKvitteringSender
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravKvitteringSenderDummy
@@ -37,13 +30,11 @@ import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravPDFGenerator
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravProcessor
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravSlettProcessor
 import no.nav.helse.fritakagp.processing.gravid.krav.OpprettRobotOppgaveGravidProcessor
-import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadKafkaProcessor
 import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadKvitteringProcessor
 import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadKvitteringSender
 import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadKvitteringSenderDummy
 import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadPDFGenerator
 import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadProcessor
-import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravKafkaProcessor
 import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravKvitteringProcessor
 import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravKvitteringSender
 import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravKvitteringSenderDummy
@@ -51,7 +42,6 @@ import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravPDFGenerator
 import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravProcessor
 import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravSlettProcessor
 import no.nav.helse.fritakagp.processing.kronisk.krav.OpprettRobotOppgaveKroniskProcessor
-import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadKafkaProcessor
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadKvitteringProcessor
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadKvitteringSender
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadKvitteringSenderDummy
@@ -75,9 +65,6 @@ fun localConfig(env: Env.Local): Module = module {
     single { PostgresKroniskSoeknadRepository(get(), get()) } bind KroniskSoeknadRepository::class
     single { PostgresKroniskKravRepository(get(), get()) } bind KroniskKravRepository::class
 
-    single { SoeknadmeldingKafkaProducer(localCommonKafkaProps(), env.kafkaTopicNameSoeknad, get(), StringKafkaProducerFactory()) } bind SoeknadmeldingSender::class
-    single { KravmeldingKafkaProducer(localCommonKafkaProps(), env.kafkaTopicNameKrav, get(), StringKafkaProducerFactory()) } bind KravmeldingSender::class
-
     single { PostgresBakgrunnsjobbRepository(get()) } bind BakgrunnsjobbRepository::class
     single { BakgrunnsjobbService(get()) }
 
@@ -99,11 +86,6 @@ fun localConfig(env: Env.Local): Module = module {
     single { KroniskSoeknadKvitteringProcessor(get(), get(), get()) }
     single { KroniskKravKvitteringSenderDummy() } bind KroniskKravKvitteringSender::class
     single { KroniskKravKvitteringProcessor(get(), get(), get()) }
-
-    single { GravidSoeknadKafkaProcessor(get(), get(), get()) }
-    single { GravidKravKafkaProcessor(get(), get(), get()) }
-    single { KroniskSoeknadKafkaProcessor(get(), get(), get()) }
-    single { KroniskKravKafkaProcessor(get(), get(), get()) }
 
     single { PdlService(get()) }
 

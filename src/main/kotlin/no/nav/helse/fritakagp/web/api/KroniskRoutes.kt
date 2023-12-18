@@ -124,7 +124,7 @@ fun Route.kroniskRoutes(
                 logger.info("KKG: Hent krav fra db.")
                 val form = kroniskKravRepo.getById(UUID.fromString(call.parameters["id"]))
 
-                if (form == null) {
+                if (form == null || form.status == KravStatus.SLETTET) {
                     call.respond(HttpStatusCode.NotFound)
                 } else {
                     if (form.identitetsnummer != innloggetFnr) {

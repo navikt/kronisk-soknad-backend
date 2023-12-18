@@ -1,21 +1,40 @@
 package no.nav.helse.slowtests.systemtests.api
 
 import io.ktor.client.call.body
+import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import no.nav.helse.KroniskTestData
+import no.nav.helse.fritakagp.db.KroniskKravRepository
 import no.nav.helse.fritakagp.domain.Arbeidsgiverperiode
+import no.nav.helse.fritakagp.domain.KravStatus
 import no.nav.helse.fritakagp.domain.KroniskKrav
 import no.nav.helse.fritakagp.web.api.resreq.ValidationProblem
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.koin.test.inject
 import java.time.LocalDate
 
 class KroniskKravHTTPTests : SystemTestBase() {
     private val kravKroniskUrl = "/fritak-agp-api/api/v1/kronisk/krav"
+
+    @Test
+    fun `Gir not found når kravet er slettet`() = suspendableTest {
+        val repo by inject<KroniskKravRepository>()
+
+        repo.insert(KroniskTestData.kroniskKrav.copy(status = KravStatus.SLETTET))
+
+        val response = httpClient.get {
+            appUrl("$kravKroniskUrl/${KroniskTestData.kroniskKrav.id}")
+            contentType(ContentType.Application.Json)
+            loggedInAs(KroniskTestData.kroniskKrav.identitetsnummer)
+        }
+
+        assertThat(response.status).isEqualTo(HttpStatusCode.NotFound)
+    }
 
     @Test
     fun `invalid json gives 400 Bad request`() = suspendableTest {

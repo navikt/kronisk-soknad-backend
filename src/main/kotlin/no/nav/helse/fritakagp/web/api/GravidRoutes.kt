@@ -108,7 +108,7 @@ fun Route.gravidRoutes(
             get("/{id}") {
                 val innloggetFnr = hentIdentitetsnummerFraLoginToken(call.request)
                 val form = gravidKravRepo.getById(UUID.fromString(call.parameters["id"]))
-                if (form == null) {
+                if (form == null || form.status == KravStatus.SLETTET) {
                     call.respond(HttpStatusCode.NotFound)
                 } else {
                     if (form.identitetsnummer != innloggetFnr) {
@@ -193,6 +193,7 @@ fun Route.gravidRoutes(
                 }
 
                 gravidKravRepo.update(kravTilSletting)
+                // TODO: Fjern
                 bakgunnsjobbService.opprettJobb<GravidKravSlettProcessor>(
                     maksAntallForsoek = 10,
                     data = om.writeValueAsString(GravidKravProcessor.JobbData(kravTilSletting.id))
@@ -200,6 +201,7 @@ fun Route.gravidRoutes(
 
                 // Oppretter nytt krav
                 gravidKravRepo.insert(kravTilOppdatering)
+                // TODO: Endre til ny type jobb
                 bakgunnsjobbService.opprettJobb<GravidKravProcessor>(
                     maksAntallForsoek = 10,
                     data = om.writeValueAsString(GravidKravProcessor.JobbData(kravTilOppdatering.id))

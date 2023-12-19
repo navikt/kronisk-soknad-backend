@@ -12,20 +12,16 @@ import no.nav.helse.fritakagp.koin.profileModules
 import no.nav.helse.fritakagp.processing.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.arbeidsgivernotifikasjon.ArbeidsgiverOppdaterNotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
-import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravKafkaProcessor
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravKvitteringProcessor
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravProcessor
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravSlettProcessor
 import no.nav.helse.fritakagp.processing.gravid.krav.OpprettRobotOppgaveGravidProcessor
-import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadKafkaProcessor
 import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadKvitteringProcessor
 import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadProcessor
-import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravKafkaProcessor
 import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravKvitteringProcessor
 import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravProcessor
 import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravSlettProcessor
 import no.nav.helse.fritakagp.processing.kronisk.krav.OpprettRobotOppgaveKroniskProcessor
-import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadKafkaProcessor
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadKvitteringProcessor
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadProcessor
 import no.nav.helse.fritakagp.web.auth.localAuthTokenDispenser
@@ -90,21 +86,17 @@ class FritakAgpApplication(val port: Int = 8080, val runAsDeamon: Boolean = true
     private fun configAndStartBackgroundWorker() {
         get<BakgrunnsjobbService>().apply {
             registrer(get<GravidSoeknadProcessor>())
-            registrer(get<GravidSoeknadKafkaProcessor>())
             registrer(get<GravidSoeknadKvitteringProcessor>())
 
             registrer(get<GravidKravProcessor>())
-            registrer(get<GravidKravKafkaProcessor>())
             registrer(get<GravidKravKvitteringProcessor>())
             registrer(get<GravidKravSlettProcessor>())
             registrer(get<OpprettRobotOppgaveGravidProcessor>())
 
             registrer(get<KroniskSoeknadProcessor>())
-            registrer(get<KroniskSoeknadKafkaProcessor>())
             registrer(get<KroniskSoeknadKvitteringProcessor>())
 
             registrer(get<KroniskKravProcessor>())
-            registrer(get<KroniskKravKafkaProcessor>())
             registrer(get<KroniskKravKvitteringProcessor>())
             registrer(get<KroniskKravSlettProcessor>())
             registrer(get<OpprettRobotOppgaveKroniskProcessor>())

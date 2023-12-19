@@ -155,12 +155,9 @@ class KroniskSoeknadProcessorTest {
 
         val opprettetJobber = mutableListOf<Bakgrunnsjobb>()
 
-        verify(exactly = 2) {
+        verify(exactly = 1) {
             bakgrunnsjobbRepomock.save(capture(opprettetJobber))
         }
-
-        val kafkajobb = opprettetJobber.find { it.type == KroniskSoeknadKafkaProcessor.JOB_TYPE }
-        assertThat(kafkajobb?.data).contains(soeknad.id.toString())
 
         val beskjedJobb = opprettetJobber.find { it.type == BrukernotifikasjonProcessor.JOB_TYPE }
         assertThat(beskjedJobb?.data).contains(soeknad.id.toString())

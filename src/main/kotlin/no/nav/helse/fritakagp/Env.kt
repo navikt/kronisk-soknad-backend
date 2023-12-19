@@ -38,8 +38,6 @@ sealed class Env private constructor(
     val gcpProjectId = "gcp_prjId".prop()
 
     val kafkaTopicNameBrukernotifikasjon = "brukernotifikasjon.topic_name".prop()
-    val kafkaTopicNameSoeknad = "kafka_soeknad_topic_name".prop()
-    val kafkaTopicNameKrav = "kafka_krav_topic_name".prop()
 
     // Integrasjoner (URL)
 

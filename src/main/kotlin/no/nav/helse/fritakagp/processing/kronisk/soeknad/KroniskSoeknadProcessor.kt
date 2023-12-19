@@ -79,13 +79,6 @@ class KroniskSoeknadProcessor(
             bakgrunnsjobbRepo.save(
                 Bakgrunnsjobb(
                     maksAntallForsoek = 10,
-                    data = om.writeValueAsString(KroniskSoeknadKafkaProcessor.JobbData(soeknad.id)),
-                    type = KroniskSoeknadKafkaProcessor.JOB_TYPE
-                )
-            )
-            bakgrunnsjobbRepo.save(
-                Bakgrunnsjobb(
-                    maksAntallForsoek = 10,
                     data = om.writeValueAsString(BrukernotifikasjonProcessor.Jobbdata(soeknad.id, SkjemaType.KroniskSøknad)),
                     type = BrukernotifikasjonProcessor.JOB_TYPE
                 )

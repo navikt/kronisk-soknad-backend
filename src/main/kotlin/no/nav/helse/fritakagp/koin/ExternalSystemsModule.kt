@@ -16,14 +16,7 @@ import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.integration.gcp.BucketStorageImpl
 import no.nav.helse.fritakagp.integration.kafka.BrukernotifikasjonBeskjedKafkaProducer
 import no.nav.helse.fritakagp.integration.kafka.BrukernotifikasjonBeskjedSender
-import no.nav.helse.fritakagp.integration.kafka.KravmeldingKafkaProducer
-import no.nav.helse.fritakagp.integration.kafka.KravmeldingSender
-import no.nav.helse.fritakagp.integration.kafka.SoeknadmeldingKafkaProducer
-import no.nav.helse.fritakagp.integration.kafka.SoeknadmeldingSender
-import no.nav.helse.fritakagp.integration.kafka.StringKafkaProducerFactory
 import no.nav.helse.fritakagp.integration.kafka.brukernotifikasjonKafkaProps
-import no.nav.helse.fritakagp.integration.kafka.kravmeldingKafkaProps
-import no.nav.helse.fritakagp.integration.kafka.soeknadmeldingKafkaProps
 import no.nav.helse.fritakagp.integration.norg.Norg2Client
 import no.nav.helse.fritakagp.integration.oauth2.DefaultOAuth2HttpClient
 import no.nav.helse.fritakagp.integration.oauth2.TokenResolver
@@ -153,24 +146,6 @@ fun Module.externalSystemClients(env: Env, envOauth2: EnvOauth2) {
             env.gcpProjectId
         )
     } bind BucketStorage::class
-
-    single {
-        SoeknadmeldingKafkaProducer(
-            soeknadmeldingKafkaProps(),
-            env.kafkaTopicNameSoeknad,
-            get(),
-            StringKafkaProducerFactory()
-        )
-    } bind SoeknadmeldingSender::class
-
-    single {
-        KravmeldingKafkaProducer(
-            kravmeldingKafkaProps(),
-            env.kafkaTopicNameKrav,
-            get(),
-            StringKafkaProducerFactory()
-        )
-    } bind KravmeldingSender::class
 
     single {
         BrukernotifikasjonBeskjedKafkaProducer(

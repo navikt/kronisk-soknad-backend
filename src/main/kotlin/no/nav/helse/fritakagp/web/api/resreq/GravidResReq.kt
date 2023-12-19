@@ -92,7 +92,7 @@ data class GravidKravRequest(
     val bekreftet: Boolean,
     val kontrollDager: Int?,
     val antallDager: Int,
-    val dokumentasjon: String?
+    val dokumentasjon: String? // TODO: kan slettes(?)
 ) {
     fun validate(aktuelleArbeidsforhold: List<Arbeidsforhold>) {
         validate(this) {

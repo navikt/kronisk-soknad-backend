@@ -63,6 +63,14 @@ data class GravidKrav(
     companion object {
         const val tittel = "Krav om refusjon av arbeidsgiverperioden - graviditet"
     }
+
+    fun isDuplicate(krav: GravidKrav): Boolean {
+        return identitetsnummer == krav.identitetsnummer &&
+            virksomhetsnummer == krav.virksomhetsnummer &&
+            perioder == krav.perioder &&
+            kontrollDager == krav.kontrollDager &&
+            antallDager == krav.antallDager
+    }
 }
 
 enum class KravStatus {

@@ -182,6 +182,10 @@ fun Route.gravidRoutes(
                 val kravTilOppdatering = request.toDomain(innloggetFnr, sendtAvNavn, navn)
                 belopBeregning.beregnBeløpGravid(kravTilOppdatering)
 
+                if (kravTilSletting.isDuplicate(kravTilOppdatering)) {
+                    return@patch call.respond(HttpStatusCode.Conflict)
+                }
+
                 kravTilSletting.status = KravStatus.ENDRET
                 kravTilSletting.slettetAv = innloggetFnr
                 kravTilSletting.slettetAvNavn = sendtAvNavn

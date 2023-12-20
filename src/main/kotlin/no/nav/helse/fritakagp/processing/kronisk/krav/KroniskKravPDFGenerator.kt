@@ -32,7 +32,7 @@ class KroniskKravPDFGenerator {
         return content
     }
 
-    fun leggTilKrav(doc: PDDocument, krav: KroniskKrav, tittel: String){
+    fun leggTilKrav(doc: PDDocument, krav: KroniskKrav, tittel: String) {
         val font = PDType0Font.load(doc, this::class.java.classLoader.getResource(FONT_NAME).openStream())
         var content = lagNySide(doc, font)
         content.setFont(font, FONT_SIZE + 4)
@@ -87,7 +87,7 @@ class KroniskKravPDFGenerator {
         val doc = PDDocument()
         leggTilKrav(doc, oppdatertKrav, "Endring ${KroniskKrav.tittel}")
 
-        //TODO: nytt navn på tittel
+        // TODO: nytt navn på tittel
         leggTilKrav(doc, endretKrav, "Tidligere ${KroniskKrav.tittel}")
         val out = ByteArrayOutputStream()
         doc.save(out)

@@ -224,8 +224,6 @@ fun Route.kroniskRoutes(
                 endretKrav.endretDato = LocalDateTime.now()
                 endretKrav.endretTilId = kravTilOppdatering.id
 
-
-
                 // Sletter gammelt krav
                 logger.info("KKPa: Slett sak om gammelt krav i arbeidsgivernotifikasjon.")
                 endretKrav.arbeidsgiverSakId?.let {

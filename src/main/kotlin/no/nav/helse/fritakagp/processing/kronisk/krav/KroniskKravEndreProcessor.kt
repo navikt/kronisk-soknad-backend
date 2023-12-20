@@ -60,7 +60,7 @@ class KroniskKravEndreProcessor(
         }
     }
 
-    private fun getOrThrow(jobb: Bakgrunnsjobb): Pair<KroniskKrav,KroniskKrav> {
+    private fun getOrThrow(jobb: Bakgrunnsjobb): Pair<KroniskKrav, KroniskKrav> {
         val jobbData = om.readValue<KroniskKravProcessor.JobbData>(jobb.data)
         val endretKrav = kroniskKravRepo.getById(jobbData.id)
         requireNotNull(endretKrav) { "Jobben indikerte et endret krav med id ${jobb.data} men den kunne ikke finnes" }
@@ -110,7 +110,7 @@ class KroniskKravEndreProcessor(
         journalfoeringsTittel: String
     ): List<Dokument> {
         val base64EnkodetPdf = Base64.getEncoder().encodeToString(pdfGenerator.lagEndringPdf(oppdatertKrav, endretKrav))
-        val jsonOrginalDokument = Base64.getEncoder().encodeToString(om.writeValueAsBytes(listOf(endretKrav,oppdatertKrav)))
+        val jsonOrginalDokument = Base64.getEncoder().encodeToString(om.writeValueAsBytes(listOf(endretKrav, oppdatertKrav)))
         val dokumentListe = mutableListOf(
             Dokument(
                 dokumentVarianter = listOf(

@@ -100,6 +100,18 @@ fun generereSlettKroniskKravBeskrivelse(krav: KroniskKrav, desc: String): String
     }
 }
 
+fun generereEndretKroniskKravBeskrivelse(krav: KroniskKrav, desc: String): String {
+    return buildString {
+        appendLine(desc)
+        appendLine("Endret krav mottatt: ${TIMESTAMP_FORMAT.format(krav.opprettet)}")
+        appendLine("Endret krav med JournalpostId: ${krav.journalpostId}")
+        appendLine("Person (FNR): ${krav.identitetsnummer}")
+        appendLine("Arbeidsgiver oppgitt i krav: ${krav.virksomhetsnavn} (${krav.virksomhetsnummer})")
+        appendLine("Periode:")
+        appendLine(genererePeriodeTable(krav.perioder))
+    }
+}
+
 fun generereGravidkKravBeskrivelse(krav: GravidKrav, desc: String): String {
     return buildString {
         appendLine(desc)
@@ -131,8 +143,8 @@ fun genererePeriodeTable(perioder: List<Arbeidsgiverperiode>): String {
         for (p in perioder.sortedBy { it.fom }) {
             val gradering = (p.gradering * 100).toString() + "%"
             row(
-                p.fom.atStartOfDay(),
-                p.tom.atStartOfDay(),
+                p.fom,
+                p.tom,
                 gradering,
                 p.antallDagerMedRefusjon,
                 p.månedsinntekt.roundToInt().toString(),

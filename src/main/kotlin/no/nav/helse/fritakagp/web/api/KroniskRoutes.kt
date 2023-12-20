@@ -26,6 +26,7 @@ import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
 import no.nav.helse.fritakagp.processing.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonProcessor
+import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravEndreProcessor
 import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravKvitteringProcessor
 import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravProcessor
 import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravSlettProcessor
@@ -206,40 +207,44 @@ fun Route.kroniskRoutes(
                 val kravId = UUID.fromString(call.parameters["id"])
 
                 logger.info("KKPa: Hent gammelt krav fra db.")
-                val kravTilSletting = kroniskKravRepo.getById(kravId)
+                val endretKrav = kroniskKravRepo.getById(kravId)
                     ?: return@patch call.respond(HttpStatusCode.NotFound)
 
-                if (kravTilSletting.virksomhetsnummer != request.virksomhetsnummer) {
+                if (endretKrav.virksomhetsnummer != request.virksomhetsnummer) {
                     return@patch call.respond(HttpStatusCode.Forbidden)
                 }
 
                 val kravTilOppdatering = request.toDomain(innloggetFnr, sendtAvNavn, navn)
                 belopBeregning.beregnBeløpKronisk(kravTilOppdatering)
+                kravTilOppdatering.status = KravStatus.OPPDATERT
 
-                kravTilSletting.status = KravStatus.ENDRET
-                kravTilSletting.slettetAv = innloggetFnr
-                kravTilSletting.slettetAvNavn = sendtAvNavn
-                kravTilSletting.endretDato = LocalDateTime.now()
+                endretKrav.status = KravStatus.ENDRET
+                endretKrav.slettetAv = innloggetFnr
+                endretKrav.slettetAvNavn = sendtAvNavn
+                endretKrav.endretDato = LocalDateTime.now()
+                endretKrav.endretTilId = kravTilOppdatering.id
+
+
 
                 // Sletter gammelt krav
                 logger.info("KKPa: Slett sak om gammelt krav i arbeidsgivernotifikasjon.")
-                kravTilSletting.arbeidsgiverSakId?.let {
+                endretKrav.arbeidsgiverSakId?.let {
                     runBlocking { arbeidsgiverNotifikasjonKlient.hardDeleteSak(it) }
                 }
 
                 logger.info("KKPa: Oppdater gammelt krav til slettet i db.")
-                kroniskKravRepo.update(kravTilSletting)
-                bakgunnsjobbService.opprettJobb<KroniskKravSlettProcessor>(
+                kroniskKravRepo.update(endretKrav)
+               /* bakgunnsjobbService.opprettJobb<KroniskKravSlettProcessor>(
                     maksAntallForsoek = 10,
                     data = om.writeValueAsString(KroniskKravProcessor.JobbData(kravTilSletting.id))
-                )
+                )*/
 
                 // Oppretter nytt krav
                 logger.info("KKPa: Legg til nytt krav i db.")
                 kroniskKravRepo.insert(kravTilOppdatering)
-                bakgunnsjobbService.opprettJobb<KroniskKravProcessor>(
+                bakgunnsjobbService.opprettJobb<KroniskKravEndreProcessor>(
                     maksAntallForsoek = 10,
-                    data = om.writeValueAsString(KroniskKravProcessor.JobbData(kravTilOppdatering.id))
+                    data = om.writeValueAsString(KroniskKravProcessor.JobbData(endretKrav.id))
                 )
                 bakgunnsjobbService.opprettJobb<KroniskKravKvitteringProcessor>(
                     maksAntallForsoek = 10,

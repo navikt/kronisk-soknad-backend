@@ -67,6 +67,7 @@ data class GravidKrav(
 
 enum class KravStatus {
     OPPRETTET,
+    OPPDATERT,
     ENDRET,
     SLETTET
 }

@@ -1,0 +1,211 @@
+package no.nav.helse.fritakagp.processing.kronisk.krav
+
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
+import kotlinx.coroutines.runBlocking
+import no.nav.helse.arbeidsgiver.bakgrunnsjobb2.Bakgrunnsjobb
+import no.nav.helse.arbeidsgiver.bakgrunnsjobb2.BakgrunnsjobbProsesserer
+import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.OPPGAVETYPE_FORDELINGSOPPGAVE
+import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.OppgaveKlient
+import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.OpprettOppgaveRequest
+import no.nav.helse.fritakagp.db.KroniskKravRepository
+import no.nav.helse.fritakagp.domain.KroniskKrav
+import no.nav.helse.fritakagp.domain.generereEndretKroniskKravBeskrivelse
+import no.nav.helse.fritakagp.domain.generereKroniskKravBeskrivelse
+import no.nav.helse.fritakagp.integration.gcp.BucketStorage
+import no.nav.helse.fritakagp.service.PdlService
+import no.nav.helsearbeidsgiver.dokarkiv.DokArkivClient
+import no.nav.helsearbeidsgiver.dokarkiv.domene.Avsender
+import no.nav.helsearbeidsgiver.dokarkiv.domene.Dokument
+import no.nav.helsearbeidsgiver.dokarkiv.domene.DokumentVariant
+import no.nav.helsearbeidsgiver.dokarkiv.domene.GjelderPerson
+import no.nav.helsearbeidsgiver.utils.log.logger
+import java.time.LocalDate
+import java.util.Base64
+import java.util.UUID
+
+class KroniskKravEndreProcessor(
+    private val kroniskKravRepo: KroniskKravRepository,
+    private val dokarkivKlient: DokArkivClient,
+    private val oppgaveKlient: OppgaveKlient,
+    private val pdlService: PdlService,
+    private val pdfGenerator: KroniskKravPDFGenerator,
+    private val om: ObjectMapper,
+    private val bucketStorage: BucketStorage
+) : BakgrunnsjobbProsesserer {
+    companion object {
+        val JOB_TYPE = "endre-kronisk-krav"
+        val dokumentasjonBrevkode = "endre_krav_om_fritak_fra_agp_dokumentasjon"
+    }
+
+    override val type: String get() = JOB_TYPE
+
+    val digitalKravBehandingsType = "ae0121"
+    val fritakAGPBehandingsTema = "ab0200"
+
+    private val logger = this.logger()
+
+    /**
+     * Prosesserer endring av kroniskkrav; journalfører og oppretter en oppgave for saksbehandler.
+     * Jobbdataene forventes å være en UUID for et krav som skal prosesseres.
+     */
+    override fun prosesser(jobb: Bakgrunnsjobb) {
+        val (endretKrav, oppdatertKrav) = getOrThrow(jobb)
+        logger.info("Endrer krav ${endretKrav.id} til ${oppdatertKrav.id}")
+        try {
+            oppdatertKrav.journalpostId = journalførOppdatering(oppdatertKrav, endretKrav)
+            oppdatertKrav.oppgaveId = opprettOppgave(oppdatertKrav, endretKrav)
+        } finally {
+            updateAndLogOnFailure(oppdatertKrav)
+        }
+    }
+
+    private fun getOrThrow(jobb: Bakgrunnsjobb): Pair<KroniskKrav,KroniskKrav> {
+        val jobbData = om.readValue<KroniskKravProcessor.JobbData>(jobb.data)
+        val endretKrav = kroniskKravRepo.getById(jobbData.id)
+        requireNotNull(endretKrav) { "Jobben indikerte et endret krav med id ${jobb.data} men den kunne ikke finnes" }
+        val oppdatertId = endretKrav.endretTilId
+        requireNotNull(oppdatertId) { "Jobben indikerte et oppdatert krav men mangler id" }
+        val oppdatertKrav = kroniskKravRepo.getById(oppdatertId)
+        requireNotNull(oppdatertKrav) { "Jobben indikerte et oppdatert krav med id $oppdatertId men den kunne ikke finnes" }
+        return endretKrav to oppdatertKrav
+    }
+
+    override fun stoppet(jobb: Bakgrunnsjobb) {
+        val (endretKrav, oppdatertKrav) = getOrThrow(jobb)
+
+        val oppgaveId = opprettFordelingsOppgave(oppdatertKrav, endretKrav)
+        logger.warn("Jobben ${jobb.uuid} feilet permanenet og resulterte i fordelignsoppgave $oppgaveId")
+    }
+
+    private fun updateAndLogOnFailure(krav: KroniskKrav) {
+        try {
+            kroniskKravRepo.update(krav)
+        } catch (e: Exception) {
+            throw RuntimeException("Feilet i å oppdatere slettet krav ${krav.id} etter at en ekstern operasjon har blitt utført. JournalpostID: ${krav.journalpostId} OppgaveID: ${krav.oppgaveId}", e)
+        }
+    }
+
+    fun journalførOppdatering(oppdatertKrav: KroniskKrav, endretKrav: KroniskKrav): String {
+        val journalfoeringsTittel = "Endring ${KroniskKrav.tittel}"
+        val id = runBlocking {
+            val journalpostId = dokarkivKlient.opprettOgFerdigstillJournalpost(
+                tittel = journalfoeringsTittel,
+                gjelderPerson = GjelderPerson(oppdatertKrav.identitetsnummer),
+                avsender = Avsender.Organisasjon(oppdatertKrav.virksomhetsnummer, oppdatertKrav.virksomhetsnavn ?: "Ukjent arbeidsgiver"),
+                datoMottatt = oppdatertKrav.opprettet.toLocalDate(),
+                dokumenter = createDocuments(oppdatertKrav, endretKrav, journalfoeringsTittel),
+                eksternReferanseId = "${oppdatertKrav.id}-endring",
+                callId = UUID.randomUUID().toString()
+            )
+            logger.debug("Journalført ${oppdatertKrav.id} med ref $journalpostId")
+            return@runBlocking journalpostId.journalpostId
+        }
+        return id
+    }
+
+    private fun createDocuments(
+        oppdatertKrav: KroniskKrav,
+        endretKrav: KroniskKrav,
+        journalfoeringsTittel: String
+    ): List<Dokument> {
+        val base64EnkodetPdf = Base64.getEncoder().encodeToString(pdfGenerator.lagEndringPdf(oppdatertKrav, endretKrav))
+        val jsonOrginalDokument = Base64.getEncoder().encodeToString(om.writeValueAsBytes(listOf(endretKrav,oppdatertKrav)))
+        val dokumentListe = mutableListOf(
+            Dokument(
+                dokumentVarianter = listOf(
+                    DokumentVariant(
+                        fysiskDokument = base64EnkodetPdf,
+                        filtype = "PDF",
+                        variantFormat = "ARKIV",
+                        filnavn = null
+                    ),
+                    DokumentVariant(
+                        filtype = "JSON",
+                        fysiskDokument = jsonOrginalDokument,
+                        variantFormat = "ORIGINAL",
+                        filnavn = null
+                    )
+                ),
+                brevkode = dokumentasjonBrevkode,
+                tittel = journalfoeringsTittel
+            )
+        )
+
+        bucketStorage.getDocAsString(endretKrav.id)?.let {
+            dokumentListe.add(
+                Dokument(
+                    dokumentVarianter = listOf(
+                        DokumentVariant(
+                            fysiskDokument = it.base64Data,
+                            filtype = it.extension.uppercase(),
+                            variantFormat = "ARKIV",
+                            filnavn = null
+                        ),
+                        DokumentVariant(
+                            filtype = "JSON",
+                            fysiskDokument = jsonOrginalDokument,
+                            variantFormat = "ORIGINAL",
+                            filnavn = null
+                        )
+                    ),
+                    brevkode = KroniskKravProcessor.dokumentasjonBrevkode,
+                    tittel = "Helsedokumentasjon"
+                )
+            )
+        }
+
+        return dokumentListe
+    }
+
+    fun opprettOppgave(oppdatertKrav: KroniskKrav, endretKrav: KroniskKrav): String {
+        val aktoerId = pdlService.hentAktoerId(oppdatertKrav.identitetsnummer)
+        requireNotNull(aktoerId) { "Fant ikke AktørID for fnr i ${oppdatertKrav.id}" }
+        logger.info("Fant aktørid")
+
+        val beskrivelse: String =
+            buildString {
+                append(generereKroniskKravBeskrivelse(oppdatertKrav, "Endret: ${KroniskKrav.tittel}"))
+                append(generereEndretKroniskKravBeskrivelse(endretKrav, "Tidligere: ${KroniskKrav.tittel}"))
+            }
+        val request = OpprettOppgaveRequest(
+            aktoerId = aktoerId,
+            journalpostId = oppdatertKrav.journalpostId,
+            beskrivelse = beskrivelse,
+            tema = "SYK",
+            behandlingstype = digitalKravBehandingsType,
+            oppgavetype = "BEH_REF",
+            behandlingstema = fritakAGPBehandingsTema,
+            aktivDato = LocalDate.now(),
+            fristFerdigstillelse = LocalDate.now().plusDays(7),
+            prioritet = "NORM"
+        )
+
+        return runBlocking { oppgaveKlient.opprettOppgave(request, UUID.randomUUID().toString()).id.toString() }
+    }
+
+    fun opprettFordelingsOppgave(oppdatertKrav: KroniskKrav, endretKrav: KroniskKrav): String {
+        val aktoerId = pdlService.hentAktoerId(oppdatertKrav.identitetsnummer)
+        requireNotNull(aktoerId) { "Fant ikke AktørID for fnr i ${oppdatertKrav.id}" }
+        val beskrivelse: String =
+            buildString {
+                append(generereKroniskKravBeskrivelse(oppdatertKrav, "Fordelingsoppgave for Endret: ${KroniskKrav.tittel}"))
+                append(generereEndretKroniskKravBeskrivelse(endretKrav, "Tidligere: ${KroniskKrav.tittel}"))
+            }
+
+        val request = OpprettOppgaveRequest(
+            aktoerId = aktoerId,
+            journalpostId = oppdatertKrav.journalpostId,
+            beskrivelse = beskrivelse,
+            tema = "SYK",
+            behandlingstype = digitalKravBehandingsType,
+            oppgavetype = OPPGAVETYPE_FORDELINGSOPPGAVE,
+            behandlingstema = fritakAGPBehandingsTema,
+            aktivDato = LocalDate.now(),
+            fristFerdigstillelse = LocalDate.now().plusDays(7),
+            prioritet = "NORM"
+        )
+
+        return runBlocking { oppgaveKlient.opprettOppgave(request, UUID.randomUUID().toString()).id.toString() }
+    }
+}

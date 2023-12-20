@@ -40,6 +40,7 @@ import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadKvitteringS
 import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadPDFGenerator
 import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadProcessor
 import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravAltinnKvitteringSender
+import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravEndreProcessor
 import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravKvitteringProcessor
 import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravKvitteringSender
 import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravPDFGenerator
@@ -86,6 +87,7 @@ fun preprodConfig(env: Env.Preprod): Module = module {
     single { KroniskSoeknadProcessor(get(), get(), get(), get(), get(), KroniskSoeknadPDFGenerator(), get(), get(), get()) }
     single { KroniskKravProcessor(get(), get(), get(), get(), get(), KroniskKravPDFGenerator(), get(), get(), get(), get()) }
     single { KroniskKravSlettProcessor(get(), get(), get(), get(), KroniskKravPDFGenerator(), get(), get()) }
+    single { KroniskKravEndreProcessor(get(), get(), get(), get(), KroniskKravPDFGenerator(), get(), get()) }
     single { OpprettRobotOppgaveGravidProcessor(get(), get(), get(), get(), get()) }
 
     single { Clients.iCorrespondenceExternalBasic(env.altinnMeldingUrl) }

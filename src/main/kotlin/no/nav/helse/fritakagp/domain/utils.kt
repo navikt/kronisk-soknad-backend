@@ -143,8 +143,8 @@ fun genererePeriodeTable(perioder: List<Arbeidsgiverperiode>): String {
         for (p in perioder.sortedBy { it.fom }) {
             val gradering = (p.gradering * 100).toString() + "%"
             row(
-                p.fom,
-                p.tom,
+                DATE_FORMAT.format(p.fom),
+                DATE_FORMAT.format(p.tom),
                 gradering,
                 p.antallDagerMedRefusjon,
                 p.månedsinntekt.roundToInt().toString(),

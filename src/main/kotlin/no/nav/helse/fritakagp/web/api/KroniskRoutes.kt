@@ -230,15 +230,11 @@ fun Route.kroniskRoutes(
                     runBlocking { arbeidsgiverNotifikasjonKlient.hardDeleteSak(it) }
                 }
 
-                logger.info("KKPa: Oppdater gammelt krav til slettet i db.")
+                logger.info("KKPa: Oppdater gammelt krav til status: ${KravStatus.ENDRET} i db.")
                 kroniskKravRepo.update(endretKrav)
-               /* bakgunnsjobbService.opprettJobb<KroniskKravSlettProcessor>(
-                    maksAntallForsoek = 10,
-                    data = om.writeValueAsString(KroniskKravProcessor.JobbData(kravTilSletting.id))
-                )*/
 
                 // Oppretter nytt krav
-                logger.info("KKPa: Legg til nytt krav i db.")
+                logger.info("KKPa: Legg til nytt krav i db med status: ${KravStatus.OPPDATERT}.")
                 kroniskKravRepo.insert(kravTilOppdatering)
                 bakgunnsjobbService.opprettJobb<KroniskKravEndreProcessor>(
                     maksAntallForsoek = 10,

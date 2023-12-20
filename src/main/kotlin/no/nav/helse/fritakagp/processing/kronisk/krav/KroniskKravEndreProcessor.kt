@@ -53,6 +53,9 @@ class KroniskKravEndreProcessor(
         val (endretKrav, oppdatertKrav) = getOrThrow(jobb)
         logger.info("Endrer krav ${endretKrav.id} til ${oppdatertKrav.id}")
         try {
+            if (oppdatertKrav.virksomhetsnavn == null) {
+                oppdatertKrav.virksomhetsnavn = endretKrav.virksomhetsnavn
+            }
             oppdatertKrav.journalpostId = journalførOppdatering(oppdatertKrav, endretKrav)
             oppdatertKrav.oppgaveId = opprettOppgave(oppdatertKrav, endretKrav)
         } finally {

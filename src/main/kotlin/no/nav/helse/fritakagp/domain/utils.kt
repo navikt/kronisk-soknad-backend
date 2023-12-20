@@ -107,6 +107,7 @@ fun generereEndretKroniskKravBeskrivelse(krav: KroniskKrav, desc: String): Strin
         appendLine("Endret krav med JournalpostId: ${krav.journalpostId}")
         appendLine("Person (FNR): ${krav.identitetsnummer}")
         appendLine("Arbeidsgiver oppgitt i krav: ${krav.virksomhetsnavn} (${krav.virksomhetsnummer})")
+        appendLine("Antall lønnsdager: ${krav.antallDager}")
         appendLine("Periode:")
         appendLine(genererePeriodeTable(krav.perioder))
     }

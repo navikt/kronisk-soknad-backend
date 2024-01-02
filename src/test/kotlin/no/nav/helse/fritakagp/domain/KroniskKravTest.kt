@@ -29,7 +29,7 @@ class KroniskKravTest {
     }
 
     @Test
-    fun `Duplikatsjekk - forskjellige perioder i identititetsnummer gir ingen duplikat-treff`() {
+    fun `Duplikatsjekk - forskjellige arbeidsgiverperioder gir ingen duplikat-treff`() {
         val agp1 = Arbeidsgiverperiode(LocalDate.of(2020, 1, 1), LocalDate.of(2020, 1, 16), 10, 1000.0, 1.0)
         val endretFraDato = agp1.copy(fom = agp1.fom.plusDays(1))
         val endretTilDato = agp1.copy(tom = agp1.tom.plusDays(1))
@@ -39,7 +39,9 @@ class KroniskKravTest {
         val perioder = listOf(agp1, endretFraDato, endretTilDato, endretRefusjon, endretInntekt, endretGradering)
 
         perioder.allPairs().forEach {
-            assertFalse(it.first.equals(it.second))
+            val krav1 = KroniskTestData.kroniskKrav.copy(perioder = listOf(it.first))
+            val krav2 = KroniskTestData.kroniskKrav.copy(perioder = listOf(it.second))
+            assertFalse(krav1.isDuplicate(krav2))
         }
     }
 

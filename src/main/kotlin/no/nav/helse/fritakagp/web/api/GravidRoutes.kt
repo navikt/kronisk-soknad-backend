@@ -27,6 +27,7 @@ import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
 import no.nav.helse.fritakagp.processing.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonProcessor
+import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravEndreProcessor
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravKvitteringProcessor
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravProcessor
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravSlettProcessor
@@ -172,43 +173,37 @@ fun Route.gravidRoutes(
                 request.validate(arbeidsforhold)
 
                 val kravId = UUID.fromString(call.parameters["id"])
-                val kravTilSletting = gravidKravRepo.getById(kravId)
+                val endretKrav = gravidKravRepo.getById(kravId)
                     ?: return@patch call.respond(HttpStatusCode.NotFound)
 
-                if (kravTilSletting.virksomhetsnummer != request.virksomhetsnummer) {
+                if (endretKrav.virksomhetsnummer != request.virksomhetsnummer) {
                     return@patch call.respond(HttpStatusCode.Forbidden)
                 }
 
                 val kravTilOppdatering = request.toDomain(innloggetFnr, sendtAvNavn, navn)
                 belopBeregning.beregnBeløpGravid(kravTilOppdatering)
 
-                if (kravTilSletting.isDuplicate(kravTilOppdatering)) {
+                if (endretKrav.isDuplicate(kravTilOppdatering)) {
                     return@patch call.respond(HttpStatusCode.Conflict)
                 }
 
-                kravTilSletting.status = KravStatus.ENDRET
-                kravTilSletting.slettetAv = innloggetFnr
-                kravTilSletting.slettetAvNavn = sendtAvNavn
-                kravTilSletting.endretDato = LocalDateTime.now()
+                endretKrav.status = KravStatus.ENDRET
+                endretKrav.slettetAv = innloggetFnr
+                endretKrav.slettetAvNavn = sendtAvNavn
+                endretKrav.endretDato = LocalDateTime.now()
+                endretKrav.endretTilId = kravTilOppdatering.id
 
                 // Sletter gammelt krav
-                kravTilSletting.arbeidsgiverSakId?.let {
+                endretKrav.arbeidsgiverSakId?.let {
                     runBlocking { arbeidsgiverNotifikasjonKlient.hardDeleteSak(it) }
                 }
 
-                gravidKravRepo.update(kravTilSletting)
-                // TODO: Fjern
-                bakgunnsjobbService.opprettJobb<GravidKravSlettProcessor>(
-                    maksAntallForsoek = 10,
-                    data = om.writeValueAsString(GravidKravProcessor.JobbData(kravTilSletting.id))
-                )
-
+                gravidKravRepo.update(endretKrav)
                 // Oppretter nytt krav
                 gravidKravRepo.insert(kravTilOppdatering)
-                // TODO: Endre til ny type jobb
-                bakgunnsjobbService.opprettJobb<GravidKravProcessor>(
+                bakgunnsjobbService.opprettJobb<GravidKravEndreProcessor>(
                     maksAntallForsoek = 10,
-                    data = om.writeValueAsString(GravidKravProcessor.JobbData(kravTilOppdatering.id))
+                    data = om.writeValueAsString(GravidKravProcessor.JobbData(endretKrav.id))
                 )
                 bakgunnsjobbService.opprettJobb<GravidKravKvitteringProcessor>(
                     maksAntallForsoek = 10,

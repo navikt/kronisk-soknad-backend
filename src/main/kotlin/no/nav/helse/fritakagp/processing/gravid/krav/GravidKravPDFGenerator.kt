@@ -34,10 +34,29 @@ class GravidKravPDFGenerator {
 
     fun lagPDF(krav: GravidKrav): ByteArray {
         val doc = PDDocument()
+        leggTilKrav(doc, krav, GravidKrav.tittel)
+        val out = ByteArrayOutputStream()
+        doc.save(out)
+        val ba = out.toByteArray()
+        doc.close()
+        return ba
+    }
+
+    fun lagEndringPdf(oppdatertKrav: GravidKrav, endretKrav: GravidKrav): ByteArray {
+        val doc = PDDocument()
+        leggTilKrav(doc, oppdatertKrav, "Endring ${GravidKrav.tittel}")
+        leggTilKrav(doc, endretKrav, "Tidligere ${GravidKrav.tittel}")
+        val out = ByteArrayOutputStream()
+        doc.save(out)
+        val ba = out.toByteArray()
+        doc.close()
+        return ba
+    }
+    fun leggTilKrav(doc: PDDocument, krav: GravidKrav, tittel: String) {
         val font = PDType0Font.load(doc, this::class.java.classLoader.getResource(FONT_NAME).openStream())
         var content = lagNySide(doc, font)
         content.setFont(font, FONT_SIZE + 4)
-        content.showText(GravidKrav.tittel)
+        content.showText(tittel)
         content.setFont(font, FONT_SIZE)
 
         content.writeTextWrapped("Mottatt: ${krav.opprettet.format(TIMESTAMP_FORMAT)}", 4)
@@ -73,13 +92,7 @@ class GravidKravPDFGenerator {
 
         content.endText()
         content.close()
-        val out = ByteArrayOutputStream()
-        doc.save(out)
-        val ba = out.toByteArray()
-        doc.close()
-        return ba
     }
-
     fun lagSlettingPDF(krav: GravidKrav): ByteArray {
         val doc = PDDocument()
         val font = PDType0Font.load(doc, this::class.java.classLoader.getResource(FONT_NAME).openStream())

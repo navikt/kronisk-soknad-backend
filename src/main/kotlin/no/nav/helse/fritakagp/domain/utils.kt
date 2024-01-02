@@ -113,7 +113,19 @@ fun generereEndretKroniskKravBeskrivelse(krav: KroniskKrav, desc: String): Strin
     }
 }
 
-fun generereGravidkKravBeskrivelse(krav: GravidKrav, desc: String): String {
+fun generereEndretGravidKravBeskrivelse(krav: GravidKrav, desc: String): String {
+    return buildString {
+        appendLine(desc)
+        appendLine("Endret krav mottatt: ${TIMESTAMP_FORMAT.format(krav.opprettet)}")
+        appendLine("Referansenummer: ${krav.referansenummer}")
+        appendLine("Person (FNR): ${krav.identitetsnummer}")
+        appendLine("Arbeidsgiver oppgitt i krav: ${krav.virksomhetsnavn} (${krav.virksomhetsnummer})")
+        appendLine("Antall lønnsdager: ${krav.antallDager}")
+        appendLine("Periode:")
+        appendLine(genererePeriodeTable(krav.perioder))
+    }
+}
+fun generereGravidKravBeskrivelse(krav: GravidKrav, desc: String): String {
     return buildString {
         appendLine(desc)
         appendLine("Mottatt: ${krav.opprettet.format(TIMESTAMP_FORMAT)}")

@@ -5,18 +5,14 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import kotlinx.coroutines.runBlocking
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb2.Bakgrunnsjobb
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb2.BakgrunnsjobbProsesserer
-import no.nav.helse.arbeidsgiver.bakgrunnsjobb2.BakgrunnsjobbRepository
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.OPPGAVETYPE_FORDELINGSOPPGAVE
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.OppgaveKlient
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.OpprettOppgaveRequest
-import no.nav.helse.fritakagp.GravidKravMetrics
 import no.nav.helse.fritakagp.db.GravidKravRepository
 import no.nav.helse.fritakagp.domain.GravidKrav
+import no.nav.helse.fritakagp.domain.generereEndretGravidKravBeskrivelse
 import no.nav.helse.fritakagp.domain.generereGravidKravBeskrivelse
-import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
-import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
-import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor.Jobbdata.SkjemaType
 import no.nav.helse.fritakagp.service.PdlService
 import no.nav.helsearbeidsgiver.dokarkiv.DokArkivClient
 import no.nav.helsearbeidsgiver.dokarkiv.domene.Avsender
@@ -28,22 +24,18 @@ import java.time.LocalDate
 import java.util.Base64
 import java.util.UUID
 
-class GravidKravProcessor(
+class GravidKravEndreProcessor(
     private val gravidKravRepo: GravidKravRepository,
     private val dokarkivKlient: DokArkivClient,
     private val oppgaveKlient: OppgaveKlient,
     private val pdlService: PdlService,
-    private val bakgrunnsjobbRepo: BakgrunnsjobbRepository,
     private val pdfGenerator: GravidKravPDFGenerator,
     private val om: ObjectMapper,
-    private val bucketStorage: BucketStorage,
-    private val brregClient: BrregClient
-
+    private val bucketStorage: BucketStorage
 ) : BakgrunnsjobbProsesserer {
     companion object {
-        val JOB_TYPE = "gravid-krav-formidling"
-        val brevkode = "krav_om_fritak_fra_agp_gravid"
-        val dokumentasjonBrevkode = "krav_om_fritak_fra_agp_dokumentasjon"
+        val JOB_TYPE = "endre-gravid-krav"
+        val dokumentasjonBrevkode = "endre_krav_om_fritak_fra_agp_dokumentasjon"
     }
 
     override val type: String get() = JOB_TYPE
@@ -54,54 +46,38 @@ class GravidKravProcessor(
     private val logger = this.logger()
 
     /**
-     * Prosesserer et gravidkrav; journalfører kravet og oppretter en oppgave for saksbehandler.
+     * Prosesserer endring av gravidkrav; journalfører og oppretter en oppgave for saksbehandler.
      * Jobbdataene forventes å være en UUID for et krav som skal prosesseres.
      */
     override fun prosesser(jobb: Bakgrunnsjobb) {
-        val krav = getOrThrow(jobb)
-
+        val (endretKrav, oppdatertKrav) = getOrThrow(jobb)
+        logger.info("Endrer krav ${endretKrav.id} til ${oppdatertKrav.id}")
         try {
-            if (krav.virksomhetsnavn == null) {
-                runBlocking {
-                    krav.virksomhetsnavn = brregClient.getVirksomhetsNavn(krav.virksomhetsnummer)
-                }
+            if (oppdatertKrav.virksomhetsnavn == null) {
+                oppdatertKrav.virksomhetsnavn = endretKrav.virksomhetsnavn
             }
-            if (krav.journalpostId == null) {
-                krav.journalpostId = journalfør(krav)
-                GravidKravMetrics.tellJournalfoert()
-            }
-
-            bucketStorage.deleteDoc(krav.id)
-
-            if (krav.oppgaveId == null) {
-                krav.oppgaveId = opprettOppgave(krav)
-                GravidKravMetrics.tellOppgaveOpprettet()
-            }
-            bakgrunnsjobbRepo.save(
-                Bakgrunnsjobb(
-                    maksAntallForsoek = 10,
-                    data = om.writeValueAsString(BrukernotifikasjonProcessor.Jobbdata(krav.id, SkjemaType.GravidKrav)),
-                    type = BrukernotifikasjonProcessor.JOB_TYPE
-                )
-            )
+            oppdatertKrav.journalpostId = journalførOppdatering(oppdatertKrav, endretKrav)
+            oppdatertKrav.oppgaveId = opprettOppgave(oppdatertKrav, endretKrav)
         } finally {
-            updateAndLogOnFailure(krav)
+            updateAndLogOnFailure(oppdatertKrav)
         }
     }
 
-    private fun getOrThrow(jobb: Bakgrunnsjobb): GravidKrav {
-        val jobbData = om.readValue<JobbData>(jobb.data)
-        val krav = gravidKravRepo.getById(jobbData.id)
-        requireNotNull(krav, { "Jobben indikerte et krav med id ${jobb.data} men den kunne ikke finnes" })
-        return krav
+    private fun getOrThrow(jobb: Bakgrunnsjobb): Pair<GravidKrav, GravidKrav> {
+        val jobbData = om.readValue<GravidKravProcessor.JobbData>(jobb.data)
+        val endretKrav = gravidKravRepo.getById(jobbData.id)
+        requireNotNull(endretKrav) { "Jobben indikerte et endret krav med id ${jobb.data} men den kunne ikke finnes" }
+        val oppdatertId = endretKrav.endretTilId
+        requireNotNull(oppdatertId) { "Jobben indikerte et oppdatert krav men mangler id" }
+        val oppdatertKrav = gravidKravRepo.getById(oppdatertId)
+        requireNotNull(oppdatertKrav) { "Jobben indikerte et oppdatert krav med id $oppdatertId men den kunne ikke finnes" }
+        return endretKrav to oppdatertKrav
     }
 
-    /**
-     * Når vi gir opp, opprette en fordelingsoppgave til saksbehandler
-     */
     override fun stoppet(jobb: Bakgrunnsjobb) {
-        val krav = getOrThrow(jobb)
-        val oppgaveId = opprettFordelingsOppgave(krav)
+        val (endretKrav, oppdatertKrav) = getOrThrow(jobb)
+
+        val oppgaveId = opprettFordelingsOppgave(oppdatertKrav, endretKrav)
         logger.warn("Jobben ${jobb.uuid} feilet permanent og resulterte i fordelingsoppgave $oppgaveId")
     }
 
@@ -109,35 +85,35 @@ class GravidKravProcessor(
         try {
             gravidKravRepo.update(krav)
         } catch (e: Exception) {
-            throw RuntimeException("Feilet i å lagre ${krav.id} etter at en ekstern operasjon har blitt utført. JournalpostID: ${krav.journalpostId} OppgaveID: ${krav.oppgaveId}", e)
+            throw RuntimeException("Feilet i å oppdatere slettet krav ${krav.id} etter at en ekstern operasjon har blitt utført. JournalpostID: ${krav.journalpostId} OppgaveID: ${krav.oppgaveId}", e)
         }
     }
 
-    fun journalfør(krav: GravidKrav): String {
+    fun journalførOppdatering(oppdatertKrav: GravidKrav, endretKrav: GravidKrav): String {
+        val journalfoeringsTittel = "Endring ${GravidKrav.tittel}"
         val id = runBlocking {
             val journalpostId = dokarkivKlient.opprettOgFerdigstillJournalpost(
-                tittel = GravidKrav.tittel,
-                gjelderPerson = GjelderPerson(krav.identitetsnummer),
-                avsender = Avsender.Organisasjon(krav.virksomhetsnummer, krav.virksomhetsnavn ?: "Ukjent arbeidsgiver"),
-                datoMottatt = krav.opprettet.toLocalDate(),
-                dokumenter = createDocuments(krav, GravidKrav.tittel),
-                eksternReferanseId = krav.id.toString(),
+                tittel = journalfoeringsTittel,
+                gjelderPerson = GjelderPerson(oppdatertKrav.identitetsnummer),
+                avsender = Avsender.Organisasjon(oppdatertKrav.virksomhetsnummer, oppdatertKrav.virksomhetsnavn ?: "Ukjent arbeidsgiver"),
+                datoMottatt = oppdatertKrav.opprettet.toLocalDate(),
+                dokumenter = createDocuments(oppdatertKrav, endretKrav, journalfoeringsTittel),
+                eksternReferanseId = "${oppdatertKrav.id}-endring",
                 callId = UUID.randomUUID().toString()
             )
-
-            logger.debug("Journalført ${krav.id} med ref $journalpostId")
+            logger.debug("Journalført ${oppdatertKrav.id} med ref $journalpostId")
             return@runBlocking journalpostId.journalpostId
         }
         return id
     }
 
     private fun createDocuments(
-        krav: GravidKrav,
+        oppdatertKrav: GravidKrav,
+        endretKrav: GravidKrav,
         journalfoeringsTittel: String
     ): List<Dokument> {
-        val base64EnkodetPdf = Base64.getEncoder().encodeToString(pdfGenerator.lagPDF(krav))
-        val jsonOrginalDokument = Base64.getEncoder().encodeToString(om.writeValueAsBytes(krav))
-
+        val base64EnkodetPdf = Base64.getEncoder().encodeToString(pdfGenerator.lagEndringPdf(oppdatertKrav, endretKrav))
+        val jsonOrginalDokument = Base64.getEncoder().encodeToString(om.writeValueAsBytes(listOf(endretKrav, oppdatertKrav)))
         val dokumentListe = mutableListOf(
             Dokument(
                 dokumentVarianter = listOf(
@@ -154,12 +130,12 @@ class GravidKravProcessor(
                         filnavn = null
                     )
                 ),
-                brevkode = brevkode,
+                brevkode = dokumentasjonBrevkode,
                 tittel = journalfoeringsTittel
             )
         )
 
-        bucketStorage.getDocAsString(krav.id)?.let {
+        bucketStorage.getDocAsString(endretKrav.id)?.let {
             dokumentListe.add(
                 Dokument(
                     dokumentVarianter = listOf(
@@ -176,7 +152,7 @@ class GravidKravProcessor(
                             filnavn = null
                         )
                     ),
-                    brevkode = dokumentasjonBrevkode,
+                    brevkode = GravidKravProcessor.dokumentasjonBrevkode,
                     tittel = "Helsedokumentasjon"
                 )
             )
@@ -185,21 +161,25 @@ class GravidKravProcessor(
         return dokumentListe
     }
 
-    fun opprettOppgave(krav: GravidKrav): String {
-        val aktoerId = pdlService.hentAktoerId(krav.identitetsnummer)
-        requireNotNull(aktoerId) { "Fant ikke AktørID for fnr i ${krav.id}" }
-        krav.oppgaveId
-        oppgaveKlient
+    fun opprettOppgave(oppdatertKrav: GravidKrav, endretKrav: GravidKrav): String {
+        val aktoerId = pdlService.hentAktoerId(oppdatertKrav.identitetsnummer)
+        requireNotNull(aktoerId) { "Fant ikke AktørID for fnr i ${oppdatertKrav.id}" }
+        logger.info("Fant aktørid")
 
-        val beskrivelse = om.writeValueAsString(krav.toKravForOppgave())
-        val oppgaveType = "ROB_BEH"
+        val beskrivelse: String =
+            buildString {
+                append(generereGravidKravBeskrivelse(oppdatertKrav, "Endret: ${GravidKrav.tittel}"))
+                appendLine()
+                appendLine()
+                append(generereEndretGravidKravBeskrivelse(endretKrav, "Tidligere: ${GravidKrav.tittel}"))
+            }
         val request = OpprettOppgaveRequest(
             aktoerId = aktoerId,
-            journalpostId = krav.journalpostId,
+            journalpostId = oppdatertKrav.journalpostId,
             beskrivelse = beskrivelse,
             tema = "SYK",
             behandlingstype = digitalKravBehandingsType,
-            oppgavetype = oppgaveType,
+            oppgavetype = "BEH_REF",
             behandlingstema = fritakAGPBehandingsTema,
             aktivDato = LocalDate.now(),
             fristFerdigstillelse = LocalDate.now().plusDays(7),
@@ -209,14 +189,19 @@ class GravidKravProcessor(
         return runBlocking { oppgaveKlient.opprettOppgave(request, UUID.randomUUID().toString()).id.toString() }
     }
 
-    fun opprettFordelingsOppgave(krav: GravidKrav): String {
-        val aktoerId = pdlService.hentAktoerId(krav.identitetsnummer)
-        requireNotNull(aktoerId) { "Fant ikke AktørID for fnr i ${krav.id}" }
+    fun opprettFordelingsOppgave(oppdatertKrav: GravidKrav, endretKrav: GravidKrav): String {
+        val aktoerId = pdlService.hentAktoerId(oppdatertKrav.identitetsnummer)
+        requireNotNull(aktoerId) { "Fant ikke AktørID for fnr i ${oppdatertKrav.id}" }
+        val beskrivelse: String =
+            buildString {
+                append(generereGravidKravBeskrivelse(oppdatertKrav, "Fordelingsoppgave for Endret: ${GravidKrav.tittel}"))
+                append(generereEndretGravidKravBeskrivelse(endretKrav, "Tidligere: ${GravidKrav.tittel}"))
+            }
 
         val request = OpprettOppgaveRequest(
             aktoerId = aktoerId,
-            journalpostId = krav.journalpostId,
-            beskrivelse = generereGravidKravBeskrivelse(krav, "Klarte ikke å opprette oppgave og/eller journalføre for dette refusjonskravet: ${krav.id}"),
+            journalpostId = oppdatertKrav.journalpostId,
+            beskrivelse = beskrivelse,
             tema = "SYK",
             behandlingstype = digitalKravBehandingsType,
             oppgavetype = OPPGAVETYPE_FORDELINGSOPPGAVE,
@@ -228,6 +213,4 @@ class GravidKravProcessor(
 
         return runBlocking { oppgaveKlient.opprettOppgave(request, UUID.randomUUID().toString()).id.toString() }
     }
-
-    data class JobbData(val id: UUID)
 }

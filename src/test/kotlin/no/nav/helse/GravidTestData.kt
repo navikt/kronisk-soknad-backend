@@ -228,6 +228,8 @@ aąbcćdeęfghijlłmnńoóprsśtuwź
         navn = validNavn
     )
 
+    val gravidEndretKrav = gravidKrav.copy(antallDager = 6)
+
     val gravidLangtKrav = GravidKrav(
         sendtAv = validIdentitetsnummer,
         virksomhetsnummer = validOrgNr,

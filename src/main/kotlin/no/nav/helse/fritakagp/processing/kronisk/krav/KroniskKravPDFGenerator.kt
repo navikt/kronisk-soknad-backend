@@ -87,7 +87,6 @@ class KroniskKravPDFGenerator {
         val doc = PDDocument()
         leggTilKrav(doc, oppdatertKrav, "Endring ${KroniskKrav.tittel}")
 
-        // TODO: nytt navn på tittel
         leggTilKrav(doc, endretKrav, "Tidligere ${KroniskKrav.tittel}")
         val out = ByteArrayOutputStream()
         doc.save(out)

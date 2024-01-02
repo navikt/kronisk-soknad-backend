@@ -40,6 +40,21 @@ class OppdaterGravidKravHTTPTests : SystemTestBase() {
     }
 
     @Test
+    internal fun `Oppdaterer ikke når ny request er duplikat`() = suspendableTest {
+        val repo by inject<GravidKravRepository>()
+
+        val krav = repo.insert(GravidTestData.gravidKravRequestValid.toDomain("hohoho", "god", "jul"))
+
+        val response = httpClient.patch {
+            appUrl("$kravGravidUrl/${krav.id}")
+            contentType(ContentType.Application.Json)
+            loggedInAs(GravidTestData.gravidKrav.identitetsnummer)
+            setBody(GravidTestData.gravidKravRequestValid)
+        }
+        assertThat(response.status).isEqualTo(HttpStatusCode.Conflict)
+    }
+
+    @Test
     internal fun `Skal returnere 404 når kravet ikke finnes`() = suspendableTest {
         val response =
             httpClient.patch {

@@ -216,6 +216,9 @@ fun Route.kroniskRoutes(
 
                 val kravTilOppdatering = request.toDomain(innloggetFnr, sendtAvNavn, navn)
                 belopBeregning.beregnBeløpKronisk(kravTilOppdatering)
+                if (endretKrav.isDuplicate(kravTilOppdatering)) {
+                    return@patch call.respond(HttpStatusCode.Conflict)
+                }
                 kravTilOppdatering.status = KravStatus.OPPDATERT
 
                 endretKrav.status = KravStatus.ENDRET

@@ -60,7 +60,7 @@ class GravidKravEndreProcessorTest {
     }
 
     @Test
-    fun `skal journalføre, opprette oppgave og oppdatere søknaden i databasen`() {
+    fun `skal journalføre, opprette oppgave og oppdatere kravet i databasen`() {
         prosessor.prosesser(jobb)
 
         assertThat(oppdatertKrav.journalpostId).isEqualTo(arkivReferanse)

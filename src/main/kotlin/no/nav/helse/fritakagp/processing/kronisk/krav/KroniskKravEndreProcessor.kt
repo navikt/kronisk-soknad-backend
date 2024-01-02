@@ -169,6 +169,8 @@ class KroniskKravEndreProcessor(
         val beskrivelse: String =
             buildString {
                 append(generereKroniskKravBeskrivelse(oppdatertKrav, "Endret: ${KroniskKrav.tittel}"))
+                appendLine()
+                appendLine()
                 append(generereEndretKroniskKravBeskrivelse(endretKrav, "Tidligere: ${KroniskKrav.tittel}"))
             }
         val request = OpprettOppgaveRequest(

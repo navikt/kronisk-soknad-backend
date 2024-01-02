@@ -78,7 +78,7 @@ class KroniskKravEndreProcessor(
         val (endretKrav, oppdatertKrav) = getOrThrow(jobb)
 
         val oppgaveId = opprettFordelingsOppgave(oppdatertKrav, endretKrav)
-        logger.warn("Jobben ${jobb.uuid} feilet permanenet og resulterte i fordelignsoppgave $oppgaveId")
+        logger.warn("Jobben ${jobb.uuid} feilet permanent og resulterte i fordelingsoppgave $oppgaveId")
     }
 
     private fun updateAndLogOnFailure(krav: KroniskKrav) {

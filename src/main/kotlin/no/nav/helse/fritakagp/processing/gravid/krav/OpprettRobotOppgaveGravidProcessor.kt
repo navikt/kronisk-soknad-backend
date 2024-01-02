@@ -55,7 +55,7 @@ class OpprettRobotOppgaveGravidProcessor(
     }
 
     override fun stoppet(jobb: Bakgrunnsjobb) {
-        logger.warn("Jobben ${jobb.uuid} feilet permanenet")
+        logger.warn("Jobben ${jobb.uuid} feilet permanent")
     }
 
     private fun updateAndLogOnFailure(krav: GravidKrav) {

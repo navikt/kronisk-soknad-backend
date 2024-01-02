@@ -60,6 +60,14 @@ data class KroniskKrav(
         )
     }
 
+    fun isDuplicate(krav: KroniskKrav): Boolean {
+        return identitetsnummer == krav.identitetsnummer &&
+            virksomhetsnummer == krav.virksomhetsnummer &&
+            perioder == krav.perioder &&
+            kontrollDager == krav.kontrollDager &&
+            antallDager == krav.antallDager
+    }
+
     companion object {
         const val tittel = "Krav om refusjon av arbeidsgiverperioden - kronisk eller langvarig sykdom"
     }

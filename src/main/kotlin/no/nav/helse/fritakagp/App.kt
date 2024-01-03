@@ -12,12 +12,14 @@ import no.nav.helse.fritakagp.koin.profileModules
 import no.nav.helse.fritakagp.processing.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.arbeidsgivernotifikasjon.ArbeidsgiverOppdaterNotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
+import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravEndreProcessor
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravKvitteringProcessor
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravProcessor
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravSlettProcessor
 import no.nav.helse.fritakagp.processing.gravid.krav.OpprettRobotOppgaveGravidProcessor
 import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadKvitteringProcessor
 import no.nav.helse.fritakagp.processing.gravid.soeknad.GravidSoeknadProcessor
+import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravEndreProcessor
 import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravKvitteringProcessor
 import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravProcessor
 import no.nav.helse.fritakagp.processing.kronisk.krav.KroniskKravSlettProcessor
@@ -91,6 +93,7 @@ class FritakAgpApplication(val port: Int = 8080, val runAsDeamon: Boolean = true
             registrer(get<GravidKravProcessor>())
             registrer(get<GravidKravKvitteringProcessor>())
             registrer(get<GravidKravSlettProcessor>())
+            registrer(get<GravidKravEndreProcessor>())
             registrer(get<OpprettRobotOppgaveGravidProcessor>())
 
             registrer(get<KroniskSoeknadProcessor>())
@@ -99,6 +102,7 @@ class FritakAgpApplication(val port: Int = 8080, val runAsDeamon: Boolean = true
             registrer(get<KroniskKravProcessor>())
             registrer(get<KroniskKravKvitteringProcessor>())
             registrer(get<KroniskKravSlettProcessor>())
+            registrer(get<KroniskKravEndreProcessor>())
             registrer(get<OpprettRobotOppgaveKroniskProcessor>())
 
             registrer(get<BrukernotifikasjonProcessor>())

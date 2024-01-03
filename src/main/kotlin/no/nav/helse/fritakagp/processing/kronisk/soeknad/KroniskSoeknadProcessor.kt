@@ -94,7 +94,7 @@ class KroniskSoeknadProcessor(
     override fun stoppet(jobb: Bakgrunnsjobb) {
         val soeknad = getSoeknadOrThrow(jobb)
         val oppgaveId = opprettFordelingsOppgave(soeknad)
-        logger.warn("Jobben ${jobb.uuid} feilet permanenet og resulterte i fordelignsoppgave $oppgaveId")
+        logger.warn("Jobben ${jobb.uuid} feilet permanent og resulterte i fordelingsoppgave $oppgaveId")
     }
 
     private fun getSoeknadOrThrow(jobb: Bakgrunnsjobb): KroniskSoeknad {

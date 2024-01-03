@@ -100,7 +100,32 @@ fun generereSlettKroniskKravBeskrivelse(krav: KroniskKrav, desc: String): String
     }
 }
 
-fun generereGravidkKravBeskrivelse(krav: GravidKrav, desc: String): String {
+fun generereEndretKroniskKravBeskrivelse(krav: KroniskKrav, desc: String): String {
+    return buildString {
+        appendLine(desc)
+        appendLine("Endret krav mottatt: ${TIMESTAMP_FORMAT.format(krav.opprettet)}")
+        appendLine("Endret krav med JournalpostId: ${krav.journalpostId}")
+        appendLine("Person (FNR): ${krav.identitetsnummer}")
+        appendLine("Arbeidsgiver oppgitt i krav: ${krav.virksomhetsnavn} (${krav.virksomhetsnummer})")
+        appendLine("Antall lønnsdager: ${krav.antallDager}")
+        appendLine("Periode:")
+        appendLine(genererePeriodeTable(krav.perioder))
+    }
+}
+
+fun generereEndretGravidKravBeskrivelse(krav: GravidKrav, desc: String): String {
+    return buildString {
+        appendLine(desc)
+        appendLine("Endret krav mottatt: ${TIMESTAMP_FORMAT.format(krav.opprettet)}")
+        appendLine("Referansenummer: ${krav.referansenummer}")
+        appendLine("Person (FNR): ${krav.identitetsnummer}")
+        appendLine("Arbeidsgiver oppgitt i krav: ${krav.virksomhetsnavn} (${krav.virksomhetsnummer})")
+        appendLine("Antall lønnsdager: ${krav.antallDager}")
+        appendLine("Periode:")
+        appendLine(genererePeriodeTable(krav.perioder))
+    }
+}
+fun generereGravidKravBeskrivelse(krav: GravidKrav, desc: String): String {
     return buildString {
         appendLine(desc)
         appendLine("Mottatt: ${krav.opprettet.format(TIMESTAMP_FORMAT)}")
@@ -131,8 +156,8 @@ fun genererePeriodeTable(perioder: List<Arbeidsgiverperiode>): String {
         for (p in perioder.sortedBy { it.fom }) {
             val gradering = (p.gradering * 100).toString() + "%"
             row(
-                p.fom.atStartOfDay(),
-                p.tom.atStartOfDay(),
+                DATE_FORMAT.format(p.fom),
+                DATE_FORMAT.format(p.tom),
                 gradering,
                 p.antallDagerMedRefusjon,
                 p.månedsinntekt.roundToInt().toString(),

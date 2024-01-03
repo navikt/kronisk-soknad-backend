@@ -57,8 +57,7 @@ class KroniskKravRequestTest {
     }
 
     @Test
-    internal fun `mapping til domenemodell tar med harVedleggflagg`() {
-        Assertions.assertThat(KroniskTestData.kroniskKravRequestMedFil.toDomain(sendtAv, sendtAvNavn, navn).harVedlegg).isTrue
+    internal fun `mapping til domenemodell setter harVedlegg til default false - dokumentasjon er fjernet fra krav`() {
         Assertions.assertThat(KroniskTestData.kroniskKravRequestValid.toDomain(sendtAv, sendtAvNavn, navn).harVedlegg).isFalse
     }
 

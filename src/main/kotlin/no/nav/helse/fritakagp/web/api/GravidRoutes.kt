@@ -137,7 +137,6 @@ fun Route.gravidRoutes(
 
                 val krav = request.toDomain(innloggetFnr, sendtAvNavn, navn)
                 belopBeregning.beregnBeløpGravid(krav)
-                processDocumentForGCPStorage(request.dokumentasjon, virusScanner, bucket, krav.id)
 
                 gravidKravRepo.insert(krav)
                 bakgunnsjobbService.opprettJobb<GravidKravProcessor>(

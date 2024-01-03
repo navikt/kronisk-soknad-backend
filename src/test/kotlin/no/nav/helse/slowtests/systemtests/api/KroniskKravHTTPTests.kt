@@ -92,20 +92,6 @@ class KroniskKravHTTPTests : SystemTestBase() {
     }
 
     @Test
-    fun `Skal returnere Created når fil er vedlagt`() = suspendableTest {
-        val response = httpClient.post {
-            appUrl(kravKroniskUrl)
-            contentType(ContentType.Application.Json)
-            loggedInAs("123456789")
-            setBody(KroniskTestData.kroniskKravRequestMedFil)
-        }
-
-        val krav = response.body<KroniskKrav>()
-        assertThat(response.status).isEqualTo(HttpStatusCode.Created)
-        assertThat(krav.harVedlegg).isEqualTo(true)
-    }
-
-    @Test
     fun `Skal returnere full propertypath for periode`() = suspendableTest {
         val response =
             httpClient.post {

@@ -76,8 +76,7 @@ class GravidKravRequestTest {
     }
 
     @Test
-    internal fun `mapping til domenemodell tar med harVedleggflagg`() {
-        assertThat(GravidTestData.gravidKravRequestMedFil.toDomain(sendtAv, sendtAvNavn, navn).harVedlegg).isTrue
+    internal fun `mapping til domenemodell setter harVedlegg til false - støtte for vedlegg er fjernet fra krav`() {
         assertThat(GravidTestData.gravidKravRequestValid.toDomain(sendtAv, sendtAvNavn, navn).harVedlegg).isFalse
     }
 

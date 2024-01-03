@@ -207,41 +207,41 @@ fun Route.kroniskRoutes(
                 val kravId = UUID.fromString(call.parameters["id"])
 
                 logger.info("KKPa: Hent gammelt krav fra db.")
-                val endretKrav = kroniskKravRepo.getById(kravId)
+                val forrigeKrav = kroniskKravRepo.getById(kravId)
                     ?: return@patch call.respond(HttpStatusCode.NotFound)
 
-                if (endretKrav.virksomhetsnummer != request.virksomhetsnummer) {
+                if (forrigeKrav.virksomhetsnummer != request.virksomhetsnummer) {
                     return@patch call.respond(HttpStatusCode.Forbidden)
                 }
 
                 val kravTilOppdatering = request.toDomain(innloggetFnr, sendtAvNavn, navn)
                 belopBeregning.beregnBeløpKronisk(kravTilOppdatering)
-                if (endretKrav.isDuplicate(kravTilOppdatering)) {
+                if (forrigeKrav.isDuplicate(kravTilOppdatering)) {
                     return@patch call.respond(HttpStatusCode.Conflict)
                 }
                 kravTilOppdatering.status = KravStatus.OPPDATERT
 
-                endretKrav.status = KravStatus.ENDRET
-                endretKrav.slettetAv = innloggetFnr
-                endretKrav.slettetAvNavn = sendtAvNavn
-                endretKrav.endretDato = LocalDateTime.now()
-                endretKrav.endretTilId = kravTilOppdatering.id
+                forrigeKrav.status = KravStatus.ENDRET
+                forrigeKrav.slettetAv = innloggetFnr
+                forrigeKrav.slettetAvNavn = sendtAvNavn
+                forrigeKrav.endretDato = LocalDateTime.now()
+                forrigeKrav.endretTilId = kravTilOppdatering.id
 
                 // Sletter gammelt krav
                 logger.info("KKPa: Slett sak om gammelt krav i arbeidsgivernotifikasjon.")
-                endretKrav.arbeidsgiverSakId?.let {
+                forrigeKrav.arbeidsgiverSakId?.let {
                     runBlocking { arbeidsgiverNotifikasjonKlient.hardDeleteSak(it) }
                 }
 
                 logger.info("KKPa: Oppdater gammelt krav til status: ${KravStatus.ENDRET} i db.")
-                kroniskKravRepo.update(endretKrav)
+                kroniskKravRepo.update(forrigeKrav)
 
                 // Oppretter nytt krav
                 logger.info("KKPa: Legg til nytt krav i db med status: ${KravStatus.OPPDATERT}.")
                 kroniskKravRepo.insert(kravTilOppdatering)
                 bakgunnsjobbService.opprettJobb<KroniskKravEndreProcessor>(
                     maksAntallForsoek = 10,
-                    data = om.writeValueAsString(KroniskKravProcessor.JobbData(endretKrav.id))
+                    data = om.writeValueAsString(KroniskKravProcessor.JobbData(forrigeKrav.id))
                 )
                 bakgunnsjobbService.opprettJobb<KroniskKravKvitteringProcessor>(
                     maksAntallForsoek = 10,

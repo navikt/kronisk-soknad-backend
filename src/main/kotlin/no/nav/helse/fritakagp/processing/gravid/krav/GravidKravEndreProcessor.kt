@@ -50,14 +50,14 @@ class GravidKravEndreProcessor(
      * Jobbdataene forventes å være en UUID for et krav som skal prosesseres.
      */
     override fun prosesser(jobb: Bakgrunnsjobb) {
-        val (endretKrav, oppdatertKrav) = getOrThrow(jobb)
-        logger.info("Endrer krav ${endretKrav.id} til ${oppdatertKrav.id}")
+        val (forrigeKrav, oppdatertKrav) = getOrThrow(jobb)
+        logger.info("Endrer krav ${forrigeKrav.id} til ${oppdatertKrav.id}")
         try {
             if (oppdatertKrav.virksomhetsnavn == null) {
-                oppdatertKrav.virksomhetsnavn = endretKrav.virksomhetsnavn
+                oppdatertKrav.virksomhetsnavn = forrigeKrav.virksomhetsnavn
             }
-            oppdatertKrav.journalpostId = journalførOppdatering(oppdatertKrav, endretKrav)
-            oppdatertKrav.oppgaveId = opprettOppgave(oppdatertKrav, endretKrav)
+            oppdatertKrav.journalpostId = journalførOppdatering(oppdatertKrav, forrigeKrav)
+            oppdatertKrav.oppgaveId = opprettOppgave(oppdatertKrav, forrigeKrav)
         } finally {
             updateAndLogOnFailure(oppdatertKrav)
         }
@@ -65,19 +65,19 @@ class GravidKravEndreProcessor(
 
     private fun getOrThrow(jobb: Bakgrunnsjobb): Pair<GravidKrav, GravidKrav> {
         val jobbData = om.readValue<GravidKravProcessor.JobbData>(jobb.data)
-        val endretKrav = gravidKravRepo.getById(jobbData.id)
-        requireNotNull(endretKrav) { "Jobben indikerte et endret krav med id ${jobb.data} men den kunne ikke finnes" }
-        val oppdatertId = endretKrav.endretTilId
+        val forrigeKrav = gravidKravRepo.getById(jobbData.id)
+        requireNotNull(forrigeKrav) { "Jobben indikerte et krav med id ${jobb.data} men den kunne ikke finnes" }
+        val oppdatertId = forrigeKrav.endretTilId
         requireNotNull(oppdatertId) { "Jobben indikerte et oppdatert krav men mangler id" }
         val oppdatertKrav = gravidKravRepo.getById(oppdatertId)
         requireNotNull(oppdatertKrav) { "Jobben indikerte et oppdatert krav med id $oppdatertId men den kunne ikke finnes" }
-        return endretKrav to oppdatertKrav
+        return forrigeKrav to oppdatertKrav
     }
 
     override fun stoppet(jobb: Bakgrunnsjobb) {
-        val (endretKrav, oppdatertKrav) = getOrThrow(jobb)
+        val (forrigeKrav, oppdatertKrav) = getOrThrow(jobb)
 
-        val oppgaveId = opprettFordelingsOppgave(oppdatertKrav, endretKrav)
+        val oppgaveId = opprettFordelingsOppgave(oppdatertKrav, forrigeKrav)
         logger.warn("Jobben ${jobb.uuid} feilet permanent og resulterte i fordelingsoppgave $oppgaveId")
     }
 
@@ -85,11 +85,11 @@ class GravidKravEndreProcessor(
         try {
             gravidKravRepo.update(krav)
         } catch (e: Exception) {
-            throw RuntimeException("Feilet i å oppdatere slettet krav ${krav.id} etter at en ekstern operasjon har blitt utført. JournalpostID: ${krav.journalpostId} OppgaveID: ${krav.oppgaveId}", e)
+            throw RuntimeException("Feilet i å oppdatere krav ${krav.id} etter at en ekstern operasjon har blitt utført. JournalpostID: ${krav.journalpostId} OppgaveID: ${krav.oppgaveId}", e)
         }
     }
 
-    fun journalførOppdatering(oppdatertKrav: GravidKrav, endretKrav: GravidKrav): String {
+    fun journalførOppdatering(oppdatertKrav: GravidKrav, forrigeKrav: GravidKrav): String {
         val journalfoeringsTittel = "Endring ${GravidKrav.tittel}"
         val id = runBlocking {
             val journalpostId = dokarkivKlient.opprettOgFerdigstillJournalpost(
@@ -97,7 +97,7 @@ class GravidKravEndreProcessor(
                 gjelderPerson = GjelderPerson(oppdatertKrav.identitetsnummer),
                 avsender = Avsender.Organisasjon(oppdatertKrav.virksomhetsnummer, oppdatertKrav.virksomhetsnavn ?: "Ukjent arbeidsgiver"),
                 datoMottatt = oppdatertKrav.opprettet.toLocalDate(),
-                dokumenter = createDocuments(oppdatertKrav, endretKrav, journalfoeringsTittel),
+                dokumenter = createDocuments(oppdatertKrav, forrigeKrav, journalfoeringsTittel),
                 eksternReferanseId = "${oppdatertKrav.id}-endring",
                 callId = UUID.randomUUID().toString()
             )
@@ -161,7 +161,7 @@ class GravidKravEndreProcessor(
         return dokumentListe
     }
 
-    fun opprettOppgave(oppdatertKrav: GravidKrav, endretKrav: GravidKrav): String {
+    fun opprettOppgave(oppdatertKrav: GravidKrav, forrigeKrav: GravidKrav): String {
         val aktoerId = pdlService.hentAktoerId(oppdatertKrav.identitetsnummer)
         requireNotNull(aktoerId) { "Fant ikke AktørID for fnr i ${oppdatertKrav.id}" }
         logger.info("Fant aktørid")
@@ -171,7 +171,7 @@ class GravidKravEndreProcessor(
                 append(generereGravidKravBeskrivelse(oppdatertKrav, "Endret: ${GravidKrav.tittel}"))
                 appendLine()
                 appendLine()
-                append(generereEndretGravidKravBeskrivelse(endretKrav, "Tidligere: ${GravidKrav.tittel}"))
+                append(generereEndretGravidKravBeskrivelse(forrigeKrav, "Tidligere: ${GravidKrav.tittel}"))
             }
         val request = OpprettOppgaveRequest(
             aktoerId = aktoerId,
@@ -189,13 +189,13 @@ class GravidKravEndreProcessor(
         return runBlocking { oppgaveKlient.opprettOppgave(request, UUID.randomUUID().toString()).id.toString() }
     }
 
-    fun opprettFordelingsOppgave(oppdatertKrav: GravidKrav, endretKrav: GravidKrav): String {
+    fun opprettFordelingsOppgave(oppdatertKrav: GravidKrav, forrigeKrav: GravidKrav): String {
         val aktoerId = pdlService.hentAktoerId(oppdatertKrav.identitetsnummer)
         requireNotNull(aktoerId) { "Fant ikke AktørID for fnr i ${oppdatertKrav.id}" }
         val beskrivelse: String =
             buildString {
                 append(generereGravidKravBeskrivelse(oppdatertKrav, "Fordelingsoppgave for Endret: ${GravidKrav.tittel}"))
-                append(generereEndretGravidKravBeskrivelse(endretKrav, "Tidligere: ${GravidKrav.tittel}"))
+                append(generereEndretGravidKravBeskrivelse(forrigeKrav, "Tidligere: ${GravidKrav.tittel}"))
             }
 
         val request = OpprettOppgaveRequest(

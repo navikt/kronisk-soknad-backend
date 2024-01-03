@@ -173,37 +173,37 @@ fun Route.gravidRoutes(
                 request.validate(arbeidsforhold)
 
                 val kravId = UUID.fromString(call.parameters["id"])
-                val endretKrav = gravidKravRepo.getById(kravId)
+                val forrigeKrav = gravidKravRepo.getById(kravId)
                     ?: return@patch call.respond(HttpStatusCode.NotFound)
 
-                if (endretKrav.virksomhetsnummer != request.virksomhetsnummer) {
+                if (forrigeKrav.virksomhetsnummer != request.virksomhetsnummer) {
                     return@patch call.respond(HttpStatusCode.Forbidden)
                 }
 
                 val kravTilOppdatering = request.toDomain(innloggetFnr, sendtAvNavn, navn)
                 belopBeregning.beregnBeløpGravid(kravTilOppdatering)
 
-                if (endretKrav.isDuplicate(kravTilOppdatering)) {
+                if (forrigeKrav.isDuplicate(kravTilOppdatering)) {
                     return@patch call.respond(HttpStatusCode.Conflict)
                 }
 
-                endretKrav.status = KravStatus.ENDRET
-                endretKrav.slettetAv = innloggetFnr
-                endretKrav.slettetAvNavn = sendtAvNavn
-                endretKrav.endretDato = LocalDateTime.now()
-                endretKrav.endretTilId = kravTilOppdatering.id
+                forrigeKrav.status = KravStatus.ENDRET
+                forrigeKrav.slettetAv = innloggetFnr
+                forrigeKrav.slettetAvNavn = sendtAvNavn
+                forrigeKrav.endretDato = LocalDateTime.now()
+                forrigeKrav.endretTilId = kravTilOppdatering.id
 
                 // Sletter gammelt krav
-                endretKrav.arbeidsgiverSakId?.let {
+                forrigeKrav.arbeidsgiverSakId?.let {
                     runBlocking { arbeidsgiverNotifikasjonKlient.hardDeleteSak(it) }
                 }
 
-                gravidKravRepo.update(endretKrav)
+                gravidKravRepo.update(forrigeKrav)
                 // Oppretter nytt krav
                 gravidKravRepo.insert(kravTilOppdatering)
                 bakgunnsjobbService.opprettJobb<GravidKravEndreProcessor>(
                     maksAntallForsoek = 10,
-                    data = om.writeValueAsString(GravidKravProcessor.JobbData(endretKrav.id))
+                    data = om.writeValueAsString(GravidKravProcessor.JobbData(forrigeKrav.id))
                 )
                 bakgunnsjobbService.opprettJobb<GravidKravKvitteringProcessor>(
                     maksAntallForsoek = 10,

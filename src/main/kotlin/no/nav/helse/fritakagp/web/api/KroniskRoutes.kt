@@ -164,9 +164,6 @@ fun Route.kroniskRoutes(
                 logger.info("KKPo: Hent grunnbeløp.")
                 belopBeregning.beregnBeløpKronisk(krav)
 
-                logger.info("KKPo: Prosesser dokument for GCP-lagring.")
-                processDocumentForGCPStorage(request.dokumentasjon, virusScanner, bucket, krav.id)
-
                 logger.info("KKPo: Legg til krav i db.")
                 kroniskKravRepo.insert(krav)
                 bakgunnsjobbService.opprettJobb<KroniskKravProcessor>(

@@ -11,7 +11,7 @@ import no.nav.helse.fritakagp.domain.OmplasseringAarsak
 import no.nav.helse.fritakagp.domain.Tiltak
 import no.nav.helse.fritakagp.web.api.resreq.validation.datoerHarRiktigRekkefolge
 import no.nav.helse.fritakagp.web.api.resreq.validation.isAvStorrelse
-import no.nav.helse.fritakagp.web.api.resreq.validation.isGodskjentFiletyper
+import no.nav.helse.fritakagp.web.api.resreq.validation.isGodkjentFiltype
 import no.nav.helse.fritakagp.web.api.resreq.validation.isVirksomhet
 import no.nav.helse.fritakagp.web.api.resreq.validation.maanedsInntektErMellomNullOgTiMil
 import no.nav.helse.fritakagp.web.api.resreq.validation.måHaAktivtArbeidsforhold
@@ -63,7 +63,7 @@ data class GravidSoknadRequest(
             }
 
             if (!this@GravidSoknadRequest.dokumentasjon.isNullOrEmpty()) {
-                validate(GravidSoknadRequest::dokumentasjon).isGodskjentFiletyper()
+                validate(GravidSoknadRequest::dokumentasjon).isGodkjentFiltype()
                 validate(GravidSoknadRequest::dokumentasjon).isAvStorrelse(SMALLEST_PDF_SIZE, 10L * MB)
             }
         }
@@ -91,8 +91,7 @@ data class GravidKravRequest(
     val perioder: List<Arbeidsgiverperiode>,
     val bekreftet: Boolean,
     val kontrollDager: Int?,
-    val antallDager: Int,
-    val dokumentasjon: String? // TODO: kan slettes(?)
+    val antallDager: Int
 ) {
     fun validate(aktuelleArbeidsforhold: List<Arbeidsforhold>) {
         validate(this) {
@@ -110,11 +109,6 @@ data class GravidKravRequest(
                 validate(Arbeidsgiverperiode::gradering).isLessThanOrEqualTo(1.0)
                 validate(Arbeidsgiverperiode::gradering).isGreaterThanOrEqualTo(0.2)
             }
-
-            if (!this@GravidKravRequest.dokumentasjon.isNullOrEmpty()) {
-                validate(GravidKravRequest::dokumentasjon).isGodskjentFiletyper()
-                validate(GravidKravRequest::dokumentasjon).isAvStorrelse(SMALLEST_PDF_SIZE, (10L * MB))
-            }
         }
     }
 
@@ -125,7 +119,6 @@ data class GravidKravRequest(
         perioder = perioder,
         sendtAv = sendtAv,
         sendtAvNavn = sendtAvNavn,
-        harVedlegg = !dokumentasjon.isNullOrEmpty(),
         kontrollDager = kontrollDager,
         antallDager = antallDager
     )

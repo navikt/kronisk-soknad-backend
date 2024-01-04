@@ -34,7 +34,7 @@ fun <E> Validator<E>.Property<Double?>.maanedsInntektErMellomNullOgTiMil() =
     }
 
 class DataUrlExtensionConstraints : CustomConstraint
-fun <E> Validator<E>.Property<String?>.isGodskjentFiletyper() =
+fun <E> Validator<E>.Property<String?>.isGodkjentFiltype() =
     this.validate(DataUrlExtensionConstraints()) {
         return@validate enumContains<GodkjenteFiletyper>(extractFilExtDel(it!!.uppercase()))
     }

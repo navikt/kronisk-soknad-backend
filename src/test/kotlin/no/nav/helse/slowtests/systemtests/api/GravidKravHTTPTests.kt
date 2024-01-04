@@ -126,18 +126,6 @@ class GravidKravHTTPTests : SystemTestBase() {
     }
 
     @Test
-    fun `Skal returnere Created og lagre flagg når fil er vedlagt`() = suspendableTest {
-        val response = httpClient.post {
-            appUrl(kravGravidUrl)
-            contentType(ContentType.Application.Json)
-            loggedInAs("123456789")
-            setBody(GravidTestData.gravidKravRequestMedFil)
-        }
-
-        assertThat(response.status).isEqualTo(HttpStatusCode.Created)
-    }
-
-    @Test
     fun `Skal returnere en valideringfeil`() = suspendableTest {
         val response =
             httpClient.post {

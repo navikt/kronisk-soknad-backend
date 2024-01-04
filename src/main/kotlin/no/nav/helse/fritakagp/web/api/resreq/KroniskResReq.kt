@@ -12,7 +12,7 @@ import no.nav.helse.fritakagp.web.api.resreq.validation.ikkeFlereFravaersdagerEn
 import no.nav.helse.fritakagp.web.api.resreq.validation.ingenDataEldreEnn
 import no.nav.helse.fritakagp.web.api.resreq.validation.ingenDataFraFremtiden
 import no.nav.helse.fritakagp.web.api.resreq.validation.isAvStorrelse
-import no.nav.helse.fritakagp.web.api.resreq.validation.isGodskjentFiletyper
+import no.nav.helse.fritakagp.web.api.resreq.validation.isGodkjentFiltype
 import no.nav.helse.fritakagp.web.api.resreq.validation.isVirksomhet
 import no.nav.helse.fritakagp.web.api.resreq.validation.maanedsInntektErMellomNullOgTiMil
 import no.nav.helse.fritakagp.web.api.resreq.validation.måHaAktivtArbeidsforhold
@@ -58,7 +58,7 @@ data class KroniskSoknadRequest(
             }
 
             if (!this@KroniskSoknadRequest.dokumentasjon.isNullOrEmpty()) {
-                validate(KroniskSoknadRequest::dokumentasjon).isGodskjentFiletyper()
+                validate(KroniskSoknadRequest::dokumentasjon).isGodkjentFiltype()
                 validate(KroniskSoknadRequest::dokumentasjon).isAvStorrelse(SMALLEST_PDF_SIZE, 10L * MB)
             }
         }
@@ -83,7 +83,6 @@ data class KroniskKravRequest(
     val identitetsnummer: String,
     val perioder: List<Arbeidsgiverperiode>,
     val bekreftet: Boolean,
-    val dokumentasjon: String?,
     val kontrollDager: Int?,
     val antallDager: Int
 ) {
@@ -102,11 +101,6 @@ data class KroniskKravRequest(
                 validate(Arbeidsgiverperiode::gradering).isLessThanOrEqualTo(1.0)
                 validate(Arbeidsgiverperiode::gradering).isGreaterThanOrEqualTo(0.2)
             }
-
-            if (!this@KroniskKravRequest.dokumentasjon.isNullOrEmpty()) {
-                validate(KroniskKravRequest::dokumentasjon).isGodskjentFiletyper()
-                validate(KroniskKravRequest::dokumentasjon).isAvStorrelse(SMALLEST_PDF_SIZE, 10L * MB)
-            }
         }
     }
 
@@ -117,7 +111,6 @@ data class KroniskKravRequest(
         perioder = perioder,
         sendtAv = sendtAv,
         sendtAvNavn = sendtAvNavn,
-        harVedlegg = !dokumentasjon.isNullOrEmpty(),
         kontrollDager = kontrollDager,
         antallDager = antallDager
     )

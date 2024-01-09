@@ -1,8 +1,8 @@
 package no.nav.helse.fritakagp.processing.kronisk.krav
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import no.nav.helse.arbeidsgiver.bakgrunnsjobb2.Bakgrunnsjobb
-import no.nav.helse.arbeidsgiver.bakgrunnsjobb2.BakgrunnsjobbProsesserer
+import no.nav.hag.utils.bakgrunnsjobb.Bakgrunnsjobb
+import no.nav.hag.utils.bakgrunnsjobb.BakgrunnsjobbProsesserer
 import no.nav.helse.fritakagp.KroniskKravMetrics
 import no.nav.helse.fritakagp.db.KroniskKravRepository
 import java.util.UUID

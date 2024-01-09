@@ -59,7 +59,3 @@ env:
     value: https://www.altinn.no/ServiceEngineExternal/CorrespondenceAgencyExternalBasic.svc
   - name: ENHETSREGISTERET
     value: https://data.brreg.no/enhetsregisteret/api/underenheter
-  - name: DATAPAKKE_API_URL
-    value: https://datakatalog-api.intern.nav.no/v1/datapackage
-  - name: DATAPAKKE_ID
-    value: a4570c9e9521df726e1050ebcd917b9a

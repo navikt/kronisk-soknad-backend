@@ -6,7 +6,6 @@ import no.nav.helse.arbeidsgiver.bakgrunnsjobb2.BakgrunnsjobbService
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb2.PostgresBakgrunnsjobbRepository
 import no.nav.helse.fritakagp.Env
 import no.nav.helse.fritakagp.MetrikkVarsler
-import no.nav.helse.fritakagp.datapakke.DatapakkePublisherJob
 import no.nav.helse.fritakagp.db.GravidKravRepository
 import no.nav.helse.fritakagp.db.GravidSoeknadRepository
 import no.nav.helse.fritakagp.db.IStatsRepo
@@ -146,6 +145,5 @@ fun prodConfig(env: Env.Prod): Module = module {
     single { DefaultAltinnAuthorizer(get()) } bind AltinnAuthorizer::class
     single { BeloepBeregning(get()) }
 
-    single { DatapakkePublisherJob(get(), get(), env.datapakkeUrl, env.datapakkeId, get()) }
     single { StatsRepoImpl(get()) } bind IStatsRepo::class
 }

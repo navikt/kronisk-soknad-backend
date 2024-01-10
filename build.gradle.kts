@@ -103,11 +103,13 @@ dependencies {
     val altinnClientVersion: String by project
     val altinnCorrespondenceAgencyVersion: String by project
     val arbeidsgiverNotifikasjonKlientVersion: String by project
+    val bakgrunnsjobbVersion: String by project
     val assertJVersion: String by project
     val brukernotifikasjonSchemasVersion: String by project
     val confluentVersion: String by project
     val coroutinesVersion: String by project
     val cxfVersion: String by project
+    val dokarkivKlientVersion: String by project
     val fellesBackendVersion: String by project
     val flywayVersion: String by project
     val gcpStorageVersion: String by project
@@ -137,7 +139,6 @@ dependencies {
     val tokenSupportVersion: String by project
     val utilsVersion: String by project
     val valiktorVersion: String by project
-    val dokarkivKlientVersion: String by project
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
     implementation("ch.qos.logback:logback-classic:$logback_version")
@@ -180,6 +181,7 @@ dependencies {
         exclude(group = "net.logstash.logback", module = "logstash-logback-encoder")
         exclude(group = "org.slf4j", module = "slf4j-api")
     }
+    implementation("no.nav.helsearbeidsgiver:hag-bakgrunnsjobb:$bakgrunnsjobbVersion")
     implementation("no.nav.helsearbeidsgiver:arbeidsgiver-notifikasjon-klient:$arbeidsgiverNotifikasjonKlientVersion")
     implementation("no.nav.helsearbeidsgiver:dokarkiv-client:$dokarkivKlientVersion")
     implementation("no.nav.helsearbeidsgiver:utils:$utilsVersion")

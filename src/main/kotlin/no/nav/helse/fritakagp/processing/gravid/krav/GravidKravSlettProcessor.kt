@@ -3,8 +3,8 @@ package no.nav.helse.fritakagp.processing.gravid.krav
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import kotlinx.coroutines.runBlocking
-import no.nav.helse.arbeidsgiver.bakgrunnsjobb2.Bakgrunnsjobb
-import no.nav.helse.arbeidsgiver.bakgrunnsjobb2.BakgrunnsjobbProsesserer
+import no.nav.hag.utils.bakgrunnsjobb.Bakgrunnsjobb
+import no.nav.hag.utils.bakgrunnsjobb.BakgrunnsjobbProsesserer
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.OPPGAVETYPE_FORDELINGSOPPGAVE
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.OppgaveKlient
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.OpprettOppgaveRequest

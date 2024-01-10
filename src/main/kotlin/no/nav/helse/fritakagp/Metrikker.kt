@@ -1,7 +1,7 @@
 package no.nav.helse.fritakagp
 
 import io.prometheus.client.Counter
-import no.nav.helse.arbeidsgiver.bakgrunnsjobb2.Bakgrunnsvarsler
+import no.nav.hag.utils.bakgrunnsjobb.Bakgrunnsvarsler
 
 const val METRICS_NS = "fritakagp"
 

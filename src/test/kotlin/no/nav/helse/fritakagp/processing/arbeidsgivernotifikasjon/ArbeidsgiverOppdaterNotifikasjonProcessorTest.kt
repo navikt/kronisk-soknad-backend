@@ -7,9 +7,9 @@ import com.fasterxml.jackson.module.kotlin.KotlinModule
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
+import no.nav.hag.utils.bakgrunnsjobb.Bakgrunnsjobb
 import no.nav.helse.GravidTestData
 import no.nav.helse.KroniskTestData
-import no.nav.helse.arbeidsgiver.bakgrunnsjobb2.Bakgrunnsjobb
 import no.nav.helse.fritakagp.db.GravidKravRepository
 import no.nav.helse.fritakagp.db.KroniskKravRepository
 import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonKlient

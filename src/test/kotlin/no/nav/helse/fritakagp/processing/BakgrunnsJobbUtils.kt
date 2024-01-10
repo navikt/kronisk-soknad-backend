@@ -1,6 +1,6 @@
 package no.nav.helse.fritakagp.processing
 
-import no.nav.helse.arbeidsgiver.bakgrunnsjobb2.Bakgrunnsjobb
+import no.nav.hag.utils.bakgrunnsjobb.Bakgrunnsjobb
 
 object BakgrunnsJobbUtils {
     fun emptyJob() = Bakgrunnsjobb(data = "", type = "")

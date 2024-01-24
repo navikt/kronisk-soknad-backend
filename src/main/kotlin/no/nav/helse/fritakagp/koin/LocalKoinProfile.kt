@@ -5,7 +5,6 @@ import no.nav.hag.utils.bakgrunnsjobb.BakgrunnsjobbRepository
 import no.nav.hag.utils.bakgrunnsjobb.BakgrunnsjobbService
 import no.nav.hag.utils.bakgrunnsjobb.PostgresBakgrunnsjobbRepository
 import no.nav.helse.fritakagp.Env
-import no.nav.helse.fritakagp.datapakke.DatapakkePublisherJob
 import no.nav.helse.fritakagp.db.GravidKravRepository
 import no.nav.helse.fritakagp.db.GravidSoeknadRepository
 import no.nav.helse.fritakagp.db.IStatsRepo
@@ -98,7 +97,6 @@ fun localConfig(env: Env.Local): Module = module {
 
     single { DefaultAltinnAuthorizer(get()) } bind AltinnAuthorizer::class
 
-    single { DatapakkePublisherJob(get(), get(), env.datapakkeUrl, env.datapakkeId, get()) }
     single { StatsRepoImpl(get()) } bind IStatsRepo::class
     single { ArbeidsgiverNotifikasjonKlient(env.arbeidsgiverNotifikasjonUrl, getAccessToken = { "token" }) }
 }

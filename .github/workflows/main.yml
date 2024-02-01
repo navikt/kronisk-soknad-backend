@@ -67,12 +67,12 @@ jobs:
     name: Deploy to dev-gcp
     needs: buildAndTest
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
     steps:
       - uses: actions/checkout@v4
-      - uses: nais/deploy/actions/deploy@v1
+      - uses: nais/deploy/actions/deploy@v2
         env:
-          TEAM: helsearbeidsgiver
-          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: dev-gcp
           RESOURCE: deploy/nais.yml
           VAR: image=${{ env.IMAGE }}:${{ github.sha }}

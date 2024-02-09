@@ -181,8 +181,8 @@ class KroniskKravEndreProcessor(
             behandlingstype = digitalKravBehandingsType,
             oppgavetype = "BEH_REF",
             behandlingstema = fritakAGPBehandingsTema,
-            aktivDato = LocalDate.now(),
-            fristFerdigstillelse = LocalDate.now().plusDays(7),
+            aktivDato = oppdatertKrav.opprettet.toLocalDate(),
+            fristFerdigstillelse =  oppdatertKrav.opprettet.plusDays(7).toLocalDate(),
             prioritet = "NORM"
         )
 

@@ -182,7 +182,7 @@ class KroniskKravEndreProcessor(
             oppgavetype = "BEH_REF",
             behandlingstema = fritakAGPBehandingsTema,
             aktivDato = oppdatertKrav.opprettet.toLocalDate(),
-            fristFerdigstillelse =  oppdatertKrav.opprettet.plusDays(7).toLocalDate(),
+            fristFerdigstillelse = oppdatertKrav.opprettet.plusDays(7).toLocalDate(),
             prioritet = "NORM"
         )
 

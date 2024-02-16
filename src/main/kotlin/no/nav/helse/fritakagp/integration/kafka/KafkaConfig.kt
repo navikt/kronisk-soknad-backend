@@ -35,4 +35,3 @@ fun gcpCommonKafkaProps() = mapOf<String, Any>(
     SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG to envOrThrow("KAFKA_CREDSTORE_PASSWORD"),
     SslConfigs.SSL_KEY_PASSWORD_CONFIG to envOrThrow("KAFKA_CREDSTORE_PASSWORD")
 )
-

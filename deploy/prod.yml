@@ -1,6 +1,6 @@
 context: prod
 bucketName: helse-arbeidsgiver-fritakagb-bucket-prod
-tier: db-custom-1-1536
+dbTier: db-custom-1-1536
 ingresses:
   - https://fritakagp-api.intern.nav.no
 accessOutbound:

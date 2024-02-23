@@ -54,8 +54,8 @@ spec:
       - type: POSTGRES_11
         databases:
           - name: fritakagp-db
-        {{#if tier}}
-        tier: {{ tier }}
+        {{#if dbTier}}
+        tier: {{ dbTier }}
         {{/if}}
         diskAutoresize: true
     {{#if bucketName}}

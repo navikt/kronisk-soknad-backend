@@ -36,7 +36,7 @@ data class KroniskSoeknad(
     var referansenummer: Int? = null
 ) : SimpleJsonbEntity {
     companion object {
-        const val tittel = "Søknad om refusjon av arbeidsgiverperioden - kronisk eller langvarig sykdom"
+        const val tittel = "Søknad om fritak fra arbeidsgiverperioden - kronisk eller langvarig sykdom"
     }
 }
 

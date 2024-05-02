@@ -34,10 +34,8 @@ import no.nav.helse.fritakagp.service.BehandlendeEnhetService
 import no.nav.helsearbeidsgiver.altinn.AltinnOrganisasjon
 import no.nav.helsearbeidsgiver.dokarkiv.DokArkivClient
 import no.nav.helsearbeidsgiver.pdl.PdlClient
-import no.nav.helsearbeidsgiver.pdl.PdlHentFullPerson
-import no.nav.helsearbeidsgiver.pdl.PdlHentPersonNavn
-import no.nav.helsearbeidsgiver.pdl.PdlIdent
-import no.nav.helsearbeidsgiver.pdl.PdlPersonNavnMetadata
+import no.nav.helsearbeidsgiver.pdl.domene.FullPerson
+import no.nav.helsearbeidsgiver.pdl.domene.PersonNavn
 import no.nav.helsearbeidsgiver.tokenprovider.AccessTokenProvider
 import org.koin.core.module.Module
 import org.koin.core.qualifier.named
@@ -105,16 +103,13 @@ fun Module.mockExternalDependecies() {
 
     single {
         mockk<PdlClient> {
-            coEvery { personNavn(any()) } returns PdlHentPersonNavn.PdlPersonNavneliste(
-                listOf(
-                    PdlHentPersonNavn.PdlPersonNavneliste.PdlPersonNavn("Ola", "M", "Avsender", PdlPersonNavnMetadata("freg"))
-                )
-            )
-
-            coEvery { fullPerson(any()) } returns PdlHentFullPerson(
-                PdlHentFullPerson.PdlFullPersonliste(emptyList(), emptyList(), emptyList(), emptyList(), emptyList(), emptyList(), emptyList()),
-                PdlHentFullPerson.PdlIdentResponse(listOf(PdlIdent("aktør-id", PdlIdent.PdlIdentGruppe.AKTORID))),
-                PdlHentFullPerson.PdlGeografiskTilknytning(PdlHentFullPerson.PdlGeografiskTilknytning.PdlGtType.UTLAND, null, null, "SWE")
+            coEvery { personNavn(any()) } returns PersonNavn("Ola", "M", "Avsender")
+            coEvery { fullPerson(any()) } returns FullPerson(
+                navn = PersonNavn(fornavn = "Per", mellomnavn = "", etternavn = "Ulv"),
+                foedselsdato = LocalDate.of(1900, 1, 1),
+                ident = "aktør-id",
+                diskresjonskode = "SPSF",
+                geografiskTilknytning = "SWE"
             )
         }
     }

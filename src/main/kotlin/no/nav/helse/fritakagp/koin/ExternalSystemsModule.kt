@@ -27,6 +27,7 @@ import no.nav.helsearbeidsgiver.altinn.AltinnClient
 import no.nav.helsearbeidsgiver.altinn.CacheConfig
 import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonKlient
 import no.nav.helsearbeidsgiver.dokarkiv.DokArkivClient
+import no.nav.helsearbeidsgiver.pdl.Behandlingsgrunnlag
 import no.nav.helsearbeidsgiver.pdl.PdlClient
 import no.nav.helsearbeidsgiver.tokenprovider.AccessTokenProvider
 import no.nav.helsearbeidsgiver.tokenprovider.OAuth2TokenProvider
@@ -122,7 +123,7 @@ fun Module.externalSystemClients(env: Env, envOauth2: EnvOauth2) {
 
     single {
         val tokenProvider: AccessTokenProvider = get(qualifier = named("PROXY"))
-        PdlClient(env.pdlUrl, tokenProvider::getToken)
+        PdlClient(env.pdlUrl, Behandlingsgrunnlag.FRITAKAGP, tokenProvider::getToken)
     } bind PdlClient::class
 
     single {

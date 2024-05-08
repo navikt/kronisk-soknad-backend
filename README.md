@@ -14,9 +14,14 @@ Deretter kan du kalle:
 
 http://localhost:8080/fritak-agp-api/api/v1/arbeidsgivere
 
+# URL i dev
+
+https://arbeidsgiver.intern.dev.nav.no/fritak-agp/nb
+
+
 # Koble til Databasen i GCP
 
-Følg oppskriften for Cloud SQL proxy her: https://doc.nais.io/persistence/postgres/
+Følg oppskriften for Cloud SQL proxy her: https://doc.nais.io/reference/cli/postgres/
 
 For å koble til når du har personlig bruker:
 CONNECTION_NAME=$(gcloud sql instances describe fritakagp --format="get(connectionName)" --project helsearbeidsgiver-dev-6d06);

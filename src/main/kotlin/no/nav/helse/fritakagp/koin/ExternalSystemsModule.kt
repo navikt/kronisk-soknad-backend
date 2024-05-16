@@ -119,10 +119,24 @@ fun Module.externalSystemClients(env: Env, envOauth2: EnvOauth2) {
         OAuth2TokenProvider(accessTokenService, azureAdConfig)
     } bind AccessTokenProvider::class
 
+    single(named("PDL")) {
+        val azureAdConfig = envOauth2.azureAdConfig(envOauth2.scopePdl)
+        val tokenResolver = TokenResolver()
+        val oauthHttpClient = DefaultOAuth2HttpClient(get())
+        val accessTokenService = OAuth2AccessTokenService(
+            tokenResolver,
+            OnBehalfOfTokenClient(oauthHttpClient),
+            ClientCredentialsTokenClient(oauthHttpClient),
+            TokenExchangeClient(oauthHttpClient)
+        )
+
+        OAuth2TokenProvider(accessTokenService, azureAdConfig)
+    } bind AccessTokenProvider::class
+
     single { AaregArbeidsforholdClientImpl(env.aaregUrl, get(qualifier = named("PROXY")), get()) } bind AaregArbeidsforholdClient::class
 
     single {
-        val tokenProvider: AccessTokenProvider = get(qualifier = named("PROXY"))
+        val tokenProvider: AccessTokenProvider = get(qualifier = named("PDL"))
         PdlClient(env.pdlUrl, Behandlingsgrunnlag.FRITAKAGP, tokenProvider::getToken)
     } bind PdlClient::class
 

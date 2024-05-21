@@ -8,6 +8,7 @@ accessOutbound:
     - kafka-schema-registry.nais.adeo.no
     - dokarkiv.prod-fss-pub.nais.io
     - helsearbeidsgiver-proxy.prod-fss-pub.nais.io
+    - pdl-api.prod-fss-pub.nais.io
     - oppgave.prod-fss-pub.nais.io
     - ag-notifikasjon-produsent-api.intern.nav.no
     - api-gw.oera.no
@@ -37,6 +38,8 @@ env:
     value: api://prod-fss.oppgavehandtering.oppgave/.default
   - name: PROXY_SCOPE
     value: api://prod-fss.helsearbeidsgiver.helsearbeidsgiver-proxy/.default
+  - name: PDL_SCOPE
+    value: api://prod-fss.pdl.pdl-api/.default
   - name: FRONTEND_URL
     value: https://arbeidsgiver.nav.no/fritak-agp
     # TODO ikke i dev
@@ -53,7 +56,7 @@ env:
   - name: OPPGAVEBEHANDLING_URL
     value: https://oppgave.prod-fss-pub.nais.io/api/v1/oppgaver
   - name: PDL_URL
-    value: https://helsearbeidsgiver-proxy.prod-fss-pub.nais.io/pdl
+    value: https://pdl-api.prod-fss-pub.nais.io/graphql
   - name: ALTINN_SERVICE_OWNER_GW_URL
     value: https://api-gw.oera.no/ekstern/altinn/api/serviceowner
   - name: ALTINN_ENDPOINT

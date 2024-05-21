@@ -91,6 +91,7 @@ class EnvOauth2(mainConfig: ApplicationConfig) {
     val scopeOppgave = "oppgavescope".prop()
     val scopeDokarkiv = "dokarkivscope".prop()
     val scopeArbeidsgivernotifikasjon = "arbeidsgivernotifikasjonscope".prop()
+    val scopePdl = "pdlscope".prop()
 
     private fun String.prop(): String =
         oauth2Config.prop(this)

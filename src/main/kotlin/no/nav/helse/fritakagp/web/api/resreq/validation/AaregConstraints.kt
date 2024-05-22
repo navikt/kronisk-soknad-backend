@@ -1,10 +1,10 @@
 package no.nav.helse.fritakagp.web.api.resreq.validation
 
-import no.nav.helse.arbeidsgiver.integrasjoner.aareg2.Arbeidsforhold
 import no.nav.helse.fritakagp.domain.Arbeidsgiverperiode
+import no.nav.helsearbeidsgiver.aareg.Arbeidsforhold
 import org.valiktor.Validator
 import java.time.LocalDate
-import no.nav.helse.arbeidsgiver.integrasjoner.aareg2.Periode as AaregPeriode
+import no.nav.helsearbeidsgiver.aareg.Periode as AaregPeriode
 
 class ArbeidsforholdConstraint : CustomConstraint
 val MAKS_DAGER_OPPHOLD = 3L

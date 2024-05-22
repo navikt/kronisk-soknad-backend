@@ -14,7 +14,6 @@ import io.ktor.server.routing.post
 import io.ktor.server.routing.route
 import kotlinx.coroutines.runBlocking
 import no.nav.hag.utils.bakgrunnsjobb.BakgrunnsjobbService
-import no.nav.helse.arbeidsgiver.integrasjoner.aareg2.AaregArbeidsforholdClient
 import no.nav.helse.fritakagp.KroniskKravMetrics
 import no.nav.helse.fritakagp.KroniskSoeknadMetrics
 import no.nav.helse.fritakagp.db.KroniskKravRepository
@@ -37,6 +36,7 @@ import no.nav.helse.fritakagp.web.api.resreq.KroniskKravRequest
 import no.nav.helse.fritakagp.web.api.resreq.KroniskSoknadRequest
 import no.nav.helse.fritakagp.web.auth.authorize
 import no.nav.helse.fritakagp.web.auth.hentIdentitetsnummerFraLoginToken
+import no.nav.helsearbeidsgiver.aareg.AaregClient
 import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonKlient
 import no.nav.helsearbeidsgiver.utils.log.logger
 import java.time.LocalDateTime
@@ -52,7 +52,7 @@ fun Route.kroniskRoutes(
     bucket: BucketStorage,
     authorizer: AltinnAuthorizer,
     belopBeregning: BeloepBeregning,
-    aaregClient: AaregArbeidsforholdClient,
+    aaregClient: AaregClient,
     pdlService: PdlService,
     arbeidsgiverNotifikasjonKlient: ArbeidsgiverNotifikasjonKlient
 ) {

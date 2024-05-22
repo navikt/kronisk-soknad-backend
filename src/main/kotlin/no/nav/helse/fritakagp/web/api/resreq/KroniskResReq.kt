@@ -1,6 +1,6 @@
 package no.nav.helse.fritakagp.web.api.resreq
 
-import no.nav.helse.arbeidsgiver.integrasjoner.aareg2.Arbeidsforhold
+import no.nav.helsearbeidsgiver.aareg.Arbeidsforhold
 import no.nav.helse.arbeidsgiver.web.validation.isValidIdentitetsnummer
 import no.nav.helse.arbeidsgiver.web.validation.isValidOrganisasjonsnummer
 import no.nav.helse.fritakagp.domain.Arbeidsgiverperiode

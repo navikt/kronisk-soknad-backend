@@ -1,20 +1,13 @@
 package no.nav.helse.fritakagp.web.api
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import io.ktor.http.HttpStatusCode
-import io.ktor.server.application.application
-import io.ktor.server.application.call
-import io.ktor.server.request.receive
-import io.ktor.server.response.respond
-import io.ktor.server.routing.Route
-import io.ktor.server.routing.delete
-import io.ktor.server.routing.get
-import io.ktor.server.routing.patch
-import io.ktor.server.routing.post
-import io.ktor.server.routing.route
+import io.ktor.http.*
+import io.ktor.server.application.*
+import io.ktor.server.request.*
+import io.ktor.server.response.*
+import io.ktor.server.routing.*
 import kotlinx.coroutines.runBlocking
 import no.nav.hag.utils.bakgrunnsjobb.BakgrunnsjobbService
-import no.nav.helse.arbeidsgiver.integrasjoner.aareg2.AaregArbeidsforholdClient
 import no.nav.helse.fritakagp.GravidKravMetrics
 import no.nav.helse.fritakagp.GravidSoeknadMetrics
 import no.nav.helse.fritakagp.db.GravidKravRepository
@@ -41,6 +34,7 @@ import no.nav.helse.fritakagp.web.api.resreq.validation.extractBase64Del
 import no.nav.helse.fritakagp.web.api.resreq.validation.extractFilExtDel
 import no.nav.helse.fritakagp.web.auth.authorize
 import no.nav.helse.fritakagp.web.auth.hentIdentitetsnummerFraLoginToken
+import no.nav.helsearbeidsgiver.aareg.AaregClient
 import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonKlient
 import org.valiktor.ConstraintViolationException
 import org.valiktor.DefaultConstraintViolation
@@ -57,7 +51,7 @@ fun Route.gravidRoutes(
     bucket: BucketStorage,
     authorizer: AltinnAuthorizer,
     belopBeregning: BeloepBeregning,
-    aaregClient: AaregArbeidsforholdClient,
+    aaregClient: AaregClient,
     pdlService: PdlService,
     arbeidsgiverNotifikasjonKlient: ArbeidsgiverNotifikasjonKlient
 ) {

@@ -1,13 +1,19 @@
 package no.nav.helse.fritakagp.web
 
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import io.ktor.http.*
-import io.ktor.serialization.jackson.*
-import io.ktor.server.application.*
-import io.ktor.server.auth.*
-import io.ktor.server.plugins.contentnegotiation.*
-import io.ktor.server.plugins.cors.*
-import io.ktor.server.routing.*
+import io.ktor.http.ContentType
+import io.ktor.http.HttpMethod
+import io.ktor.serialization.jackson.JacksonConverter
+import io.ktor.serialization.jackson.jackson
+import io.ktor.server.application.Application
+import io.ktor.server.application.install
+import io.ktor.server.auth.Authentication
+import io.ktor.server.auth.authenticate
+import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.server.plugins.cors.CORS
+import io.ktor.server.routing.IgnoreTrailingSlash
+import io.ktor.server.routing.route
+import io.ktor.server.routing.routing
 import no.nav.helse.fritakagp.Env
 import no.nav.helse.fritakagp.customObjectMapper
 import no.nav.helse.fritakagp.web.api.altinnRoutes

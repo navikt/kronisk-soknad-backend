@@ -3,11 +3,6 @@ package no.nav.helse.fritakagp.web.dto.validation
 import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.helse.AaregTestData
 import no.nav.helse.GravidTestData
-import no.nav.helsearbeidsgiver.aareg.Ansettelsesperiode
-import no.nav.helsearbeidsgiver.aareg.Arbeidsforhold
-import no.nav.helsearbeidsgiver.aareg.Arbeidsgiver
-import no.nav.helsearbeidsgiver.aareg.Opplysningspliktig
-import no.nav.helsearbeidsgiver.aareg.Periode
 import no.nav.helse.arbeidsgiver.utils.loadFromResources
 import no.nav.helse.fritakagp.customObjectMapper
 import no.nav.helse.fritakagp.domain.Arbeidsgiverperiode
@@ -15,6 +10,11 @@ import no.nav.helse.fritakagp.web.api.resreq.GravidKravRequest
 import no.nav.helse.fritakagp.web.api.resreq.validation.måHaAktivtArbeidsforhold
 import no.nav.helse.fritakagp.web.api.resreq.validation.slåSammenPerioder
 import no.nav.helse.fritakagp.web.api.resreq.validationShouldFailFor
+import no.nav.helsearbeidsgiver.aareg.Ansettelsesperiode
+import no.nav.helsearbeidsgiver.aareg.Arbeidsforhold
+import no.nav.helsearbeidsgiver.aareg.Arbeidsgiver
+import no.nav.helsearbeidsgiver.aareg.Opplysningspliktig
+import no.nav.helsearbeidsgiver.aareg.Periode
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test

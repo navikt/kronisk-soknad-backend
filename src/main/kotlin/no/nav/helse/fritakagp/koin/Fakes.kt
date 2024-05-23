@@ -4,12 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import io.mockk.coEvery
 import io.mockk.mockk
-import no.nav.helse.arbeidsgiver.integrasjoner.aareg2.AaregArbeidsforholdClient
-import no.nav.helse.arbeidsgiver.integrasjoner.aareg2.Ansettelsesperiode
-import no.nav.helse.arbeidsgiver.integrasjoner.aareg2.Arbeidsforhold
-import no.nav.helse.arbeidsgiver.integrasjoner.aareg2.Arbeidsgiver
-import no.nav.helse.arbeidsgiver.integrasjoner.aareg2.Opplysningspliktig
-import no.nav.helse.arbeidsgiver.integrasjoner.aareg2.Periode
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.OppgaveKlient
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.OppgaveResponse
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.OpprettOppgaveRequest
@@ -31,6 +25,12 @@ import no.nav.helse.fritakagp.integration.virusscan.MockVirusScanner
 import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
 import no.nav.helse.fritakagp.processing.arbeidsgivernotifikasjon.ArbeidsgiverOppdaterNotifikasjonProcessor
 import no.nav.helse.fritakagp.service.BehandlendeEnhetService
+import no.nav.helsearbeidsgiver.aareg.AaregClient
+import no.nav.helsearbeidsgiver.aareg.Ansettelsesperiode
+import no.nav.helsearbeidsgiver.aareg.Arbeidsforhold
+import no.nav.helsearbeidsgiver.aareg.Arbeidsgiver
+import no.nav.helsearbeidsgiver.aareg.Opplysningspliktig
+import no.nav.helsearbeidsgiver.aareg.Periode
 import no.nav.helsearbeidsgiver.altinn.AltinnOrganisasjon
 import no.nav.helsearbeidsgiver.dokarkiv.DokArkivClient
 import no.nav.helsearbeidsgiver.pdl.PdlClient
@@ -56,45 +56,44 @@ fun Module.mockExternalDependecies() {
     } bind AccessTokenProvider::class
 
     single {
-        object : AaregArbeidsforholdClient {
-            override suspend fun hentArbeidsforhold(ident: String, callId: String): List<Arbeidsforhold> =
-                listOf(
-                    Arbeidsforhold(
-                        Arbeidsgiver("test", "810007842"),
-                        Opplysningspliktig("Juice", "810007702"),
-                        emptyList(),
-                        Ansettelsesperiode(
-                            Periode(LocalDate.MIN, null)
-                        ),
-                        LocalDate.MIN.atStartOfDay()
+        mockk<AaregClient> {
+            coEvery { hentArbeidsforhold(any(), any()) } returns listOf(
+                Arbeidsforhold(
+                    Arbeidsgiver("test", "810007842"),
+                    Opplysningspliktig("Juice", "810007702"),
+                    emptyList(),
+                    Ansettelsesperiode(
+                        Periode(LocalDate.MIN, null)
                     ),
-                    Arbeidsforhold(
-                        Arbeidsgiver("test", "910098896"),
-                        Opplysningspliktig("Juice", "910098896"),
-                        emptyList(),
-                        Ansettelsesperiode(
-                            Periode(
-                                LocalDate.MIN,
-                                null
-                            )
-                        ),
-                        LocalDate.MIN.atStartOfDay()
+                    LocalDate.MIN.atStartOfDay()
+                ),
+                Arbeidsforhold(
+                    Arbeidsgiver("test", "910098896"),
+                    Opplysningspliktig("Juice", "910098896"),
+                    emptyList(),
+                    Ansettelsesperiode(
+                        Periode(
+                            LocalDate.MIN,
+                            null
+                        )
                     ),
-                    Arbeidsforhold(
-                        Arbeidsgiver("test", "917404437"),
-                        Opplysningspliktig("Juice", "910098896"),
-                        emptyList(),
-                        Ansettelsesperiode(
-                            Periode(
-                                LocalDate.MIN,
-                                null
-                            )
-                        ),
-                        LocalDate.MIN.atStartOfDay()
-                    )
+                    LocalDate.MIN.atStartOfDay()
+                ),
+                Arbeidsforhold(
+                    Arbeidsgiver("test", "917404437"),
+                    Opplysningspliktig("Juice", "910098896"),
+                    emptyList(),
+                    Ansettelsesperiode(
+                        Periode(
+                            LocalDate.MIN,
+                            null
+                        )
+                    ),
+                    LocalDate.MIN.atStartOfDay()
                 )
+            )
         }
-    } bind AaregArbeidsforholdClient::class
+    }
 
     single {
         val tokenProvider: AccessTokenProvider = get(qualifier = named("TOKENPROVIDER"))

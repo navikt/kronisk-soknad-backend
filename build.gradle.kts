@@ -132,6 +132,7 @@ dependencies {
     val mockOAuth2ServerVersion: String by project
     val pdfboxVersion: String by project
     val pdlClientVersion: String by project
+    val aaregClientVersion: String by project
     val postgresqlVersion: String by project
     val prometheusVersion: String by project
     val slf4jVersion: String by project
@@ -191,6 +192,7 @@ dependencies {
         exclude(group = "io.netty", module = "netty-all")
     }
     implementation("no.nav.helsearbeidsgiver:pdl-client:$pdlClientVersion")
+    implementation("no.nav.helsearbeidsgiver:aareg-client:$aaregClientVersion")
     implementation("no.nav.security:token-client-core:$tokenSupportVersion")
     implementation("no.nav.security:token-validation-ktor-v2:$tokenSupportVersion")
     implementation("no.nav.helsearbeidsgiver:altinn-client:$altinnClientVersion")

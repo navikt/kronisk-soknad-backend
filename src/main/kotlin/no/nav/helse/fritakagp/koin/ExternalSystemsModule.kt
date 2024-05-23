@@ -1,8 +1,6 @@
 package no.nav.helse.fritakagp.koin
 
 import com.nimbusds.oauth2.sdk.auth.ClientAuthenticationMethod
-import no.nav.helse.arbeidsgiver.integrasjoner.aareg2.AaregArbeidsforholdClient
-import no.nav.helse.arbeidsgiver.integrasjoner.aareg2.AaregArbeidsforholdClientImpl
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.OppgaveKlient
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.OppgaveKlientImpl
 import no.nav.helse.fritakagp.Env
@@ -23,6 +21,7 @@ import no.nav.helse.fritakagp.integration.oauth2.TokenResolver
 import no.nav.helse.fritakagp.integration.virusscan.ClamavVirusScannerImp
 import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
 import no.nav.helse.fritakagp.service.BehandlendeEnhetService
+import no.nav.helsearbeidsgiver.aareg.AaregClient
 import no.nav.helsearbeidsgiver.altinn.AltinnClient
 import no.nav.helsearbeidsgiver.altinn.CacheConfig
 import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonKlient
@@ -133,12 +132,29 @@ fun Module.externalSystemClients(env: Env, envOauth2: EnvOauth2) {
         OAuth2TokenProvider(accessTokenService, azureAdConfig)
     } bind AccessTokenProvider::class
 
-    single { AaregArbeidsforholdClientImpl(env.aaregUrl, get(qualifier = named("PROXY")), get()) } bind AaregArbeidsforholdClient::class
+    single(named("AAREG")) {
+        val azureAdConfig = envOauth2.azureAdConfig(envOauth2.scopeAareg)
+        val tokenResolver = TokenResolver()
+        val oauthHttpClient = DefaultOAuth2HttpClient(get())
+        val accessTokenService = OAuth2AccessTokenService(
+            tokenResolver,
+            OnBehalfOfTokenClient(oauthHttpClient),
+            ClientCredentialsTokenClient(oauthHttpClient),
+            TokenExchangeClient(oauthHttpClient)
+        )
+
+        OAuth2TokenProvider(accessTokenService, azureAdConfig)
+    } bind AccessTokenProvider::class
 
     single {
         val tokenProvider: AccessTokenProvider = get(qualifier = named("PDL"))
         PdlClient(env.pdlUrl, Behandlingsgrunnlag.FRITAKAGP, tokenProvider::getToken)
     } bind PdlClient::class
+
+    single {
+        val tokenProvider: AccessTokenProvider = get(qualifier = named("AAREG"))
+        AaregClient(env.aaregUrl, tokenProvider::getToken)
+    } bind AaregClient::class
 
     single {
         val tokenProvider: AccessTokenProvider = get(qualifier = named("DOKARKIV"))

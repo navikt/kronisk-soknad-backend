@@ -11,6 +11,7 @@ accessOutbound:
     - dokarkiv.dev-fss-pub.nais.io
     - helsearbeidsgiver-proxy.dev-fss-pub.nais.io
     - pdl-api.dev-fss-pub.nais.io
+    - aareg-services.dev-fss-pub.nais.io
     - oppgave-q1.dev-fss-pub.nais.io
     - api-gw-q1.oera.no
     - tt02.altinn.no
@@ -39,6 +40,8 @@ env:
     value: api://dev-fss.oppgavehandtering.oppgave-q1/.default
   - name: PDL_SCOPE
     value: api://dev-fss.pdl.pdl-api/.default
+  - name: AAREG_SCOPE
+    value: api://dev-fss.arbeidsforhold.aareg-services-nais/.default
   - name: PROXY_SCOPE
     value: api://dev-fss.helsearbeidsgiver.helsearbeidsgiver-proxy/.default
   - name: FRONTEND_URL
@@ -55,6 +58,8 @@ env:
     value: https://oppgave-q1.dev-fss-pub.nais.io/api/v1/oppgaver
   - name: PDL_URL
     value: https://pdl-api.dev-fss-pub.nais.io/graphql
+  - name: AAREG_URL
+    value: https://aareg-services.dev-fss-pub.nais.io/api/v1/arbeidstaker/arbeidsforhold?sporingsinformasjon=false&historikk=false
   - name: ALTINN_SERVICE_OWNER_GW_URL
     value: https://api-gw-q1.oera.no/ekstern/altinn/api/serviceowner
   - name: ALTINN_ENDPOINT

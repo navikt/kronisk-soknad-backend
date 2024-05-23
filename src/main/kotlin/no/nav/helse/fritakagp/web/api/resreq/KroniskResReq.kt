@@ -1,6 +1,5 @@
 package no.nav.helse.fritakagp.web.api.resreq
 
-import no.nav.helse.arbeidsgiver.integrasjoner.aareg2.Arbeidsforhold
 import no.nav.helse.arbeidsgiver.web.validation.isValidIdentitetsnummer
 import no.nav.helse.arbeidsgiver.web.validation.isValidOrganisasjonsnummer
 import no.nav.helse.fritakagp.domain.Arbeidsgiverperiode
@@ -17,6 +16,7 @@ import no.nav.helse.fritakagp.web.api.resreq.validation.isVirksomhet
 import no.nav.helse.fritakagp.web.api.resreq.validation.maanedsInntektErMellomNullOgTiMil
 import no.nav.helse.fritakagp.web.api.resreq.validation.måHaAktivtArbeidsforhold
 import no.nav.helse.fritakagp.web.api.resreq.validation.refusjonsDagerIkkeOverstigerPeriodelengde
+import no.nav.helsearbeidsgiver.aareg.Arbeidsforhold
 import org.valiktor.functions.isBetween
 import org.valiktor.functions.isEmpty
 import org.valiktor.functions.isEqualTo

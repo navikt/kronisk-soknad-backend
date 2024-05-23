@@ -9,6 +9,7 @@ accessOutbound:
     - dokarkiv.prod-fss-pub.nais.io
     - helsearbeidsgiver-proxy.prod-fss-pub.nais.io
     - pdl-api.prod-fss-pub.nais.io
+    - aareg-services.prod-fss-pub.nais.io
     - oppgave.prod-fss-pub.nais.io
     - ag-notifikasjon-produsent-api.intern.nav.no
     - api-gw.oera.no
@@ -40,11 +41,12 @@ env:
     value: api://prod-fss.helsearbeidsgiver.helsearbeidsgiver-proxy/.default
   - name: PDL_SCOPE
     value: api://prod-fss.pdl.pdl-api/.default
+  - name: AAREG_SCOPE
+    value: api://prod-fss.arbeidsforhold.aareg-services-nais/.default
   - name: FRONTEND_URL
     value: https://arbeidsgiver.nav.no/fritak-agp
-    # TODO ikke i dev
   - name: AAREG_URL
-    value: https://helsearbeidsgiver-proxy.prod-fss-pub.nais.io/aareg-arbeidsforhold
+    value: https://aareg-services.prod-fss-pub.nais.io/api/v1/arbeidstaker/arbeidsforhold?sporingsinformasjon=false&historikk=false
   - name: ARBEIDSGIVER_NOTIFIKASJON_API_URL
     value: https://ag-notifikasjon-produsent-api.intern.nav.no/api/graphql
   - name: DOKARKIV_URL

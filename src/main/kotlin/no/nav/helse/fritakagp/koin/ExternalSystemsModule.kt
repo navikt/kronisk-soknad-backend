@@ -185,7 +185,7 @@ fun Module.externalSystemClients(env: Env, envOauth2: EnvOauth2) {
         )
     } bind BrukernotifikasjonBeskjedSender::class
 
-    single { Norg2Client(env.norg2Url, get(qualifier = named("PROXY")), get()) }
+    single { Norg2Client(env.norg2Url, get()) }
     single { BehandlendeEnhetService(get(), get()) }
 }
 

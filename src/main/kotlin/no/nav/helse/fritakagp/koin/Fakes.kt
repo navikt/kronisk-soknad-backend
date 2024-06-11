@@ -142,11 +142,6 @@ fun Module.mockExternalDependecies() {
     single {
         object : Norg2Client(
             "",
-            object : AccessTokenProvider {
-                override fun getToken(): String {
-                    return "token"
-                }
-            },
             get()
         ) {
             override suspend fun hentAlleArbeidsfordelinger(

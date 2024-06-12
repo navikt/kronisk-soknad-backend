@@ -9,7 +9,6 @@ import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.http.withCharset
 import kotlinx.coroutines.runBlocking
-import no.nav.helsearbeidsgiver.tokenprovider.AccessTokenProvider
 import java.time.LocalDate
 
 /**
@@ -24,7 +23,6 @@ import java.time.LocalDate
  */
 open class Norg2Client(
     private val url: String,
-    private val stsClient: AccessTokenProvider,
     private val httpClient: HttpClient
 ) {
 
@@ -32,12 +30,12 @@ open class Norg2Client(
      * Oppslag av informasjon om ruting av arbeidsoppgaver til enheter.
      */
     open suspend fun hentAlleArbeidsfordelinger(request: ArbeidsfordelingRequest, callId: String?): List<ArbeidsfordelingResponse> {
-        val stsToken = stsClient.getToken()
         val res: List<ArbeidsfordelingResponse> = runBlocking {
             httpClient.post(url) {
                 contentType(ContentType.Application.Json.withCharset(Charsets.UTF_8))
-                header("Authorization", "Bearer $stsToken")
                 header("X-Correlation-ID", callId)
+                header("Nav-Call-Id", callId)
+                header("Nav-Consumer-Id", "fritakagp")
                 setBody(request)
             }.body()
         }

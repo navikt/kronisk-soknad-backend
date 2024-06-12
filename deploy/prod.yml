@@ -7,7 +7,6 @@ accessOutbound:
   external:
     - kafka-schema-registry.nais.adeo.no
     - dokarkiv.prod-fss-pub.nais.io
-    - helsearbeidsgiver-proxy.prod-fss-pub.nais.io
     - pdl-api.prod-fss-pub.nais.io
     - aareg-services.prod-fss-pub.nais.io
     - oppgave.prod-fss-pub.nais.io
@@ -38,8 +37,6 @@ env:
     value: api://prod-fss.teamdokumenthandtering.dokarkiv/.default
   - name: OPPGAVE_SCOPE
     value: api://prod-fss.oppgavehandtering.oppgave/.default
-  - name: PROXY_SCOPE
-    value: api://prod-fss.helsearbeidsgiver.helsearbeidsgiver-proxy/.default
   - name: PDL_SCOPE
     value: api://prod-fss.pdl.pdl-api/.default
   - name: AAREG_SCOPE

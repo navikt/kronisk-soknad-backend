@@ -77,20 +77,6 @@ fun Module.externalSystemClients(env: Env, envOauth2: EnvOauth2) {
         OAuth2TokenProvider(accessTokenService, azureAdConfig)
     } bind AccessTokenProvider::class
 
-    single(named("PROXY")) {
-        val azureAdConfig = envOauth2.azureAdConfig(envOauth2.scopeProxy)
-        val tokenResolver = TokenResolver()
-        val oauthHttpClient = DefaultOAuth2HttpClient(get())
-        val accessTokenService = OAuth2AccessTokenService(
-            tokenResolver,
-            OnBehalfOfTokenClient(oauthHttpClient),
-            ClientCredentialsTokenClient(oauthHttpClient),
-            TokenExchangeClient(oauthHttpClient)
-        )
-
-        OAuth2TokenProvider(accessTokenService, azureAdConfig)
-    } bind AccessTokenProvider::class
-
     single(named("DOKARKIV")) {
         val azureAdConfig = envOauth2.azureAdConfig(envOauth2.scopeDokarkiv)
         val tokenResolver = TokenResolver()

@@ -72,9 +72,6 @@ spec:
   accessPolicy:
     outbound:
       rules:
-        - application: helsearbeidsgiver-proxy
-          namespace: helsearbeidsgiver
-          cluster: {{ context }}-fss
         - application: clamav
           namespace: nais-system
         {{#each accessOutbound.apps as |app|}}

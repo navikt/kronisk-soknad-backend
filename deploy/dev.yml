@@ -9,7 +9,6 @@ accessOutbound:
   external:
     - kafka-schema-registry.nais-q.adeo.no
     - dokarkiv.dev-fss-pub.nais.io
-    - helsearbeidsgiver-proxy.dev-fss-pub.nais.io
     - pdl-api.dev-fss-pub.nais.io
     - aareg-services.dev-fss-pub.nais.io
     - oppgave-q1.dev-fss-pub.nais.io
@@ -43,8 +42,6 @@ env:
     value: api://dev-fss.pdl.pdl-api/.default
   - name: AAREG_SCOPE
     value: api://dev-fss.arbeidsforhold.aareg-services-nais/.default
-  - name: PROXY_SCOPE
-    value: api://dev-fss.helsearbeidsgiver.helsearbeidsgiver-proxy/.default
   - name: FRONTEND_URL
     value: https://arbeidsgiver.intern.dev.nav.no/fritak-agp
   - name: ARBEIDSGIVER_NOTIFIKASJON_API_URL

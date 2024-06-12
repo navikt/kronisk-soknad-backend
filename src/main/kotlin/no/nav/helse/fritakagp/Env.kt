@@ -87,7 +87,6 @@ class EnvOauth2(mainConfig: ApplicationConfig) {
     val authClientAuthMethod = "authentication.client_auth_method".prop()
     val authClientSecret = "authentication.client_secret".prop()
 
-    val scopeProxy = "proxyscope".prop()
     val scopeOppgave = "oppgavescope".prop()
     val scopeDokarkiv = "dokarkivscope".prop()
     val scopeArbeidsgivernotifikasjon = "arbeidsgivernotifikasjonscope".prop()

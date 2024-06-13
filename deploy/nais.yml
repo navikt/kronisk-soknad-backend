@@ -68,7 +68,13 @@ spec:
   {{#each ingresses as |ingress|}}
     - {{ ingress }}
   {{/each}}
-
+  {{#if maskinporten}}
+  maskinporten:
+    enabled: true
+    scopes:
+      consumes:
+        - name: "altinn:serviceowner/reportees"
+  {{/if}}
   accessPolicy:
     outbound:
       rules:

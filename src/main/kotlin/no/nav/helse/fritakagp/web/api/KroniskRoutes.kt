@@ -54,7 +54,7 @@ fun Route.kroniskRoutes(
     belopBeregning: BeloepBeregning,
     aaregClient: AaregClient,
     pdlService: PdlService,
-    arbeidsgiverNotifikasjonKlient: ArbeidsgiverNotifikasjonKlient,
+    arbeidsgiverNotifikasjonKlient: ArbeidsgiverNotifikasjonKlient
 ) {
     val logger = "kroniskRoutes".logger()
 
@@ -105,11 +105,11 @@ fun Route.kroniskRoutes(
                 kroniskSoeknadRepo.insert(soeknad)
                 bakgunnsjobbService.opprettJobb<KroniskSoeknadProcessor>(
                     maksAntallForsoek = 10,
-                    data = om.writeValueAsString(KroniskSoeknadProcessor.JobbData(soeknad.id)),
+                    data = om.writeValueAsString(KroniskSoeknadProcessor.JobbData(soeknad.id))
                 )
                 bakgunnsjobbService.opprettJobb<KroniskSoeknadKvitteringProcessor>(
                     maksAntallForsoek = 10,
-                    data = om.writeValueAsString(KroniskSoeknadKvitteringProcessor.Jobbdata(soeknad.id)),
+                    data = om.writeValueAsString(KroniskSoeknadKvitteringProcessor.Jobbdata(soeknad.id))
                 )
 
                 call.respond(HttpStatusCode.Created, soeknad)
@@ -168,15 +168,15 @@ fun Route.kroniskRoutes(
                 kroniskKravRepo.insert(krav)
                 bakgunnsjobbService.opprettJobb<KroniskKravProcessor>(
                     maksAntallForsoek = 10,
-                    data = om.writeValueAsString(KroniskKravProcessor.JobbData(krav.id)),
+                    data = om.writeValueAsString(KroniskKravProcessor.JobbData(krav.id))
                 )
                 bakgunnsjobbService.opprettJobb<KroniskKravKvitteringProcessor>(
                     maksAntallForsoek = 10,
-                    data = om.writeValueAsString(KroniskKravKvitteringProcessor.Jobbdata(krav.id)),
+                    data = om.writeValueAsString(KroniskKravKvitteringProcessor.Jobbdata(krav.id))
                 )
                 bakgunnsjobbService.opprettJobb<ArbeidsgiverNotifikasjonProcessor>(
                     maksAntallForsoek = 10,
-                    data = om.writeValueAsString(ArbeidsgiverNotifikasjonProcessor.JobbData(krav.id, ArbeidsgiverNotifikasjonProcessor.JobbData.SkjemaType.KroniskKrav)),
+                    data = om.writeValueAsString(ArbeidsgiverNotifikasjonProcessor.JobbData(krav.id, ArbeidsgiverNotifikasjonProcessor.JobbData.SkjemaType.KroniskKrav))
                 )
 
                 call.respond(HttpStatusCode.Created, krav)
@@ -238,15 +238,15 @@ fun Route.kroniskRoutes(
                 kroniskKravRepo.insert(kravTilOppdatering)
                 bakgunnsjobbService.opprettJobb<KroniskKravEndreProcessor>(
                     maksAntallForsoek = 10,
-                    data = om.writeValueAsString(KroniskKravProcessor.JobbData(forrigeKrav.id)),
+                    data = om.writeValueAsString(KroniskKravProcessor.JobbData(forrigeKrav.id))
                 )
                 bakgunnsjobbService.opprettJobb<KroniskKravKvitteringProcessor>(
                     maksAntallForsoek = 10,
-                    data = om.writeValueAsString(KroniskKravKvitteringProcessor.Jobbdata(kravTilOppdatering.id)),
+                    data = om.writeValueAsString(KroniskKravKvitteringProcessor.Jobbdata(kravTilOppdatering.id))
                 )
                 bakgunnsjobbService.opprettJobb<ArbeidsgiverNotifikasjonProcessor>(
                     maksAntallForsoek = 10,
-                    data = om.writeValueAsString(ArbeidsgiverNotifikasjonProcessor.JobbData(kravTilOppdatering.id, ArbeidsgiverNotifikasjonProcessor.JobbData.SkjemaType.KroniskKrav)),
+                    data = om.writeValueAsString(ArbeidsgiverNotifikasjonProcessor.JobbData(kravTilOppdatering.id, ArbeidsgiverNotifikasjonProcessor.JobbData.SkjemaType.KroniskKrav))
                 )
 
                 call.respond(HttpStatusCode.OK, kravTilOppdatering)
@@ -276,7 +276,7 @@ fun Route.kroniskRoutes(
                 kroniskKravRepo.update(form)
                 bakgunnsjobbService.opprettJobb<KroniskKravSlettProcessor>(
                     maksAntallForsoek = 10,
-                    data = om.writeValueAsString(KroniskKravProcessor.JobbData(form.id)),
+                    data = om.writeValueAsString(KroniskKravProcessor.JobbData(form.id))
                 )
                 call.respond(HttpStatusCode.OK)
             }

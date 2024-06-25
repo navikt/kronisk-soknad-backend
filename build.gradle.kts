@@ -48,10 +48,9 @@ tasks.named<Jar>("jar") {
     archiveBaseName.set("app")
     manifest {
         attributes["Main-Class"] = mainClassFritakAgp
-        attributes["Class-Path"] =
-            configurations.runtimeClasspath.get().joinToString(separator = " ") {
-                it.name
-            }
+        attributes["Class-Path"] = configurations.runtimeClasspath.get().joinToString(separator = " ") {
+            it.name
+        }
     }
     doLast {
         configurations.runtimeClasspath.get().forEach {

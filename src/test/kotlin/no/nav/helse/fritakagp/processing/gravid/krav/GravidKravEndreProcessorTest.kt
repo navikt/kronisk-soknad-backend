@@ -72,7 +72,7 @@ class GravidKravEndreProcessorTest {
                 withArg {
                     assertEquals("BEH_REF", it.oppgavetype)
                 },
-                any(),
+                any()
             )
         }
 

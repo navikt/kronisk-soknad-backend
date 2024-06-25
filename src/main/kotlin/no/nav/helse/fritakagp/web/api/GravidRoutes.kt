@@ -12,8 +12,6 @@ import io.ktor.server.routing.get
 import io.ktor.server.routing.patch
 import io.ktor.server.routing.post
 import io.ktor.server.routing.route
-import java.time.LocalDateTime
-import java.util.*
 import kotlinx.coroutines.runBlocking
 import no.nav.hag.utils.bakgrunnsjobb.BakgrunnsjobbService
 import no.nav.helse.fritakagp.GravidKravMetrics
@@ -46,6 +44,8 @@ import no.nav.helsearbeidsgiver.altinn.AltinnClient
 import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonKlient
 import org.valiktor.ConstraintViolationException
 import org.valiktor.DefaultConstraintViolation
+import java.time.LocalDateTime
+import java.util.*
 
 fun Route.gravidRoutes(
     breegClient: BrregClient,

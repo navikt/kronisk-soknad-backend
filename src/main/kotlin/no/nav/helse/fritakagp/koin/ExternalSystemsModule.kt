@@ -1,9 +1,6 @@
 package no.nav.helse.fritakagp.koin
 
 import com.nimbusds.oauth2.sdk.auth.ClientAuthenticationMethod
-import java.net.URI
-import java.time.Duration
-import kotlin.time.toKotlinDuration
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.OppgaveKlient
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.OppgaveKlientImpl
 import no.nav.helse.fritakagp.Env
@@ -39,6 +36,9 @@ import no.nav.security.token.support.client.core.oauth2.TokenExchangeClient
 import org.koin.core.module.Module
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
+import java.net.URI
+import java.time.Duration
+import kotlin.time.toKotlinDuration
 
 fun Module.externalSystemClients(env: Env, envOauth2: EnvOauth2) {
     single {

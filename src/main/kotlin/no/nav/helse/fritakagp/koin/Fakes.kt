@@ -2,8 +2,6 @@ package no.nav.helse.fritakagp.koin
 
 import io.mockk.coEvery
 import io.mockk.mockk
-import java.time.LocalDate
-import java.time.LocalDateTime
 import kotlinx.serialization.json.Json
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.OppgaveKlient
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.OppgaveResponse
@@ -41,6 +39,8 @@ import no.nav.helsearbeidsgiver.tokenprovider.AccessTokenProvider
 import org.koin.core.module.Module
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
+import java.time.LocalDate
+import java.time.LocalDateTime
 
 fun Module.mockExternalDependecies() {
     single {

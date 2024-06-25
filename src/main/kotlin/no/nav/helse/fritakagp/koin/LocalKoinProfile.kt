@@ -1,7 +1,6 @@
 package no.nav.helse.fritakagp.koin
 
 import com.zaxxer.hikari.HikariDataSource
-import javax.sql.DataSource
 import no.nav.hag.utils.bakgrunnsjobb.BakgrunnsjobbRepository
 import no.nav.hag.utils.bakgrunnsjobb.BakgrunnsjobbService
 import no.nav.hag.utils.bakgrunnsjobb.PostgresBakgrunnsjobbRepository
@@ -52,6 +51,7 @@ import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjo
 import org.koin.core.module.Module
 import org.koin.dsl.bind
 import org.koin.dsl.module
+import javax.sql.DataSource
 
 fun localConfig(env: Env.Local): Module = module {
     mockExternalDependecies()

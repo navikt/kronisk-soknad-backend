@@ -1,12 +1,12 @@
 package no.nav.helse.fritakagp.web.api.resreq.validation
 
-import java.time.LocalDate
-import java.time.temporal.ChronoUnit
 import no.nav.helse.fritakagp.domain.Arbeidsgiverperiode
 import no.nav.helse.fritakagp.domain.FravaerData
 import no.nav.helse.fritakagp.domain.GodkjenteFiletyper
 import org.valiktor.Constraint
 import org.valiktor.Validator
+import java.time.LocalDate
+import java.time.temporal.ChronoUnit
 
 interface CustomConstraint : Constraint {
     override val messageBundle: String

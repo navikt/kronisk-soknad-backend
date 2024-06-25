@@ -1,6 +1,5 @@
 package no.nav.helse.fritakagp.web.api.resreq
 
-import java.time.LocalDate
 import no.nav.helse.arbeidsgiver.web.validation.isValidIdentitetsnummer
 import no.nav.helse.arbeidsgiver.web.validation.isValidOrganisasjonsnummer
 import no.nav.helse.fritakagp.domain.Arbeidsgiverperiode
@@ -25,6 +24,7 @@ import org.valiktor.functions.isNotNull
 import org.valiktor.functions.isTrue
 import org.valiktor.functions.validateForEach
 import org.valiktor.validate
+import java.time.LocalDate
 
 data class GravidSoknadRequest(
     val virksomhetsnummer: String,

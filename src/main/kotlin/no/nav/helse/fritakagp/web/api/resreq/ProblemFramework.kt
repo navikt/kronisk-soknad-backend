@@ -1,10 +1,10 @@
 package no.nav.helse.fritakagp.web.api.resreq
 
-import java.net.URI
-import java.util.*
 import no.nav.helse.fritakagp.domain.Arbeidsgiverperiode
 import org.valiktor.ConstraintViolation
 import org.valiktor.i18n.toMessage
+import java.net.URI
+import java.util.*
 
 /**
  * Tilbakemeldings-standard basert på

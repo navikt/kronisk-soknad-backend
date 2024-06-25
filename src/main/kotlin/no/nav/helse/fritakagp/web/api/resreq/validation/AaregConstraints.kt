@@ -1,9 +1,9 @@
 package no.nav.helse.fritakagp.web.api.resreq.validation
 
-import java.time.LocalDate
 import no.nav.helse.fritakagp.domain.Arbeidsgiverperiode
 import no.nav.helsearbeidsgiver.aareg.Arbeidsforhold
 import org.valiktor.Validator
+import java.time.LocalDate
 import no.nav.helsearbeidsgiver.aareg.Periode as AaregPeriode
 
 class ArbeidsforholdConstraint : CustomConstraint

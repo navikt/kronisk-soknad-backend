@@ -68,42 +68,41 @@ fun Module.mockExternalDependecies() {
 
     single {
         mockk<AaregClient> {
-            coEvery { hentArbeidsforhold(any(), any()) } returns
-                listOf(
-                    Arbeidsforhold(
-                        Arbeidsgiver("test", "810007842"),
-                        Opplysningspliktig("Juice", "810007702"),
-                        emptyList(),
-                        Ansettelsesperiode(
-                            Periode(LocalDate.MIN, null),
-                        ),
-                        LocalDate.MIN.atStartOfDay(),
+            coEvery { hentArbeidsforhold(any(), any()) } returns listOf(
+                Arbeidsforhold(
+                    Arbeidsgiver("test", "810007842"),
+                    Opplysningspliktig("Juice", "810007702"),
+                    emptyList(),
+                    Ansettelsesperiode(
+                        Periode(LocalDate.MIN, null),
                     ),
-                    Arbeidsforhold(
-                        Arbeidsgiver("test", "910098896"),
-                        Opplysningspliktig("Juice", "910098896"),
-                        emptyList(),
-                        Ansettelsesperiode(
-                            Periode(
-                                LocalDate.MIN,
-                                null,
-                            ),
+                    LocalDate.MIN.atStartOfDay(),
+                ),
+                Arbeidsforhold(
+                    Arbeidsgiver("test", "910098896"),
+                    Opplysningspliktig("Juice", "910098896"),
+                    emptyList(),
+                    Ansettelsesperiode(
+                        Periode(
+                            LocalDate.MIN,
+                            null,
                         ),
-                        LocalDate.MIN.atStartOfDay(),
                     ),
-                    Arbeidsforhold(
-                        Arbeidsgiver("test", "917404437"),
-                        Opplysningspliktig("Juice", "910098896"),
-                        emptyList(),
-                        Ansettelsesperiode(
-                            Periode(
-                                LocalDate.MIN,
-                                null,
-                            ),
+                    LocalDate.MIN.atStartOfDay(),
+                ),
+                Arbeidsforhold(
+                    Arbeidsgiver("test", "917404437"),
+                    Opplysningspliktig("Juice", "910098896"),
+                    emptyList(),
+                    Ansettelsesperiode(
+                        Periode(
+                            LocalDate.MIN,
+                            null,
                         ),
-                        LocalDate.MIN.atStartOfDay(),
                     ),
-                )
+                    LocalDate.MIN.atStartOfDay(),
+                ),
+            )
         }
     }
 
@@ -115,38 +114,35 @@ fun Module.mockExternalDependecies() {
     single {
         mockk<PdlClient> {
             coEvery { personNavn(any()) } returns PersonNavn("Ola", "M", "Avsender")
-            coEvery { fullPerson(any()) } returns
-                FullPerson(
-                    navn = PersonNavn(fornavn = "Per", mellomnavn = "", etternavn = "Ulv"),
-                    foedselsdato = LocalDate.of(1900, 1, 1),
-                    ident = "aktør-id",
-                    diskresjonskode = "SPSF",
-                    geografiskTilknytning = "SWE",
-                )
+            coEvery { fullPerson(any()) } returns FullPerson(
+                navn = PersonNavn(fornavn = "Per", mellomnavn = "", etternavn = "Ulv"),
+                foedselsdato = LocalDate.of(1900, 1, 1),
+                ident = "aktør-id",
+                diskresjonskode = "SPSF",
+                geografiskTilknytning = "SWE",
+            )
         }
     }
 
     single {
         object : OppgaveKlient {
-            override suspend fun hentOppgave(
-                oppgaveId: Int,
-                callId: String,
-            ): OppgaveResponse = OppgaveResponse(oppgaveId, 1, oppgavetype = "JFR", aktivDato = LocalDateTime.now().minusDays(3).toLocalDate(), prioritet = Prioritet.NORM.toString())
+            override suspend fun hentOppgave(oppgaveId: Int, callId: String): OppgaveResponse {
+                return OppgaveResponse(oppgaveId, 1, oppgavetype = "JFR", aktivDato = LocalDateTime.now().minusDays(3).toLocalDate(), prioritet = Prioritet.NORM.toString())
+            }
 
             override suspend fun opprettOppgave(
                 opprettOppgaveRequest: OpprettOppgaveRequest,
                 callId: String,
-            ): OpprettOppgaveResponse =
-                OpprettOppgaveResponse(
-                    1234,
-                    "0100",
-                    tema = "KON",
-                    oppgavetype = "JFR",
-                    versjon = 1,
-                    aktivDato = LocalDate.now(),
-                    Prioritet.NORM,
-                    Status.UNDER_BEHANDLING,
-                )
+            ): OpprettOppgaveResponse = OpprettOppgaveResponse(
+                1234,
+                "0100",
+                tema = "KON",
+                oppgavetype = "JFR",
+                versjon = 1,
+                aktivDato = LocalDate.now(),
+                Prioritet.NORM,
+                Status.UNDER_BEHANDLING,
+            )
         }
     } bind OppgaveKlient::class
 

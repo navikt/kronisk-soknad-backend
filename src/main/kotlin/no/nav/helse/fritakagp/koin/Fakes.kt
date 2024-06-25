@@ -75,9 +75,9 @@ fun Module.mockExternalDependecies() {
                         Opplysningspliktig("Juice", "810007702"),
                         emptyList(),
                         Ansettelsesperiode(
-                            Periode(LocalDate.MIN, null)
+                            Periode(LocalDate.MIN, null),
                         ),
-                        LocalDate.MIN.atStartOfDay()
+                        LocalDate.MIN.atStartOfDay(),
                     ),
                     Arbeidsforhold(
                         Arbeidsgiver("test", "910098896"),
@@ -86,10 +86,10 @@ fun Module.mockExternalDependecies() {
                         Ansettelsesperiode(
                             Periode(
                                 LocalDate.MIN,
-                                null
-                            )
+                                null,
+                            ),
                         ),
-                        LocalDate.MIN.atStartOfDay()
+                        LocalDate.MIN.atStartOfDay(),
                     ),
                     Arbeidsforhold(
                         Arbeidsgiver("test", "917404437"),
@@ -98,11 +98,11 @@ fun Module.mockExternalDependecies() {
                         Ansettelsesperiode(
                             Periode(
                                 LocalDate.MIN,
-                                null
-                            )
+                                null,
+                            ),
                         ),
-                        LocalDate.MIN.atStartOfDay()
-                    )
+                        LocalDate.MIN.atStartOfDay(),
+                    ),
                 )
         }
     }
@@ -121,7 +121,7 @@ fun Module.mockExternalDependecies() {
                     foedselsdato = LocalDate.of(1900, 1, 1),
                     ident = "aktør-id",
                     diskresjonskode = "SPSF",
-                    geografiskTilknytning = "SWE"
+                    geografiskTilknytning = "SWE",
                 )
         }
     }
@@ -130,12 +130,12 @@ fun Module.mockExternalDependecies() {
         object : OppgaveKlient {
             override suspend fun hentOppgave(
                 oppgaveId: Int,
-                callId: String
+                callId: String,
             ): OppgaveResponse = OppgaveResponse(oppgaveId, 1, oppgavetype = "JFR", aktivDato = LocalDateTime.now().minusDays(3).toLocalDate(), prioritet = Prioritet.NORM.toString())
 
             override suspend fun opprettOppgave(
                 opprettOppgaveRequest: OpprettOppgaveRequest,
-                callId: String
+                callId: String,
             ): OpprettOppgaveResponse =
                 OpprettOppgaveResponse(
                     1234,
@@ -145,7 +145,7 @@ fun Module.mockExternalDependecies() {
                     versjon = 1,
                     aktivDato = LocalDate.now(),
                     Prioritet.NORM,
-                    Status.UNDER_BEHANDLING
+                    Status.UNDER_BEHANDLING,
                 )
         }
     } bind OppgaveKlient::class
@@ -157,33 +157,32 @@ fun Module.mockExternalDependecies() {
     single {
         object : Norg2Client(
             "",
-            get()
+            get(),
         ) {
             override suspend fun hentAlleArbeidsfordelinger(
                 request: ArbeidsfordelingRequest,
-                callId: String?
-            ): List<ArbeidsfordelingResponse> =
-                listOf(
-                    ArbeidsfordelingResponse(
-                        aktiveringsdato = LocalDate.of(2020, 11, 30),
-                        antallRessurser = 0,
-                        enhetId = 123456789,
-                        enhetNr = "1234",
-                        kanalstrategi = null,
-                        navn = "NAV Område",
-                        nedleggelsesdato = null,
-                        oppgavebehandler = false,
-                        orgNivaa = "SPESEN",
-                        orgNrTilKommunaltNavKontor = "",
-                        organisasjonsnummer = null,
-                        sosialeTjenester = "",
-                        status = "Aktiv",
-                        type = "KO",
-                        underAvviklingDato = null,
-                        underEtableringDato = LocalDate.of(2020, 11, 30),
-                        versjon = 1
-                    )
-                )
+                callId: String?,
+            ): List<ArbeidsfordelingResponse> = listOf(
+                ArbeidsfordelingResponse(
+                    aktiveringsdato = LocalDate.of(2020, 11, 30),
+                    antallRessurser = 0,
+                    enhetId = 123456789,
+                    enhetNr = "1234",
+                    kanalstrategi = null,
+                    navn = "NAV Område",
+                    nedleggelsesdato = null,
+                    oppgavebehandler = false,
+                    orgNivaa = "SPESEN",
+                    orgNrTilKommunaltNavKontor = "",
+                    organisasjonsnummer = null,
+                    sosialeTjenester = "",
+                    status = "Aktiv",
+                    type = "KO",
+                    underAvviklingDato = null,
+                    underEtableringDato = LocalDate.of(2020, 11, 30),
+                    versjon = 1,
+                ),
+            )
         }
     } bind Norg2Client::class
 

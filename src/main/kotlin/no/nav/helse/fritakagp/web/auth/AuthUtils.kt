@@ -9,7 +9,7 @@ import no.nav.helse.fritakagp.integration.altinn.hasAccess
 import no.nav.helsearbeidsgiver.altinn.AltinnClient
 import no.nav.security.token.support.core.jwt.JwtToken
 import java.time.Instant
-import java.util.*
+import java.util.Date
 
 fun PipelineContext<Unit, ApplicationCall>.authorize(authorizer: AltinnClient, arbeidsgiverId: String) {
     val identitetsnummer = hentIdentitetsnummerFraLoginToken(call.request)

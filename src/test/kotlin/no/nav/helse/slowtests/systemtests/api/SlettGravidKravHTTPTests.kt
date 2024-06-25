@@ -9,7 +9,7 @@ import no.nav.helse.fritakagp.db.GravidKravRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.koin.test.inject
-import java.util.*
+import java.util.UUID
 
 class SlettGravidKravHTTPTests : SystemTestBase() {
     private val kravGravidUrl = "/fritak-agp-api/api/v1/gravid/krav"

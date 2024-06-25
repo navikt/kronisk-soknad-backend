@@ -17,7 +17,7 @@ import no.nav.helsearbeidsgiver.utils.log.logger
 import java.net.URL
 import java.time.LocalDateTime
 import java.time.ZoneId
-import java.util.*
+import java.util.UUID
 
 class BrukernotifikasjonProcessor(
     private val gravidKravRepo: GravidKravRepository,

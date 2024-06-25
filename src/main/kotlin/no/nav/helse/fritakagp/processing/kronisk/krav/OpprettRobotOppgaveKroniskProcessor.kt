@@ -13,7 +13,7 @@ import no.nav.helse.fritakagp.domain.KroniskKrav
 import no.nav.helse.fritakagp.service.BehandlendeEnhetService
 import no.nav.helse.fritakagp.service.PdlService
 import no.nav.helsearbeidsgiver.utils.log.logger
-import java.util.*
+import java.util.UUID
 
 class OpprettRobotOppgaveKroniskProcessor(
     private val kroniskKravRepo: KroniskKravRepository,

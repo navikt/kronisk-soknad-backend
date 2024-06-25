@@ -40,7 +40,7 @@ import no.nav.helsearbeidsgiver.altinn.AltinnClient
 import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonKlient
 import no.nav.helsearbeidsgiver.utils.log.logger
 import java.time.LocalDateTime
-import java.util.*
+import java.util.UUID
 
 fun Route.kroniskRoutes(
     breegClient: BrregClient,

@@ -3,7 +3,7 @@ package no.nav.helse.fritakagp.db
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
 import java.sql.Connection
-import java.util.*
+import java.util.UUID
 import javax.sql.DataSource
 
 interface SimpleJsonbEntity {

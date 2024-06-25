@@ -20,7 +20,7 @@ import no.nav.helsearbeidsgiver.utils.log.logger
 import org.valiktor.ConstraintViolationException
 import java.lang.reflect.InvocationTargetException
 import java.net.URI
-import java.util.*
+import java.util.UUID
 
 fun Application.configureExceptionHandling() {
     install(StatusPages) {

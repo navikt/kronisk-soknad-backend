@@ -34,7 +34,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.io.IOException
-import java.util.*
+import java.util.Base64
 import kotlin.test.assertEquals
 import kotlin.test.fail
 

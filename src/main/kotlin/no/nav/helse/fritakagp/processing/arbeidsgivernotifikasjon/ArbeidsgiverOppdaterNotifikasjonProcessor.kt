@@ -13,7 +13,7 @@ import no.nav.helsearbeidsgiver.utils.log.logger
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
-import java.util.*
+import java.util.UUID
 
 /* One-off-job som skal oppdatere alle saker med gammel status "under behandling" til ny status "MOTTATT"
 * Når alle disse jobbtypene er utført (eller har feilet for godt), kan denne klassen slettes - sjekk det med sql:

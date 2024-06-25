@@ -4,7 +4,7 @@ import de.m3y.kformat.Table
 import de.m3y.kformat.table
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.*
+import java.util.Base64
 import kotlin.math.roundToInt
 
 fun decodeBase64File(datafile: String): ByteArray {

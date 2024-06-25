@@ -5,7 +5,7 @@ import no.nav.hag.utils.bakgrunnsjobb.Bakgrunnsjobb
 import no.nav.hag.utils.bakgrunnsjobb.BakgrunnsjobbProsesserer
 import no.nav.helse.fritakagp.GravidSoeknadMetrics
 import no.nav.helse.fritakagp.db.GravidSoeknadRepository
-import java.util.*
+import java.util.UUID
 
 class GravidSoeknadKvitteringProcessor(
     private val gravidSoeknadKvitteringSender: GravidSoeknadKvitteringSender,

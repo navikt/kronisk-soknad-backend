@@ -45,7 +45,7 @@ import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjo
 import org.valiktor.ConstraintViolationException
 import org.valiktor.DefaultConstraintViolation
 import java.time.LocalDateTime
-import java.util.*
+import java.util.UUID
 
 fun Route.gravidRoutes(
     breegClient: BrregClient,

@@ -6,10 +6,6 @@ import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.OppgaveKlientImpl
 import no.nav.helse.fritakagp.Env
 import no.nav.helse.fritakagp.EnvOauth2
 import no.nav.helse.fritakagp.integration.GrunnbeloepClient
-import no.nav.helse.fritakagp.integration.altinn.AltinnAuthorizer
-import no.nav.helse.fritakagp.integration.altinn.AltinnRepo
-import no.nav.helse.fritakagp.integration.altinn.CachedAuthRepo
-import no.nav.helse.fritakagp.integration.altinn.DefaultAltinnAuthorizer
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.integration.gcp.BucketStorageImpl
 import no.nav.helse.fritakagp.integration.kafka.BrukernotifikasjonBeskjedKafkaProducer
@@ -46,20 +42,14 @@ import kotlin.time.toKotlinDuration
 
 fun Module.externalSystemClients(env: Env, envOauth2: EnvOauth2) {
     single {
-        CachedAuthRepo(
-            AltinnClient(
-                url = env.altinnServiceOwnerUrl,
-                serviceCode = env.altinnServiceOwnerServiceId,
-                apiGwApiKey = env.altinnServiceOwnerGatewayApiKey,
-                altinnApiKey = env.altinnServiceOwnerApiKey,
-                cacheConfig = CacheConfig(Duration.ofMinutes(60).toKotlinDuration(), 100)
-            )
+        AltinnClient(
+            url = env.altinnServiceOwnerUrl,
+            serviceCode = env.altinnServiceOwnerServiceId,
+            apiGwApiKey = env.altinnServiceOwnerGatewayApiKey,
+            altinnApiKey = env.altinnServiceOwnerApiKey,
+            cacheConfig = CacheConfig(Duration.ofMinutes(60).toKotlinDuration(), 100)
         )
-    } bind AltinnRepo::class
-
-    single {
-        DefaultAltinnAuthorizer(get())
-    } bind AltinnAuthorizer::class
+    } bind AltinnClient::class
 
     single { GrunnbeloepClient(env.grunnbeloepUrl, get()) }
 

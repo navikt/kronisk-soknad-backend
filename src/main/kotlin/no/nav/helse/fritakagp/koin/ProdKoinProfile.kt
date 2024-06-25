@@ -18,8 +18,6 @@ import no.nav.helse.fritakagp.db.PostgresKroniskSoeknadRepository
 import no.nav.helse.fritakagp.db.StatsRepoImpl
 import no.nav.helse.fritakagp.db.createHikariConfig
 import no.nav.helse.fritakagp.domain.BeloepBeregning
-import no.nav.helse.fritakagp.integration.altinn.AltinnAuthorizer
-import no.nav.helse.fritakagp.integration.altinn.DefaultAltinnAuthorizer
 import no.nav.helse.fritakagp.integration.altinn.message.Clients
 import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.brreg.BrregClientImpl
@@ -142,7 +140,6 @@ fun prodConfig(env: Env.Prod): Module = module {
 
     single { BrregClientImpl(get(), env.brregUrl) } bind BrregClient::class
 
-    single { DefaultAltinnAuthorizer(get()) } bind AltinnAuthorizer::class
     single { BeloepBeregning(get()) }
 
     single { StatsRepoImpl(get()) } bind IStatsRepo::class

@@ -6,12 +6,12 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
 import io.ktor.server.routing.route
-import no.nav.helse.fritakagp.integration.altinn.AltinnRepo
 import no.nav.helse.fritakagp.web.auth.hentIdentitetsnummerFraLoginToken
 import no.nav.helsearbeidsgiver.altinn.AltinnBrukteForLangTidException
+import no.nav.helsearbeidsgiver.altinn.AltinnClient
 import no.nav.helsearbeidsgiver.utils.log.logger
 
-fun Route.altinnRoutes(authRepo: AltinnRepo) {
+fun Route.altinnRoutes(authRepo: AltinnClient) {
     val logger = "AltinnRoutes".logger()
     route("/arbeidsgivere") {
         get("/") {
@@ -23,7 +23,7 @@ fun Route.altinnRoutes(authRepo: AltinnRepo) {
             }
             logger.info("Henter arbeidsgivere for ${id.take(6)}")
             try {
-                val rettigheter = authRepo.hentOrgMedRettigheterForPerson(id)
+                val rettigheter = authRepo.hentRettighetOrganisasjoner(id)
                 logger.info("Hentet rettigheter for ${id.take(6)} med ${rettigheter.size} rettigheter")
                 call.respond(rettigheter)
             } catch (ae: AltinnBrukteForLangTidException) {

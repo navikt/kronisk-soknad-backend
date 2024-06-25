@@ -1,6 +1,7 @@
 package no.nav.helse.fritakagp.koin
 
 import com.zaxxer.hikari.HikariDataSource
+import javax.sql.DataSource
 import no.nav.hag.utils.bakgrunnsjobb.BakgrunnsjobbRepository
 import no.nav.hag.utils.bakgrunnsjobb.BakgrunnsjobbService
 import no.nav.hag.utils.bakgrunnsjobb.PostgresBakgrunnsjobbRepository
@@ -18,8 +19,6 @@ import no.nav.helse.fritakagp.db.StatsRepoImpl
 import no.nav.helse.fritakagp.db.createHikariConfig
 import no.nav.helse.fritakagp.domain.BeloepBeregning
 import no.nav.helse.fritakagp.integration.GrunnbeloepClient
-import no.nav.helse.fritakagp.integration.altinn.AltinnAuthorizer
-import no.nav.helse.fritakagp.integration.altinn.DefaultAltinnAuthorizer
 import no.nav.helse.fritakagp.processing.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravEndreProcessor
@@ -53,7 +52,6 @@ import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjo
 import org.koin.core.module.Module
 import org.koin.dsl.bind
 import org.koin.dsl.module
-import javax.sql.DataSource
 
 fun localConfig(env: Env.Local): Module = module {
     mockExternalDependecies()
@@ -94,8 +92,6 @@ fun localConfig(env: Env.Local): Module = module {
 
     single { BrukernotifikasjonProcessor(get(), get(), get(), get(), get(), get(), 4, env.frontendUrl) }
     single { ArbeidsgiverNotifikasjonProcessor(get(), get(), get(), env.frontendUrl, get()) }
-
-    single { DefaultAltinnAuthorizer(get()) } bind AltinnAuthorizer::class
 
     single { StatsRepoImpl(get()) } bind IStatsRepo::class
     single { ArbeidsgiverNotifikasjonKlient(env.arbeidsgiverNotifikasjonUrl, getAccessToken = { "token" }) }

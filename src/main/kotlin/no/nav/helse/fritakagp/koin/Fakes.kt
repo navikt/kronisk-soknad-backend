@@ -1,9 +1,10 @@
 package no.nav.helse.fritakagp.koin
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import io.mockk.coEvery
 import io.mockk.mockk
+import java.time.LocalDate
+import java.time.LocalDateTime
+import kotlinx.serialization.json.Json
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.OppgaveKlient
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.OppgaveResponse
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.OpprettOppgaveRequest
@@ -11,7 +12,6 @@ import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.OpprettOppgaveResponse
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.Prioritet
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.Status
 import no.nav.helse.arbeidsgiver.utils.loadFromResources
-import no.nav.helse.fritakagp.integration.altinn.AltinnRepo
 import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.brreg.MockBrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
@@ -31,6 +31,7 @@ import no.nav.helsearbeidsgiver.aareg.Arbeidsforhold
 import no.nav.helsearbeidsgiver.aareg.Arbeidsgiver
 import no.nav.helsearbeidsgiver.aareg.Opplysningspliktig
 import no.nav.helsearbeidsgiver.aareg.Periode
+import no.nav.helsearbeidsgiver.altinn.AltinnClient
 import no.nav.helsearbeidsgiver.altinn.AltinnOrganisasjon
 import no.nav.helsearbeidsgiver.dokarkiv.DokArkivClient
 import no.nav.helsearbeidsgiver.pdl.PdlClient
@@ -40,11 +41,23 @@ import no.nav.helsearbeidsgiver.tokenprovider.AccessTokenProvider
 import org.koin.core.module.Module
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
-import java.time.LocalDate
-import java.time.LocalDateTime
 
 fun Module.mockExternalDependecies() {
-    single { MockAltinnRepo(get()) } bind AltinnRepo::class
+    single {
+        mockk<AltinnClient> {
+            val json = Json { ignoreUnknownKeys = true }
+            val jsonFile = "altinn-mock/organisasjoner-med-rettighet.json".loadFromResources()
+            val altinnOrganisasjons = json.decodeFromString<List<AltinnOrganisasjon>>(jsonFile).toSet()
+
+            coEvery { hentRettighetOrganisasjoner(any()) } returns altinnOrganisasjons
+            coEvery { harRettighetForOrganisasjon(any(), any()) } answers {
+                val organisasjonsNr = secondArg<String>()
+                altinnOrganisasjons.any {
+                    it.orgnr == organisasjonsNr && it.orgnrHovedenhet != null
+                }
+            }
+        }
+    }
 
     single { MockBrukernotifikasjonBeskjedSender() } bind BrukernotifikasjonBeskjedSender::class
     single(named("TOKENPROVIDER")) {
@@ -174,10 +187,4 @@ fun Module.mockExternalDependecies() {
     single { BehandlendeEnhetService(get(), get()) }
 
     single { mockk<ArbeidsgiverOppdaterNotifikasjonProcessor>(relaxed = true) }
-}
-
-class MockAltinnRepo(om: ObjectMapper) : AltinnRepo {
-    private val mockList = "altinn-mock/organisasjoner-med-rettighet.json".loadFromResources()
-    private val mockAcl = om.readValue<Set<AltinnOrganisasjon>>(mockList)
-    override fun hentOrgMedRettigheterForPerson(identitetsnummer: String): Set<AltinnOrganisasjon> = mockAcl
 }

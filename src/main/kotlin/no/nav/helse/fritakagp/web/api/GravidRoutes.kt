@@ -12,6 +12,8 @@ import io.ktor.server.routing.get
 import io.ktor.server.routing.patch
 import io.ktor.server.routing.post
 import io.ktor.server.routing.route
+import java.time.LocalDateTime
+import java.util.*
 import kotlinx.coroutines.runBlocking
 import no.nav.hag.utils.bakgrunnsjobb.BakgrunnsjobbService
 import no.nav.helse.fritakagp.GravidKravMetrics
@@ -21,7 +23,6 @@ import no.nav.helse.fritakagp.db.GravidSoeknadRepository
 import no.nav.helse.fritakagp.domain.BeloepBeregning
 import no.nav.helse.fritakagp.domain.KravStatus
 import no.nav.helse.fritakagp.domain.decodeBase64File
-import no.nav.helse.fritakagp.integration.altinn.AltinnAuthorizer
 import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
@@ -41,11 +42,10 @@ import no.nav.helse.fritakagp.web.api.resreq.validation.extractFilExtDel
 import no.nav.helse.fritakagp.web.auth.authorize
 import no.nav.helse.fritakagp.web.auth.hentIdentitetsnummerFraLoginToken
 import no.nav.helsearbeidsgiver.aareg.AaregClient
+import no.nav.helsearbeidsgiver.altinn.AltinnClient
 import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonKlient
 import org.valiktor.ConstraintViolationException
 import org.valiktor.DefaultConstraintViolation
-import java.time.LocalDateTime
-import java.util.UUID
 
 fun Route.gravidRoutes(
     breegClient: BrregClient,
@@ -55,7 +55,7 @@ fun Route.gravidRoutes(
     om: ObjectMapper,
     virusScanner: VirusScanner,
     bucket: BucketStorage,
-    authorizer: AltinnAuthorizer,
+    authorizer: AltinnClient,
     belopBeregning: BeloepBeregning,
     aaregClient: AaregClient,
     pdlService: PdlService,

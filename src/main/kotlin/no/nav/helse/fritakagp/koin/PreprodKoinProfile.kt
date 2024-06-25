@@ -1,6 +1,7 @@
 package no.nav.helse.fritakagp.koin
 
 import com.zaxxer.hikari.HikariDataSource
+import javax.sql.DataSource
 import no.nav.hag.utils.bakgrunnsjobb.BakgrunnsjobbRepository
 import no.nav.hag.utils.bakgrunnsjobb.BakgrunnsjobbService
 import no.nav.hag.utils.bakgrunnsjobb.PostgresBakgrunnsjobbRepository
@@ -18,8 +19,6 @@ import no.nav.helse.fritakagp.db.PostgresKroniskSoeknadRepository
 import no.nav.helse.fritakagp.db.StatsRepoImpl
 import no.nav.helse.fritakagp.db.createHikariConfig
 import no.nav.helse.fritakagp.domain.BeloepBeregning
-import no.nav.helse.fritakagp.integration.altinn.AltinnAuthorizer
-import no.nav.helse.fritakagp.integration.altinn.DefaultAltinnAuthorizer
 import no.nav.helse.fritakagp.integration.altinn.message.Clients
 import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.brreg.MockBrregClient
@@ -56,7 +55,6 @@ import no.nav.helse.fritakagp.service.PdlService
 import org.koin.core.module.Module
 import org.koin.dsl.bind
 import org.koin.dsl.module
-import javax.sql.DataSource
 
 fun preprodConfig(env: Env.Preprod): Module = module {
     externalSystemClients(env, env.oauth2)
@@ -142,7 +140,6 @@ fun preprodConfig(env: Env.Preprod): Module = module {
 
     single { MockBrregClient() } bind BrregClient::class
 
-    single { DefaultAltinnAuthorizer(get()) } bind AltinnAuthorizer::class
     single { BeloepBeregning(get()) }
 
     single { StatsRepoImpl(get()) } bind IStatsRepo::class

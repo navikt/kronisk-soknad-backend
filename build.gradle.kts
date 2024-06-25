@@ -134,7 +134,6 @@ dependencies {
     val pdfboxVersion: String by project
     val pdlClientVersion: String by project
     val aaregClientVersion: String by project
-    val maskinportenClientVersion: String by project
     val postgresqlVersion: String by project
     val prometheusVersion: String by project
     val slf4jVersion: String by project
@@ -195,7 +194,6 @@ dependencies {
     }
     implementation("no.nav.helsearbeidsgiver:pdl-client:$pdlClientVersion")
     implementation("no.nav.helsearbeidsgiver:aareg-client:$aaregClientVersion")
-    implementation("no.nav.helsearbeidsgiver:maskinporten-client:$maskinportenClientVersion")
     implementation("no.nav.security:token-client-core:$tokenSupportVersion")
     implementation("no.nav.security:token-validation-ktor-v2:$tokenSupportVersion")
     implementation("no.nav.helsearbeidsgiver:altinn-client:$altinnClientVersion")

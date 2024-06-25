@@ -9,7 +9,7 @@ import no.nav.helse.fritakagp.db.GravidKravRepository
 import no.nav.helse.fritakagp.db.KroniskKravRepository
 import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonKlient
 import no.nav.helsearbeidsgiver.utils.log.logger
-import java.util.UUID
+import java.util.*
 
 class ArbeidsgiverNotifikasjonProcessor(
     private val gravidKravRepo: GravidKravRepository,

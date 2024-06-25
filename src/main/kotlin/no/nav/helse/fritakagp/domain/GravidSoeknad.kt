@@ -3,7 +3,7 @@ package no.nav.helse.fritakagp.domain
 import no.nav.helse.fritakagp.db.SimpleJsonbEntity
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.util.UUID
+import java.util.*
 
 data class GravidSoeknad(
     override val id: UUID = UUID.randomUUID(),

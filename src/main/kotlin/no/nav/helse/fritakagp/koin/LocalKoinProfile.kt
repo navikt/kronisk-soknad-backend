@@ -53,46 +53,47 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import javax.sql.DataSource
 
-fun localConfig(env: Env.Local): Module = module {
-    mockExternalDependecies()
+fun localConfig(env: Env.Local): Module =
+    module {
+        mockExternalDependecies()
 
-    single { GrunnbeloepClient(env.grunnbeloepUrl, get()) }
-    single { BeloepBeregning(get()) }
-    single { HikariDataSource(createHikariConfig(env.databaseUrl, env.databaseUsername, env.databasePassword)) } bind DataSource::class
-    single { PostgresGravidSoeknadRepository(get(), get()) } bind GravidSoeknadRepository::class
-    single { PostgresGravidKravRepository(get(), get()) } bind GravidKravRepository::class
-    single { PostgresKroniskSoeknadRepository(get(), get()) } bind KroniskSoeknadRepository::class
-    single { PostgresKroniskKravRepository(get(), get()) } bind KroniskKravRepository::class
+        single { GrunnbeloepClient(env.grunnbeloepUrl, get()) }
+        single { BeloepBeregning(get()) }
+        single { HikariDataSource(createHikariConfig(env.databaseUrl, env.databaseUsername, env.databasePassword)) } bind DataSource::class
+        single { PostgresGravidSoeknadRepository(get(), get()) } bind GravidSoeknadRepository::class
+        single { PostgresGravidKravRepository(get(), get()) } bind GravidKravRepository::class
+        single { PostgresKroniskSoeknadRepository(get(), get()) } bind KroniskSoeknadRepository::class
+        single { PostgresKroniskKravRepository(get(), get()) } bind KroniskKravRepository::class
 
-    single { PostgresBakgrunnsjobbRepository(get()) } bind BakgrunnsjobbRepository::class
-    single { BakgrunnsjobbService(get()) }
+        single { PostgresBakgrunnsjobbRepository(get()) } bind BakgrunnsjobbRepository::class
+        single { BakgrunnsjobbService(get()) }
 
-    single { GravidSoeknadProcessor(get(), get(), get(), get(), get(), GravidSoeknadPDFGenerator(), get(), get(), get()) }
-    single { GravidKravProcessor(get(), get(), get(), get(), get(), GravidKravPDFGenerator(), get(), get(), get()) }
-    single { GravidKravSlettProcessor(get(), get(), get(), get(), GravidKravPDFGenerator(), get(), get()) }
-    single { GravidKravEndreProcessor(get(), get(), get(), get(), GravidKravPDFGenerator(), get(), get()) }
-    single { KroniskSoeknadProcessor(get(), get(), get(), get(), get(), KroniskSoeknadPDFGenerator(), get(), get(), get()) }
-    single { KroniskKravProcessor(get(), get(), get(), get(), get(), KroniskKravPDFGenerator(), get(), get(), get(), get()) }
-    single { KroniskKravSlettProcessor(get(), get(), get(), get(), KroniskKravPDFGenerator(), get(), get()) }
-    single { KroniskKravEndreProcessor(get(), get(), get(), get(), KroniskKravPDFGenerator(), get(), get()) }
-    single { OpprettRobotOppgaveKroniskProcessor(get(), get(), get(), get(), get()) }
+        single { GravidSoeknadProcessor(get(), get(), get(), get(), get(), GravidSoeknadPDFGenerator(), get(), get(), get()) }
+        single { GravidKravProcessor(get(), get(), get(), get(), get(), GravidKravPDFGenerator(), get(), get(), get()) }
+        single { GravidKravSlettProcessor(get(), get(), get(), get(), GravidKravPDFGenerator(), get(), get()) }
+        single { GravidKravEndreProcessor(get(), get(), get(), get(), GravidKravPDFGenerator(), get(), get()) }
+        single { KroniskSoeknadProcessor(get(), get(), get(), get(), get(), KroniskSoeknadPDFGenerator(), get(), get(), get()) }
+        single { KroniskKravProcessor(get(), get(), get(), get(), get(), KroniskKravPDFGenerator(), get(), get(), get(), get()) }
+        single { KroniskKravSlettProcessor(get(), get(), get(), get(), KroniskKravPDFGenerator(), get(), get()) }
+        single { KroniskKravEndreProcessor(get(), get(), get(), get(), KroniskKravPDFGenerator(), get(), get()) }
+        single { OpprettRobotOppgaveKroniskProcessor(get(), get(), get(), get(), get()) }
 
-    single { GravidSoeknadKvitteringSenderDummy() } bind GravidSoeknadKvitteringSender::class
-    single { GravidSoeknadKvitteringProcessor(get(), get(), get()) }
-    single { GravidKravKvitteringSenderDummy() } bind GravidKravKvitteringSender::class
-    single { GravidKravKvitteringProcessor(get(), get(), get()) }
-    single { OpprettRobotOppgaveGravidProcessor(get(), get(), get(), get(), get()) }
+        single { GravidSoeknadKvitteringSenderDummy() } bind GravidSoeknadKvitteringSender::class
+        single { GravidSoeknadKvitteringProcessor(get(), get(), get()) }
+        single { GravidKravKvitteringSenderDummy() } bind GravidKravKvitteringSender::class
+        single { GravidKravKvitteringProcessor(get(), get(), get()) }
+        single { OpprettRobotOppgaveGravidProcessor(get(), get(), get(), get(), get()) }
 
-    single { KroniskSoeknadKvitteringSenderDummy() } bind KroniskSoeknadKvitteringSender::class
-    single { KroniskSoeknadKvitteringProcessor(get(), get(), get()) }
-    single { KroniskKravKvitteringSenderDummy() } bind KroniskKravKvitteringSender::class
-    single { KroniskKravKvitteringProcessor(get(), get(), get()) }
+        single { KroniskSoeknadKvitteringSenderDummy() } bind KroniskSoeknadKvitteringSender::class
+        single { KroniskSoeknadKvitteringProcessor(get(), get(), get()) }
+        single { KroniskKravKvitteringSenderDummy() } bind KroniskKravKvitteringSender::class
+        single { KroniskKravKvitteringProcessor(get(), get(), get()) }
 
-    single { PdlService(get()) }
+        single { PdlService(get()) }
 
-    single { BrukernotifikasjonProcessor(get(), get(), get(), get(), get(), get(), 4, env.frontendUrl) }
-    single { ArbeidsgiverNotifikasjonProcessor(get(), get(), get(), env.frontendUrl, get()) }
+        single { BrukernotifikasjonProcessor(get(), get(), get(), get(), get(), get(), 4, env.frontendUrl) }
+        single { ArbeidsgiverNotifikasjonProcessor(get(), get(), get(), env.frontendUrl, get()) }
 
-    single { StatsRepoImpl(get()) } bind IStatsRepo::class
-    single { ArbeidsgiverNotifikasjonKlient(env.arbeidsgiverNotifikasjonUrl, getAccessToken = { "token" }) }
-}
+        single { StatsRepoImpl(get()) } bind IStatsRepo::class
+        single { ArbeidsgiverNotifikasjonKlient(env.arbeidsgiverNotifikasjonUrl, getAccessToken = { "token" }) }
+    }

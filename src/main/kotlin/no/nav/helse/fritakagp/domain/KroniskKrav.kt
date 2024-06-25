@@ -2,7 +2,7 @@ package no.nav.helse.fritakagp.domain
 
 import no.nav.helse.fritakagp.db.SimpleJsonbEntity
 import java.time.LocalDateTime
-import java.util.UUID
+import java.util.*
 
 data class KroniskKrav(
     override val id: UUID = UUID.randomUUID(),

@@ -31,7 +31,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.io.IOException
-import java.util.Base64
+import java.util.*
 import kotlin.test.assertEquals
 
 class GravidSoeknadProcessorTest {

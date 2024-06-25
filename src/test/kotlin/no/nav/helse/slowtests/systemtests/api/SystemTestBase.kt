@@ -29,7 +29,6 @@ import org.koin.test.inject
  * 3) Kjøre ende til ende-tester (feks teste at en søknad send inn på HTTP-endepunktet havner i databasen riktig)
  */
 open class SystemTestBase : KoinTest {
-
     val httpClient by inject<HttpClient>()
     val objectMapper = customObjectMapper(false)
 
@@ -57,10 +56,12 @@ open class SystemTestBase : KoinTest {
      * Hjelpefunksjon for å hente ut gyldig JWT-token og legge det til som Auth header på en request
      */
     suspend fun HttpRequestBuilder.loggedInAs(subject: String) {
-        val response = httpClient.get {
-            appUrl("/local/token-please?subject=$subject")
-            contentType(ContentType.Application.Json)
-        }.body<String>()
+        val response =
+            httpClient
+                .get {
+                    appUrl("/local/token-please?subject=$subject")
+                    contentType(ContentType.Application.Json)
+                }.body<String>()
 
         header("Authorization", "Bearer $response")
     }
@@ -74,6 +75,5 @@ open class SystemTestBase : KoinTest {
         }
     }
 
-    suspend fun extractResponseBody(response: HttpResponse) =
-        response.call.response.body<Problem>()
+    suspend fun extractResponseBody(response: HttpResponse) = response.call.response.body<Problem>()
 }

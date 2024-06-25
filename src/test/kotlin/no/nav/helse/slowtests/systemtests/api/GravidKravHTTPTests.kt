@@ -24,189 +24,205 @@ class GravidKravHTTPTests : SystemTestBase() {
 
     @Test
     @Disabled
-    internal fun `Returnerer kravet når korrekt bruker er innlogget, 403 når ikke`() = suspendableTest {
-        val repo by inject<GravidKravRepository>()
+    internal fun `Returnerer kravet når korrekt bruker er innlogget, 403 når ikke`() =
+        suspendableTest {
+            val repo by inject<GravidKravRepository>()
 
-        repo.insert(GravidTestData.gravidKrav)
-        val response =
-            httpClient.get {
-                appUrl("$kravGravidUrl/${GravidTestData.gravidKrav.id}")
-                contentType(ContentType.Application.Json)
-                loggedInAs("123456789")
-            }
+            repo.insert(GravidTestData.gravidKrav)
+            val response =
+                httpClient.get {
+                    appUrl("$kravGravidUrl/${GravidTestData.gravidKrav.id}")
+                    contentType(ContentType.Application.Json)
+                    loggedInAs("123456789")
+                }
 
-        assertThat(response.status).isEqualTo(HttpStatusCode.Forbidden)
+            assertThat(response.status).isEqualTo(HttpStatusCode.Forbidden)
 
-        val accessGrantedForm = httpClient.get {
-            appUrl("$kravGravidUrl/${GravidTestData.gravidKrav.id}")
-            contentType(ContentType.Application.Json)
-            loggedInAs(GravidTestData.gravidKrav.identitetsnummer)
+            val accessGrantedForm =
+                httpClient.get {
+                    appUrl("$kravGravidUrl/${GravidTestData.gravidKrav.id}")
+                    contentType(ContentType.Application.Json)
+                    loggedInAs(GravidTestData.gravidKrav.identitetsnummer)
+                }
+
+            assertThat(accessGrantedForm).isEqualTo(GravidTestData.gravidKrav)
         }
 
-        assertThat(accessGrantedForm).isEqualTo(GravidTestData.gravidKrav)
-    }
-
     @Test
-    fun `Gir not found når kravet er slettet`() = suspendableTest {
-        val repo by inject<GravidKravRepository>()
+    fun `Gir not found når kravet er slettet`() =
+        suspendableTest {
+            val repo by inject<GravidKravRepository>()
 
-        repo.insert(GravidTestData.gravidKrav.copy(status = KravStatus.SLETTET))
+            repo.insert(GravidTestData.gravidKrav.copy(status = KravStatus.SLETTET))
 
-        val response = httpClient.get {
-            appUrl("$kravGravidUrl/${GravidTestData.gravidKrav.id}")
-            contentType(ContentType.Application.Json)
-            loggedInAs(GravidTestData.gravidKrav.identitetsnummer)
+            val response =
+                httpClient.get {
+                    appUrl("$kravGravidUrl/${GravidTestData.gravidKrav.id}")
+                    contentType(ContentType.Application.Json)
+                    loggedInAs(GravidTestData.gravidKrav.identitetsnummer)
+                }
+
+            assertThat(response.status).isEqualTo(HttpStatusCode.NotFound)
         }
 
-        assertThat(response.status).isEqualTo(HttpStatusCode.NotFound)
-    }
-
     @Test
-    fun `invalid json gives 400 Bad request`() = suspendableTest {
-        val response =
-            httpClient.post {
-                appUrl(kravGravidUrl)
-                contentType(ContentType.Application.Json)
-                loggedInAs("123456789")
+    fun `invalid json gives 400 Bad request`() =
+        suspendableTest {
+            val response =
+                httpClient.post {
+                    appUrl(kravGravidUrl)
+                    contentType(ContentType.Application.Json)
+                    loggedInAs("123456789")
 
-                setBody(
-                    """
-                    {
-                        "fnr": "${GravidTestData.validIdentitetsnummer}",
-                        "orgnr": "${GravidTestData.fullValidSoeknadRequest.virksomhetsnummer}",
-                        "tilrettelegge": true,
-                        "tiltak": ["IKKE GYLDIG"]
-                    }
-                    """.trimIndent()
-                )
-            }
+                    setBody(
+                        """
+                        {
+                            "fnr": "${GravidTestData.validIdentitetsnummer}",
+                            "orgnr": "${GravidTestData.fullValidSoeknadRequest.virksomhetsnummer}",
+                            "tilrettelegge": true,
+                            "tiltak": ["IKKE GYLDIG"]
+                        }
+                        """.trimIndent()
+                    )
+                }
 
-        assertThat(response.status).isEqualTo(HttpStatusCode.BadRequest)
-        val res = extractResponseBody(response)
-        assertThat(res.title).contains("Valideringen av input feilet")
-    }
-
-    @Test
-    fun `Skal returnere Created ved feilfritt skjema uten fil`() = suspendableTest {
-        val response = httpClient.post {
-            appUrl(kravGravidUrl)
-            contentType(ContentType.Application.Json)
-            loggedInAs("123456789")
-            setBody(GravidTestData.gravidKravRequestValid)
-        }.body<GravidKrav>()
-        assertThat(response.status).isEqualTo(KravStatus.OPPRETTET)
-        assertThat(response.identitetsnummer).isEqualTo(GravidTestData.gravidKravRequestValid.identitetsnummer)
-    }
-
-    @Test
-    fun `Skal returnere Created ved periode på en dag`() = suspendableTest {
-        val response = httpClient.post {
-            appUrl(kravGravidUrl)
-            contentType(ContentType.Application.Json)
-            loggedInAs("123456789")
-            setBody(GravidTestData.gravidKravRequestValidPeriode1Dag)
+            assertThat(response.status).isEqualTo(HttpStatusCode.BadRequest)
+            val res = extractResponseBody(response)
+            assertThat(res.title).contains("Valideringen av input feilet")
         }
 
-        assertThat(response.status).isEqualTo(HttpStatusCode.Created)
-        val krav = response.body<GravidKrav>()
-        assertThat(krav.identitetsnummer).isEqualTo(GravidTestData.gravidKravRequestValidPeriode1Dag.identitetsnummer)
-    }
+    @Test
+    fun `Skal returnere Created ved feilfritt skjema uten fil`() =
+        suspendableTest {
+            val response =
+                httpClient
+                    .post {
+                        appUrl(kravGravidUrl)
+                        contentType(ContentType.Application.Json)
+                        loggedInAs("123456789")
+                        setBody(GravidTestData.gravidKravRequestValid)
+                    }.body<GravidKrav>()
+            assertThat(response.status).isEqualTo(KravStatus.OPPRETTET)
+            assertThat(response.identitetsnummer).isEqualTo(GravidTestData.gravidKravRequestValid.identitetsnummer)
+        }
 
     @Test
-    fun `Skal returnere forbidden hvis virksomheten ikke er i auth listen fra altinn`() = suspendableTest {
-        val response =
-            httpClient.post {
-                appUrl(kravGravidUrl)
-                contentType(ContentType.Application.Json)
-                loggedInAs("123456789")
-                setBody(GravidTestData.gravidKravRequestValid.copy(virksomhetsnummer = "123456785"))
-            }
+    fun `Skal returnere Created ved periode på en dag`() =
+        suspendableTest {
+            val response =
+                httpClient.post {
+                    appUrl(kravGravidUrl)
+                    contentType(ContentType.Application.Json)
+                    loggedInAs("123456789")
+                    setBody(GravidTestData.gravidKravRequestValidPeriode1Dag)
+                }
 
-        assertThat(response.status).isEqualTo(HttpStatusCode.Forbidden)
-    }
+            assertThat(response.status).isEqualTo(HttpStatusCode.Created)
+            val krav = response.body<GravidKrav>()
+            assertThat(krav.identitetsnummer).isEqualTo(GravidTestData.gravidKravRequestValidPeriode1Dag.identitetsnummer)
+        }
 
     @Test
-    fun `Skal returnere en valideringfeil`() = suspendableTest {
-        val response =
-            httpClient.post {
-                appUrl(kravGravidUrl)
-                contentType(ContentType.Application.Json)
-                loggedInAs("123456789")
-                setBody(
-                    GravidTestData.gravidKravRequestInValid.copy(
-                        perioder = listOf(
-                            Arbeidsgiverperiode(
-                                LocalDate.of(2020, 1, 15),
-                                LocalDate.of(2020, 1, 10),
-                                2,
-                                månedsinntekt = 2590.8
-                            ),
-                            Arbeidsgiverperiode(
-                                LocalDate.of(2020, 1, 5),
-                                LocalDate.of(2020, 1, 4),
-                                2,
-                                månedsinntekt = 2590.8
-                            ),
-                            Arbeidsgiverperiode(
-                                LocalDate.of(2020, 1, 5),
-                                LocalDate.of(2020, 1, 14),
-                                12,
-                                månedsinntekt = 2590.8
+    fun `Skal returnere forbidden hvis virksomheten ikke er i auth listen fra altinn`() =
+        suspendableTest {
+            val response =
+                httpClient.post {
+                    appUrl(kravGravidUrl)
+                    contentType(ContentType.Application.Json)
+                    loggedInAs("123456789")
+                    setBody(GravidTestData.gravidKravRequestValid.copy(virksomhetsnummer = "123456785"))
+                }
+
+            assertThat(response.status).isEqualTo(HttpStatusCode.Forbidden)
+        }
+
+    @Test
+    fun `Skal returnere en valideringfeil`() =
+        suspendableTest {
+            val response =
+                httpClient.post {
+                    appUrl(kravGravidUrl)
+                    contentType(ContentType.Application.Json)
+                    loggedInAs("123456789")
+                    setBody(
+                        GravidTestData.gravidKravRequestInValid.copy(
+                            perioder =
+                            listOf(
+                                Arbeidsgiverperiode(
+                                    LocalDate.of(2020, 1, 15),
+                                    LocalDate.of(2020, 1, 10),
+                                    2,
+                                    månedsinntekt = 2590.8
+                                ),
+                                Arbeidsgiverperiode(
+                                    LocalDate.of(2020, 1, 5),
+                                    LocalDate.of(2020, 1, 4),
+                                    2,
+                                    månedsinntekt = 2590.8
+                                ),
+                                Arbeidsgiverperiode(
+                                    LocalDate.of(2020, 1, 5),
+                                    LocalDate.of(2020, 1, 14),
+                                    12,
+                                    månedsinntekt = 2590.8
+                                )
                             )
                         )
                     )
-                )
-            }
+                }
 
-        assertThat(response.status).isEqualTo(HttpStatusCode.UnprocessableEntity)
-        val res = response.call.body<ValidationProblem>()
-        assertThat(res.violations.size).isEqualTo(5)
-    }
+            assertThat(response.status).isEqualTo(HttpStatusCode.UnprocessableEntity)
+            val res = response.call.body<ValidationProblem>()
+            assertThat(res.violations.size).isEqualTo(5)
+        }
 
     @Test
-    fun `Skal returnere full propertypath for periode`() = suspendableTest {
-        val response =
-            httpClient.post {
-                appUrl(kravGravidUrl)
-                contentType(ContentType.Application.Json)
-                loggedInAs("123456789")
-                setBody(
-                    GravidTestData.gravidKravRequestInValid.copy(
-                        perioder = listOf(
-                            Arbeidsgiverperiode(
-                                LocalDate.of(2020, 1, 15),
-                                LocalDate.of(2020, 1, 10),
-                                2,
-                                månedsinntekt = 2590.8
-                            ),
-                            Arbeidsgiverperiode(
-                                LocalDate.of(2020, 1, 5),
-                                LocalDate.of(2020, 1, 4),
-                                2,
-                                månedsinntekt = 2590.8
-                            ),
-                            Arbeidsgiverperiode(
-                                LocalDate.of(2020, 1, 5),
-                                LocalDate.of(2020, 1, 14),
-                                12,
-                                månedsinntekt = 2590.8
+    fun `Skal returnere full propertypath for periode`() =
+        suspendableTest {
+            val response =
+                httpClient.post {
+                    appUrl(kravGravidUrl)
+                    contentType(ContentType.Application.Json)
+                    loggedInAs("123456789")
+                    setBody(
+                        GravidTestData.gravidKravRequestInValid.copy(
+                            perioder =
+                            listOf(
+                                Arbeidsgiverperiode(
+                                    LocalDate.of(2020, 1, 15),
+                                    LocalDate.of(2020, 1, 10),
+                                    2,
+                                    månedsinntekt = 2590.8
+                                ),
+                                Arbeidsgiverperiode(
+                                    LocalDate.of(2020, 1, 5),
+                                    LocalDate.of(2020, 1, 4),
+                                    2,
+                                    månedsinntekt = 2590.8
+                                ),
+                                Arbeidsgiverperiode(
+                                    LocalDate.of(2020, 1, 5),
+                                    LocalDate.of(2020, 1, 14),
+                                    12,
+                                    månedsinntekt = 2590.8
+                                )
                             )
                         )
                     )
-                )
-            }
+                }
 
-        val possiblePropertyPaths = setOf(
-            "perioder[0].fom",
-            "perioder[0].antallDagerMedRefusjon",
-            "perioder[1].fom",
-            "perioder[1].antallDagerMedRefusjon",
-            "perioder[2].antallDagerMedRefusjon"
-        )
-        val res = response.call.body<ValidationProblem>()
-        assertThat(res.violations.size).isEqualTo(5)
-        res.violations.forEach {
-            assertThat(it.propertyPath).isIn(possiblePropertyPaths)
+            val possiblePropertyPaths =
+                setOf(
+                    "perioder[0].fom",
+                    "perioder[0].antallDagerMedRefusjon",
+                    "perioder[1].fom",
+                    "perioder[1].antallDagerMedRefusjon",
+                    "perioder[2].antallDagerMedRefusjon"
+                )
+            val res = response.call.body<ValidationProblem>()
+            assertThat(res.violations.size).isEqualTo(5)
+            res.violations.forEach {
+                assertThat(it.propertyPath).isIn(possiblePropertyPaths)
+            }
         }
-    }
 }

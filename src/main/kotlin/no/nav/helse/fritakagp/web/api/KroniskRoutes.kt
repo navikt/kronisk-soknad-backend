@@ -82,12 +82,16 @@ fun Route.kroniskRoutes(
                 logger.info("KSP: Send inn kronisk søknad.")
                 val request = call.receive<KroniskSoknadRequest>()
 
-                val isVirksomhet = if (application.environment.config.property("koin.profile").getString() == "PREPROD") {
-                    true
-                } else {
-                    logger.info("KSP: Hent virksomhet fra brreg.")
-                    breegClient.erVirksomhet(request.virksomhetsnummer)
-                }
+                val isVirksomhet =
+                    if (application.environment.config
+                        .property("koin.profile")
+                        .getString() == "PREPROD"
+                    ) {
+                        true
+                    } else {
+                        logger.info("KSP: Hent virksomhet fra brreg.")
+                        breegClient.erVirksomhet(request.virksomhetsnummer)
+                    }
                 request.validate(isVirksomhet)
 
                 val innloggetFnr = hentIdentitetsnummerFraLoginToken(call.request)
@@ -147,9 +151,10 @@ fun Route.kroniskRoutes(
                 authorize(authorizer, request.virksomhetsnummer)
 
                 logger.info("KKPo: Hent arbeidsforhold fra aareg.")
-                val arbeidsforhold = aaregClient
-                    .hentArbeidsforhold(request.identitetsnummer, UUID.randomUUID().toString())
-                    .filter { it.arbeidsgiver.organisasjonsnummer == request.virksomhetsnummer }
+                val arbeidsforhold =
+                    aaregClient
+                        .hentArbeidsforhold(request.identitetsnummer, UUID.randomUUID().toString())
+                        .filter { it.arbeidsgiver.organisasjonsnummer == request.virksomhetsnummer }
 
                 request.validate(arbeidsforhold)
 
@@ -195,17 +200,19 @@ fun Route.kroniskRoutes(
                 val navn = pdlService.hentNavn(request.identitetsnummer)
 
                 logger.info("KKPa: Hent arbeidsforhold fra aareg.")
-                val arbeidsforhold = aaregClient
-                    .hentArbeidsforhold(request.identitetsnummer, UUID.randomUUID().toString())
-                    .filter { it.arbeidsgiver.organisasjonsnummer == request.virksomhetsnummer }
+                val arbeidsforhold =
+                    aaregClient
+                        .hentArbeidsforhold(request.identitetsnummer, UUID.randomUUID().toString())
+                        .filter { it.arbeidsgiver.organisasjonsnummer == request.virksomhetsnummer }
 
                 request.validate(arbeidsforhold)
 
                 val kravId = UUID.fromString(call.parameters["id"])
 
                 logger.info("KKPa: Hent gammelt krav fra db.")
-                val forrigeKrav = kroniskKravRepo.getById(kravId)
-                    ?: return@patch call.respond(HttpStatusCode.NotFound)
+                val forrigeKrav =
+                    kroniskKravRepo.getById(kravId)
+                        ?: return@patch call.respond(HttpStatusCode.NotFound)
 
                 if (forrigeKrav.virksomhetsnummer != request.virksomhetsnummer) {
                     return@patch call.respond(HttpStatusCode.Forbidden)
@@ -258,8 +265,9 @@ fun Route.kroniskRoutes(
                 val innloggetFnr = hentIdentitetsnummerFraLoginToken(call.request)
                 val slettetAv = pdlService.hentNavn(innloggetFnr)
                 val kravId = UUID.fromString(call.parameters["id"])
-                val form = kroniskKravRepo.getById(kravId)
-                    ?: return@delete call.respond(HttpStatusCode.NotFound)
+                val form =
+                    kroniskKravRepo.getById(kravId)
+                        ?: return@delete call.respond(HttpStatusCode.NotFound)
 
                 authorize(authorizer, form.virksomhetsnummer)
 

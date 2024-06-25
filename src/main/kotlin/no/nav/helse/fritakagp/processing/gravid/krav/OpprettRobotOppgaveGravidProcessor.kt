@@ -13,7 +13,7 @@ import no.nav.helse.fritakagp.domain.GravidKrav
 import no.nav.helse.fritakagp.service.BehandlendeEnhetService
 import no.nav.helse.fritakagp.service.PdlService
 import no.nav.helsearbeidsgiver.utils.log.logger
-import java.util.UUID
+import java.util.*
 
 class OpprettRobotOppgaveGravidProcessor(
     private val gravidKravRepo: GravidKravRepository,

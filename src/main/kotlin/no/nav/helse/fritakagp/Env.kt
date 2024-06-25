@@ -7,22 +7,27 @@ fun readEnv(config: ApplicationConfig): Env =
         "PROD" -> Env::Prod
         "PREPROD" -> Env::Preprod
         else -> Env::Local
-    }
-        .invoke(config)
+    }.invoke(config)
 
 sealed class Env private constructor(
     internal val config: ApplicationConfig
 ) {
-    class Prod(config: ApplicationConfig) : Env(config) {
+    class Prod(
+        config: ApplicationConfig
+    ) : Env(config) {
         val oauth2 = EnvOauth2(config)
     }
 
-    class Preprod(config: ApplicationConfig) : Env(config) {
+    class Preprod(
+        config: ApplicationConfig
+    ) : Env(config) {
         val oauth2 = EnvOauth2(config)
         val jwt = EnvJwt(config)
     }
 
-    class Local(config: ApplicationConfig) : Env(config) {
+    class Local(
+        config: ApplicationConfig
+    ) : Env(config) {
         val jwt = EnvJwt(config)
     }
 
@@ -69,15 +74,18 @@ sealed class Env private constructor(
 
     val pdlUrl = "pdl_url".prop()
 
-    private fun String.prop(): String =
-        config.prop(this)
+    private fun String.prop(): String = config.prop(this)
 }
 
-class EnvOauth2(mainConfig: ApplicationConfig) {
-    private val oauth2Config = "no.nav.security.jwt.client.registration.clients".let(mainConfig::configList)
-        .first {
-            it.prop("client_name") == "azure_ad"
-        }
+class EnvOauth2(
+    mainConfig: ApplicationConfig
+) {
+    private val oauth2Config =
+        "no.nav.security.jwt.client.registration.clients"
+            .let(mainConfig::configList)
+            .first {
+                it.prop("client_name") == "azure_ad"
+            }
 
     val tokenEndpointUrl = "token_endpoint_url".prop()
     val wellKnownUrl = "well_known_url".prop()
@@ -93,20 +101,21 @@ class EnvOauth2(mainConfig: ApplicationConfig) {
     val scopePdl = "pdlscope".prop()
     val scopeAareg = "aaregscope".prop()
 
-    private fun String.prop(): String =
-        oauth2Config.prop(this)
+    private fun String.prop(): String = oauth2Config.prop(this)
 }
 
-class EnvJwt(mainConfig: ApplicationConfig) {
-    private val jwtIssuerConfig = "no.nav.security.jwt.issuers".let(mainConfig::configList)
-        .first()
+class EnvJwt(
+    mainConfig: ApplicationConfig
+) {
+    private val jwtIssuerConfig =
+        "no.nav.security.jwt.issuers"
+            .let(mainConfig::configList)
+            .first()
 
     val issuerName = "issuer_name".prop()
     val audience = "accepted_audience".prop()
 
-    private fun String.prop(): String =
-        jwtIssuerConfig.prop(this)
+    private fun String.prop(): String = jwtIssuerConfig.prop(this)
 }
 
-private fun ApplicationConfig.prop(key: String): String =
-    property(key).getString()
+private fun ApplicationConfig.prop(key: String): String = property(key).getString()

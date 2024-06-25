@@ -17,7 +17,7 @@ import no.nav.helse.fritakagp.processing.BakgrunnsJobbUtils
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor.Jobbdata.SkjemaType
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import java.util.UUID
+import java.util.*
 
 internal class BrukernotifikasjonProcessorTest {
 

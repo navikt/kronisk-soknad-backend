@@ -6,7 +6,7 @@ import no.nav.hag.utils.bakgrunnsjobb.Bakgrunnsjobb
 import no.nav.hag.utils.bakgrunnsjobb.BakgrunnsjobbProsesserer
 import no.nav.helse.fritakagp.KroniskSoeknadMetrics
 import no.nav.helse.fritakagp.db.KroniskSoeknadRepository
-import java.util.UUID
+import java.util.*
 
 class KroniskSoeknadKvitteringProcessor(
     private val kroniskSoeknadKvitteringSender: KroniskSoeknadKvitteringSender,

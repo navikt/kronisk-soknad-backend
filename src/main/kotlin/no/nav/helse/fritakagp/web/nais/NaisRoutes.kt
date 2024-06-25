@@ -12,7 +12,7 @@ import io.prometheus.client.CollectorRegistry
 import io.prometheus.client.exporter.common.TextFormat
 import io.prometheus.client.hotspot.DefaultExports
 import org.koin.ktor.ext.get
-import java.util.Collections
+import java.util.*
 import javax.sql.DataSource
 
 private val collectorRegistry = CollectorRegistry.defaultRegistry

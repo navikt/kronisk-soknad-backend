@@ -20,8 +20,7 @@ import no.nav.helsearbeidsgiver.dokarkiv.domene.DokumentVariant
 import no.nav.helsearbeidsgiver.dokarkiv.domene.GjelderPerson
 import no.nav.helsearbeidsgiver.utils.log.logger
 import java.time.LocalDate
-import java.util.Base64
-import java.util.UUID
+import java.util.*
 
 class GravidKravSlettProcessor(
     private val gravidKravRepo: GravidKravRepository,

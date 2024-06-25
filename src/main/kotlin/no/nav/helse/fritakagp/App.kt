@@ -37,10 +37,7 @@ import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.slf4j.LoggerFactory
 
-class FritakAgpApplication(
-    val port: Int = 8080,
-    val runAsDeamon: Boolean = true
-) : KoinComponent {
+class FritakAgpApplication(val port: Int = 8080, val runAsDeamon: Boolean = true) : KoinComponent {
     private val logger = LoggerFactory.getLogger(this.javaClass)
     private val appConfig = HoconApplicationConfig(ConfigFactory.load())
     private val env = readEnv(appConfig)
@@ -58,10 +55,9 @@ class FritakAgpApplication(
 
         configAndStartBackgroundWorker()
 
-        webserver =
-            createWebserver().also {
-                it.start(wait = runAsDeamon)
-            }
+        webserver = createWebserver().also {
+            it.start(wait = runAsDeamon)
+        }
     }
 
     fun shutdown() {
@@ -120,9 +116,7 @@ class FritakAgpApplication(
     private fun migrateDatabase() {
         logger.info("Starter databasemigrering")
 
-        Flyway
-            .configure()
-            .baselineOnMigrate(true)
+        Flyway.configure().baselineOnMigrate(true)
             .dataSource(GlobalContext.getKoinApplicationOrNull()?.koin?.get())
             .load()
             .migrate()

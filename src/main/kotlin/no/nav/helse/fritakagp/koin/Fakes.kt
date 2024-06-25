@@ -62,7 +62,9 @@ fun Module.mockExternalDependecies() {
     single { MockBrukernotifikasjonBeskjedSender() } bind BrukernotifikasjonBeskjedSender::class
     single(named("TOKENPROVIDER")) {
         object : AccessTokenProvider {
-            override fun getToken(): String = "fake token"
+            override fun getToken(): String {
+                return "fake token"
+            }
         }
     } bind AccessTokenProvider::class
 

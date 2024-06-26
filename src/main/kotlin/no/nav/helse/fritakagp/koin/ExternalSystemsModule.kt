@@ -42,8 +42,6 @@ import java.net.URI
 import java.time.Duration
 import kotlin.time.toKotlinDuration
 
-
-
 fun Module.externalSystemClients(env: Env, envOauth2: EnvOauth2) {
     single(named("maskinportenClient")) {
         MaskinportenClient(env.altinnScope)

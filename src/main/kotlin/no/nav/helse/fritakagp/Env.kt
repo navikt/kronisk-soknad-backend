@@ -49,7 +49,7 @@ sealed class Env private constructor(
     val altinnServiceOwnerUrl = "altinn.service_owner_api_url".prop()
     val altinnServiceOwnerServiceId = "altinn.service_id".prop()
     val altinnServiceOwnerApiKey = "altinn.altinn_api_key".prop()
-    val altinnScope="altinn.altinn_scope".prop()
+    val altinnScope = "altinn.altinn_scope".prop()
 
     val aaregUrl = "aareg_url".prop()
 

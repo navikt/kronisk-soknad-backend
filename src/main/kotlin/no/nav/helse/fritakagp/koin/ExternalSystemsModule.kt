@@ -1,6 +1,7 @@
 package no.nav.helse.fritakagp.koin
 
 import com.nimbusds.oauth2.sdk.auth.ClientAuthenticationMethod
+import kotlinx.coroutines.runBlocking
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.OppgaveKlient
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.OppgaveKlientImpl
 import no.nav.helse.fritakagp.Env
@@ -22,6 +23,7 @@ import no.nav.helsearbeidsgiver.altinn.AltinnClient
 import no.nav.helsearbeidsgiver.altinn.CacheConfig
 import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonKlient
 import no.nav.helsearbeidsgiver.dokarkiv.DokArkivClient
+import no.nav.helsearbeidsgiver.maskinporten.MaskinportenClient
 import no.nav.helsearbeidsgiver.pdl.Behandlingsgrunnlag
 import no.nav.helsearbeidsgiver.pdl.PdlClient
 import no.nav.helsearbeidsgiver.tokenprovider.AccessTokenProvider
@@ -40,12 +42,19 @@ import java.net.URI
 import java.time.Duration
 import kotlin.time.toKotlinDuration
 
+
+
 fun Module.externalSystemClients(env: Env, envOauth2: EnvOauth2) {
+    single(named("maskinportenClient")) {
+        MaskinportenClient(env.altinnScope)
+    }
     single {
+        val maskinportenClient: MaskinportenClient = get(qualifier = named("maskinportenClient"))
+        val fetchToken = runBlocking { maskinportenClient.fetchNewAccessToken().tokenResponse.accessToken }
         AltinnClient(
             url = env.altinnServiceOwnerUrl,
             serviceCode = env.altinnServiceOwnerServiceId,
-            apiGwApiKey = env.altinnServiceOwnerGatewayApiKey,
+            maskiportenClient = { fetchToken },
             altinnApiKey = env.altinnServiceOwnerApiKey,
             cacheConfig = CacheConfig(Duration.ofMinutes(60).toKotlinDuration(), 100)
         )

@@ -140,6 +140,7 @@ dependencies {
     val tokenSupportVersion: String by project
     val utilsVersion: String by project
     val valiktorVersion: String by project
+    val maskinportenClientVersion: String by project
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
     implementation("ch.qos.logback:logback-classic:$logback_version")
@@ -196,6 +197,7 @@ dependencies {
     implementation("no.nav.security:token-client-core:$tokenSupportVersion")
     implementation("no.nav.security:token-validation-ktor-v2:$tokenSupportVersion")
     implementation("no.nav.helsearbeidsgiver:altinn-client:$altinnClientVersion")
+    implementation("no.nav.helsearbeidsgiver:maskinporten-client:$maskinportenClientVersion")
     implementation("no.nav.helsearbeidsgiver:tokenprovider:$tokenProviderVersion")
     implementation("no.nav.tjenestespesifikasjoner:altinn-correspondence-agency-external-basic:$altinnCorrespondenceAgencyVersion")
     implementation("org.apache.cxf:cxf-rt-features-logging:$cxfVersion")

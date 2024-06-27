@@ -11,7 +11,6 @@ import no.nav.helse.fritakagp.customObjectMapper
 import no.nav.helse.fritakagp.db.GravidKravRepository
 import no.nav.helse.fritakagp.domain.GravidKrav
 import no.nav.helse.fritakagp.processing.BakgrunnsJobbUtils
-import no.nav.helse.fritakagp.service.BehandlendeEnhetService
 import no.nav.helse.fritakagp.service.PdlService
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.BeforeEach
@@ -23,8 +22,7 @@ class OpprettRobotOppgaveGravidProcessorTest {
     val repositoryMock = mockk<GravidKravRepository>(relaxed = true)
     val pdlServiceMock = mockk<PdlService>(relaxed = true)
     val objectMapper = customObjectMapper()
-    val behandlendeEnhetService = mockk<BehandlendeEnhetService>(relaxed = true)
-    val prosessor = OpprettRobotOppgaveGravidProcessor(repositoryMock, oppgaveMock, pdlServiceMock, objectMapper, behandlendeEnhetService)
+    val prosessor = OpprettRobotOppgaveGravidProcessor(repositoryMock, oppgaveMock, pdlServiceMock, objectMapper)
     lateinit var krav: GravidKrav
 
     private val oppgaveId = 9999

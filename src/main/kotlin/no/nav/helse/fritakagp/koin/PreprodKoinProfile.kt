@@ -81,13 +81,13 @@ fun preprodConfig(env: Env.Preprod): Module = module {
     single { GravidKravProcessor(get(), get(), get(), get(), get(), GravidKravPDFGenerator(), get(), get(), get()) }
     single { GravidKravSlettProcessor(get(), get(), get(), get(), GravidKravPDFGenerator(), get(), get()) }
     single { GravidKravEndreProcessor(get(), get(), get(), get(), GravidKravPDFGenerator(), get(), get()) }
-    single { OpprettRobotOppgaveKroniskProcessor(get(), get(), get(), get(), get()) }
+    single { OpprettRobotOppgaveKroniskProcessor(get(), get(), get(), get()) }
 
     single { KroniskSoeknadProcessor(get(), get(), get(), get(), get(), KroniskSoeknadPDFGenerator(), get(), get(), get()) }
-    single { KroniskKravProcessor(get(), get(), get(), get(), get(), KroniskKravPDFGenerator(), get(), get(), get(), get()) }
+    single { KroniskKravProcessor(get(), get(), get(), get(), get(), KroniskKravPDFGenerator(), get(), get(), get()) }
     single { KroniskKravSlettProcessor(get(), get(), get(), get(), KroniskKravPDFGenerator(), get(), get()) }
     single { KroniskKravEndreProcessor(get(), get(), get(), get(), KroniskKravPDFGenerator(), get(), get()) }
-    single { OpprettRobotOppgaveGravidProcessor(get(), get(), get(), get(), get()) }
+    single { OpprettRobotOppgaveGravidProcessor(get(), get(), get(), get()) }
 
     single { Clients.iCorrespondenceExternalBasic(env.altinnMeldingUrl) }
 

@@ -22,7 +22,6 @@ import no.nav.helse.fritakagp.integration.norg.Norg2Client
 import no.nav.helse.fritakagp.integration.virusscan.MockVirusScanner
 import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
 import no.nav.helse.fritakagp.processing.arbeidsgivernotifikasjon.ArbeidsgiverOppdaterNotifikasjonProcessor
-import no.nav.helse.fritakagp.service.BehandlendeEnhetService
 import no.nav.helsearbeidsgiver.aareg.AaregClient
 import no.nav.helsearbeidsgiver.aareg.Ansettelsesperiode
 import no.nav.helsearbeidsgiver.aareg.Arbeidsforhold
@@ -183,8 +182,6 @@ fun Module.mockExternalDependecies() {
             )
         }
     } bind Norg2Client::class
-
-    single { BehandlendeEnhetService(get(), get()) }
 
     single { mockk<ArbeidsgiverOppdaterNotifikasjonProcessor>(relaxed = true) }
 }

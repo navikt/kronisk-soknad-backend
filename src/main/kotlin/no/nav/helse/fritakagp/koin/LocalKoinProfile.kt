@@ -72,16 +72,16 @@ fun localConfig(env: Env.Local): Module = module {
     single { GravidKravSlettProcessor(get(), get(), get(), get(), GravidKravPDFGenerator(), get(), get()) }
     single { GravidKravEndreProcessor(get(), get(), get(), get(), GravidKravPDFGenerator(), get(), get()) }
     single { KroniskSoeknadProcessor(get(), get(), get(), get(), get(), KroniskSoeknadPDFGenerator(), get(), get(), get()) }
-    single { KroniskKravProcessor(get(), get(), get(), get(), get(), KroniskKravPDFGenerator(), get(), get(), get(), get()) }
+    single { KroniskKravProcessor(get(), get(), get(), get(), get(), KroniskKravPDFGenerator(), get(), get(), get()) }
     single { KroniskKravSlettProcessor(get(), get(), get(), get(), KroniskKravPDFGenerator(), get(), get()) }
     single { KroniskKravEndreProcessor(get(), get(), get(), get(), KroniskKravPDFGenerator(), get(), get()) }
-    single { OpprettRobotOppgaveKroniskProcessor(get(), get(), get(), get(), get()) }
+    single { OpprettRobotOppgaveKroniskProcessor(get(), get(), get(), get()) }
 
     single { GravidSoeknadKvitteringSenderDummy() } bind GravidSoeknadKvitteringSender::class
     single { GravidSoeknadKvitteringProcessor(get(), get(), get()) }
     single { GravidKravKvitteringSenderDummy() } bind GravidKravKvitteringSender::class
     single { GravidKravKvitteringProcessor(get(), get(), get()) }
-    single { OpprettRobotOppgaveGravidProcessor(get(), get(), get(), get(), get()) }
+    single { OpprettRobotOppgaveGravidProcessor(get(), get(), get(), get()) }
 
     single { KroniskSoeknadKvitteringSenderDummy() } bind KroniskSoeknadKvitteringSender::class
     single { KroniskSoeknadKvitteringProcessor(get(), get(), get()) }

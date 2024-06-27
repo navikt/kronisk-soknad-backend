@@ -10,7 +10,6 @@ import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.OpprettOppgaveRequest
 import no.nav.helse.fritakagp.KroniskKravMetrics
 import no.nav.helse.fritakagp.db.KroniskKravRepository
 import no.nav.helse.fritakagp.domain.KroniskKrav
-import no.nav.helse.fritakagp.service.BehandlendeEnhetService
 import no.nav.helse.fritakagp.service.PdlService
 import no.nav.helsearbeidsgiver.utils.log.logger
 import java.util.UUID
@@ -19,8 +18,7 @@ class OpprettRobotOppgaveKroniskProcessor(
     private val kroniskKravRepo: KroniskKravRepository,
     private val oppgaveKlient: OppgaveKlient,
     private val pdlService: PdlService,
-    private val om: ObjectMapper,
-    private val behandlendeEnhetService: BehandlendeEnhetService
+    private val om: ObjectMapper
 ) : BakgrunnsjobbProsesserer {
     companion object {
         val JOB_TYPE = "kronisk-krav-robot-oppgave"
@@ -73,13 +71,11 @@ class OpprettRobotOppgaveKroniskProcessor(
 
     fun opprettOppgave(krav: KroniskKrav): String {
         val aktoerId = pdlService.hentAktoerId(krav.identitetsnummer)
-        val enhetsNr = behandlendeEnhetService.hentBehandlendeEnhet(krav.identitetsnummer, krav.id.toString())
         requireNotNull(aktoerId) { "Fant ikke AktørID for fnr i ${krav.id}" }
         logger.info("Fant aktørid")
         val beskrivelse = om.writeValueAsString(krav.toKravForOppgave())
         val oppgaveType = "ROB_BEH"
         val request = OpprettOppgaveRequest(
-            tildeltEnhetsnr = enhetsNr,
             aktoerId = aktoerId,
             journalpostId = krav.journalpostId,
             beskrivelse = beskrivelse,

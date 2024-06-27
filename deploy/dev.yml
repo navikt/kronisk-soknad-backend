@@ -17,7 +17,6 @@ accessOutbound:
     - data.brreg.no
     - g.nav.no
     - test.idporten.no
-    - norg2.dev-fss-pub.nais.io
 envFrom:
   # servicebrukerens passord som er  hentet fra vault og lagt inn slik: https://doc.nais.io/security/secrets/kubernetes-secrets/
   - service-user-password
@@ -50,8 +49,6 @@ env:
     value: https://dokarkiv.dev-fss-pub.nais.io/rest/journalpostapi/v1
   - name: GRUNNBELOEP_URL
     value: https://g.nav.no/api/v1/grunnbeløp
-  - name: NORG2_URL
-    value: https://norg2.dev-fss-pub.nais.io/norg2/api/v1/arbeidsfordeling/enheter/bestmatch
   - name: OPPGAVEBEHANDLING_URL
     value: https://oppgave-q1.dev-fss-pub.nais.io/api/v1/oppgaver
   - name: PDL_URL

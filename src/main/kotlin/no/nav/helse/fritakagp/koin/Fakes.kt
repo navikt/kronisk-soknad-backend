@@ -16,9 +16,6 @@ import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.integration.gcp.MockBucketStorage
 import no.nav.helse.fritakagp.integration.kafka.BrukernotifikasjonBeskjedSender
 import no.nav.helse.fritakagp.integration.kafka.MockBrukernotifikasjonBeskjedSender
-import no.nav.helse.fritakagp.integration.norg.ArbeidsfordelingRequest
-import no.nav.helse.fritakagp.integration.norg.ArbeidsfordelingResponse
-import no.nav.helse.fritakagp.integration.norg.Norg2Client
 import no.nav.helse.fritakagp.integration.virusscan.MockVirusScanner
 import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
 import no.nav.helse.fritakagp.processing.arbeidsgivernotifikasjon.ArbeidsgiverOppdaterNotifikasjonProcessor
@@ -150,38 +147,6 @@ fun Module.mockExternalDependecies() {
     single { MockVirusScanner() } bind VirusScanner::class
     single { MockBucketStorage() } bind BucketStorage::class
     single { MockBrregClient() } bind BrregClient::class
-
-    single {
-        object : Norg2Client(
-            "",
-            get()
-        ) {
-            override suspend fun hentAlleArbeidsfordelinger(
-                request: ArbeidsfordelingRequest,
-                callId: String?
-            ): List<ArbeidsfordelingResponse> = listOf(
-                ArbeidsfordelingResponse(
-                    aktiveringsdato = LocalDate.of(2020, 11, 30),
-                    antallRessurser = 0,
-                    enhetId = 123456789,
-                    enhetNr = "1234",
-                    kanalstrategi = null,
-                    navn = "NAV Område",
-                    nedleggelsesdato = null,
-                    oppgavebehandler = false,
-                    orgNivaa = "SPESEN",
-                    orgNrTilKommunaltNavKontor = "",
-                    organisasjonsnummer = null,
-                    sosialeTjenester = "",
-                    status = "Aktiv",
-                    type = "KO",
-                    underAvviklingDato = null,
-                    underEtableringDato = LocalDate.of(2020, 11, 30),
-                    versjon = 1
-                )
-            )
-        }
-    } bind Norg2Client::class
 
     single { mockk<ArbeidsgiverOppdaterNotifikasjonProcessor>(relaxed = true) }
 }

@@ -17,7 +17,6 @@ import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor.Jobbdata.SkjemaType
-import no.nav.helse.fritakagp.service.BehandlendeEnhetService
 import no.nav.helse.fritakagp.service.PdlService
 import no.nav.helsearbeidsgiver.dokarkiv.DokArkivClient
 import no.nav.helsearbeidsgiver.dokarkiv.domene.Avsender
@@ -38,8 +37,7 @@ class KroniskKravProcessor(
     private val pdfGenerator: KroniskKravPDFGenerator,
     private val om: ObjectMapper,
     private val bucketStorage: BucketStorage,
-    private val brregClient: BrregClient,
-    private val behandlendeEnhetService: BehandlendeEnhetService
+    private val brregClient: BrregClient
 ) : BakgrunnsjobbProsesserer {
     companion object {
         val JOB_TYPE = "kronisk-krav-formidling"
@@ -190,13 +188,11 @@ class KroniskKravProcessor(
 
     fun opprettOppgave(krav: KroniskKrav): String {
         val aktoerId = pdlService.hentAktoerId(krav.identitetsnummer)
-        val enhetsNr = behandlendeEnhetService.hentBehandlendeEnhet(krav.identitetsnummer, krav.id.toString())
         requireNotNull(aktoerId) { "Fant ikke AktørID for fnr i ${krav.id}" }
         logger.info("Fant aktørid")
         val beskrivelse = om.writeValueAsString(krav.toKravForOppgave())
         val oppgaveType = "ROB_BEH"
         val request = OpprettOppgaveRequest(
-            tildeltEnhetsnr = enhetsNr,
             aktoerId = aktoerId,
             journalpostId = krav.journalpostId,
             beskrivelse = beskrivelse,
@@ -214,11 +210,9 @@ class KroniskKravProcessor(
 
     fun opprettFordelingsOppgave(krav: KroniskKrav): String {
         val aktoerId = pdlService.hentAktoerId(krav.identitetsnummer)
-        val enhetsNr = behandlendeEnhetService.hentBehandlendeEnhet(krav.identitetsnummer, krav.id.toString())
         requireNotNull(aktoerId) { "Fant ikke AktørID for fnr i ${krav.id}" }
 
         val request = OpprettOppgaveRequest(
-            tildeltEnhetsnr = enhetsNr,
             aktoerId = aktoerId,
             journalpostId = krav.journalpostId,
             beskrivelse = generereKroniskKravBeskrivelse(krav, "Fordelingsoppgave for ${KroniskKrav.tittel}"),

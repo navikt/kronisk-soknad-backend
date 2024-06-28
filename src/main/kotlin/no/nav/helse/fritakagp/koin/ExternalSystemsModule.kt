@@ -11,12 +11,10 @@ import no.nav.helse.fritakagp.integration.gcp.BucketStorageImpl
 import no.nav.helse.fritakagp.integration.kafka.BrukernotifikasjonBeskjedKafkaProducer
 import no.nav.helse.fritakagp.integration.kafka.BrukernotifikasjonBeskjedSender
 import no.nav.helse.fritakagp.integration.kafka.brukernotifikasjonKafkaProps
-import no.nav.helse.fritakagp.integration.norg.Norg2Client
 import no.nav.helse.fritakagp.integration.oauth2.DefaultOAuth2HttpClient
 import no.nav.helse.fritakagp.integration.oauth2.TokenResolver
 import no.nav.helse.fritakagp.integration.virusscan.ClamavVirusScannerImp
 import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
-import no.nav.helse.fritakagp.service.BehandlendeEnhetService
 import no.nav.helsearbeidsgiver.aareg.AaregClient
 import no.nav.helsearbeidsgiver.altinn.AltinnClient
 import no.nav.helsearbeidsgiver.altinn.CacheConfig
@@ -160,9 +158,6 @@ fun Module.externalSystemClients(env: Env, envOauth2: EnvOauth2) {
             env.kafkaTopicNameBrukernotifikasjon
         )
     } bind BrukernotifikasjonBeskjedSender::class
-
-    single { Norg2Client(env.norg2Url, get()) }
-    single { BehandlendeEnhetService(get(), get()) }
 }
 
 private fun EnvOauth2.azureAdConfig(scope: String): ClientProperties =

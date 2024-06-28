@@ -24,7 +24,6 @@ import no.nav.helse.fritakagp.processing.BakgrunnsJobbUtils.emptyJob
 import no.nav.helse.fritakagp.processing.BakgrunnsJobbUtils.testJob
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
 import no.nav.helse.fritakagp.readToObjectNode
-import no.nav.helse.fritakagp.service.BehandlendeEnhetService
 import no.nav.helse.fritakagp.service.GeografiskTilknytning
 import no.nav.helse.fritakagp.service.PdlService
 import no.nav.helsearbeidsgiver.dokarkiv.DokArkivClient
@@ -49,8 +48,7 @@ class KroniskKravProcessorTest {
     val bucketStorageMock = mockk<BucketStorage>(relaxed = true)
     val bakgrunnsjobbRepomock = mockk<BakgrunnsjobbRepository>(relaxed = true)
     val berregServiceMock = mockk<BrregClient>(relaxed = true)
-    val behandlendeEnhetService = mockk<BehandlendeEnhetService>(relaxed = true)
-    val prosessor = KroniskKravProcessor(repositoryMock, joarkMock, oppgaveMock, pdlServiceMock, bakgrunnsjobbRepomock, pdfGeneratorMock, objectMapper, bucketStorageMock, berregServiceMock, behandlendeEnhetService)
+    val prosessor = KroniskKravProcessor(repositoryMock, joarkMock, oppgaveMock, pdlServiceMock, bakgrunnsjobbRepomock, pdfGeneratorMock, objectMapper, bucketStorageMock, berregServiceMock)
     lateinit var krav: KroniskKrav
 
     private val oppgaveId = 9999

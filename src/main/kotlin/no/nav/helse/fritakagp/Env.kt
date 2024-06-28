@@ -51,6 +51,11 @@ sealed class Env private constructor(
     val altinnServiceOwnerApiKey = "altinn.altinn_api_key".prop()
     val altinnScope = "altinn.altinn_scope".prop()
 
+    val maskinportenUrl = "maskinporten.url".prop()
+    val maskinportenClientId = "maskinporten.client_id".prop()
+    val maskinportenClientJwk = "maskinporten.client_jwk".prop()
+    val maskinportenIssuer = "maskinporten.client_issuer".prop()
+
     val aaregUrl = "aareg_url".prop()
 
     val arbeidsgiverNotifikasjonUrl = "arbeidsgiver_notifikasjon_api_url".prop()

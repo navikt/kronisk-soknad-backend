@@ -24,6 +24,7 @@ import no.nav.helsearbeidsgiver.altinn.CacheConfig
 import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonKlient
 import no.nav.helsearbeidsgiver.dokarkiv.DokArkivClient
 import no.nav.helsearbeidsgiver.maskinporten.MaskinportenClient
+import no.nav.helsearbeidsgiver.maskinporten.MaskinportenClientConfig
 import no.nav.helsearbeidsgiver.pdl.Behandlingsgrunnlag
 import no.nav.helsearbeidsgiver.pdl.PdlClient
 import no.nav.helsearbeidsgiver.tokenprovider.AccessTokenProvider
@@ -44,7 +45,15 @@ import kotlin.time.toKotlinDuration
 
 fun Module.externalSystemClients(env: Env, envOauth2: EnvOauth2) {
     single(named("maskinportenClient")) {
-        MaskinportenClient(env.altinnScope)
+        MaskinportenClient(
+            MaskinportenClientConfig(
+                env.altinnScope,
+                env.maskinportenClientId,
+                env.maskinportenClientJwk,
+                env.maskinportenIssuer,
+                env.maskinportenUrl
+            )
+        )
     }
     single {
         val maskinportenClient: MaskinportenClient = get(qualifier = named("maskinportenClient"))

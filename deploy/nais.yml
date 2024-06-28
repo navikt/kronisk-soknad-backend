@@ -68,6 +68,7 @@ spec:
   {{#each ingresses as |ingress|}}
     - {{ ingress }}
   {{/each}}
+
   {{#if maskinporten}}
   maskinporten:
     enabled: true
@@ -75,6 +76,7 @@ spec:
       consumes:
         - name: "altinn:serviceowner/reportees"
   {{/if}}
+
   accessPolicy:
     outbound:
       rules:

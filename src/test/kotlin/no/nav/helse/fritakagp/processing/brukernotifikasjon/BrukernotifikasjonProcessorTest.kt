@@ -1,13 +1,11 @@
 package no.nav.helse.fritakagp.processing.brukernotifikasjon
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.KotlinModule
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import no.nav.helse.GravidTestData
 import no.nav.helse.KroniskTestData
+import no.nav.helse.fritakagp.customObjectMapper
 import no.nav.helse.fritakagp.db.GravidKravRepository
 import no.nav.helse.fritakagp.db.GravidSoeknadRepository
 import no.nav.helse.fritakagp.db.KroniskKravRepository
@@ -27,7 +25,7 @@ internal class BrukernotifikasjonProcessorTest {
     val gsRepo = mockk<GravidSoeknadRepository>(relaxed = true)
     val kafkaSenderMock = mockk<BrukernotifikasjonBeskjedSender>(relaxed = true)
 
-    val objectMapper = ObjectMapper().registerModules(KotlinModule(), JavaTimeModule())
+    val objectMapper = customObjectMapper()
 
     val prosessor = BrukernotifikasjonProcessor(gkRepo, gsRepo, kkRepo, ksRepo, objectMapper, kafkaSenderMock, 4)
 

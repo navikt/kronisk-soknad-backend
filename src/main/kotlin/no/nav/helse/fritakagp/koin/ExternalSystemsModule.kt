@@ -55,11 +55,11 @@ fun Module.externalSystemClients(env: Env, envOauth2: EnvOauth2) {
     }
     single {
         val maskinportenClient: MaskinportenClient = get(qualifier = named("maskinportenClient"))
-        val fetchToken = runBlocking { maskinportenClient.fetchNewAccessToken().tokenResponse.accessToken }
+        val fetchToken : () -> String = { runBlocking { maskinportenClient.fetchNewAccessToken().tokenResponse.accessToken } }
         AltinnClient(
             url = env.altinnServiceOwnerUrl,
             serviceCode = env.altinnServiceOwnerServiceId,
-            getToken = { fetchToken },
+            getToken = fetchToken,
             altinnApiKey = env.altinnServiceOwnerApiKey,
             cacheConfig = CacheConfig(Duration.ofMinutes(60).toKotlinDuration(), 100)
         )

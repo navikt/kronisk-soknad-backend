@@ -60,7 +60,7 @@ env:
   - name: ALTINN_ENDPOINT
     value: https://tt02.altinn.no/ServiceEngineExternal/CorrespondenceAgencyExternalBasic.svc
   - name: ALTINN_SCOPE
-    value: altinn:serviceowner/reportees
+    value: altinn:serviceowner/repotees
   - name: ENHETSREGISTERET
     value: https://data.brreg.no/enhetsregisteret/api/underenheter
 

@@ -61,7 +61,7 @@ fun Module.externalSystemClients(env: Env, envOauth2: EnvOauth2) {
             serviceCode = env.altinnServiceOwnerServiceId,
             getToken = fetchToken,
             altinnApiKey = env.altinnServiceOwnerApiKey,
-            cacheConfig = CacheConfig(Duration.ofMinutes(3).toKotlinDuration(), 100)
+            cacheConfig = CacheConfig(Duration.ofMinutes(60).toKotlinDuration(), 100)
         )
     } bind AltinnClient::class
 

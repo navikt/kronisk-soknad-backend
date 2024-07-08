@@ -73,9 +73,10 @@ spec:
   maskinporten:
     enabled: true
     scopes:
-      consumes:
-        - name: "altinn:serviceowner/reportees"
-  {{/if}}
+      consumes: {{#each maskinporten.consumers as |consumer| }}
+        - name: "{{ consumer }}"
+    {{/each }}
+  {{/if }}
 
   accessPolicy:
     outbound:

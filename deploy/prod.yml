@@ -63,4 +63,6 @@ env:
   - name: ENHETSREGISTERET
     value: https://data.brreg.no/enhetsregisteret/api/underenheter
 
-maskinporten: true
+maskinporten:
+  consumes:
+    - "altinn:serviceowner/reportees"

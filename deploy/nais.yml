@@ -73,8 +73,8 @@ spec:
   maskinporten:
     enabled: true
     scopes:
-      consumes: {{#each maskinporten.consumers as |consumer| }}
-        - name: "{{ consumer }}"
+      consumes: {{#each maskinporten.consumes as |consume| }}
+        - name: "{{ consume }}"
     {{/each }}
   {{/if }}
 

@@ -5,7 +5,7 @@ Fritak Arbeidsgiverperiode (AGP)
 Backend for mottak av søknader om fritak fra AGP ved sykepenger.
 # Komme i gang
 
-For å kjøre lokalt kan du starte  `docker-compose up` fra docker/local før du starter prosjektet. 
+For å kjøre lokalt kan du starte  `docker compose up` fra docker/local før du starter prosjektet. 
 
 http://localhost:8080/local/token-please?subject=12345678910
 

@@ -46,7 +46,7 @@ jobs:
         uses: gradle/wrapper-validation-action@v2
 
       - name: compose up
-        run: cd docker/local && docker-compose up -d && sleep 10
+        run: cd docker/local && docker compose up -d && sleep 10
 
       - name: Slow tests
         uses: gradle/actions/setup-gradle@v3

@@ -26,7 +26,7 @@ jobs:
         uses: gradle/wrapper-validation-action@v2
 
       - name: compose up
-        run: cd docker/local && docker-compose up -d && sleep 15
+        run: cd docker/local && docker compose up -d && sleep 15
 
       - name: Build and test
         uses: gradle/actions/setup-gradle@v3

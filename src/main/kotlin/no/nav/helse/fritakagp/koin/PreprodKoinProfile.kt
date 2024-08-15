@@ -24,6 +24,7 @@ import no.nav.helse.fritakagp.integration.brreg.MockBrregClient
 import no.nav.helse.fritakagp.processing.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.arbeidsgivernotifikasjon.ArbeidsgiverOppdaterNotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
+import no.nav.helse.fritakagp.processing.brukernotifikasjon.NyBrukerNotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravAltinnKvitteringSender
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravEndreProcessor
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravKvitteringProcessor
@@ -49,6 +50,7 @@ import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadKvitterin
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadPDFGenerator
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadProcessor
 import no.nav.helse.fritakagp.service.PdlService
+import no.nav.tms.varsel.action.Sensitivitet
 import org.koin.core.module.Module
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -130,6 +132,8 @@ fun preprodConfig(env: Env.Preprod): Module = module {
     single { KroniskKravKvitteringProcessor(get(), get(), get()) }
 
     single { BrukernotifikasjonProcessor(get(), get(), get(), get(), get(), get(), 3, env.frontendUrl) }
+    single { NyBrukerNotifikasjonProcessor(get(), get(), get(), get(), get(), get(), Sensitivitet.Substantial,env.frontendUrl) }
+
     single { ArbeidsgiverNotifikasjonProcessor(get(), get(), get(), env.frontendUrl, get()) }
     single { ArbeidsgiverOppdaterNotifikasjonProcessor(get(), get(), get(), get()) }
     single { PdlService(get()) }

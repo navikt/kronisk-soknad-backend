@@ -35,6 +35,7 @@ class BrukernotifikasjonProcessor(
     companion object {
         val JOB_TYPE = "brukernotifikasjon"
     }
+
     override val type: String get() = JOB_TYPE
 
     override fun prosesser(jobb: Bakgrunnsjobb) {
@@ -42,6 +43,7 @@ class BrukernotifikasjonProcessor(
         val jobbData = om.readValue<Jobbdata>(jobb.data)
         val beskjed = map(jobbData)
         val uuid = UUID.randomUUID().toString()
+
         val nokkel = NokkelInputBuilder()
             .withEventId(uuid)
             .withFodselsnummer(beskjed.fnr)
@@ -57,7 +59,15 @@ class BrukernotifikasjonProcessor(
         return when (jobbData.skjemaType) {
             Jobbdata.SkjemaType.KroniskKrav -> {
                 val skjema = kroniskKravRepo.getById(jobbData.skjemaId) ?: throw IllegalArgumentException("Fant ikke $jobbData")
-                BeskjedMedFnr(skjema.identitetsnummer, skjema.id.toString(), buildBeskjed("$frontendAppBaseUrl/nb/notifikasjon/kronisk/krav/${skjema.id}", skjema.opprettet, skjema.virksomhetsnavn))
+                BeskjedMedFnr(
+                    fnr = skjema.identitetsnummer,
+                    skjemaId = skjema.id.toString(),
+                    beskjed = buildBeskjed(
+                        linkUrl = "$frontendAppBaseUrl/nb/notifikasjon/kronisk/krav/${skjema.id}",
+                        hendselstidspunkt = skjema.opprettet,
+                        virksomhetsNavn = skjema.virksomhetsnavn
+                    )
+                )
             }
 
             Jobbdata.SkjemaType.KroniskSøknad -> {
@@ -69,6 +79,7 @@ class BrukernotifikasjonProcessor(
                 val skjema = gravidKravRepo.getById(jobbData.skjemaId) ?: throw IllegalArgumentException("Fant ikke $jobbData")
                 BeskjedMedFnr(skjema.identitetsnummer, skjema.id.toString(), buildBeskjed("$frontendAppBaseUrl/nb/notifikasjon/gravid/krav/${skjema.id}", skjema.opprettet, skjema.virksomhetsnavn))
             }
+
             Jobbdata.SkjemaType.GravidSøknad -> {
                 val skjema = gravidSoeknadRepo.getById(jobbData.skjemaId) ?: throw IllegalArgumentException("Fant ikke $jobbData")
                 BeskjedMedFnr(skjema.identitetsnummer, skjema.id.toString(), buildBeskjed("$frontendAppBaseUrl/nb/notifikasjon/gravid/soknad/${skjema.id}", skjema.opprettet, skjema.virksomhetsnavn))

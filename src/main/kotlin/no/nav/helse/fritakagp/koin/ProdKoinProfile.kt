@@ -132,7 +132,7 @@ fun prodConfig(env: Env.Prod): Module = module {
     single { KroniskKravKvitteringProcessor(get(), get(), get()) }
 
     single { BrukernotifikasjonProcessor(get(), get(), get(), get(), get(), get(), 4, env.frontendUrl) }
-    single { NyBrukerNotifikasjonProcessor(get(), get(), get(), get(), get(), get(), Sensitivitet.High,env.frontendUrl) }
+    single { NyBrukerNotifikasjonProcessor(get(), get(), get(), get(), get(), get(), Sensitivitet.High, env.frontendUrl) }
 
     single { ArbeidsgiverNotifikasjonProcessor(get(), get(), get(), env.frontendUrl, get()) }
     single { ArbeidsgiverOppdaterNotifikasjonProcessor(get(), get(), get(), get()) }

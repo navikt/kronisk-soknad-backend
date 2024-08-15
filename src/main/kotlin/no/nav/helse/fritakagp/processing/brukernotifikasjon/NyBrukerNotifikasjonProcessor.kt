@@ -1,6 +1,5 @@
 package no.nav.helse.fritakagp.processing.brukernotifikasjon
 
-
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.hag.utils.bakgrunnsjobb.Bakgrunnsjobb
@@ -19,7 +18,6 @@ import no.nav.tms.varsel.action.Varseltype
 import no.nav.tms.varsel.builder.VarselActionBuilder
 import java.time.ZonedDateTime
 import java.util.UUID
-
 
 class NyBrukerNotifikasjonProcessor(
     private val gravidKravRepo: GravidKravRepository,
@@ -46,9 +44,7 @@ class NyBrukerNotifikasjonProcessor(
     }
 
     private fun opprettVarsel(varselId: String, jobb: Bakgrunnsjobb): String {
-
         val jobbData = om.readValue<Jobbdata>(jobb.data)
-
 
         when (jobbData.skjemaType) {
             Jobbdata.SkjemaType.KroniskKrav -> {
@@ -91,7 +87,6 @@ class NyBrukerNotifikasjonProcessor(
                 )
             }
         }
-
     }
 
     private fun getVarsel(varselId: String, identitetsnummer: String, virksomhetsnavn: String?, lenke: String) = VarselActionBuilder.opprett {
@@ -105,7 +100,7 @@ class NyBrukerNotifikasjonProcessor(
             default = true
         )
         produsent = Produsent(
-            cluster = "dev-gcp",//TODO finn ut hvordan vi kan bruke miljøvariabler
+            cluster = "dev-gcp", // TODO finn ut hvordan vi kan bruke miljøvariabler
             appnavn = "fritakagp",
             namespace = "helsearbeidsgiver"
 
@@ -126,4 +121,3 @@ class NyBrukerNotifikasjonProcessor(
         }
     }
 }
-

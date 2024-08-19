@@ -103,7 +103,7 @@ class BrukernotifikasjonProcessor(
             .withLink(URL(linkUrl))
             .withSikkerhetsnivaa(sikkerhetsNivaa)
             .withSynligFremTil(synligFremTil)
-            .withTekst("${virksomhetsNavn ?: ukjentArbeidsgiver} har søkt om utvidet støtte fra NAV angående sykepenger til deg.")
+            .withTekst("${virksomhetsNavn ?: ukjentArbeidsgiver} har søkt om utvidet støtte fra NAV angående sykepenger til deg.old")
             .withEksternVarsling(true)
             .withTidspunkt(hendelsestidsPunktUtc)
             .build()

@@ -11,6 +11,7 @@ import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.integration.gcp.BucketStorageImpl
 import no.nav.helse.fritakagp.integration.kafka.BrukernotifikasjonBeskjedKafkaProducer
 import no.nav.helse.fritakagp.integration.kafka.BrukernotifikasjonBeskjedSender
+import no.nav.helse.fritakagp.integration.kafka.BrukernotifikasjonKafkaProducer
 import no.nav.helse.fritakagp.integration.kafka.brukernotifikasjonKafkaProps
 import no.nav.helse.fritakagp.integration.oauth2.DefaultOAuth2HttpClient
 import no.nav.helse.fritakagp.integration.oauth2.TokenResolver
@@ -174,6 +175,12 @@ fun Module.externalSystemClients(env: Env, envOauth2: EnvOauth2) {
             env.kafkaTopicNameBrukernotifikasjon
         )
     } bind BrukernotifikasjonBeskjedSender::class
+    single {
+        BrukernotifikasjonKafkaProducer(
+            brukernotifikasjonKafkaProps(),
+            env.kafkaTopicNameBrukernotifikasjon
+        )
+    } bind BrukernotifikasjonKafkaProducer::class
 }
 
 private fun EnvOauth2.azureAdConfig(scope: String): ClientProperties =

@@ -27,7 +27,7 @@ class NyBrukerNotifikasjonProcessor(
     private val om: ObjectMapper,
     private val brukerNotifikasjonProducerFactory: BrukernotifikasjonKafkaProducer,
     private val sensitivitetNivaa: Sensitivitet = Sensitivitet.High,
-    private val frontendAppBaseUrl: String = "https://arbeidsgiver.nav.no/fritak-agp"
+    private val frontendAppBaseUrl: String = "https://arbeidsgiver.nav.no/fritak-agp/nb/notifikasjon"
 ) : BakgrunnsjobbProsesserer {
     override val type: String get() = JOB_TYPE
     private val logger = this.logger()

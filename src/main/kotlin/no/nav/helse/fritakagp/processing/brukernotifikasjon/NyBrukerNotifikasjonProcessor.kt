@@ -96,7 +96,7 @@ class NyBrukerNotifikasjonProcessor(
         ident = identitetsnummer
         tekst = Tekst(
             spraakkode = "nb",
-            tekst = "${virksomhetsnavn ?: ukjentArbeidsgiver} ny har søkt om utvidet støtte fra NAV angående sykepenger til deg. Denne kommer fra ny topic",
+            tekst = "${virksomhetsnavn ?: ukjentArbeidsgiver} ny har søkt om utvidet støtte fra NAV angående sykepenger til deg.",
             default = true
         )
         produsent = Produsent(

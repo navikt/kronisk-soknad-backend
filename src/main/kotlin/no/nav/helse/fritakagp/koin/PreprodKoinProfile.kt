@@ -131,7 +131,7 @@ fun preprodConfig(env: Env.Preprod): Module = module {
     } bind KroniskKravKvitteringSender::class
     single { KroniskKravKvitteringProcessor(get(), get(), get()) }
 
-   single { BrukernotifikasjonProcessor(get(), get(), get(), get(), get(), get(), 3, env.frontendUrl) }
+    single { BrukernotifikasjonProcessor(get(), get(), get(), get(), get(), get(), 3, env.frontendUrl) }
     single { NyBrukerNotifikasjonProcessor(get(), get(), get(), get(), get(), get(), Sensitivitet.Substantial, env.frontendUrl) }
 
     single { ArbeidsgiverNotifikasjonProcessor(get(), get(), get(), env.frontendUrl, get()) }

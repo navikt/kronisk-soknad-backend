@@ -17,8 +17,9 @@ class BrukernotifikasjonKafkaProducer(
     private var kafkaProducer: KafkaProducer<String, String> = KafkaProducer(props)
     private val logger = this.logger()
     override fun sendMessage(varselId: String, varsel: String): RecordMetadata? {
+        //TODO:fjerne denne loggen
         logger.info("Sender brukernotifikasjon: $varsel")
-        val record = ProducerRecord("min-side.aapen-brukervarsel-v1", varselId, varsel)
+        val record = ProducerRecord(topicName, varselId, varsel)
         return kafkaProducer.send(record).get().also {
             logger.info("Skrevet vaselId $varselId til Kafka til topic ${it!!.topic()} med offset ${it.offset()}")
         }

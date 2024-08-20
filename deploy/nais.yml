@@ -102,7 +102,7 @@ spec:
 
   env:
     - name: KAFKA_BESKJED_TOPIC_NAME
-      value: min-side.aapen-brukernotifikasjon-beskjed-v1
+      value: min-side.aapen-brukervarsel-v1
     - name: CLAM_AV_URL
       value: http://clamav.nais-system/scan
     {{#each env as |var|}}

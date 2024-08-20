@@ -167,7 +167,6 @@ fun Module.externalSystemClients(env: Env, envOauth2: EnvOauth2) {
         )
     } bind BucketStorage::class
 
-
     single {
         BrukernotifikasjonKafkaProducer(
             brukernotifikasjonKafkaProps(),

@@ -9,8 +9,6 @@ import no.nav.helse.fritakagp.EnvOauth2
 import no.nav.helse.fritakagp.integration.GrunnbeloepClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.integration.gcp.BucketStorageImpl
-import no.nav.helse.fritakagp.integration.kafka.BrukernotifikasjonBeskjedKafkaProducer
-import no.nav.helse.fritakagp.integration.kafka.BrukernotifikasjonBeskjedSender
 import no.nav.helse.fritakagp.integration.kafka.BrukernotifikasjonKafkaProducer
 import no.nav.helse.fritakagp.integration.kafka.brukernotifikasjonKafkaProps
 import no.nav.helse.fritakagp.integration.oauth2.DefaultOAuth2HttpClient
@@ -169,12 +167,7 @@ fun Module.externalSystemClients(env: Env, envOauth2: EnvOauth2) {
         )
     } bind BucketStorage::class
 
-    single {
-        BrukernotifikasjonBeskjedKafkaProducer(
-            brukernotifikasjonKafkaProps(),
-            env.kafkaTopicNameBrukernotifikasjon
-        )
-    } bind BrukernotifikasjonBeskjedSender::class
+
     single {
         BrukernotifikasjonKafkaProducer(
             brukernotifikasjonKafkaProps(),

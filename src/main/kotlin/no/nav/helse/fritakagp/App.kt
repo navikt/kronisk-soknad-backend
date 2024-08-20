@@ -102,7 +102,7 @@ class FritakAgpApplication(val port: Int = 8080, val runAsDeamon: Boolean = true
             registrer(get<KroniskKravSlettProcessor>())
             registrer(get<KroniskKravEndreProcessor>())
 
-            registrer(get<BrukernotifikasjonProcessor>())
+
             registrer(get<NyBrukerNotifikasjonProcessor>())
             registrer(get<ArbeidsgiverNotifikasjonProcessor>())
             registrer(get<ArbeidsgiverOppdaterNotifikasjonProcessor>())

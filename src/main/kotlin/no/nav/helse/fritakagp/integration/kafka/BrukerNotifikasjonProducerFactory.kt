@@ -17,7 +17,7 @@ class BrukernotifikasjonKafkaProducer(
     private var kafkaProducer: KafkaProducer<String, String> = KafkaProducer(props)
     private val logger = this.logger()
     override fun sendMessage(varselId: String, varsel: String): RecordMetadata? {
-        //TODO:fjerne denne loggen
+        // TODO:fjerne denne loggen
         logger.info("Sender brukernotifikasjon: $varsel")
         val record = ProducerRecord(topicName, varselId, varsel)
         return kafkaProducer.send(record).get().also {

@@ -27,7 +27,7 @@ class NyBrukerNotifikasjonProcessor(
     private val om: ObjectMapper,
     private val brukerNotifikasjonProducerFactory: BrukernotifikasjonKafkaProducer,
     private val sensitivitetNivaa: Sensitivitet = Sensitivitet.High,
-    private val frontendAppBaseUrl: String = "https://arbeidsgiver.nav.no/fritak-agp/nb/notifikasjon"
+    private val frontendAppBaseUrl: String = "https://arbeidsgiver.nav.no/fritak-agp"
 ) : BakgrunnsjobbProsesserer {
     override val type: String get() = JOB_TYPE
     private val logger = this.logger()
@@ -53,7 +53,7 @@ class NyBrukerNotifikasjonProcessor(
                     varselId = varselId,
                     identitetsnummer = skjema.identitetsnummer,
                     virksomhetsnavn = skjema.virksomhetsnavn,
-                    lenke = "$frontendAppBaseUrl/kronisk/krav/${skjema.id}"
+                    lenke = "$frontendAppBaseUrl/nb/notifikasjon/kronisk/krav/${skjema.id}"
                 )
             }
 
@@ -63,7 +63,7 @@ class NyBrukerNotifikasjonProcessor(
                     varselId = varselId,
                     identitetsnummer = skjema.identitetsnummer,
                     virksomhetsnavn = skjema.virksomhetsnavn,
-                    lenke = "$frontendAppBaseUrl/kronisk/soknad/${skjema.id}"
+                    lenke = "$frontendAppBaseUrl/nb/notifikasjon/kronisk/soknad/${skjema.id}"
                 )
             }
 
@@ -73,7 +73,7 @@ class NyBrukerNotifikasjonProcessor(
                     varselId = varselId,
                     identitetsnummer = skjema.identitetsnummer,
                     virksomhetsnavn = skjema.virksomhetsnavn,
-                    lenke = "$frontendAppBaseUrl/gravid/krav/${skjema.id}"
+                    lenke = "$frontendAppBaseUrl/nb/notifikasjon/gravid/krav/${skjema.id}"
                 )
             }
 
@@ -83,7 +83,7 @@ class NyBrukerNotifikasjonProcessor(
                     varselId = varselId,
                     identitetsnummer = skjema.identitetsnummer,
                     virksomhetsnavn = skjema.virksomhetsnavn,
-                    lenke = "$frontendAppBaseUrl/gravid/soknad/${skjema.id}"
+                    lenke = "$frontendAppBaseUrl/nb/notifikasjon/gravid/soknad/${skjema.id}"
                 )
             }
         }

@@ -10,7 +10,6 @@ import no.nav.helse.fritakagp.db.KroniskKravRepository
 import no.nav.helse.fritakagp.db.KroniskSoeknadRepository
 import no.nav.helse.fritakagp.integration.kafka.BrukernotifikasjonSender
 import no.nav.helsearbeidsgiver.utils.log.logger
-import no.nav.tms.varsel.action.EksternVarslingBestilling
 import no.nav.tms.varsel.action.Sensitivitet
 import no.nav.tms.varsel.action.Tekst
 import no.nav.tms.varsel.action.Varseltype
@@ -103,7 +102,6 @@ class BrukernotifikasjonProcessor(
             )
             link = lenke
             aktivFremTil = ZonedDateTime.now().plusDays(31)
-            eksternVarsling = EksternVarslingBestilling()
         }
 
     data class Jobbdata(

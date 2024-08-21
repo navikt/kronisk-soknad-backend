@@ -11,7 +11,6 @@ import no.nav.helse.fritakagp.db.KroniskSoeknadRepository
 import no.nav.helse.fritakagp.integration.kafka.BrukernotifikasjonKafkaProducer
 import no.nav.helsearbeidsgiver.utils.log.logger
 import no.nav.tms.varsel.action.EksternVarslingBestilling
-import no.nav.tms.varsel.action.Produsent
 import no.nav.tms.varsel.action.Sensitivitet
 import no.nav.tms.varsel.action.Tekst
 import no.nav.tms.varsel.action.Varseltype
@@ -98,12 +97,6 @@ class NyBrukerNotifikasjonProcessor(
             spraakkode = "nb",
             tekst = "${virksomhetsnavn ?: ukjentArbeidsgiver} ny har søkt om utvidet støtte fra NAV angående sykepenger til deg.",
             default = true
-        )
-        produsent = Produsent(
-            cluster = "dev-gcp", // TODO finn ut hvordan vi kan bruke miljøvariabler
-            appnavn = "fritakagp",
-            namespace = "helsearbeidsgiver"
-
         )
         link = lenke
         aktivFremTil = ZonedDateTime.now().plusDays(31)

@@ -15,7 +15,7 @@ import no.nav.helse.fritakagp.domain.KroniskKrav
 import no.nav.helse.fritakagp.domain.generereKroniskKravBeskrivelse
 import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
-import no.nav.helse.fritakagp.processing.brukernotifikasjon.NyBrukerNotifikasjonProcessor
+import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
 import no.nav.helse.fritakagp.service.PdlService
 import no.nav.helsearbeidsgiver.dokarkiv.DokArkivClient
 import no.nav.helsearbeidsgiver.dokarkiv.domene.Avsender
@@ -82,8 +82,8 @@ class KroniskKravProcessor(
             bakgrunnsjobbRepo.save(
                 Bakgrunnsjobb(
                     maksAntallForsoek = 10,
-                    data = om.writeValueAsString(NyBrukerNotifikasjonProcessor.Jobbdata(krav.id, NyBrukerNotifikasjonProcessor.Jobbdata.SkjemaType.KroniskKrav)),
-                    type = NyBrukerNotifikasjonProcessor.JOB_TYPE
+                    data = om.writeValueAsString(BrukernotifikasjonProcessor.Jobbdata(krav.id, BrukernotifikasjonProcessor.Jobbdata.SkjemaType.KroniskKrav)),
+                    type = BrukernotifikasjonProcessor.JOB_TYPE
                 )
             )
         } finally {

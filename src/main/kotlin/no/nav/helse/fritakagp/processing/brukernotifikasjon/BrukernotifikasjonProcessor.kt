@@ -97,7 +97,7 @@ class BrukernotifikasjonProcessor(
             ident = identitetsnummer
             tekst = Tekst(
                 spraakkode = "nb",
-                tekst = "${virksomhetsnavn ?: ukjentArbeidsgiver} ny har søkt om utvidet støtte fra NAV angående sykepenger til deg.",
+                tekst = "${virksomhetsnavn ?: ukjentArbeidsgiver} har søkt om utvidet støtte fra NAV angående sykepenger til deg.",
                 default = true
             )
             link = lenke

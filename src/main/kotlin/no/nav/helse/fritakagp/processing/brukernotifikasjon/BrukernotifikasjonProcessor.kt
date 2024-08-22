@@ -46,10 +46,10 @@ class BrukernotifikasjonProcessor(
     private fun opprettVarsel(varselId: String, jobb: Bakgrunnsjobb): String {
         val jobbData = om.readValue<Jobbdata>(jobb.data)
 
-        when (jobbData.skjemaType) {
+        return when (jobbData.skjemaType) {
             Jobbdata.SkjemaType.KroniskKrav -> {
                 val skjema = kroniskKravRepo.getById(jobbData.skjemaId) ?: throw IllegalArgumentException("Fant ikke $jobbData")
-                return getVarsel(
+                getVarsel(
                     varselId = varselId,
                     identitetsnummer = skjema.identitetsnummer,
                     virksomhetsnavn = skjema.virksomhetsnavn,
@@ -59,7 +59,7 @@ class BrukernotifikasjonProcessor(
 
             Jobbdata.SkjemaType.KroniskSøknad -> {
                 val skjema = kroniskSoeknadRepo.getById(jobbData.skjemaId) ?: throw IllegalArgumentException("Fant ikke $jobbData")
-                return getVarsel(
+                getVarsel(
                     varselId = varselId,
                     identitetsnummer = skjema.identitetsnummer,
                     virksomhetsnavn = skjema.virksomhetsnavn,
@@ -69,7 +69,7 @@ class BrukernotifikasjonProcessor(
 
             Jobbdata.SkjemaType.GravidKrav -> {
                 val skjema = gravidKravRepo.getById(jobbData.skjemaId) ?: throw IllegalArgumentException("Fant ikke $jobbData")
-                return getVarsel(
+                getVarsel(
                     varselId = varselId,
                     identitetsnummer = skjema.identitetsnummer,
                     virksomhetsnavn = skjema.virksomhetsnavn,
@@ -79,7 +79,7 @@ class BrukernotifikasjonProcessor(
 
             Jobbdata.SkjemaType.GravidSøknad -> {
                 val skjema = gravidSoeknadRepo.getById(jobbData.skjemaId) ?: throw IllegalArgumentException("Fant ikke $jobbData")
-                return getVarsel(
+                getVarsel(
                     varselId = varselId,
                     identitetsnummer = skjema.identitetsnummer,
                     virksomhetsnavn = skjema.virksomhetsnavn,

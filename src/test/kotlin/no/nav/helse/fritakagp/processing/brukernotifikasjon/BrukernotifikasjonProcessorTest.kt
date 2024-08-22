@@ -10,9 +10,11 @@ import no.nav.helse.fritakagp.db.GravidKravRepository
 import no.nav.helse.fritakagp.db.GravidSoeknadRepository
 import no.nav.helse.fritakagp.db.KroniskKravRepository
 import no.nav.helse.fritakagp.db.KroniskSoeknadRepository
-import no.nav.helse.fritakagp.integration.kafka.BrukernotifikasjonBeskjedSender
+import no.nav.helse.fritakagp.integration.kafka.BrukernotifikasjonSender
 import no.nav.helse.fritakagp.processing.BakgrunnsJobbUtils
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor.Jobbdata.SkjemaType
+import no.nav.tms.varsel.action.Sensitivitet
+import no.nav.tms.varsel.builder.BuilderEnvironment
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.util.UUID
@@ -23,18 +25,24 @@ internal class BrukernotifikasjonProcessorTest {
     val kkRepo = mockk<KroniskKravRepository>(relaxed = true)
     val gkRepo = mockk<GravidKravRepository>(relaxed = true)
     val gsRepo = mockk<GravidSoeknadRepository>(relaxed = true)
-    val kafkaSenderMock = mockk<BrukernotifikasjonBeskjedSender>(relaxed = true)
+    val kafkaSenderMock = mockk<BrukernotifikasjonSender>(relaxed = true)
 
     val objectMapper = customObjectMapper()
 
-    val prosessor = BrukernotifikasjonProcessor(gkRepo, gsRepo, kkRepo, ksRepo, objectMapper, kafkaSenderMock, 4)
+    val prosessor = BrukernotifikasjonProcessor(gkRepo, gsRepo, kkRepo, ksRepo, objectMapper, kafkaSenderMock, Sensitivitet.High)
 
-    private val oppgaveId = 9999
-    private val arkivReferanse = "12345"
     private var jobb = BakgrunnsJobbUtils.emptyJob()
 
     @BeforeEach
     fun setup() {
+        mapOf(
+            "NAIS_APP_NAME" to "test-app",
+            "NAIS_NAMESPACE" to "test-namespace",
+            "NAIS_CLUSTER_NAME" to "dev"
+        ).let { naisEnv ->
+            BuilderEnvironment.extend(naisEnv)
+        }
+
         every { ksRepo.getById(any()) } returns KroniskTestData.soeknadKronisk
         every { kkRepo.getById(any()) } returns KroniskTestData.kroniskKrav
         every { gkRepo.getById(any()) } returns GravidTestData.gravidKrav

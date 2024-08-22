@@ -141,6 +141,7 @@ dependencies {
     val utilsVersion: String by project
     val valiktorVersion: String by project
     val maskinportenClientVersion: String by project
+    val tmsVarselKotlinBuilderVersion: String by project
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
     implementation("ch.qos.logback:logback-classic:$logback_version")
@@ -213,6 +214,7 @@ dependencies {
     implementation("org.valiktor:valiktor-core:$valiktorVersion")
     implementation("org.valiktor:valiktor-javatime:$valiktorVersion")
     implementation("io.mockk:mockk:$mockkVersion") // Brukes til å mocke eksterne avhengigheter under lokal kjøring
+    implementation("no.nav.tms.varsel:kotlin-builder:$tmsVarselKotlinBuilderVersion")
 
     testImplementation("io.insert-koin:koin-test:$koinVersion")
     testImplementation("io.ktor:ktor-client-mock:$ktorVersion")

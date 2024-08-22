@@ -1,37 +1,31 @@
 package no.nav.helse.fritakagp.integration.kafka
 
-import no.nav.brukernotifikasjon.schemas.input.BeskjedInput
-import no.nav.brukernotifikasjon.schemas.input.NokkelInput
 import no.nav.helsearbeidsgiver.utils.log.logger
 import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.clients.producer.RecordMetadata
 
-interface BrukernotifikasjonBeskjedSender {
-    fun sendMessage(nokkel: NokkelInput, beskjed: BeskjedInput): RecordMetadata?
+interface BrukernotifikasjonSender {
+    fun sendMessage(varselId: String, varsel: String): RecordMetadata?
 }
-
-class MockBrukernotifikasjonBeskjedSender : BrukernotifikasjonBeskjedSender {
+class MockBrukernotifikasjonBeskjedSender : BrukernotifikasjonSender {
     private val logger = this.logger()
-
-    override fun sendMessage(nokkel: NokkelInput, beskjed: BeskjedInput): RecordMetadata? {
-        logger.info("Sender Brukernotifikasjon: $beskjed")
+    override fun sendMessage(varselId: String, varsel: String): RecordMetadata? {
+        logger.info("Mocked sending av varselId $varselId til Kafka")
         return null
     }
 }
-
-class BrukernotifikasjonBeskjedKafkaProducer(
+class BrukernotifikasjonKafkaProducer(
     props: Map<String, Any>,
     private val topicName: String
-) :
-    BrukernotifikasjonBeskjedSender {
-    private val logger = this.logger()
-    private var producer: KafkaProducer<NokkelInput, BeskjedInput> = KafkaProducer(props)
+) : BrukernotifikasjonSender {
 
-    override fun sendMessage(nokkel: NokkelInput, beskjed: BeskjedInput): RecordMetadata? {
-        val record: ProducerRecord<NokkelInput, BeskjedInput> = ProducerRecord(topicName, nokkel, beskjed)
-        return producer.send(record).get().also {
-            logger.info("Skrevet eventId ${nokkel.getEventId()} til Kafka til topic ${it!!.topic()} med offset ${it.offset()}")
+    private var kafkaProducer: KafkaProducer<String, String> = KafkaProducer(props)
+    private val logger = this.logger()
+    override fun sendMessage(varselId: String, varsel: String): RecordMetadata? {
+        val record = ProducerRecord(topicName, varselId, varsel)
+        return kafkaProducer.send(record).get().also {
+            logger.info("Skrevet varselId $varselId til Kafka til topic ${it!!.topic()} med offset ${it.offset()}")
         }
     }
 }

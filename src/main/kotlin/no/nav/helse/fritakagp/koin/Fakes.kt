@@ -14,7 +14,7 @@ import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.brreg.MockBrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.integration.gcp.MockBucketStorage
-import no.nav.helse.fritakagp.integration.kafka.BrukernotifikasjonBeskjedSender
+import no.nav.helse.fritakagp.integration.kafka.BrukernotifikasjonSender
 import no.nav.helse.fritakagp.integration.kafka.MockBrukernotifikasjonBeskjedSender
 import no.nav.helse.fritakagp.integration.virusscan.MockVirusScanner
 import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
@@ -55,7 +55,7 @@ fun Module.mockExternalDependecies() {
         }
     }
 
-    single { MockBrukernotifikasjonBeskjedSender() } bind BrukernotifikasjonBeskjedSender::class
+    single { MockBrukernotifikasjonBeskjedSender() } bind BrukernotifikasjonSender::class
     single(named("TOKENPROVIDER")) {
         object : AccessTokenProvider {
             override fun getToken(): String {

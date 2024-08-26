@@ -9,6 +9,9 @@ import no.nav.helse.fritakagp.db.GravidSoeknadRepository
 import no.nav.helse.fritakagp.db.KroniskKravRepository
 import no.nav.helse.fritakagp.db.KroniskSoeknadRepository
 import no.nav.helse.fritakagp.integration.kafka.BrukernotifikasjonSender
+import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor.Jobbdata.NotifikasjonType.Annullere
+import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor.Jobbdata.NotifikasjonType.Endre
+import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor.Jobbdata.NotifikasjonType.Opprette
 import no.nav.helsearbeidsgiver.utils.log.logger
 import no.nav.tms.varsel.action.Sensitivitet
 import no.nav.tms.varsel.action.Tekst
@@ -53,7 +56,7 @@ class BrukernotifikasjonProcessor(
                     varselId = varselId,
                     identitetsnummer = skjema.identitetsnummer,
                     virksomhetsnavn = skjema.virksomhetsnavn,
-                    lenke = "$frontendAppBaseUrl/nb/notifikasjon/kronisk/krav/${skjema.id}"
+                    jobbData=jobbData
                 )
             }
 
@@ -63,7 +66,7 @@ class BrukernotifikasjonProcessor(
                     varselId = varselId,
                     identitetsnummer = skjema.identitetsnummer,
                     virksomhetsnavn = skjema.virksomhetsnavn,
-                    lenke = "$frontendAppBaseUrl/nb/notifikasjon/kronisk/soknad/${skjema.id}"
+                    jobbData=jobbData
                 )
             }
 
@@ -73,7 +76,7 @@ class BrukernotifikasjonProcessor(
                     varselId = varselId,
                     identitetsnummer = skjema.identitetsnummer,
                     virksomhetsnavn = skjema.virksomhetsnavn,
-                    lenke = "$frontendAppBaseUrl/nb/notifikasjon/gravid/krav/${skjema.id}"
+                    jobbData=jobbData
                 )
             }
 
@@ -83,13 +86,13 @@ class BrukernotifikasjonProcessor(
                     varselId = varselId,
                     identitetsnummer = skjema.identitetsnummer,
                     virksomhetsnavn = skjema.virksomhetsnavn,
-                    lenke = "$frontendAppBaseUrl/nb/notifikasjon/gravid/soknad/${skjema.id}"
+                    jobbData=jobbData
                 )
             }
         }
     }
 
-    private fun getVarsel(varselId: String, identitetsnummer: String, virksomhetsnavn: String?, lenke: String) =
+    private fun getVarsel(varselId: String, identitetsnummer: String, virksomhetsnavn: String?, jobbData: Jobbdata) =
         VarselActionBuilder.opprett {
             type = Varseltype.Beskjed
             this.varselId = varselId
@@ -97,22 +100,68 @@ class BrukernotifikasjonProcessor(
             ident = identitetsnummer
             tekst = Tekst(
                 spraakkode = "nb",
-                tekst = "${virksomhetsnavn ?: ukjentArbeidsgiver} har søkt om utvidet støtte fra NAV angående sykepenger til deg.",
+                tekst = (virksomhetsnavn ?: ukjentArbeidsgiver) +" "+ jobbData.getTekst(),
                 default = true
             )
-            link = lenke
+            link = frontendAppBaseUrl+jobbData.getLenke()
             aktivFremTil = ZonedDateTime.now().plusDays(31)
         }
 
     data class Jobbdata(
         val skjemaId: UUID,
-        val skjemaType: SkjemaType
+        val skjemaType: SkjemaType,
+        val notifikasjonType: NotifikasjonType
     ) {
+        fun getTekst(): String {
+            return when (notifikasjonType) {
+                Opprette -> "har søkt om utvidet støtte fra NAV angående sykepenger til deg."
+                Endre -> "Endret"
+                Annullere -> "Annullert"
+            }
+        }
+        fun getLenke(): String {
+             when (skjemaType) {
+                SkjemaType.KroniskKrav  -> {
+                   return  when(notifikasjonType) {
+                       Opprette -> "/nb/notifikasjon/kronisk/krav/$skjemaId"
+                       Endre -> TODO()
+                       Annullere -> TODO()
+                   }
+                }
+                SkjemaType.KroniskSøknad -> {
+                    return  when(notifikasjonType) {
+                        Opprette -> "/nb/notifikasjon/kronisk/soknad/$skjemaId"
+                        Endre -> TODO()
+                        Annullere -> TODO()
+                    }
+                }
+                SkjemaType.GravidKrav -> {
+                    return  when(notifikasjonType) {
+                        Opprette -> "/nb/notifikasjon/gravid/krav/$skjemaId"
+                        Endre -> TODO()
+                        Annullere -> TODO()
+                    }
+                }
+                SkjemaType.GravidSøknad -> {
+                    return  when(notifikasjonType) {
+                        Opprette -> "/nb/notifikasjon/gravid/soknad/$skjemaId"
+                        Endre -> TODO()
+                        Annullere -> TODO()
+                    }
+                }
+            }
+        }
         enum class SkjemaType {
             KroniskKrav,
             KroniskSøknad,
             GravidKrav,
             GravidSøknad
+        }
+        enum class NotifikasjonType {
+            Opprette,
+            Endre,
+            Annullere,
+
         }
     }
 }

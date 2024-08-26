@@ -56,7 +56,7 @@ class BrukernotifikasjonProcessor(
                     varselId = varselId,
                     identitetsnummer = skjema.identitetsnummer,
                     virksomhetsnavn = skjema.virksomhetsnavn,
-                    jobbData=jobbData
+                    jobbData = jobbData
                 )
             }
 
@@ -66,7 +66,7 @@ class BrukernotifikasjonProcessor(
                     varselId = varselId,
                     identitetsnummer = skjema.identitetsnummer,
                     virksomhetsnavn = skjema.virksomhetsnavn,
-                    jobbData=jobbData
+                    jobbData = jobbData
                 )
             }
 
@@ -76,7 +76,7 @@ class BrukernotifikasjonProcessor(
                     varselId = varselId,
                     identitetsnummer = skjema.identitetsnummer,
                     virksomhetsnavn = skjema.virksomhetsnavn,
-                    jobbData=jobbData
+                    jobbData = jobbData
                 )
             }
 
@@ -86,7 +86,7 @@ class BrukernotifikasjonProcessor(
                     varselId = varselId,
                     identitetsnummer = skjema.identitetsnummer,
                     virksomhetsnavn = skjema.virksomhetsnavn,
-                    jobbData=jobbData
+                    jobbData = jobbData
                 )
             }
         }
@@ -100,10 +100,10 @@ class BrukernotifikasjonProcessor(
             ident = identitetsnummer
             tekst = Tekst(
                 spraakkode = "nb",
-                tekst = (virksomhetsnavn ?: ukjentArbeidsgiver) +" "+ jobbData.getTekst(),
+                tekst = (virksomhetsnavn ?: ukjentArbeidsgiver) + " " + jobbData.getTekst(),
                 default = true
             )
-            link = frontendAppBaseUrl+jobbData.getLenke()
+            link = frontendAppBaseUrl + jobbData.getLenke()
             aktivFremTil = ZonedDateTime.now().plusDays(31)
         }
 
@@ -120,30 +120,30 @@ class BrukernotifikasjonProcessor(
             }
         }
         fun getLenke(): String {
-             when (skjemaType) {
-                SkjemaType.KroniskKrav  -> {
-                   return  when(notifikasjonType) {
-                       Opprette -> "/nb/notifikasjon/kronisk/krav/$skjemaId"
-                       Endre -> TODO()
-                       Annullere -> TODO()
-                   }
+            when (skjemaType) {
+                SkjemaType.KroniskKrav -> {
+                    return when (notifikasjonType) {
+                        Opprette -> "/nb/notifikasjon/kronisk/krav/$skjemaId"
+                        Endre -> TODO()
+                        Annullere -> TODO()
+                    }
                 }
                 SkjemaType.KroniskSøknad -> {
-                    return  when(notifikasjonType) {
+                    return when (notifikasjonType) {
                         Opprette -> "/nb/notifikasjon/kronisk/soknad/$skjemaId"
                         Endre -> TODO()
                         Annullere -> TODO()
                     }
                 }
                 SkjemaType.GravidKrav -> {
-                    return  when(notifikasjonType) {
+                    return when (notifikasjonType) {
                         Opprette -> "/nb/notifikasjon/gravid/krav/$skjemaId"
                         Endre -> TODO()
                         Annullere -> TODO()
                     }
                 }
                 SkjemaType.GravidSøknad -> {
-                    return  when(notifikasjonType) {
+                    return when (notifikasjonType) {
                         Opprette -> "/nb/notifikasjon/gravid/soknad/$skjemaId"
                         Endre -> TODO()
                         Annullere -> TODO()
@@ -160,8 +160,7 @@ class BrukernotifikasjonProcessor(
         enum class NotifikasjonType {
             Opprette,
             Endre,
-            Annullere,
-
+            Annullere
         }
     }
 }

@@ -5,6 +5,10 @@ import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonJo
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonJobbdata.NotifikasjonsType.Opprette
 import java.util.UUID
 
+private const val ENDEPUNKT_KRONISK = "/nb/notifikasjon/kronisk/"
+
+private const val ENDEPUNKT_GRAVID = "/nb/notifikasjon/gravid/"
+
 data class BrukernotifikasjonJobbdata(
     val skjemaId: UUID,
     val skjemaType: SkjemaType,
@@ -23,33 +27,33 @@ data class BrukernotifikasjonJobbdata(
         when (skjemaType) {
             SkjemaType.KroniskKrav -> {
                 return when (notifikasjonsType) {
-                    Opprette -> "/nb/notifikasjon/kronisk/krav/$skjemaId"
-                    Endre -> "/nb/notifikasjon/kronisk/krav/$skjemaId"
-                    Annullere -> "/nb/notifikasjon/kronisk/krav/slettet/$skjemaId"
+                    Opprette -> "${ENDEPUNKT_KRONISK}krav/$skjemaId"
+                    Endre -> "${ENDEPUNKT_KRONISK}krav/$skjemaId"
+                    Annullere -> "${ENDEPUNKT_KRONISK}krav/slettet/$skjemaId"
                 }
             }
 
             SkjemaType.KroniskSøknad -> {
                 return when (notifikasjonsType) {
-                    Opprette -> "/nb/notifikasjon/kronisk/soknad/$skjemaId"
-                    Endre -> "/nb/notifikasjon/kronisk/soknad/$skjemaId"
-                    Annullere -> "/nb/notifikasjon/kronisk/soknad/$skjemaId"
+                    Opprette -> "${ENDEPUNKT_KRONISK}soknad/$skjemaId"
+                    Endre -> "${ENDEPUNKT_KRONISK}soknad/$skjemaId"
+                    Annullere -> "${ENDEPUNKT_KRONISK}soknad/$skjemaId"
                 }
             }
 
             SkjemaType.GravidKrav -> {
                 return when (notifikasjonsType) {
-                    Opprette -> "/nb/notifikasjon/gravid/krav/$skjemaId"
-                    Endre -> "/nb/notifikasjon/gravid/krav/$skjemaId"
-                    Annullere -> "/nb/notifikasjon/gravid/krav/slettet/$skjemaId"
+                    Opprette -> "${ENDEPUNKT_GRAVID}krav/$skjemaId"
+                    Endre -> "${ENDEPUNKT_GRAVID}krav/$skjemaId"
+                    Annullere -> "${ENDEPUNKT_GRAVID}krav/slettet/$skjemaId"
                 }
             }
 
             SkjemaType.GravidSøknad -> {
                 return when (notifikasjonsType) {
-                    Opprette -> "/nb/notifikasjon/gravid/soknad/$skjemaId"
-                    Endre -> "/nb/notifikasjon/gravid/soknad/$skjemaId"
-                    Annullere -> "/nb/notifikasjon/gravid/soknad/$skjemaId"
+                    Opprette -> "${ENDEPUNKT_GRAVID}soknad/$skjemaId"
+                    Endre -> "${ENDEPUNKT_GRAVID}soknad/$skjemaId"
+                    Annullere -> "${ENDEPUNKT_GRAVID}soknad/$skjemaId"
                 }
             }
         }

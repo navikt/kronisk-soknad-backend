@@ -22,6 +22,7 @@ import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.jsonEquals
 import no.nav.helse.fritakagp.processing.BakgrunnsJobbUtils.emptyJob
 import no.nav.helse.fritakagp.processing.BakgrunnsJobbUtils.testJob
+import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonJobbdata
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
 import no.nav.helse.fritakagp.readToObjectNode
 import no.nav.helse.fritakagp.service.GeografiskTilknytning
@@ -189,7 +190,7 @@ class KroniskKravProcessorTest {
         }
 
         val beskjedJobb = opprettetJobber.find { it.type == BrukernotifikasjonProcessor.JOB_TYPE }
-        assertThat(beskjedJobb?.data).contains(BrukernotifikasjonProcessor.Jobbdata.SkjemaType.KroniskKrav.name)
+        assertThat(beskjedJobb?.data).contains(BrukernotifikasjonJobbdata.SkjemaType.KroniskKrav.name)
         assertThat(beskjedJobb?.data).contains(krav.id.toString())
     }
 

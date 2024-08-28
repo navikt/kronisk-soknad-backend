@@ -12,8 +12,10 @@ import no.nav.helse.fritakagp.db.KroniskKravRepository
 import no.nav.helse.fritakagp.db.KroniskSoeknadRepository
 import no.nav.helse.fritakagp.integration.kafka.BrukernotifikasjonSender
 import no.nav.helse.fritakagp.processing.BakgrunnsJobbUtils
-import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor.Jobbdata.NotifikasjonType.Opprette
-import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor.Jobbdata.SkjemaType
+import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonJobbdata.NotifikasjonsType.Opprette
+import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonJobbdata.SkjemaType
+import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonJobbdata.SkjemaType.KroniskKrav
+import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonJobbdata.SkjemaType.KroniskSøknad
 import no.nav.tms.varsel.action.Sensitivitet
 import no.nav.tms.varsel.builder.BuilderEnvironment
 import org.junit.jupiter.api.BeforeEach
@@ -30,7 +32,8 @@ internal class BrukernotifikasjonProcessorTest {
 
     val objectMapper = customObjectMapper()
 
-    val prosessor = BrukernotifikasjonProcessor(gkRepo, gsRepo, kkRepo, ksRepo, objectMapper, kafkaSenderMock, Sensitivitet.High)
+    val service = BrukernotifikasjonService(gkRepo, gsRepo, kkRepo, ksRepo, objectMapper, Sensitivitet.High)
+    val prosessor = BrukernotifikasjonProcessor(kafkaSenderMock, service)
 
     private var jobb = BakgrunnsJobbUtils.emptyJob()
 
@@ -54,7 +57,7 @@ internal class BrukernotifikasjonProcessorTest {
     fun `skal sende kafkamelding med brukernotifikasjon for Kronisk Krav`() {
         jobb = BakgrunnsJobbUtils.testJob(
             objectMapper.writeValueAsString(
-                BrukernotifikasjonProcessor.Jobbdata(UUID.randomUUID(), SkjemaType.KroniskKrav, Opprette)
+                BrukernotifikasjonJobbdata(UUID.randomUUID(), KroniskKrav, Opprette)
             )
         )
         prosessor.prosesser(jobb)
@@ -67,7 +70,7 @@ internal class BrukernotifikasjonProcessorTest {
     fun `skal sende kafkamelding med brukernotifikasjon for Kronisk Søknad`() {
         jobb = BakgrunnsJobbUtils.testJob(
             objectMapper.writeValueAsString(
-                BrukernotifikasjonProcessor.Jobbdata(UUID.randomUUID(), SkjemaType.KroniskSøknad, Opprette)
+                BrukernotifikasjonJobbdata(UUID.randomUUID(), KroniskSøknad, Opprette)
             )
         )
         prosessor.prosesser(jobb)
@@ -80,7 +83,7 @@ internal class BrukernotifikasjonProcessorTest {
     fun `skal sende kafkamelding med brukernotifikasjon for Gravid Krav`() {
         jobb = BakgrunnsJobbUtils.testJob(
             objectMapper.writeValueAsString(
-                BrukernotifikasjonProcessor.Jobbdata(UUID.randomUUID(), SkjemaType.GravidKrav, Opprette)
+                BrukernotifikasjonJobbdata(UUID.randomUUID(), SkjemaType.GravidKrav, Opprette)
             )
         )
         prosessor.prosesser(jobb)
@@ -93,7 +96,7 @@ internal class BrukernotifikasjonProcessorTest {
     fun `skal sende kafkamelding med brukernotifikasjon for Gravid Søknad`() {
         jobb = BakgrunnsJobbUtils.testJob(
             objectMapper.writeValueAsString(
-                BrukernotifikasjonProcessor.Jobbdata(UUID.randomUUID(), SkjemaType.GravidSøknad, Opprette)
+                BrukernotifikasjonJobbdata(UUID.randomUUID(), SkjemaType.GravidSøknad, Opprette)
             )
         )
         prosessor.prosesser(jobb)

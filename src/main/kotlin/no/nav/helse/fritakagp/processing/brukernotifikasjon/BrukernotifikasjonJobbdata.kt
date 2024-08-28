@@ -13,11 +13,12 @@ data class BrukernotifikasjonJobbdata(
     fun getTekst(virksomhetsnavn: String?): String {
         val ukjentArbeidsgiver = "Arbeidsgiveren din"
         return when (notifikasjonsType) {
-            Opprette -> "($virksomhetsnavn ?: $ukjentArbeidsgiver) har søkt om at NAV dekker sykepenger fra første dag av sykefraværet ditt."
-            Endre -> "($virksomhetsnavn ?: $ukjentArbeidsgiver) har søkt om at NAV dekker sykepenger fra første dag av sykefraværet ditt."
-            Annullere -> "($virksomhetsnavn ?: $ukjentArbeidsgiver) har trukket kravet om at NAV dekker sykepenger fra første dag av sykefraværet ditt."
+            Opprette -> "${virksomhetsnavn ?: ukjentArbeidsgiver} har søkt om at NAV dekker sykepenger fra første dag av sykefraværet ditt."
+            Endre -> "${virksomhetsnavn ?: ukjentArbeidsgiver} har søkt om at NAV dekker sykepenger fra første dag av sykefraværet ditt."
+            Annullere -> "${virksomhetsnavn ?: ukjentArbeidsgiver} har trukket kravet om at NAV dekker sykepenger fra første dag av sykefraværet ditt."
         }
     }
+
     fun getLenke(): String {
         when (skjemaType) {
             SkjemaType.KroniskKrav -> {
@@ -27,6 +28,7 @@ data class BrukernotifikasjonJobbdata(
                     Annullere -> "/nb/notifikasjon/kronisk/krav/slettet/$skjemaId"
                 }
             }
+
             SkjemaType.KroniskSøknad -> {
                 return when (notifikasjonsType) {
                     Opprette -> "/nb/notifikasjon/kronisk/soknad/$skjemaId"
@@ -34,6 +36,7 @@ data class BrukernotifikasjonJobbdata(
                     Annullere -> "/nb/notifikasjon/kronisk/soknad/$skjemaId"
                 }
             }
+
             SkjemaType.GravidKrav -> {
                 return when (notifikasjonsType) {
                     Opprette -> "/nb/notifikasjon/gravid/krav/$skjemaId"
@@ -41,6 +44,7 @@ data class BrukernotifikasjonJobbdata(
                     Annullere -> "/nb/notifikasjon/gravid/krav/slettet/$skjemaId"
                 }
             }
+
             SkjemaType.GravidSøknad -> {
                 return when (notifikasjonsType) {
                     Opprette -> "/nb/notifikasjon/gravid/soknad/$skjemaId"
@@ -50,12 +54,14 @@ data class BrukernotifikasjonJobbdata(
             }
         }
     }
+
     enum class SkjemaType {
         KroniskKrav,
         KroniskSøknad,
         GravidKrav,
         GravidSøknad
     }
+
     enum class NotifikasjonsType {
         Opprette,
         Endre,

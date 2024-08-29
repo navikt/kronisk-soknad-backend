@@ -18,7 +18,7 @@ class BrukernotifikasjonProcessor(
     }
 
     override fun prosesser(jobb: Bakgrunnsjobb) {
-        logger.info("Prosesserer ${jobb.uuid} med type ${jobb.type}")
+        logger.info("Brukernotifikasjon: Prosesserer ${jobb.uuid} med type ${jobb.type}")
 
         val varselId = UUID.randomUUID().toString()
         val varsel = brukernotifikasjonService.opprettVarsel(varselId = varselId, jobb = jobb)

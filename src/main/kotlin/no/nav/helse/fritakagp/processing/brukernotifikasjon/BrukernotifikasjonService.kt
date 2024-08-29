@@ -7,6 +7,7 @@ import no.nav.helse.fritakagp.db.GravidKravRepository
 import no.nav.helse.fritakagp.db.GravidSoeknadRepository
 import no.nav.helse.fritakagp.db.KroniskKravRepository
 import no.nav.helse.fritakagp.db.KroniskSoeknadRepository
+import no.nav.helsearbeidsgiver.utils.log.logger
 import no.nav.tms.varsel.action.Sensitivitet
 import no.nav.tms.varsel.action.Tekst
 import no.nav.tms.varsel.action.Varseltype
@@ -22,10 +23,10 @@ class BrukernotifikasjonService(
     private val sensitivitetNivaa: Sensitivitet = Sensitivitet.High,
     private val frontendAppBaseUrl: String = "https://arbeidsgiver.nav.no/fritak-agp"
 ) {
-
+    private val logger = this.logger()
     fun opprettVarsel(varselId: String, jobb: Bakgrunnsjobb): String {
         val jobbData = om.readValue<BrukernotifikasjonJobbdata>(jobb.data)
-
+        logger.info("Brukernotifikasjon: Oppretter varsel for ${jobbData.skjemaType} og  ${jobbData.notifikasjonsType} med id ${jobbData.skjemaId}")
         return when (jobbData.skjemaType) {
             BrukernotifikasjonJobbdata.SkjemaType.KroniskKrav -> {
                 val skjema = kroniskKravRepo.getById(jobbData.skjemaId) ?: throw IllegalArgumentException("Fant ikke $jobbData")

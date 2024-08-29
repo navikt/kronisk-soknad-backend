@@ -1,8 +1,8 @@
 package no.nav.helse.fritakagp.processing.brukernotifikasjon
 
-import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonJobbdata.NotifikasjonsType.Annullere
-import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonJobbdata.NotifikasjonsType.Endre
-import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonJobbdata.NotifikasjonsType.Opprette
+import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonJobbdata.NotifikasjonsType.Annullering
+import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonJobbdata.NotifikasjonsType.Endring
+import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonJobbdata.NotifikasjonsType.Oppretting
 import java.util.UUID
 
 private const val ENDEPUNKT_KRONISK = "/nb/notifikasjon/kronisk/"
@@ -12,14 +12,14 @@ private const val ENDEPUNKT_GRAVID = "/nb/notifikasjon/gravid/"
 data class BrukernotifikasjonJobbdata(
     val skjemaId: UUID,
     val skjemaType: SkjemaType,
-    val notifikasjonsType: NotifikasjonsType = Opprette
+    val notifikasjonsType: NotifikasjonsType = Oppretting
 ) {
     fun getTekst(virksomhetsnavn: String?): String {
         val ukjentArbeidsgiver = "Arbeidsgiveren din"
         return when (notifikasjonsType) {
-            Opprette -> "${virksomhetsnavn ?: ukjentArbeidsgiver} har søkt om at NAV dekker sykepenger fra første dag av sykefraværet ditt."
-            Endre -> "${virksomhetsnavn ?: ukjentArbeidsgiver} har søkt om at NAV dekker sykepenger fra første dag av sykefraværet ditt."
-            Annullere -> "${virksomhetsnavn ?: ukjentArbeidsgiver} har trukket kravet om at NAV dekker sykepenger fra første dag av sykefraværet ditt."
+            Oppretting -> "${virksomhetsnavn ?: ukjentArbeidsgiver} har søkt om at NAV dekker sykepenger fra første dag av sykefraværet ditt."
+            Endring -> "${virksomhetsnavn ?: ukjentArbeidsgiver} har søkt om at NAV dekker sykepenger fra første dag av sykefraværet ditt."
+            Annullering -> "${virksomhetsnavn ?: ukjentArbeidsgiver} har trukket kravet om at NAV dekker sykepenger fra første dag av sykefraværet ditt."
         }
     }
 
@@ -27,33 +27,33 @@ data class BrukernotifikasjonJobbdata(
         when (skjemaType) {
             SkjemaType.KroniskKrav -> {
                 return when (notifikasjonsType) {
-                    Opprette -> "${ENDEPUNKT_KRONISK}krav/$skjemaId"
-                    Endre -> "${ENDEPUNKT_KRONISK}krav/$skjemaId"
-                    Annullere -> "${ENDEPUNKT_KRONISK}krav/slettet/$skjemaId"
+                    Oppretting -> "${ENDEPUNKT_KRONISK}krav/$skjemaId"
+                    Endring -> "${ENDEPUNKT_KRONISK}krav/$skjemaId"
+                    Annullering -> "${ENDEPUNKT_KRONISK}krav/slettet/$skjemaId"
                 }
             }
 
             SkjemaType.KroniskSøknad -> {
                 return when (notifikasjonsType) {
-                    Opprette -> "${ENDEPUNKT_KRONISK}soknad/$skjemaId"
-                    Endre -> "${ENDEPUNKT_KRONISK}soknad/$skjemaId"
-                    Annullere -> "${ENDEPUNKT_KRONISK}soknad/$skjemaId"
+                    Oppretting -> "${ENDEPUNKT_KRONISK}soknad/$skjemaId"
+                    Endring -> "${ENDEPUNKT_KRONISK}soknad/$skjemaId"
+                    Annullering -> "${ENDEPUNKT_KRONISK}soknad/$skjemaId"
                 }
             }
 
             SkjemaType.GravidKrav -> {
                 return when (notifikasjonsType) {
-                    Opprette -> "${ENDEPUNKT_GRAVID}krav/$skjemaId"
-                    Endre -> "${ENDEPUNKT_GRAVID}krav/$skjemaId"
-                    Annullere -> "${ENDEPUNKT_GRAVID}krav/slettet/$skjemaId"
+                    Oppretting -> "${ENDEPUNKT_GRAVID}krav/$skjemaId"
+                    Endring -> "${ENDEPUNKT_GRAVID}krav/$skjemaId"
+                    Annullering -> "${ENDEPUNKT_GRAVID}krav/slettet/$skjemaId"
                 }
             }
 
             SkjemaType.GravidSøknad -> {
                 return when (notifikasjonsType) {
-                    Opprette -> "${ENDEPUNKT_GRAVID}soknad/$skjemaId"
-                    Endre -> "${ENDEPUNKT_GRAVID}soknad/$skjemaId"
-                    Annullere -> "${ENDEPUNKT_GRAVID}soknad/$skjemaId"
+                    Oppretting -> "${ENDEPUNKT_GRAVID}soknad/$skjemaId"
+                    Endring -> "${ENDEPUNKT_GRAVID}soknad/$skjemaId"
+                    Annullering -> "${ENDEPUNKT_GRAVID}soknad/$skjemaId"
                 }
             }
         }
@@ -67,8 +67,8 @@ data class BrukernotifikasjonJobbdata(
     }
 
     enum class NotifikasjonsType {
-        Opprette,
-        Endre,
-        Annullere
+        Oppretting,
+        Endring,
+        Annullering
     }
 }

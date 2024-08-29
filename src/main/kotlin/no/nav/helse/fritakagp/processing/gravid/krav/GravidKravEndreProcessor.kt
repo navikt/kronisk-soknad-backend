@@ -15,7 +15,7 @@ import no.nav.helse.fritakagp.domain.generereEndretGravidKravBeskrivelse
 import no.nav.helse.fritakagp.domain.generereGravidKravBeskrivelse
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonJobbdata
-import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonJobbdata.NotifikasjonsType.Endre
+import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonJobbdata.NotifikasjonsType.Endring
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonJobbdata.SkjemaType
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
 import no.nav.helse.fritakagp.service.PdlService
@@ -67,7 +67,7 @@ class GravidKravEndreProcessor(
             bakgrunnsjobbRepo.save(
                 Bakgrunnsjobb(
                     maksAntallForsoek = 10,
-                    data = om.writeValueAsString(BrukernotifikasjonJobbdata(oppdatertKrav.id, SkjemaType.GravidKrav, Endre)),
+                    data = om.writeValueAsString(BrukernotifikasjonJobbdata(oppdatertKrav.id, SkjemaType.GravidKrav, Endring)),
                     type = BrukernotifikasjonProcessor.JOB_TYPE
                 )
             )

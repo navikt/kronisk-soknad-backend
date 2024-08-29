@@ -26,7 +26,7 @@ class BrukernotifikasjonService(
     private val logger = this.logger()
     fun opprettVarsel(varselId: String, jobb: Bakgrunnsjobb): String {
         val jobbData = om.readValue<BrukernotifikasjonJobbdata>(jobb.data)
-        logger.info("Brukernotifikasjon: Oppretter varsel for ${jobbData.skjemaType} og  ${jobbData.notifikasjonsType} med id ${jobbData.skjemaId}")
+        logger.info("Brukernotifikasjon: Oppretter notifikasjon for ${jobbData.skjemaType} type: ${jobbData.notifikasjonsType} med id: ${jobbData.skjemaId}")
         return when (jobbData.skjemaType) {
             BrukernotifikasjonJobbdata.SkjemaType.KroniskKrav -> {
                 val skjema = kroniskKravRepo.getById(jobbData.skjemaId) ?: throw IllegalArgumentException("Fant ikke $jobbData")

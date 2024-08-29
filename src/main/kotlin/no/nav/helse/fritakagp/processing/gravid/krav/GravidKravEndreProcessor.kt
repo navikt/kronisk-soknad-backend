@@ -37,7 +37,7 @@ class GravidKravEndreProcessor(
     private val pdfGenerator: GravidKravPDFGenerator,
     private val om: ObjectMapper,
     private val bucketStorage: BucketStorage,
-    private val bakgrunnsjobbRepo: BakgrunnsjobbRepository,
+    private val bakgrunnsjobbRepo: BakgrunnsjobbRepository
 ) : BakgrunnsjobbProsesserer {
     companion object {
         val JOB_TYPE = "endre-gravid-krav"

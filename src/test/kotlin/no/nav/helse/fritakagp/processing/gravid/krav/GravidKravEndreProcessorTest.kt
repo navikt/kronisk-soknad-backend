@@ -38,8 +38,7 @@ class GravidKravEndreProcessorTest {
     val berregServiceMock = mockk<BrregClient>(relaxed = true)
     val bakgrunnsjobbRepositoryMock = mockk<BakgrunnsjobbRepository>(relaxed = true)
 
-
-    val prosessor = GravidKravEndreProcessor(repositoryMock, joarkMock, oppgaveMock, pdlServiceMock, pdfGeneratorMock, objectMapper, bucketStorageMock,bakgrunnsjobbRepositoryMock)
+    val prosessor = GravidKravEndreProcessor(repositoryMock, joarkMock, oppgaveMock, pdlServiceMock, pdfGeneratorMock, objectMapper, bucketStorageMock, bakgrunnsjobbRepositoryMock)
     lateinit var endretKrav: GravidKrav
     lateinit var oppdatertKrav: GravidKrav
 

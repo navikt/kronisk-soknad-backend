@@ -12,6 +12,7 @@ import io.ktor.http.contentType
 import io.ktor.http.withCharset
 import kotlinx.coroutines.runBlocking
 import no.nav.helsearbeidsgiver.tokenprovider.AccessTokenProvider
+import no.nav.helsearbeidsgiver.utils.log.logger
 import java.time.LocalDate
 
 interface OppgaveKlient {
@@ -46,6 +47,7 @@ class OppgaveKlientImpl(
                 httpResponse.call.response.body()
             }
             else -> {
+                logger().error("Feilet å opprette oppgave : $httpResponse")
                 throw OpprettOppgaveUnauthorizedException(opprettOppgaveRequest, httpResponse.status)
             }
         }

@@ -32,6 +32,7 @@ class OppgaveKlientImpl(
 ) : OppgaveKlient, SyncOppgaveKlient {
 
     override suspend fun opprettOppgave(opprettOppgaveRequest: OpprettOppgaveRequest, callId: String): OpprettOppgaveResponse {
+        logger().info("Oppretter oppgave for journalpost ${opprettOppgaveRequest.journalpostId} med saksreferanse ${opprettOppgaveRequest.saksreferanse} og X-Correlation-ID $callId")
         val stsToken = stsClient.getToken()
         val httpResponse = httpClient.post(url) {
             contentType(ContentType.Application.Json.withCharset(Charsets.UTF_8))

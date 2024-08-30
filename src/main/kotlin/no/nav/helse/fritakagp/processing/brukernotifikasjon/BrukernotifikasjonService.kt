@@ -29,7 +29,7 @@ class BrukernotifikasjonService(
         logger.info("Brukernotifikasjon: Oppretter notifikasjon for ${jobbData.skjemaType} type: ${jobbData.notifikasjonsType} med id: ${jobbData.skjemaId}")
         return when (jobbData.skjemaType) {
             BrukernotifikasjonJobbdata.SkjemaType.KroniskKrav -> {
-                val skjema = kroniskKravRepo.getById(jobbData.skjemaId) ?: throw IllegalArgumentException("Fant ikke $jobbData")
+                val skjema = kroniskKravRepo.getById(jobbData.skjemaId) ?: throw IllegalArgumentException("Brukernotifikasjon: kroniskKrav finnes ikke $jobbData")
                 getVarsel(
                     varselId = varselId,
                     identitetsnummer = skjema.identitetsnummer,
@@ -39,7 +39,7 @@ class BrukernotifikasjonService(
             }
 
             BrukernotifikasjonJobbdata.SkjemaType.KroniskSøknad -> {
-                val skjema = kroniskSoeknadRepo.getById(jobbData.skjemaId) ?: throw IllegalArgumentException("Fant ikke $jobbData")
+                val skjema = kroniskSoeknadRepo.getById(jobbData.skjemaId) ?: throw IllegalArgumentException("Brukernotifikasjon: kroniskSoeknad finnes ikke $jobbData")
                 getVarsel(
                     varselId = varselId,
                     identitetsnummer = skjema.identitetsnummer,
@@ -49,7 +49,7 @@ class BrukernotifikasjonService(
             }
 
             BrukernotifikasjonJobbdata.SkjemaType.GravidKrav -> {
-                val skjema = gravidKravRepo.getById(jobbData.skjemaId) ?: throw IllegalArgumentException("Fant ikke $jobbData")
+                val skjema = gravidKravRepo.getById(jobbData.skjemaId) ?: throw IllegalArgumentException("Brukernotifikasjon: gravidKrav finnes ikke $jobbData")
                 getVarsel(
                     varselId = varselId,
                     identitetsnummer = skjema.identitetsnummer,
@@ -59,7 +59,7 @@ class BrukernotifikasjonService(
             }
 
             BrukernotifikasjonJobbdata.SkjemaType.GravidSøknad -> {
-                val skjema = gravidSoeknadRepo.getById(jobbData.skjemaId) ?: throw IllegalArgumentException("Fant ikke $jobbData")
+                val skjema = gravidSoeknadRepo.getById(jobbData.skjemaId) ?: throw IllegalArgumentException("Brukernotifikasjon: gravidSoeknad finnes ikke $jobbData")
                 getVarsel(
                     varselId = varselId,
                     identitetsnummer = skjema.identitetsnummer,

@@ -85,7 +85,7 @@ class KroniskKravProcessor(
             bakgrunnsjobbRepo.save(
                 Bakgrunnsjobb(
                     maksAntallForsoek = 10,
-                    data = om.writeValueAsString(BrukernotifikasjonJobbdata(krav.id, SkjemaType.KroniskKrav, Oppretting)),
+                    data = om.writeValueAsString(BrukernotifikasjonJobbdata(krav.id, krav.identitetsnummer, krav.virksomhetsnavn, SkjemaType.KroniskKrav, Oppretting)),
                     type = BrukernotifikasjonProcessor.JOB_TYPE
                 )
             )

@@ -84,7 +84,7 @@ class GravidSoeknadProcessor(
             bakgrunnsjobbRepo.save(
                 Bakgrunnsjobb(
                     maksAntallForsoek = 10,
-                    data = om.writeValueAsString(BrukernotifikasjonJobbdata(soeknad.id, GravidSøknad, Oppretting)),
+                    data = om.writeValueAsString(BrukernotifikasjonJobbdata(soeknad.id, soeknad.identitetsnummer, soeknad.virksomhetsnavn, GravidSøknad, Oppretting)),
                     type = BrukernotifikasjonProcessor.JOB_TYPE
                 )
             )

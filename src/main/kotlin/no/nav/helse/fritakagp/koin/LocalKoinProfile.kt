@@ -88,10 +88,10 @@ fun localConfig(env: Env.Local): Module = module {
 
     single { PdlService(get()) }
 
-    single { BrukernotifikasjonProcessor(get(), get()) }
-    single { BrukernotifikasjonService(get(), get(), get(), get(), get(), Sensitivitet.High, env.frontendUrl) }
+    single { BrukernotifikasjonProcessor(brukerNotifikasjonProducerFactory = get(), brukernotifikasjonService = get()) }
+    single { BrukernotifikasjonService(om = get(), sensitivitetNivaa = Sensitivitet.High, frontendAppBaseUrl = env.frontendUrl) }
 
-    single { ArbeidsgiverNotifikasjonProcessor(get(), get(), get(), env.frontendUrl, get()) }
+    single { ArbeidsgiverNotifikasjonProcessor(gravidKravRepo = get(), kroniskKravRepo = get(), om = get(), frontendAppBaseUrl = env.frontendUrl, arbeidsgiverNotifikasjonKlient = get()) }
 
     single { StatsRepoImpl(get()) } bind IStatsRepo::class
     single { ArbeidsgiverNotifikasjonKlient(env.arbeidsgiverNotifikasjonUrl, getAccessToken = { "token" }) }

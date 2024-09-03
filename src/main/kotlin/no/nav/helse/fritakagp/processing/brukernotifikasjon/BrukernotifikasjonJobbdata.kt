@@ -11,10 +11,12 @@ private const val ENDEPUNKT_GRAVID = "/nb/notifikasjon/gravid/"
 
 data class BrukernotifikasjonJobbdata(
     val skjemaId: UUID,
+    val identitetsnummer: String,
+    val virksomhetsnavn: String?,
     val skjemaType: SkjemaType,
     val notifikasjonsType: NotifikasjonsType = Oppretting
 ) {
-    fun getTekst(virksomhetsnavn: String?): String {
+    fun getTekst(): String {
         val ukjentArbeidsgiver = "Arbeidsgiveren din"
         return when (notifikasjonsType) {
             Oppretting -> "${virksomhetsnavn ?: ukjentArbeidsgiver} har søkt om at NAV dekker sykepenger fra første dag av sykefraværet ditt."

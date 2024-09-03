@@ -63,7 +63,7 @@ class GravidKravSlettProcessor(
             bakgrunnsjobbRepo.save(
                 Bakgrunnsjobb(
                     maksAntallForsoek = 10,
-                    data = om.writeValueAsString(BrukernotifikasjonJobbdata(krav.id, SkjemaType.GravidKrav, Annullering)),
+                    data = om.writeValueAsString(BrukernotifikasjonJobbdata(krav.id, krav.identitetsnummer, krav.virksomhetsnavn, SkjemaType.GravidKrav, Annullering)),
                     type = BrukernotifikasjonProcessor.JOB_TYPE
                 )
             )

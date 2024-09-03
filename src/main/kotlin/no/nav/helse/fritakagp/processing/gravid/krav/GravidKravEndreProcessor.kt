@@ -67,7 +67,7 @@ class GravidKravEndreProcessor(
             bakgrunnsjobbRepo.save(
                 Bakgrunnsjobb(
                     maksAntallForsoek = 10,
-                    data = om.writeValueAsString(BrukernotifikasjonJobbdata(oppdatertKrav.id, SkjemaType.GravidKrav, Endring)),
+                    data = om.writeValueAsString(BrukernotifikasjonJobbdata(oppdatertKrav.id, oppdatertKrav.identitetsnummer, oppdatertKrav.virksomhetsnavn, SkjemaType.GravidKrav, Endring)),
                     type = BrukernotifikasjonProcessor.JOB_TYPE
                 )
             )

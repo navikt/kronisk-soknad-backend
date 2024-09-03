@@ -129,18 +129,18 @@ fun preprodConfig(env: Env.Preprod): Module = module {
             env.altinnMeldingPassword
         )
     } bind KroniskKravKvitteringSender::class
-    single { KroniskKravKvitteringProcessor(get(), get(), get()) }
+    single { KroniskKravKvitteringProcessor(kroniskKravKvitteringSender = get(), db = get(), om = get()) }
 
-    single { BrukernotifikasjonProcessor(get(), get()) }
-    single { BrukernotifikasjonService(get(), get(), get(), get(), get(), Sensitivitet.Substantial, env.frontendUrl) }
+    single { BrukernotifikasjonProcessor(brukerNotifikasjonProducerFactory = get(), brukernotifikasjonService = get()) }
+    single { BrukernotifikasjonService(om = get(), sensitivitetNivaa = Sensitivitet.Substantial, frontendAppBaseUrl = env.frontendUrl) }
 
-    single { ArbeidsgiverNotifikasjonProcessor(get(), get(), get(), env.frontendUrl, get()) }
-    single { ArbeidsgiverOppdaterNotifikasjonProcessor(get(), get(), get(), get()) }
-    single { PdlService(get()) }
+    single { ArbeidsgiverNotifikasjonProcessor(gravidKravRepo = get(), kroniskKravRepo = get(), om = get(), frontendAppBaseUrl = env.frontendUrl, arbeidsgiverNotifikasjonKlient = get()) }
+    single { ArbeidsgiverOppdaterNotifikasjonProcessor(gravidKravRepo = get(), kroniskKravRepo = get(), om = get(), arbeidsgiverNotifikasjonKlient = get()) }
+    single { PdlService(pdlClient = get()) }
 
     single { MockBrregClient() } bind BrregClient::class
 
-    single { BeloepBeregning(get()) }
+    single { BeloepBeregning(grunnbeloepClient = get()) }
 
-    single { StatsRepoImpl(get()) } bind IStatsRepo::class
+    single { StatsRepoImpl(ds = get()) } bind IStatsRepo::class
 }

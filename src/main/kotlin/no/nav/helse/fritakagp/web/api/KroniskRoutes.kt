@@ -125,7 +125,7 @@ fun Route.kroniskRoutes(
                 logger.info("KKG: Hent krav fra db.")
                 val form = kroniskKravRepo.getById(UUID.fromString(call.parameters["id"]))
 
-                val slettet = call.request.queryParameters["slettet"]?.toBoolean() ?: false
+                val slettet = call.request.queryParameters.contains("slettet")
                 if (form == null) {
                     call.respond(HttpStatusCode.NotFound)
                 } else if (!slettet && form.status == KravStatus.SLETTET) {

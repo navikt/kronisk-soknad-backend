@@ -1,0 +1,64 @@
+package no.nav.helse.fritakagp.processing.brukernotifikasjon
+
+import no.nav.helse.fritakagp.customObjectMapper
+import no.nav.helse.fritakagp.processing.BakgrunnsJobbUtils
+import no.nav.tms.varsel.action.OpprettVarsel
+import no.nav.tms.varsel.action.Sensitivitet
+import no.nav.tms.varsel.action.Varseltype
+import no.nav.tms.varsel.builder.BuilderEnvironment
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import java.util.UUID
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
+
+class BrukernotifikasjonServiceTest {
+    val objectMapper = customObjectMapper()
+    val service = BrukernotifikasjonService(objectMapper, Sensitivitet.High)
+
+    @BeforeEach
+    fun setup() {
+        mapOf(
+            "NAIS_APP_NAME" to "test-app",
+            "NAIS_NAMESPACE" to "test-namespace",
+            "NAIS_CLUSTER_NAME" to "dev"
+        ).let { naisEnv ->
+            BuilderEnvironment.extend(naisEnv)
+        }
+    }
+
+    @Test
+    fun `opprette varsel`() {
+        val skjemaId = UUID.randomUUID()
+        val jobData = BrukernotifikasjonJobbdata(
+            skjemaId,
+            "20015001543",
+            "Bedrift",
+            BrukernotifikasjonJobbdata.SkjemaType.KroniskKrav,
+            notifikasjonsType = BrukernotifikasjonJobbdata.NotifikasjonsType.Oppretting
+        )
+        val jobDataString = objectMapper.writeValueAsString(jobData)
+        val testJob = BakgrunnsJobbUtils.testJob(jobDataString)
+        val varselId = UUID.randomUUID().toString()
+        val opprettVarselJson = service.opprettVarsel(varselId, testJob)
+
+        val opprettVarsel = objectMapper.readValue(opprettVarselJson, OpprettVarsel::class.java)
+
+        assertNotNull(opprettVarsel, "Varsel skal ikke være null")
+        assertEquals(Varseltype.Beskjed, opprettVarsel.type, "Type skal stemme")
+        assertEquals(varselId, opprettVarsel.varselId, "Varsel ID skal stemme")
+        assertEquals(jobData.identitetsnummer, opprettVarsel.ident, "Identitetsnummer skal stemme")
+        assertEquals(Sensitivitet.High, opprettVarsel.sensitivitet, "Sensitivitet skal stemme")
+        assertTrue(opprettVarsel.link.toString().endsWith(jobData.getLenke()), "Link skal stemme")
+
+        assertEquals(1, opprettVarsel.tekster.size, "Tekster størrelse skal stemme")
+        assertEquals("nb", opprettVarsel.tekster[0].spraakkode, "Språkkode skal stemme")
+        assertEquals("Bedrift har søkt om at NAV dekker sykepenger fra første dag av sykefraværet ditt.", opprettVarsel.tekster[0].tekst, "Tekst skal stemme")
+        assertTrue(opprettVarsel.tekster[0].default, "Default skal være true")
+        assertNotNull(opprettVarsel.aktivFremTil, "AktivFremTil skal ikke være null")
+        assertEquals("dev", opprettVarsel.produsent.cluster, "Cluster skal stemme")
+        assertEquals("test-namespace", opprettVarsel.produsent.namespace, "Namespace skal stemme")
+        assertEquals("test-app", opprettVarsel.produsent.appnavn, "Appnavn skal stemme")
+    }
+}

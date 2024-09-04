@@ -165,7 +165,9 @@ class GravidSoeknadProcessorTest {
 
         val beskjedJobb = opprettetJobber.find { it.type == BrukernotifikasjonProcessor.JOB_TYPE }
         assertThat(beskjedJobb?.data).contains(soeknad.id.toString())
-        assertThat(beskjedJobb?.data).contains(SkjemaType.GravidSøknad.name)
+        assertThat(beskjedJobb?.data).contains(
+            SkjemaType.GravidSøknad.name
+        )
     }
 
     @Test

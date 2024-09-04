@@ -109,7 +109,10 @@ fun Route.gravidRoutes(
             get("/{id}") {
                 val innloggetFnr = hentIdentitetsnummerFraLoginToken(call.request)
                 val form = gravidKravRepo.getById(UUID.fromString(call.parameters["id"]))
-                if (form == null || form.status == KravStatus.SLETTET) {
+                val slettet = call.request.queryParameters["slettet"]?.toBoolean() ?: false
+                if (form == null) {
+                    call.respond(HttpStatusCode.NotFound)
+                } else if (!slettet && form.status == KravStatus.SLETTET) {
                     call.respond(HttpStatusCode.NotFound)
                 } else {
                     if (form.identitetsnummer != innloggetFnr) {

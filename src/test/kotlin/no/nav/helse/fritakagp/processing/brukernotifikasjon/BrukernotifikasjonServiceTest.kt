@@ -2,6 +2,8 @@ package no.nav.helse.fritakagp.processing.brukernotifikasjon
 
 import no.nav.helse.fritakagp.customObjectMapper
 import no.nav.helse.fritakagp.processing.BakgrunnsJobbUtils
+import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonJobbdata.NotifikasjonsType.Oppretting
+import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonJobbdata.SkjemaType
 import no.nav.tms.varsel.action.OpprettVarsel
 import no.nav.tms.varsel.action.Sensitivitet
 import no.nav.tms.varsel.action.Varseltype
@@ -32,11 +34,11 @@ class BrukernotifikasjonServiceTest {
     fun `opprette varsel`() {
         val skjemaId = UUID.randomUUID()
         val jobData = BrukernotifikasjonJobbdata(
-            skjemaId,
-            "20015001543",
-            "Bedrift",
-            BrukernotifikasjonJobbdata.SkjemaType.KroniskKrav,
-            notifikasjonsType = BrukernotifikasjonJobbdata.NotifikasjonsType.Oppretting
+            skjemaId = skjemaId,
+            identitetsnummer = "20015001543",
+            virksomhetsnavn = "Bedrift",
+            skjemaType = SkjemaType.KroniskKrav,
+            notifikasjonsType = Oppretting
         )
         val jobDataString = objectMapper.writeValueAsString(jobData)
         val testJob = BakgrunnsJobbUtils.testJob(jobDataString)

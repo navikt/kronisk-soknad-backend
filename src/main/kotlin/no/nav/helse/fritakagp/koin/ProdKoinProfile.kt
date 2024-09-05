@@ -23,7 +23,7 @@ import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.brreg.BrregClientImpl
 import no.nav.helse.fritakagp.processing.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.arbeidsgivernotifikasjon.ArbeidsgiverOppdaterNotifikasjonProcessor
-import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
+import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessorNy
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravAltinnKvitteringSender
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravEndreProcessor
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravKvitteringProcessor
@@ -129,7 +129,7 @@ fun prodConfig(env: Env.Prod): Module = module {
     } bind KroniskKravKvitteringSender::class
     single { KroniskKravKvitteringProcessor(get(), get(), get()) }
 
-    single { BrukernotifikasjonProcessor(brukerNotifikasjonProducerFactory = get(), brukernotifikasjonService = get()) }
+    single { BrukernotifikasjonProcessorNy(brukerNotifikasjonProducerFactory = get(), brukernotifikasjonService = get()) }
 
     single { ArbeidsgiverNotifikasjonProcessor(gravidKravRepo = get(), kroniskKravRepo = get(), om = get(), frontendAppBaseUrl = env.frontendUrl, arbeidsgiverNotifikasjonKlient = get()) }
     single { ArbeidsgiverOppdaterNotifikasjonProcessor(get(), get(), get(), get()) }

@@ -23,7 +23,7 @@ import no.nav.helse.fritakagp.jsonEquals
 import no.nav.helse.fritakagp.processing.BakgrunnsJobbUtils.emptyJob
 import no.nav.helse.fritakagp.processing.BakgrunnsJobbUtils.testJob
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonJobbdata
-import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
+import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessorNy
 import no.nav.helse.fritakagp.readToObjectNode
 import no.nav.helse.fritakagp.service.GeografiskTilknytning
 import no.nav.helse.fritakagp.service.PdlService
@@ -189,7 +189,7 @@ class KroniskKravProcessorTest {
             bakgrunnsjobbRepomock.save(capture(opprettetJobber))
         }
 
-        val beskjedJobb = opprettetJobber.find { it.type == BrukernotifikasjonProcessor.JOB_TYPE }
+        val beskjedJobb = opprettetJobber.find { it.type == BrukernotifikasjonProcessorNy.JOB_TYPE }
         assertThat(beskjedJobb?.data).contains(BrukernotifikasjonJobbdata.SkjemaType.KroniskKrav.name)
         assertThat(beskjedJobb?.data).contains(krav.id.toString())
     }

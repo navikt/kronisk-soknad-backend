@@ -6,7 +6,7 @@ import no.nav.helse.fritakagp.integration.kafka.BrukernotifikasjonSender
 import no.nav.helsearbeidsgiver.utils.log.logger
 import java.util.UUID
 
-class BrukernotifikasjonProcessor(
+class BrukernotifikasjonProcessorNy(
     private val brukerNotifikasjonProducerFactory: BrukernotifikasjonSender,
     private val brukernotifikasjonService: BrukernotifikasjonService
 ) : BakgrunnsjobbProsesserer {
@@ -14,7 +14,7 @@ class BrukernotifikasjonProcessor(
     private val logger = this.logger()
 
     companion object {
-        val JOB_TYPE = "brukernotifikasjon"
+        val JOB_TYPE = "brukernotifikasjonNy"
     }
 
     override fun prosesser(jobb: Bakgrunnsjobb) {

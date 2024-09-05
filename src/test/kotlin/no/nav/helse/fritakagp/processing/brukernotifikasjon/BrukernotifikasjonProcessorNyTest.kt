@@ -22,7 +22,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.util.UUID
 
-internal class BrukernotifikasjonProcessorTest {
+internal class BrukernotifikasjonProcessorNyTest {
 
     val ksRepo = mockk<KroniskSoeknadRepository>(relaxed = true)
     val kkRepo = mockk<KroniskKravRepository>(relaxed = true)
@@ -33,7 +33,7 @@ internal class BrukernotifikasjonProcessorTest {
     val objectMapper = customObjectMapper()
 
     val service = BrukernotifikasjonService(objectMapper, Sensitivitet.High)
-    val prosessor = BrukernotifikasjonProcessor(kafkaSenderMock, service)
+    val prosessor = BrukernotifikasjonProcessorNy(kafkaSenderMock, service)
 
     private var jobb = BakgrunnsJobbUtils.emptyJob()
 

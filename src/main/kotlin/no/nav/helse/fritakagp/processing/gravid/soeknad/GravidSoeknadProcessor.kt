@@ -18,7 +18,7 @@ import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonJobbdata
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonJobbdata.NotifikasjonsType.Oppretting
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonJobbdata.SkjemaType.GravidSøknad
-import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
+import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessorNy
 import no.nav.helse.fritakagp.service.PdlService
 import no.nav.helsearbeidsgiver.dokarkiv.DokArkivClient
 import no.nav.helsearbeidsgiver.dokarkiv.domene.Avsender
@@ -85,7 +85,7 @@ class GravidSoeknadProcessor(
                 Bakgrunnsjobb(
                     maksAntallForsoek = 10,
                     data = om.writeValueAsString(BrukernotifikasjonJobbdata(soeknad.id, soeknad.identitetsnummer, soeknad.virksomhetsnavn, GravidSøknad, Oppretting)),
-                    type = BrukernotifikasjonProcessor.JOB_TYPE
+                    type = BrukernotifikasjonProcessorNy.JOB_TYPE
                 )
             )
         } finally {

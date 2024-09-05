@@ -23,7 +23,7 @@ import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.brreg.MockBrregClient
 import no.nav.helse.fritakagp.processing.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.arbeidsgivernotifikasjon.ArbeidsgiverOppdaterNotifikasjonProcessor
-import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
+import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessorNy
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonService
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravAltinnKvitteringSender
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravEndreProcessor
@@ -131,7 +131,7 @@ fun preprodConfig(env: Env.Preprod): Module = module {
     } bind KroniskKravKvitteringSender::class
     single { KroniskKravKvitteringProcessor(kroniskKravKvitteringSender = get(), db = get(), om = get()) }
 
-    single { BrukernotifikasjonProcessor(brukerNotifikasjonProducerFactory = get(), brukernotifikasjonService = get()) }
+    single { BrukernotifikasjonProcessorNy(brukerNotifikasjonProducerFactory = get(), brukernotifikasjonService = get()) }
     single { BrukernotifikasjonService(om = get(), sensitivitetNivaa = Sensitivitet.Substantial, frontendAppBaseUrl = env.frontendUrl) }
 
     single { ArbeidsgiverNotifikasjonProcessor(gravidKravRepo = get(), kroniskKravRepo = get(), om = get(), frontendAppBaseUrl = env.frontendUrl, arbeidsgiverNotifikasjonKlient = get()) }

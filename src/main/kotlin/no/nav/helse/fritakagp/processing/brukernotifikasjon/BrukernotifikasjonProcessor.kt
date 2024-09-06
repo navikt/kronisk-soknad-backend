@@ -23,7 +23,7 @@ class BrukernotifikasjonProcessor(
     private val kroniskKravRepo: KroniskKravRepository,
     private val kroniskSoeknadRepo: KroniskSoeknadRepository,
     private val om: ObjectMapper,
-    private val brukerNotifikasjonProducerFactory: BrukernotifikasjonSender,
+    private val brukernotifikasjonSender: BrukernotifikasjonSender,
     private val sensitivitetNivaa: Sensitivitet = Sensitivitet.High,
     private val frontendAppBaseUrl: String = "https://arbeidsgiver.nav.no/fritak-agp"
 ) : BakgrunnsjobbProsesserer {
@@ -40,7 +40,7 @@ class BrukernotifikasjonProcessor(
 
         val varselId = UUID.randomUUID().toString()
         val varsel = opprettVarsel(varselId = varselId, jobb = jobb)
-        brukerNotifikasjonProducerFactory.sendMessage(varselId = varselId, varsel = varsel)
+        brukernotifikasjonSender.sendMessage(varselId = varselId, varsel = varsel)
     }
 
     private fun opprettVarsel(varselId: String, jobb: Bakgrunnsjobb): String {

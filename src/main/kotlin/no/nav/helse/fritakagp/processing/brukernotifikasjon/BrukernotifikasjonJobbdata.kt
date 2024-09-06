@@ -32,16 +32,13 @@ data class BrukernotifikasjonJobbdata(
                     Annullering -> "${ENDEPUNKT_KRONISK}krav/slettet/$skjemaId"
                 }
             }
-
-            SkjemaType.KroniskSøknad -> "${ENDEPUNKT_KRONISK}soknad/$skjemaId"
-
             SkjemaType.GravidKrav -> {
                 return when (notifikasjonsType) {
                     Oppretting, Endring -> "${ENDEPUNKT_GRAVID}krav/$skjemaId"
                     Annullering -> "${ENDEPUNKT_GRAVID}krav/slettet/$skjemaId"
                 }
             }
-
+            SkjemaType.KroniskSøknad -> "${ENDEPUNKT_KRONISK}soknad/$skjemaId"
             SkjemaType.GravidSøknad -> return "${ENDEPUNKT_GRAVID}soknad/$skjemaId"
         }
     }

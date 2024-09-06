@@ -41,6 +41,7 @@ class BrukernotifikasjonServiceTest {
             notifikasjonsType = Oppretting
         )
         val jobDataString = objectMapper.writeValueAsString(jobData)
+
         val testJob = BakgrunnsJobbUtils.testJob(jobDataString)
         val varselId = UUID.randomUUID().toString()
         val opprettVarselJson = service.opprettVarsel(varselId, testJob)
@@ -52,7 +53,7 @@ class BrukernotifikasjonServiceTest {
         assertEquals(varselId, opprettVarsel.varselId, "Varsel ID skal stemme")
         assertEquals(jobData.identitetsnummer, opprettVarsel.ident, "Identitetsnummer skal stemme")
         assertEquals(Sensitivitet.High, opprettVarsel.sensitivitet, "Sensitivitet skal stemme")
-        assertTrue(opprettVarsel.link.toString().endsWith(jobData.getLenke()), "Link skal stemme")
+        assertTrue(opprettVarsel.link.toString().endsWith(jobData.hentLenke()), "Link skal stemme")
 
         assertEquals(1, opprettVarsel.tekster.size, "Tekster størrelse skal stemme")
         assertEquals("nb", opprettVarsel.tekster[0].spraakkode, "Språkkode skal stemme")

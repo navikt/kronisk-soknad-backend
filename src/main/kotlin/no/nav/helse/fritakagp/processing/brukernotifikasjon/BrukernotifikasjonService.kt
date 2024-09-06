@@ -26,10 +26,10 @@ class BrukernotifikasjonService(
             ident = jobbData.identitetsnummer
             tekst = Tekst(
                 spraakkode = "nb",
-                tekst = jobbData.getTekst(),
+                tekst = jobbData.hentTekst(),
                 default = true
             )
-            link = frontendAppBaseUrl + jobbData.getLenke()
+            link = frontendAppBaseUrl + jobbData.hentLenke()
             aktivFremTil = ZonedDateTime.now().plusDays(31)
         }
     }

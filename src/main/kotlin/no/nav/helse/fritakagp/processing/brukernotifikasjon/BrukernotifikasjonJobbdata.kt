@@ -16,7 +16,7 @@ data class BrukernotifikasjonJobbdata(
     val skjemaType: SkjemaType,
     val notifikasjonsType: NotifikasjonsType = Oppretting
 ) {
-    fun getTekst(): String {
+    fun hentTekst(): String {
         val ukjentArbeidsgiver = "Arbeidsgiveren din"
         return when (notifikasjonsType) {
             Oppretting -> "${virksomhetsnavn ?: ukjentArbeidsgiver} har søkt om at NAV dekker sykepenger fra første dag av sykefraværet ditt."
@@ -25,7 +25,7 @@ data class BrukernotifikasjonJobbdata(
         }
     }
 
-    fun getLenke(): String {
+    fun hentLenke(): String {
         when (skjemaType) {
             SkjemaType.KroniskKrav -> {
                 return when (notifikasjonsType) {

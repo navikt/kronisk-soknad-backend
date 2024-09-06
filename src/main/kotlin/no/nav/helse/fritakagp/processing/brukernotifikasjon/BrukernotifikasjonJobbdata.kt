@@ -27,19 +27,21 @@ data class BrukernotifikasjonJobbdata(
     fun hentLenke(): String {
         return when (skjemaType) {
             SkjemaType.KroniskKrav -> {
-                return when (notifikasjonsType) {
+                when (notifikasjonsType) {
                     Oppretting, Endring -> "${ENDEPUNKT_KRONISK}krav/$skjemaId"
                     Annullering -> "${ENDEPUNKT_KRONISK}krav/slettet/$skjemaId"
                 }
             }
+
             SkjemaType.GravidKrav -> {
-                return when (notifikasjonsType) {
+                when (notifikasjonsType) {
                     Oppretting, Endring -> "${ENDEPUNKT_GRAVID}krav/$skjemaId"
                     Annullering -> "${ENDEPUNKT_GRAVID}krav/slettet/$skjemaId"
                 }
             }
+
             SkjemaType.KroniskSøknad -> "${ENDEPUNKT_KRONISK}soknad/$skjemaId"
-            SkjemaType.GravidSøknad -> return "${ENDEPUNKT_GRAVID}soknad/$skjemaId"
+            SkjemaType.GravidSøknad -> "${ENDEPUNKT_GRAVID}soknad/$skjemaId"
         }
     }
 

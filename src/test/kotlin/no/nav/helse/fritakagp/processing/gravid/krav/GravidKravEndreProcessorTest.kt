@@ -5,6 +5,7 @@ import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import no.nav.hag.utils.bakgrunnsjobb.BakgrunnsjobbRepository
 import no.nav.helse.GravidTestData
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.OppgaveKlient
 import no.nav.helse.fritakagp.customObjectMapper
@@ -35,8 +36,9 @@ class GravidKravEndreProcessorTest {
     val pdfGeneratorMock = mockk<GravidKravPDFGenerator>(relaxed = true)
     val bucketStorageMock = mockk<BucketStorage>(relaxed = true)
     val berregServiceMock = mockk<BrregClient>(relaxed = true)
+    val bakgrunnsjobbRepositoryMock = mockk<BakgrunnsjobbRepository>(relaxed = true)
 
-    val prosessor = GravidKravEndreProcessor(repositoryMock, joarkMock, oppgaveMock, pdlServiceMock, pdfGeneratorMock, objectMapper, bucketStorageMock)
+    val prosessor = GravidKravEndreProcessor(repositoryMock, joarkMock, oppgaveMock, pdlServiceMock, pdfGeneratorMock, objectMapper, bucketStorageMock, bakgrunnsjobbRepositoryMock)
     lateinit var endretKrav: GravidKrav
     lateinit var oppdatertKrav: GravidKrav
 

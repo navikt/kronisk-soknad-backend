@@ -62,6 +62,21 @@ class GravidKravHTTPTests : SystemTestBase() {
     }
 
     @Test
+    fun `Gir ikke not found når kravet er slettet og flaget slettet er satt`() = suspendableTest {
+        val repo by inject<GravidKravRepository>()
+
+        repo.insert(GravidTestData.gravidKrav.copy(status = KravStatus.SLETTET))
+
+        val response = httpClient.get {
+            appUrl("$kravGravidUrl/${GravidTestData.gravidKrav.id}?slettet")
+            contentType(ContentType.Application.Json)
+            loggedInAs(GravidTestData.gravidKrav.identitetsnummer)
+        }
+
+        assertThat(response.status).isEqualTo(HttpStatusCode.OK)
+    }
+
+    @Test
     fun `invalid json gives 400 Bad request`() = suspendableTest {
         val response =
             httpClient.post {

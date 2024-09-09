@@ -22,7 +22,8 @@ import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.jsonEquals
 import no.nav.helse.fritakagp.processing.BakgrunnsJobbUtils.emptyJob
 import no.nav.helse.fritakagp.processing.BakgrunnsJobbUtils.testJob
-import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
+import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonJobbdata
+import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessorNy
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravProcessor.Companion.brevkode
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravProcessor.Companion.dokumentasjonBrevkode
 import no.nav.helse.fritakagp.readToObjectNode
@@ -173,8 +174,8 @@ class GravidKravProcessorTest {
             bakgrunnsjobbRepomock.save(capture(opprettetJobber))
         }
 
-        val beskjedJobb = opprettetJobber.find { it.type == BrukernotifikasjonProcessor.JOB_TYPE }
-        assertThat(beskjedJobb?.data).contains(BrukernotifikasjonProcessor.Jobbdata.SkjemaType.GravidKrav.name)
+        val beskjedJobb = opprettetJobber.find { it.type == BrukernotifikasjonProcessorNy.JOB_TYPE }
+        assertThat(beskjedJobb?.data).contains(BrukernotifikasjonJobbdata.SkjemaType.GravidKrav.name)
         assertThat(beskjedJobb?.data).contains(krav.id.toString())
     }
 

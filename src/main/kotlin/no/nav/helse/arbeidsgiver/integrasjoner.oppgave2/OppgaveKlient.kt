@@ -12,6 +12,7 @@ import io.ktor.http.contentType
 import io.ktor.http.withCharset
 import kotlinx.coroutines.runBlocking
 import no.nav.helsearbeidsgiver.tokenprovider.AccessTokenProvider
+import no.nav.helsearbeidsgiver.utils.log.logger
 import java.time.LocalDate
 
 interface OppgaveKlient {
@@ -31,6 +32,7 @@ class OppgaveKlientImpl(
 ) : OppgaveKlient, SyncOppgaveKlient {
 
     override suspend fun opprettOppgave(opprettOppgaveRequest: OpprettOppgaveRequest, callId: String): OpprettOppgaveResponse {
+        logger().info("Oppretter oppgave for journalpost ${opprettOppgaveRequest.journalpostId} med saksreferanse ${opprettOppgaveRequest.saksreferanse} og X-Correlation-ID $callId")
         val stsToken = stsClient.getToken()
         val httpResponse = httpClient.post(url) {
             contentType(ContentType.Application.Json.withCharset(Charsets.UTF_8))
@@ -46,6 +48,7 @@ class OppgaveKlientImpl(
                 httpResponse.call.response.body()
             }
             else -> {
+                logger().error("Feilet å opprette oppgave : $httpResponse")
                 throw OpprettOppgaveUnauthorizedException(opprettOppgaveRequest, httpResponse.status)
             }
         }

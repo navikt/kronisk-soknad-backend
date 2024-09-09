@@ -5,6 +5,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import kotlinx.coroutines.runBlocking
 import no.nav.hag.utils.bakgrunnsjobb.Bakgrunnsjobb
 import no.nav.hag.utils.bakgrunnsjobb.BakgrunnsjobbProsesserer
+import no.nav.hag.utils.bakgrunnsjobb.BakgrunnsjobbRepository
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.OPPGAVETYPE_FORDELINGSOPPGAVE
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.OppgaveKlient
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.OpprettOppgaveRequest
@@ -12,6 +13,10 @@ import no.nav.helse.fritakagp.db.KroniskKravRepository
 import no.nav.helse.fritakagp.domain.KroniskKrav
 import no.nav.helse.fritakagp.domain.generereSlettKroniskKravBeskrivelse
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
+import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonJobbdata
+import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonJobbdata.NotifikasjonsType.Annullering
+import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonJobbdata.SkjemaType
+import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessorNy
 import no.nav.helse.fritakagp.service.PdlService
 import no.nav.helsearbeidsgiver.dokarkiv.DokArkivClient
 import no.nav.helsearbeidsgiver.dokarkiv.domene.Avsender
@@ -30,7 +35,8 @@ class KroniskKravSlettProcessor(
     private val pdlService: PdlService,
     private val pdfGenerator: KroniskKravPDFGenerator,
     private val om: ObjectMapper,
-    private val bucketStorage: BucketStorage
+    private val bucketStorage: BucketStorage,
+    private val bakgrunnsjobbRepo: BakgrunnsjobbRepository
 ) : BakgrunnsjobbProsesserer {
     companion object {
         val JOB_TYPE = "slett-kronisk-krav"
@@ -54,6 +60,13 @@ class KroniskKravSlettProcessor(
         try {
             krav.sletteJournalpostId = journalførSletting(krav)
             krav.sletteOppgaveId = opprettOppgave(krav)
+            bakgrunnsjobbRepo.save(
+                Bakgrunnsjobb(
+                    maksAntallForsoek = 10,
+                    data = om.writeValueAsString(BrukernotifikasjonJobbdata(krav.id, krav.identitetsnummer, krav.virksomhetsnavn, SkjemaType.KroniskKrav, Annullering)),
+                    type = BrukernotifikasjonProcessorNy.JOB_TYPE
+                )
+            )
         } finally {
             updateAndLogOnFailure(krav)
         }

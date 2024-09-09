@@ -12,6 +12,7 @@ import no.nav.helse.fritakagp.koin.profileModules
 import no.nav.helse.fritakagp.processing.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.arbeidsgivernotifikasjon.ArbeidsgiverOppdaterNotifikasjonProcessor
 import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
+import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessorNy
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravEndreProcessor
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravKvitteringProcessor
 import no.nav.helse.fritakagp.processing.gravid.krav.GravidKravProcessor
@@ -101,7 +102,9 @@ class FritakAgpApplication(val port: Int = 8080, val runAsDeamon: Boolean = true
             registrer(get<KroniskKravSlettProcessor>())
             registrer(get<KroniskKravEndreProcessor>())
 
+            registrer(get<BrukernotifikasjonProcessorNy>())
             registrer(get<BrukernotifikasjonProcessor>())
+
             registrer(get<ArbeidsgiverNotifikasjonProcessor>())
             registrer(get<ArbeidsgiverOppdaterNotifikasjonProcessor>())
 

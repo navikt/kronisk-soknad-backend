@@ -38,6 +38,21 @@ class KroniskKravHTTPTests : SystemTestBase() {
     }
 
     @Test
+    fun `Gir ikke not found når kravet er slettet men flaget slettet er satt`() = suspendableTest {
+        val repo by inject<KroniskKravRepository>()
+
+        repo.insert(KroniskTestData.kroniskKrav.copy(status = KravStatus.SLETTET))
+
+        val response = httpClient.get {
+            appUrl("$kravKroniskUrl/${KroniskTestData.kroniskKrav.id}?slettet")
+            contentType(ContentType.Application.Json)
+            loggedInAs(KroniskTestData.kroniskKrav.identitetsnummer)
+        }
+
+        assertThat(response.status).isEqualTo(HttpStatusCode.OK)
+    }
+
+    @Test
     fun `invalid json gives 400 Bad request`() = suspendableTest {
         val response =
             httpClient.post {

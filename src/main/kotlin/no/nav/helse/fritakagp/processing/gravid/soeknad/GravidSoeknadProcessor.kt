@@ -15,8 +15,10 @@ import no.nav.helse.fritakagp.domain.GravidSoeknad
 import no.nav.helse.fritakagp.domain.generereGravidSoeknadBeskrivelse
 import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
-import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor
-import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessor.Jobbdata.SkjemaType
+import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonJobbdata
+import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonJobbdata.NotifikasjonsType.Oppretting
+import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonJobbdata.SkjemaType.GravidSøknad
+import no.nav.helse.fritakagp.processing.brukernotifikasjon.BrukernotifikasjonProcessorNy
 import no.nav.helse.fritakagp.service.PdlService
 import no.nav.helsearbeidsgiver.dokarkiv.DokArkivClient
 import no.nav.helsearbeidsgiver.dokarkiv.domene.Avsender
@@ -82,8 +84,8 @@ class GravidSoeknadProcessor(
             bakgrunnsjobbRepo.save(
                 Bakgrunnsjobb(
                     maksAntallForsoek = 10,
-                    data = om.writeValueAsString(BrukernotifikasjonProcessor.Jobbdata(soeknad.id, SkjemaType.GravidSøknad)),
-                    type = BrukernotifikasjonProcessor.JOB_TYPE
+                    data = om.writeValueAsString(BrukernotifikasjonJobbdata(soeknad.id, soeknad.identitetsnummer, soeknad.virksomhetsnavn, GravidSøknad, Oppretting)),
+                    type = BrukernotifikasjonProcessorNy.JOB_TYPE
                 )
             )
         } finally {

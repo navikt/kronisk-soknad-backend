@@ -131,7 +131,7 @@ fun prodConfig(env: Env.Prod): Module = module {
         )
     } bind KroniskKravKvitteringSender::class
     single { KroniskKravKvitteringProcessor(get(), get(), get()) }
-    single { BrukernotifikasjonService(om = get(), sensitivitetNivaa = Sensitivitet.Substantial, frontendAppBaseUrl = env.frontendUrl) }
+    single { BrukernotifikasjonService(om = get(), sensitivitetNivaa = Sensitivitet.High, frontendAppBaseUrl = env.frontendUrl) }
     single { BrukernotifikasjonProcessorNy(brukerNotifikasjonProducerFactory = get(), brukernotifikasjonService = get()) }
     single { BrukernotifikasjonProcessor(get(), get(), get(), get(), get(), get(), Sensitivitet.High, env.frontendUrl) }
     single { ArbeidsgiverNotifikasjonProcessor(gravidKravRepo = get(), kroniskKravRepo = get(), om = get(), frontendAppBaseUrl = env.frontendUrl, arbeidsgiverNotifikasjonKlient = get()) }

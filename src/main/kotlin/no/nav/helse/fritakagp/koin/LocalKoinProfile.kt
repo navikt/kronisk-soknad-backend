@@ -7,14 +7,12 @@ import no.nav.hag.utils.bakgrunnsjobb.PostgresBakgrunnsjobbRepository
 import no.nav.helse.fritakagp.Env
 import no.nav.helse.fritakagp.db.GravidKravRepository
 import no.nav.helse.fritakagp.db.GravidSoeknadRepository
-import no.nav.helse.fritakagp.db.IStatsRepo
 import no.nav.helse.fritakagp.db.KroniskKravRepository
 import no.nav.helse.fritakagp.db.KroniskSoeknadRepository
 import no.nav.helse.fritakagp.db.PostgresGravidKravRepository
 import no.nav.helse.fritakagp.db.PostgresGravidSoeknadRepository
 import no.nav.helse.fritakagp.db.PostgresKroniskKravRepository
 import no.nav.helse.fritakagp.db.PostgresKroniskSoeknadRepository
-import no.nav.helse.fritakagp.db.StatsRepoImpl
 import no.nav.helse.fritakagp.db.createHikariConfig
 import no.nav.helse.fritakagp.domain.BeloepBeregning
 import no.nav.helse.fritakagp.integration.GrunnbeloepClient
@@ -94,6 +92,5 @@ fun localConfig(env: Env.Local): Module = module {
     single { BrukernotifikasjonProcessor(get(), get(), get(), get(), get(), get(), Sensitivitet.High, env.frontendUrl) }
     single { ArbeidsgiverNotifikasjonProcessor(gravidKravRepo = get(), kroniskKravRepo = get(), om = get(), frontendAppBaseUrl = env.frontendUrl, arbeidsgiverNotifikasjonKlient = get()) }
 
-    single { StatsRepoImpl(get()) } bind IStatsRepo::class
     single { ArbeidsgiverNotifikasjonKlient(env.arbeidsgiverNotifikasjonUrl, getAccessToken = { "token" }) }
 }

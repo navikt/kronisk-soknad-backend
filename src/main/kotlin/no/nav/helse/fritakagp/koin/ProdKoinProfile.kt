@@ -8,14 +8,12 @@ import no.nav.helse.fritakagp.Env
 import no.nav.helse.fritakagp.MetrikkVarsler
 import no.nav.helse.fritakagp.db.GravidKravRepository
 import no.nav.helse.fritakagp.db.GravidSoeknadRepository
-import no.nav.helse.fritakagp.db.IStatsRepo
 import no.nav.helse.fritakagp.db.KroniskKravRepository
 import no.nav.helse.fritakagp.db.KroniskSoeknadRepository
 import no.nav.helse.fritakagp.db.PostgresGravidKravRepository
 import no.nav.helse.fritakagp.db.PostgresGravidSoeknadRepository
 import no.nav.helse.fritakagp.db.PostgresKroniskKravRepository
 import no.nav.helse.fritakagp.db.PostgresKroniskSoeknadRepository
-import no.nav.helse.fritakagp.db.StatsRepoImpl
 import no.nav.helse.fritakagp.db.createHikariConfig
 import no.nav.helse.fritakagp.domain.BeloepBeregning
 import no.nav.helse.fritakagp.integration.altinn.message.Clients
@@ -141,6 +139,4 @@ fun prodConfig(env: Env.Prod): Module = module {
     single { BrregClientImpl(httpClient = get(), brregUndervirksomhetUrl = env.brregUrl) } bind BrregClient::class
 
     single { BeloepBeregning(grunnbeloepClient = get()) }
-
-    single { StatsRepoImpl(ds = get()) } bind IStatsRepo::class
 }

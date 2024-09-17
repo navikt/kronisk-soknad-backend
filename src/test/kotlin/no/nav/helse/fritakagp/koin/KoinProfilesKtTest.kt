@@ -9,7 +9,6 @@ import no.nav.hag.utils.bakgrunnsjobb.BakgrunnsjobbService
 import no.nav.helse.fritakagp.Env
 import no.nav.helse.fritakagp.db.GravidKravRepository
 import no.nav.helse.fritakagp.db.GravidSoeknadRepository
-import no.nav.helse.fritakagp.db.IStatsRepo
 import no.nav.helse.fritakagp.db.KroniskKravRepository
 import no.nav.helse.fritakagp.db.KroniskSoeknadRepository
 import no.nav.helse.fritakagp.domain.BeloepBeregning
@@ -86,7 +85,6 @@ class KoinProfilesKtTest : KoinTest {
     private val pdlService: PdlService by inject()
     private val brregClient: BrregClient by inject()
     private val beloepBeregning: BeloepBeregning by inject()
-    private val statsRepo: IStatsRepo by inject()
 
     private val objectMapper: ObjectMapper by inject()
 
@@ -144,7 +142,6 @@ class KoinProfilesKtTest : KoinTest {
         assertNotNull(pdlService)
         assertNotNull(brregClient)
         assertNotNull(beloepBeregning)
-        assertNotNull(statsRepo)
     }
 
     private fun getTestModules(): Module {

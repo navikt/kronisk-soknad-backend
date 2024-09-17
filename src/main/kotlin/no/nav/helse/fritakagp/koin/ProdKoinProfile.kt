@@ -58,25 +58,25 @@ import org.koin.dsl.module
 import javax.sql.DataSource
 
 fun prodConfig(env: Env.Prod): Module = module {
-    externalSystemClients(env, env.oauth2)
+    externalSystemClients(env = env, envOauth2 = env.oauth2)
 
     single {
         HikariDataSource(
             createHikariConfig(
-                env.databaseUrl,
-                env.databaseUsername,
-                env.databasePassword
+                jdbcUrl = env.databaseUrl,
+                username = env.databaseUsername,
+                password = env.databasePassword
             )
         )
     } bind DataSource::class
 
-    single { PostgresGravidSoeknadRepository(get(), get()) } bind GravidSoeknadRepository::class
-    single { PostgresKroniskSoeknadRepository(get(), get()) } bind KroniskSoeknadRepository::class
-    single { PostgresGravidKravRepository(get(), get()) } bind GravidKravRepository::class
-    single { PostgresKroniskKravRepository(get(), get()) } bind KroniskKravRepository::class
+    single { PostgresGravidSoeknadRepository(ds = get(), om = get()) } bind GravidSoeknadRepository::class
+    single { PostgresKroniskSoeknadRepository(ds = get(), om = get()) } bind KroniskSoeknadRepository::class
+    single { PostgresGravidKravRepository(ds = get(), om = get()) } bind GravidKravRepository::class
+    single { PostgresKroniskKravRepository(ds = get(), om = get()) } bind KroniskKravRepository::class
 
-    single { PostgresBakgrunnsjobbRepository(get()) } bind BakgrunnsjobbRepository::class
-    single { BakgrunnsjobbService(get(), bakgrunnsvarsler = MetrikkVarsler()) }
+    single { PostgresBakgrunnsjobbRepository(dataSource = get()) } bind BakgrunnsjobbRepository::class
+    single { BakgrunnsjobbService(bakgrunnsjobbRepository = get(), bakgrunnsvarsler = MetrikkVarsler()) }
 
     single { GravidSoeknadProcessor(gravidSoeknadRepo = get(), dokarkivKlient = get(), oppgaveKlient = get(), pdlService = get(), bakgrunnsjobbRepo = get(), pdfGenerator = GravidSoeknadPDFGenerator(), om = get(), bucketStorage = get(), brregClient = get()) }
     single { GravidKravProcessor(gravidKravRepo = get(), dokarkivKlient = get(), oppgaveKlient = get(), pdlService = get(), bakgrunnsjobbRepo = get(), pdfGenerator = GravidKravPDFGenerator(), om = get(), bucketStorage = get(), brregClient = get()) }
@@ -92,55 +92,55 @@ fun prodConfig(env: Env.Prod): Module = module {
 
     single {
         GravidSoeknadAltinnKvitteringSender(
-            env.altinnMeldingServiceId,
-            get(),
-            env.altinnMeldingUsername,
-            env.altinnMeldingPassword
+            altinnTjenesteKode = env.altinnMeldingServiceId,
+            iCorrespondenceAgencyExternalBasic = get(),
+            username = env.altinnMeldingUsername,
+            password = env.altinnMeldingPassword
         )
     } bind GravidSoeknadKvitteringSender::class
 
-    single { GravidSoeknadKvitteringProcessor(get(), get(), get()) }
+    single { GravidSoeknadKvitteringProcessor(gravidSoeknadKvitteringSender = get(), db = get(), om = get()) }
 
     single {
         GravidKravAltinnKvitteringSender(
-            env.altinnMeldingServiceId,
-            get(),
-            env.altinnMeldingUsername,
-            env.altinnMeldingPassword
+            altinnTjenesteKode = env.altinnMeldingServiceId,
+            iCorrespondenceAgencyExternalBasic = get(),
+            username = env.altinnMeldingUsername,
+            password = env.altinnMeldingPassword
         )
     } bind GravidKravKvitteringSender::class
 
-    single { GravidKravKvitteringProcessor(get(), get(), get()) }
+    single { GravidKravKvitteringProcessor(gravidKravKvitteringSender = get(), db = get(), om = get()) }
 
     single {
         KroniskSoeknadAltinnKvitteringSender(
-            env.altinnMeldingServiceId,
-            get(),
-            env.altinnMeldingUsername,
-            env.altinnMeldingPassword
+            altinnTjenesteKode = env.altinnMeldingServiceId,
+            iCorrespondenceAgencyExternalBasic = get(),
+            username = env.altinnMeldingUsername,
+            password = env.altinnMeldingPassword
         )
     } bind KroniskSoeknadKvitteringSender::class
-    single { KroniskSoeknadKvitteringProcessor(get(), get(), get()) }
+    single { KroniskSoeknadKvitteringProcessor(kroniskSoeknadKvitteringSender = get(), db = get(), om = get()) }
 
     single {
         KroniskKravAltinnKvitteringSender(
-            env.altinnMeldingServiceId,
-            get(),
-            env.altinnMeldingUsername,
-            env.altinnMeldingPassword
+            altinnTjenesteKode = env.altinnMeldingServiceId,
+            iCorrespondenceAgencyExternalBasic = get(),
+            username = env.altinnMeldingUsername,
+            password = env.altinnMeldingPassword
         )
     } bind KroniskKravKvitteringSender::class
-    single { KroniskKravKvitteringProcessor(get(), get(), get()) }
+    single { KroniskKravKvitteringProcessor(kroniskKravKvitteringSender = get(), db = get(), om = get()) }
     single { BrukernotifikasjonService(om = get(), sensitivitetNivaa = Sensitivitet.High, frontendAppBaseUrl = env.frontendUrl) }
     single { BrukernotifikasjonProcessorNy(brukerNotifikasjonProducerFactory = get(), brukernotifikasjonService = get()) }
-    single { BrukernotifikasjonProcessor(get(), get(), get(), get(), get(), get(), Sensitivitet.High, env.frontendUrl) }
+    single { BrukernotifikasjonProcessor(gravidKravRepo = get(), gravidSoeknadRepo = get(), kroniskKravRepo = get(), kroniskSoeknadRepo = get(), om = get(), brukernotifikasjonSender = get(), sensitivitetNivaa = Sensitivitet.High, frontendAppBaseUrl = env.frontendUrl) }
     single { ArbeidsgiverNotifikasjonProcessor(gravidKravRepo = get(), kroniskKravRepo = get(), om = get(), frontendAppBaseUrl = env.frontendUrl, arbeidsgiverNotifikasjonKlient = get()) }
-    single { ArbeidsgiverOppdaterNotifikasjonProcessor(get(), get(), get(), get()) }
-    single { PdlService(get()) }
+    single { ArbeidsgiverOppdaterNotifikasjonProcessor(gravidKravRepo = get(), kroniskKravRepo = get(), om = get(), arbeidsgiverNotifikasjonKlient = get()) }
+    single { PdlService(pdlClient = get()) }
 
-    single { BrregClientImpl(get(), env.brregUrl) } bind BrregClient::class
+    single { BrregClientImpl(httpClient = get(), brregUndervirksomhetUrl = env.brregUrl) } bind BrregClient::class
 
-    single { BeloepBeregning(get()) }
+    single { BeloepBeregning(grunnbeloepClient = get()) }
 
-    single { StatsRepoImpl(get()) } bind IStatsRepo::class
+    single { StatsRepoImpl(ds = get()) } bind IStatsRepo::class
 }

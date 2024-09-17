@@ -57,16 +57,16 @@ import javax.sql.DataSource
 fun localConfig(env: Env.Local): Module = module {
     mockExternalDependecies()
 
-    single { GrunnbeloepClient(env.grunnbeloepUrl, get()) }
-    single { BeloepBeregning(get()) }
-    single { HikariDataSource(createHikariConfig(env.databaseUrl, env.databaseUsername, env.databasePassword)) } bind DataSource::class
-    single { PostgresGravidSoeknadRepository(get(), get()) } bind GravidSoeknadRepository::class
-    single { PostgresGravidKravRepository(get(), get()) } bind GravidKravRepository::class
-    single { PostgresKroniskSoeknadRepository(get(), get()) } bind KroniskSoeknadRepository::class
-    single { PostgresKroniskKravRepository(get(), get()) } bind KroniskKravRepository::class
+    single { GrunnbeloepClient(url = env.grunnbeloepUrl, httpClient = get()) }
+    single { BeloepBeregning(grunnbeloepClient = get()) }
+    single { HikariDataSource(createHikariConfig(jdbcUrl = env.databaseUrl, username = env.databaseUsername, password = env.databasePassword)) } bind DataSource::class
+    single { PostgresGravidSoeknadRepository(ds = get(), om = get()) } bind GravidSoeknadRepository::class
+    single { PostgresGravidKravRepository(ds = get(), om = get()) } bind GravidKravRepository::class
+    single { PostgresKroniskSoeknadRepository(ds = get(), om = get()) } bind KroniskSoeknadRepository::class
+    single { PostgresKroniskKravRepository(ds = get(), om = get()) } bind KroniskKravRepository::class
 
-    single { PostgresBakgrunnsjobbRepository(get()) } bind BakgrunnsjobbRepository::class
-    single { BakgrunnsjobbService(get()) }
+    single { PostgresBakgrunnsjobbRepository(dataSource = get()) } bind BakgrunnsjobbRepository::class
+    single { BakgrunnsjobbService(bakgrunnsjobbRepository = get()) }
 
     single { GravidSoeknadProcessor(gravidSoeknadRepo = get(), dokarkivKlient = get(), oppgaveKlient = get(), pdlService = get(), bakgrunnsjobbRepo = get(), pdfGenerator = GravidSoeknadPDFGenerator(), om = get(), bucketStorage = get(), brregClient = get()) }
     single { GravidKravProcessor(gravidKravRepo = get(), dokarkivKlient = get(), oppgaveKlient = get(), pdlService = get(), bakgrunnsjobbRepo = get(), pdfGenerator = GravidKravPDFGenerator(), om = get(), bucketStorage = get(), brregClient = get()) }
@@ -78,22 +78,22 @@ fun localConfig(env: Env.Local): Module = module {
     single { KroniskKravEndreProcessor(kroniskKravRepo = get(), dokarkivKlient = get(), oppgaveKlient = get(), pdlService = get(), pdfGenerator = KroniskKravPDFGenerator(), om = get(), bucketStorage = get(), bakgrunnsjobbRepo = get()) }
 
     single { GravidSoeknadKvitteringSenderDummy() } bind GravidSoeknadKvitteringSender::class
-    single { GravidSoeknadKvitteringProcessor(get(), get(), get()) }
+    single { GravidSoeknadKvitteringProcessor(gravidSoeknadKvitteringSender = get(), db = get(), om = get()) }
     single { GravidKravKvitteringSenderDummy() } bind GravidKravKvitteringSender::class
-    single { GravidKravKvitteringProcessor(get(), get(), get()) }
+    single { GravidKravKvitteringProcessor(gravidKravKvitteringSender = get(), db = get(), om = get()) }
 
     single { KroniskSoeknadKvitteringSenderDummy() } bind KroniskSoeknadKvitteringSender::class
-    single { KroniskSoeknadKvitteringProcessor(get(), get(), get()) }
+    single { KroniskSoeknadKvitteringProcessor(kroniskSoeknadKvitteringSender = get(), db = get(), om = get()) }
     single { KroniskKravKvitteringSenderDummy() } bind KroniskKravKvitteringSender::class
-    single { KroniskKravKvitteringProcessor(get(), get(), get()) }
+    single { KroniskKravKvitteringProcessor(kroniskKravKvitteringSender = get(), db = get(), om = get()) }
 
     single { PdlService(get()) }
 
     single { BrukernotifikasjonProcessorNy(brukerNotifikasjonProducerFactory = get(), brukernotifikasjonService = get()) }
     single { BrukernotifikasjonService(om = get(), sensitivitetNivaa = Sensitivitet.High, frontendAppBaseUrl = env.frontendUrl) }
-    single { BrukernotifikasjonProcessor(get(), get(), get(), get(), get(), get(), Sensitivitet.High, env.frontendUrl) }
+    single { BrukernotifikasjonProcessor(gravidKravRepo = get(), gravidSoeknadRepo = get(), kroniskKravRepo = get(), kroniskSoeknadRepo = get(), om = get(), brukernotifikasjonSender = get(), sensitivitetNivaa = Sensitivitet.High, frontendAppBaseUrl = env.frontendUrl) }
     single { ArbeidsgiverNotifikasjonProcessor(gravidKravRepo = get(), kroniskKravRepo = get(), om = get(), frontendAppBaseUrl = env.frontendUrl, arbeidsgiverNotifikasjonKlient = get()) }
 
-    single { StatsRepoImpl(get()) } bind IStatsRepo::class
-    single { ArbeidsgiverNotifikasjonKlient(env.arbeidsgiverNotifikasjonUrl, getAccessToken = { "token" }) }
+    single { StatsRepoImpl(ds = get()) } bind IStatsRepo::class
+    single { ArbeidsgiverNotifikasjonKlient(url = env.arbeidsgiverNotifikasjonUrl, getAccessToken = { "token" }) }
 }

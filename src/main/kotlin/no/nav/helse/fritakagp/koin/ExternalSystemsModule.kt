@@ -16,6 +16,11 @@ import no.nav.helse.fritakagp.integration.oauth2.DefaultOAuth2HttpClient
 import no.nav.helse.fritakagp.integration.oauth2.TokenResolver
 import no.nav.helse.fritakagp.integration.virusscan.ClamavVirusScannerImp
 import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
+import no.nav.helse.fritakagp.koin.AccessScope.AAREG
+import no.nav.helse.fritakagp.koin.AccessScope.ARBEIDSGIVERNOTIFIKASJON
+import no.nav.helse.fritakagp.koin.AccessScope.DOKARKIV
+import no.nav.helse.fritakagp.koin.AccessScope.OPPGAVE
+import no.nav.helse.fritakagp.koin.AccessScope.PDL
 import no.nav.helsearbeidsgiver.aareg.AaregClient
 import no.nav.helsearbeidsgiver.altinn.AltinnClient
 import no.nav.helsearbeidsgiver.altinn.CacheConfig
@@ -35,11 +40,25 @@ import no.nav.security.token.support.client.core.oauth2.OAuth2AccessTokenService
 import no.nav.security.token.support.client.core.oauth2.OnBehalfOfTokenClient
 import no.nav.security.token.support.client.core.oauth2.TokenExchangeClient
 import org.koin.core.module.Module
+import org.koin.core.qualifier.Qualifier
+import org.koin.core.qualifier.QualifierValue
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import java.net.URI
 import java.time.Duration
 import kotlin.time.toKotlinDuration
+
+enum class AccessScope : Qualifier {
+    DOKARKIV,
+    OPPGAVE,
+    ARBEIDSGIVERNOTIFIKASJON,
+    PDL,
+    AAREG
+    ;
+
+    override val value: QualifierValue
+        get() = name
+}
 
 fun Module.externalSystemClients(env: Env, envOauth2: EnvOauth2) {
     single(named("maskinportenClient")) {
@@ -67,7 +86,7 @@ fun Module.externalSystemClients(env: Env, envOauth2: EnvOauth2) {
 
     single { GrunnbeloepClient(env.grunnbeloepUrl, get()) }
 
-    single(named("OPPGAVE")) {
+    single(named(OPPGAVE)) {
         val azureAdConfig = envOauth2.azureAdConfig(envOauth2.scopeOppgave)
         val tokenResolver = TokenResolver()
         val oauthHttpClient = DefaultOAuth2HttpClient(get())
@@ -81,7 +100,7 @@ fun Module.externalSystemClients(env: Env, envOauth2: EnvOauth2) {
         OAuth2TokenProvider(accessTokenService, azureAdConfig)
     } bind AccessTokenProvider::class
 
-    single(named("DOKARKIV")) {
+    single(named(DOKARKIV)) {
         val azureAdConfig = envOauth2.azureAdConfig(envOauth2.scopeDokarkiv)
         val tokenResolver = TokenResolver()
         val oauthHttpClient = DefaultOAuth2HttpClient(get())
@@ -95,7 +114,7 @@ fun Module.externalSystemClients(env: Env, envOauth2: EnvOauth2) {
         OAuth2TokenProvider(accessTokenService, azureAdConfig)
     } bind AccessTokenProvider::class
 
-    single(named("ARBEIDSGIVERNOTIFIKASJON")) {
+    single(named(ARBEIDSGIVERNOTIFIKASJON)) {
         val azureAdConfig = envOauth2.azureAdConfig(envOauth2.scopeArbeidsgivernotifikasjon)
         val tokenResolver = TokenResolver()
         val oauthHttpClient = DefaultOAuth2HttpClient(get())
@@ -108,7 +127,7 @@ fun Module.externalSystemClients(env: Env, envOauth2: EnvOauth2) {
         OAuth2TokenProvider(accessTokenService, azureAdConfig)
     } bind AccessTokenProvider::class
 
-    single(named("PDL")) {
+    single(named(PDL)) {
         val azureAdConfig = envOauth2.azureAdConfig(envOauth2.scopePdl)
         val tokenResolver = TokenResolver()
         val oauthHttpClient = DefaultOAuth2HttpClient(get())
@@ -122,7 +141,7 @@ fun Module.externalSystemClients(env: Env, envOauth2: EnvOauth2) {
         OAuth2TokenProvider(accessTokenService, azureAdConfig)
     } bind AccessTokenProvider::class
 
-    single(named("AAREG")) {
+    single(named(AAREG)) {
         val azureAdConfig = envOauth2.azureAdConfig(envOauth2.scopeAareg)
         val tokenResolver = TokenResolver()
         val oauthHttpClient = DefaultOAuth2HttpClient(get())
@@ -137,22 +156,22 @@ fun Module.externalSystemClients(env: Env, envOauth2: EnvOauth2) {
     } bind AccessTokenProvider::class
 
     single {
-        val tokenProvider: AccessTokenProvider = get(qualifier = named("PDL"))
+        val tokenProvider: AccessTokenProvider = get(qualifier = named(PDL))
         PdlClient(env.pdlUrl, Behandlingsgrunnlag.FRITAKAGP, tokenProvider::getToken)
     } bind PdlClient::class
 
     single {
-        val tokenProvider: AccessTokenProvider = get(qualifier = named("AAREG"))
+        val tokenProvider: AccessTokenProvider = get(qualifier = named(AAREG))
         AaregClient(env.aaregUrl, tokenProvider::getToken)
     } bind AaregClient::class
 
     single {
-        val tokenProvider: AccessTokenProvider = get(qualifier = named("DOKARKIV"))
+        val tokenProvider: AccessTokenProvider = get(qualifier = named(DOKARKIV))
         DokArkivClient(env.dokarkivUrl, 3, tokenProvider::getToken)
     }
-    single { OppgaveKlientImpl(env.oppgavebehandlingUrl, get(qualifier = named("OPPGAVE")), get()) } bind OppgaveKlient::class
+    single { OppgaveKlientImpl(env.oppgavebehandlingUrl, get(qualifier = named(OPPGAVE)), get()) } bind OppgaveKlient::class
     single {
-        val tokenProvider: AccessTokenProvider = get(qualifier = named("ARBEIDSGIVERNOTIFIKASJON"))
+        val tokenProvider: AccessTokenProvider = get(qualifier = named(ARBEIDSGIVERNOTIFIKASJON))
         ArbeidsgiverNotifikasjonKlient(env.arbeidsgiverNotifikasjonUrl, tokenProvider::getToken)
     }
     single {

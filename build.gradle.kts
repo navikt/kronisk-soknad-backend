@@ -142,7 +142,6 @@ dependencies {
     val valiktorVersion: String by project
     val maskinportenClientVersion: String by project
     val tmsVarselKotlinBuilderVersion: String by project
-    val h2DatabaseVersion: String by project
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
     implementation("ch.qos.logback:logback-classic:$logback_version")
@@ -228,5 +227,4 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-params:$junitJupiterVersion")
 
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitJupiterVersion")
-    testImplementation("com.h2database:h2:$h2DatabaseVersion")
 }

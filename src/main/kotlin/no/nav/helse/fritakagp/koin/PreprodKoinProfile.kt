@@ -68,10 +68,10 @@ fun preprodConfig(env: Env.Preprod): Module = module {
         )
     } bind DataSource::class
 
-    single { PostgresGravidSoeknadRepository(get(), get()) } bind GravidSoeknadRepository::class
-    single { PostgresKroniskSoeknadRepository(get(), get()) } bind KroniskSoeknadRepository::class
-    single { PostgresGravidKravRepository(get(), get()) } bind GravidKravRepository::class
-    single { PostgresKroniskKravRepository(get(), get()) } bind KroniskKravRepository::class
+    single { PostgresGravidSoeknadRepository(ds = get(), om = get()) } bind GravidSoeknadRepository::class
+    single { PostgresKroniskSoeknadRepository(ds = get(), om = get()) } bind KroniskSoeknadRepository::class
+    single { PostgresGravidKravRepository(ds = get(), om = get()) } bind GravidKravRepository::class
+    single { PostgresKroniskKravRepository(ds = get(), om = get()) } bind KroniskKravRepository::class
 
     single { PostgresBakgrunnsjobbRepository(get()) } bind BakgrunnsjobbRepository::class
     single { BakgrunnsjobbService(get(), bakgrunnsvarsler = MetrikkVarsler()) }
@@ -97,7 +97,7 @@ fun preprodConfig(env: Env.Preprod): Module = module {
         )
     } bind GravidSoeknadKvitteringSender::class
 
-    single { GravidSoeknadKvitteringProcessor(get(), get(), get()) }
+    single { GravidSoeknadKvitteringProcessor(gravidSoeknadKvitteringSender = get(), db = get(), om = get()) }
 
     single {
         GravidKravAltinnKvitteringSender(
@@ -118,7 +118,7 @@ fun preprodConfig(env: Env.Preprod): Module = module {
             env.altinnMeldingPassword
         )
     } bind KroniskSoeknadKvitteringSender::class
-    single { KroniskSoeknadKvitteringProcessor(get(), get(), get()) }
+    single { KroniskSoeknadKvitteringProcessor(kroniskSoeknadKvitteringSender = get(), db = get(), om = get()) }
 
     single {
         KroniskKravAltinnKvitteringSender(
@@ -132,7 +132,7 @@ fun preprodConfig(env: Env.Preprod): Module = module {
 
     single { BrukernotifikasjonProcessorNy(brukerNotifikasjonProducerFactory = get(), brukernotifikasjonService = get()) }
     single { BrukernotifikasjonService(om = get(), sensitivitetNivaa = Sensitivitet.Substantial, frontendAppBaseUrl = env.frontendUrl) }
-    single { BrukernotifikasjonProcessor(get(), get(), get(), get(), get(), get(), Sensitivitet.High, env.frontendUrl) }
+    single { BrukernotifikasjonProcessor(gravidKravRepo = get(), gravidSoeknadRepo = get(), kroniskKravRepo = get(), kroniskSoeknadRepo = get(), om = get(), brukernotifikasjonSender = get(), sensitivitetNivaa = Sensitivitet.High, frontendAppBaseUrl = env.frontendUrl) }
     single { ArbeidsgiverNotifikasjonProcessor(gravidKravRepo = get(), kroniskKravRepo = get(), om = get(), frontendAppBaseUrl = env.frontendUrl, arbeidsgiverNotifikasjonKlient = get()) }
     single { ArbeidsgiverOppdaterNotifikasjonProcessor(gravidKravRepo = get(), kroniskKravRepo = get(), om = get(), arbeidsgiverNotifikasjonKlient = get()) }
     single { PdlService(pdlClient = get()) }

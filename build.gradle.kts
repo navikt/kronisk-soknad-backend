@@ -4,8 +4,8 @@ val mainClassFritakAgp = "no.nav.helse.fritakagp.AppKt"
 
 plugins {
     application
-    kotlin("jvm") version "1.9.24" // or kotlin("multiplatform") or any other kotlin plugin
-    kotlin("plugin.serialization") version "1.9.24"
+    kotlin("jvm") version "2.0.10" // or kotlin("multiplatform") or any other kotlin plugin
+    kotlin("plugin.serialization") version "2.0.10"
     id("org.jlleitschuh.gradle.ktlint")
     id("com.github.ben-manes.versions")
     id("com.autonomousapps.dependency-analysis")
@@ -143,7 +143,7 @@ dependencies {
     val maskinportenClientVersion: String by project
     val tmsVarselKotlinBuilderVersion: String by project
 
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.1")
     implementation("ch.qos.logback:logback-classic:$logback_version")
     implementation("net.logstash.logback:logstash-logback-encoder:$logbackEncoderVersion")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jacksonVersion")

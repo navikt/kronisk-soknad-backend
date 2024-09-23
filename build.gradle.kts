@@ -1,11 +1,11 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 val mainClassFritakAgp = "no.nav.helse.fritakagp.AppKt"
 
 plugins {
     application
-    kotlin("jvm") version "2.0.10" // or kotlin("multiplatform") or any other kotlin plugin
-    kotlin("plugin.serialization") version "2.0.10"
+    kotlin("jvm")
+    kotlin("plugin.serialization")
     id("org.jlleitschuh.gradle.ktlint")
     id("com.github.ben-manes.versions")
     id("com.autonomousapps.dependency-analysis")
@@ -16,8 +16,10 @@ application {
     mainClass.set(mainClassFritakAgp)
 }
 
-tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "17"
+kotlin {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_17)
+    }
 }
 
 java {

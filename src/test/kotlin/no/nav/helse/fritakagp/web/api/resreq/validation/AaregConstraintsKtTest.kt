@@ -3,9 +3,9 @@ package no.nav.helse.fritakagp.web.dto.validation
 import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.helse.AaregTestData
 import no.nav.helse.GravidTestData
-import no.nav.helse.arbeidsgiver.utils.loadFromResources
 import no.nav.helse.fritakagp.customObjectMapper
 import no.nav.helse.fritakagp.domain.Arbeidsgiverperiode
+import no.nav.helse.fritakagp.koin.loadFromResources
 import no.nav.helse.fritakagp.web.api.resreq.GravidKravRequest
 import no.nav.helse.fritakagp.web.api.resreq.validation.måHaAktivtArbeidsforhold
 import no.nav.helse.fritakagp.web.api.resreq.validation.slåSammenPerioder

@@ -7,7 +7,6 @@ import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.http.ContentType
 import io.ktor.serialization.jackson.JacksonConverter
 import io.ktor.serialization.jackson.jackson
-import no.nav.helse.arbeidsgiver.kubernetes.KubernetesProbeManager
 import no.nav.helse.fritakagp.Env
 import no.nav.helse.fritakagp.customObjectMapper
 import org.koin.core.module.Module
@@ -36,6 +35,4 @@ private val common = module {
             }
         }
     }
-
-    single { KubernetesProbeManager() }
 }

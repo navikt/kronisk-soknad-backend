@@ -9,7 +9,6 @@ import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.OpprettOppgaveRequest
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.OpprettOppgaveResponse
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.Prioritet
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.Status
-import no.nav.helse.arbeidsgiver.utils.loadFromResources
 import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.brreg.MockBrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
@@ -149,4 +148,7 @@ fun Module.mockExternalDependecies() {
     single { MockBrregClient() } bind BrregClient::class
 
     single { mockk<ArbeidsgiverOppdaterNotifikasjonProcessor>(relaxed = true) }
+}
+fun String.loadFromResources(): String {
+    return ClassLoader.getSystemResource(this).readText()
 }

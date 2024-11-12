@@ -68,3 +68,4 @@ env:
 maskinporten:
   consumes:
     - "altinn:serviceowner/reportees"
+    - "altinn:accessmanagement/authorizedparties.resourceowner"

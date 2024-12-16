@@ -68,6 +68,3 @@ env:
 maskinporten:
   consumes:
     - "altinn:serviceowner/reportees"
-metadata:
-  annotations:
-    texas.nais.io/enabled: "true"

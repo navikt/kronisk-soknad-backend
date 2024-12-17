@@ -11,6 +11,7 @@ import io.ktor.client.plugins.ResponseException
 import io.ktor.client.request.forms.submitForm
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.parameters
+import kotlinx.coroutines.runBlocking
 import no.nav.helse.fritakagp.Env
 import no.nav.helsearbeidsgiver.utils.log.sikkerLogger
 
@@ -56,7 +57,7 @@ class AuthClient(
 ) {
 
     suspend fun token(target: String): TokenResponse = try {
-        sikkerLogger().info("Requesting token from ${env.tokenEndpoint}")
+        sikkerLogger().info("Requesting token for $target from ${provider.alias} and endpoint ${env.tokenEndpoint}")
         httpClient.submitForm(
             env.tokenEndpoint,
             parameters {
@@ -89,4 +90,18 @@ class AuthClient(
                 set("identity_provider", provider.alias)
             }
         ).body()
+}
+
+fun getFetchToken(authClient: AuthClient, target:String): () -> String = {
+    runBlocking {
+         authClient.token(target).let {
+            when (it) {
+                is TokenResponse.Success -> it.accessToken
+                is TokenResponse.Error -> {
+                    sikkerLogger().error("Failed to fetch token : ${it.error.errorDescription}")
+                    throw RuntimeException("Failed to fetch token")
+                }
+            }
+        }
+    }
 }

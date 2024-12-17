@@ -11,18 +11,13 @@ import io.ktor.client.plugins.ResponseException
 import io.ktor.client.request.forms.submitForm
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.parameters
-import io.ktor.server.application.ApplicationCall
-import io.ktor.server.application.createRouteScopedPlugin
-import io.ktor.server.response.respondRedirect
 import no.nav.helse.fritakagp.Env
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 
 enum class IdentityProvider(@JsonValue val alias: String) {
     MASKINPORTEN("maskinporten"),
     AZURE_AD("azuread"),
     IDPORTEN("idporten"),
-    TOKEN_X("tokenx"),
+    TOKEN_X("tokenx")
 }
 
 sealed class TokenResponse {
@@ -30,19 +25,19 @@ sealed class TokenResponse {
         @JsonProperty("access_token")
         val accessToken: String,
         @JsonProperty("expires_in")
-        val expiresInSeconds: Int,
+        val expiresInSeconds: Int
     ) : TokenResponse()
 
     data class Error(
         val error: TokenErrorResponse,
-        val status: HttpStatusCode,
+        val status: HttpStatusCode
     ) : TokenResponse()
 }
 
 data class TokenErrorResponse(
     val error: String,
     @JsonProperty("error_description")
-    val errorDescription: String,
+    val errorDescription: String
 )
 
 data class TokenIntrospectionResponse(
@@ -50,7 +45,7 @@ data class TokenIntrospectionResponse(
     @JsonInclude(JsonInclude.Include.NON_NULL)
     val error: String?,
     @JsonAnySetter @get:JsonAnyGetter
-    val other: Map<String, Any?> = mutableMapOf(),
+    val other: Map<String, Any?> = mutableMapOf()
 )
 
 class AuthClient(
@@ -59,34 +54,37 @@ class AuthClient(
     private val provider: IdentityProvider
 ) {
 
-
     suspend fun token(target: String): TokenResponse = try {
-        httpClient.submitForm(env.tokenEndpoint, parameters {
-            set("target", target)
-            set("identity_provider", provider.alias)
-        }).body<TokenResponse.Success>()
+        httpClient.submitForm(
+            env.tokenEndpoint,
+            parameters {
+                set("target", target)
+                set("identity_provider", provider.alias)
+            }
+        ).body<TokenResponse.Success>()
     } catch (e: ResponseException) {
         TokenResponse.Error(e.response.body<TokenErrorResponse>(), e.response.status)
     }
 
-    suspend fun exchange(target: String, userToken: String,provider: IdentityProvider): TokenResponse = try {
-
-        httpClient.submitForm(env.tokenExchangeEndpoint, parameters {
-            set("target", target)
-            set("user_token", userToken)
-            set("identity_provider", provider.alias)
-        }).body<TokenResponse.Success>()
-
+    suspend fun exchange(target: String, userToken: String, provider: IdentityProvider): TokenResponse = try {
+        httpClient.submitForm(
+            env.tokenExchangeEndpoint,
+            parameters {
+                set("target", target)
+                set("user_token", userToken)
+                set("identity_provider", provider.alias)
+            }
+        ).body<TokenResponse.Success>()
     } catch (e: ResponseException) {
         TokenResponse.Error(e.response.body<TokenErrorResponse>(), e.response.status)
     }
 
-    suspend fun introspect(accessToken: String,provider: IdentityProvider): TokenIntrospectionResponse =
-        httpClient.submitForm(env.tokenIntrospectionEndpoint, parameters {
-            set("token", accessToken)
-            set("identity_provider", provider.alias)
-        }).body()
+    suspend fun introspect(accessToken: String, provider: IdentityProvider): TokenIntrospectionResponse =
+        httpClient.submitForm(
+            env.tokenIntrospectionEndpoint,
+            parameters {
+                set("token", accessToken)
+                set("identity_provider", provider.alias)
+            }
+        ).body()
 }
-
-
-

@@ -56,9 +56,9 @@ sealed class Env private constructor(
     val maskinportenClientJwk = "maskinporten.client_jwk".prop()
     val maskinportenIssuer = "maskinporten.client_issuer".prop()
 
-    val tokenEndpoint="auth.token_endpoint".prop()
-    val tokenExchangeEndpoint="auth.token_exchange_endpoint".prop()
-    val tokenIntrospectionEndpoint="auth.token_introspection_endpoint".prop()
+    val tokenEndpoint = "auth.token_endpoint".prop()
+    val tokenExchangeEndpoint = "auth.token_exchange_endpoint".prop()
+    val tokenIntrospectionEndpoint = "auth.token_introspection_endpoint".prop()
 
     val aaregUrl = "aareg_url".prop()
 

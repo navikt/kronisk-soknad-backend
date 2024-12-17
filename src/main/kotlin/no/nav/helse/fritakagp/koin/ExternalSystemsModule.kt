@@ -1,14 +1,12 @@
 package no.nav.helse.fritakagp.koin
 
 import com.nimbusds.oauth2.sdk.auth.ClientAuthenticationMethod
-import kotlinx.coroutines.runBlocking
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.OppgaveKlient
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.OppgaveKlientImpl
 import no.nav.helse.fritakagp.Env
 import no.nav.helse.fritakagp.EnvOauth2
 import no.nav.helse.fritakagp.auth.AuthClient
 import no.nav.helse.fritakagp.auth.IdentityProvider
-import no.nav.helse.fritakagp.auth.TokenResponse
 import no.nav.helse.fritakagp.auth.getFetchToken
 import no.nav.helse.fritakagp.integration.GrunnbeloepClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
@@ -37,7 +35,6 @@ import no.nav.helsearbeidsgiver.pdl.Behandlingsgrunnlag
 import no.nav.helsearbeidsgiver.pdl.PdlClient
 import no.nav.helsearbeidsgiver.tokenprovider.AccessTokenProvider
 import no.nav.helsearbeidsgiver.tokenprovider.OAuth2TokenProvider
-import no.nav.helsearbeidsgiver.utils.log.sikkerLogger
 import no.nav.security.token.support.client.core.ClientAuthenticationProperties
 import no.nav.security.token.support.client.core.ClientProperties
 import no.nav.security.token.support.client.core.OAuth2GrantType
@@ -208,7 +205,6 @@ fun Module.externalSystemClients(env: Env, envOauth2: EnvOauth2) {
 
     single(named(MASKINPORTEN)) { AuthClient(env = env, httpClient = get(), IdentityProvider.MASKINPORTEN) }
 }
-
 
 private fun EnvOauth2.azureAdConfig(scope: String): ClientProperties =
     ClientProperties(

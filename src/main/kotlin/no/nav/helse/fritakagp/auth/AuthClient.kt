@@ -12,6 +12,7 @@ import io.ktor.client.request.forms.submitForm
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.parameters
 import no.nav.helse.fritakagp.Env
+import no.nav.helsearbeidsgiver.utils.log.sikkerLogger
 
 enum class IdentityProvider(@JsonValue val alias: String) {
     MASKINPORTEN("maskinporten"),
@@ -55,6 +56,7 @@ class AuthClient(
 ) {
 
     suspend fun token(target: String): TokenResponse = try {
+        sikkerLogger().info("Requesting token from ${env.tokenEndpoint}")
         httpClient.submitForm(
             env.tokenEndpoint,
             parameters {

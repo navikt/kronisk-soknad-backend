@@ -6,6 +6,9 @@ import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.OppgaveKlient
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.OppgaveKlientImpl
 import no.nav.helse.fritakagp.Env
 import no.nav.helse.fritakagp.EnvOauth2
+import no.nav.helse.fritakagp.auth.AuthClient
+import no.nav.helse.fritakagp.auth.IdentityProvider
+import no.nav.helse.fritakagp.auth.TokenResponse
 import no.nav.helse.fritakagp.integration.GrunnbeloepClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.integration.gcp.BucketStorageImpl
@@ -19,6 +22,7 @@ import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
 import no.nav.helse.fritakagp.koin.AccessScope.AAREG
 import no.nav.helse.fritakagp.koin.AccessScope.ARBEIDSGIVERNOTIFIKASJON
 import no.nav.helse.fritakagp.koin.AccessScope.DOKARKIV
+import no.nav.helse.fritakagp.koin.AccessScope.MASKINPORTEN
 import no.nav.helse.fritakagp.koin.AccessScope.OPPGAVE
 import no.nav.helse.fritakagp.koin.AccessScope.PDL
 import no.nav.helsearbeidsgiver.aareg.AaregClient
@@ -53,7 +57,8 @@ enum class AccessScope : Qualifier {
     OPPGAVE,
     ARBEIDSGIVERNOTIFIKASJON,
     PDL,
-    AAREG
+    AAREG,
+    MASKINPORTEN
     ;
 
     override val value: QualifierValue
@@ -73,8 +78,19 @@ fun Module.externalSystemClients(env: Env, envOauth2: EnvOauth2) {
         )
     }
     single {
-        val maskinportenClient: MaskinportenClient = get(qualifier = named("maskinportenClient"))
-        val fetchToken: () -> String = { runBlocking { maskinportenClient.fetchNewAccessToken().tokenResponse.accessToken } }
+//        val maskinportenClient: MaskinportenClient = get(qualifier = named("maskinportenClient"))
+//        val fetchToken: () -> String = { runBlocking { maskinportenClient.fetchNewAccessToken().tokenResponse.accessToken } }
+
+        val maskinportenAuthClient: AuthClient = get(qualifier = named(MASKINPORTEN))
+
+        val fetchToken: () -> String = {
+            runBlocking {
+                when (val response = maskinportenAuthClient.token(env.altinnScope)) {
+                    is TokenResponse.Success -> return@runBlocking response.accessToken
+                    is TokenResponse.Error -> throw RuntimeException("Feilet å hente token fra maskinporten: ${response.error.errorDescription}")
+                }
+            }
+        }
         AltinnClient(
             url = env.altinnServiceOwnerUrl,
             serviceCode = env.altinnServiceOwnerServiceId,
@@ -193,6 +209,8 @@ fun Module.externalSystemClients(env: Env, envOauth2: EnvOauth2) {
             env.kafkaTopicNameBrukernotifikasjon
         )
     } bind BrukernotifikasjonSender::class
+
+    single(named(MASKINPORTEN)) { AuthClient(env = env, httpClient = get(), IdentityProvider.MASKINPORTEN) }
 }
 
 private fun EnvOauth2.azureAdConfig(scope: String): ClientProperties =

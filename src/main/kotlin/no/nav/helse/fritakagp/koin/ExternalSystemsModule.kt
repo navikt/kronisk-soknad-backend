@@ -86,7 +86,6 @@ fun Module.externalSystemClients(env: Env, envOauth2: EnvOauth2) {
         val fetchToken: () -> String = {
             runBlocking {
                 when (val response = maskinportenAuthClient.token(env.altinnScope)) {
-
                     is TokenResponse.Success -> return@runBlocking response.accessToken.also { sikkerLogger().info("Fikk token fra maskinporten") }
                     is TokenResponse.Error -> throw RuntimeException("Feilet å hente token fra maskinporten: ${response.error.errorDescription}")
                 }
@@ -98,7 +97,7 @@ fun Module.externalSystemClients(env: Env, envOauth2: EnvOauth2) {
             serviceCode = env.altinnServiceOwnerServiceId,
             getToken = fetchToken,
             altinnApiKey = env.altinnServiceOwnerApiKey,
-            //TODO: Sett riktig cacheConfig
+            // TODO: Sett riktig cacheConfig
             cacheConfig = CacheConfig(Duration.ofMinutes(1).toKotlinDuration(), 1)
         )
     } bind AltinnClient::class

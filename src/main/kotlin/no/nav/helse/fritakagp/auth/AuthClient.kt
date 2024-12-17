@@ -98,8 +98,8 @@ fun getFetchToken(authClient: AuthClient, target: String): () -> String = {
             when (it) {
                 is TokenResponse.Success -> it.accessToken
                 is TokenResponse.Error -> {
-                    sikkerLogger().error("Failed to fetch token : ${it.error.errorDescription}")
-                    throw RuntimeException("Failed to fetch token")
+                    sikkerLogger().error("Failed to fetch token status: ${it.status} - ${it.error.errorDescription}")
+                    throw RuntimeException("Failed to fetch token status: ${it.status} - ${it.error.errorDescription}")
                 }
             }
         }

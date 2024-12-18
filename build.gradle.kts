@@ -144,7 +144,6 @@ dependencies {
     val valiktorVersion: String by project
     val maskinportenClientVersion: String by project
     val tmsVarselKotlinBuilderVersion: String by project
-    val wiremockeVersion: String by project
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
     implementation("ch.qos.logback:logback-classic:$logback_version")
@@ -223,7 +222,6 @@ dependencies {
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-params:$junitJupiterVersion")
-    testImplementation("org.wiremock:wiremock:$wiremockeVersion")
 
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitJupiterVersion")
 }

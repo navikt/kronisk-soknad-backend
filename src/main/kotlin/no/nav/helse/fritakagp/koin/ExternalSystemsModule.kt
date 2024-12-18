@@ -57,7 +57,7 @@ enum class AccessScope : Qualifier {
     ARBEIDSGIVERNOTIFIKASJON,
     PDL,
     AAREG,
-    MASKINPORTEN
+    MASKINPORTEN// ikke egentlig et accessScope men en identity provider
     ;
 
     override val value: QualifierValue

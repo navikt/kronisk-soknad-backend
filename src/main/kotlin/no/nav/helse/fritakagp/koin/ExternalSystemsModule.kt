@@ -7,7 +7,7 @@ import no.nav.helse.fritakagp.Env
 import no.nav.helse.fritakagp.EnvOauth2
 import no.nav.helse.fritakagp.auth.AuthClient
 import no.nav.helse.fritakagp.auth.IdentityProvider
-import no.nav.helse.fritakagp.auth.getFetchToken
+import no.nav.helse.fritakagp.auth.fetchToken
 import no.nav.helse.fritakagp.integration.GrunnbeloepClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.integration.gcp.BucketStorageImpl
@@ -78,11 +78,11 @@ fun Module.externalSystemClients(env: Env, envOauth2: EnvOauth2) {
     }
     single {
         val maskinportenAuthClient: AuthClient = get(qualifier = named(MASKINPORTEN))
-        val fetchToken: () -> String = getFetchToken(maskinportenAuthClient, env.altinnScope)
+
         AltinnClient(
             url = env.altinnServiceOwnerUrl,
             serviceCode = env.altinnServiceOwnerServiceId,
-            getToken = fetchToken,
+            getToken = maskinportenAuthClient.fetchToken(env.altinnScope),
             altinnApiKey = env.altinnServiceOwnerApiKey,
             cacheConfig = CacheConfig(Duration.ofMinutes(60).toKotlinDuration(), 100)
         )

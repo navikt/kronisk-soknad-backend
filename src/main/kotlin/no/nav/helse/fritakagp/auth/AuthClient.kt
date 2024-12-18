@@ -92,9 +92,9 @@ class AuthClient(
         ).body()
 }
 
-fun getFetchToken(authClient: AuthClient, target: String): () -> String = {
+fun AuthClient.fetchToken(target: String): () -> String = {
     runBlocking {
-        authClient.token(target).let {
+        token(target).let {
             when (it) {
                 is TokenResponse.Success -> it.accessToken
                 is TokenResponse.Error -> {

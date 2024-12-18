@@ -144,7 +144,7 @@ dependencies {
     val valiktorVersion: String by project
     val maskinportenClientVersion: String by project
     val tmsVarselKotlinBuilderVersion: String by project
-    val wiremockeVersion : String by project
+    val wiremockeVersion: String by project
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
     implementation("ch.qos.logback:logback-classic:$logback_version")

@@ -57,7 +57,7 @@ enum class AccessScope : Qualifier {
     ARBEIDSGIVERNOTIFIKASJON,
     PDL,
     AAREG,
-    MASKINPORTEN// ikke egentlig et accessScope men en identity provider
+    MASKINPORTEN // ikke egentlig et accessScope men en identity provider
     ;
 
     override val value: QualifierValue
@@ -198,7 +198,7 @@ fun Module.externalSystemClients(env: Env, envOauth2: EnvOauth2) {
         )
     } bind BrukernotifikasjonSender::class
 
-    single(named(MASKINPORTEN)) { AuthClient(env = env, httpClient = get(), IdentityProvider.MASKINPORTEN) }
+    single(named(MASKINPORTEN)) { AuthClient(env = env, IdentityProvider.MASKINPORTEN) }
 }
 
 private fun EnvOauth2.azureAdConfig(scope: String): ClientProperties =

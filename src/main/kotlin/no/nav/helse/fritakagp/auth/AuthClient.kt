@@ -5,14 +5,21 @@ import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonValue
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
+import io.ktor.client.engine.apache.Apache
 import io.ktor.client.plugins.ResponseException
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.forms.submitForm
+import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.parameters
+import io.ktor.serialization.jackson.JacksonConverter
+import io.ktor.serialization.jackson.jackson
 import kotlinx.coroutines.runBlocking
 import no.nav.helse.fritakagp.Env
+import no.nav.helse.fritakagp.customObjectMapper
 import no.nav.helsearbeidsgiver.utils.log.sikkerLogger
 
 enum class IdentityProvider(@JsonValue val alias: String) {
@@ -52,10 +59,9 @@ data class TokenIntrospectionResponse(
 
 class AuthClient(
     private val env: Env,
-    private val httpClient: HttpClient,
     private val provider: IdentityProvider
 ) {
-
+    private val httpClient = createHttpClient()
     suspend fun token(target: String): TokenResponse = try {
         sikkerLogger().info("Requesting token for $target from ${provider.alias} and endpoint ${env.tokenEndpoint}")
         httpClient.submitForm(
@@ -102,6 +108,16 @@ fun AuthClient.fetchToken(target: String): () -> String = {
                     throw RuntimeException("Failed to fetch token status: ${it.status} - ${it.error.errorDescription}")
                 }
             }
+        }
+    }
+}
+
+fun createHttpClient(): HttpClient = HttpClient(Apache) {
+    expectSuccess = true
+    install(ContentNegotiation) {
+        register(ContentType.Application.Json, JacksonConverter(customObjectMapper()))
+        jackson {
+            registerModule(JavaTimeModule())
         }
     }
 }

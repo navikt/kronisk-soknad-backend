@@ -1,11 +1,13 @@
 package no.nav.helse.fritakagp.koin
 
 import com.nimbusds.oauth2.sdk.auth.ClientAuthenticationMethod
-import kotlinx.coroutines.runBlocking
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.OppgaveKlient
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.OppgaveKlientImpl
 import no.nav.helse.fritakagp.Env
 import no.nav.helse.fritakagp.EnvOauth2
+import no.nav.helse.fritakagp.auth.AuthClient
+import no.nav.helse.fritakagp.auth.IdentityProvider
+import no.nav.helse.fritakagp.auth.fetchToken
 import no.nav.helse.fritakagp.integration.GrunnbeloepClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
 import no.nav.helse.fritakagp.integration.gcp.BucketStorageImpl
@@ -19,6 +21,7 @@ import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
 import no.nav.helse.fritakagp.koin.AccessScope.AAREG
 import no.nav.helse.fritakagp.koin.AccessScope.ARBEIDSGIVERNOTIFIKASJON
 import no.nav.helse.fritakagp.koin.AccessScope.DOKARKIV
+import no.nav.helse.fritakagp.koin.AccessScope.MASKINPORTEN
 import no.nav.helse.fritakagp.koin.AccessScope.OPPGAVE
 import no.nav.helse.fritakagp.koin.AccessScope.PDL
 import no.nav.helsearbeidsgiver.aareg.AaregClient
@@ -53,7 +56,8 @@ enum class AccessScope : Qualifier {
     OPPGAVE,
     ARBEIDSGIVERNOTIFIKASJON,
     PDL,
-    AAREG
+    AAREG,
+    MASKINPORTEN // ikke egentlig et accessScope men en identity provider
     ;
 
     override val value: QualifierValue
@@ -73,12 +77,12 @@ fun Module.externalSystemClients(env: Env, envOauth2: EnvOauth2) {
         )
     }
     single {
-        val maskinportenClient: MaskinportenClient = get(qualifier = named("maskinportenClient"))
-        val fetchToken: () -> String = { runBlocking { maskinportenClient.fetchNewAccessToken().tokenResponse.accessToken } }
+        val maskinportenAuthClient: AuthClient = get(qualifier = named(MASKINPORTEN))
+
         AltinnClient(
             url = env.altinnServiceOwnerUrl,
             serviceCode = env.altinnServiceOwnerServiceId,
-            getToken = fetchToken,
+            getToken = maskinportenAuthClient.fetchToken(env.altinnScope),
             altinnApiKey = env.altinnServiceOwnerApiKey,
             cacheConfig = CacheConfig(Duration.ofMinutes(60).toKotlinDuration(), 100)
         )
@@ -193,6 +197,8 @@ fun Module.externalSystemClients(env: Env, envOauth2: EnvOauth2) {
             env.kafkaTopicNameBrukernotifikasjon
         )
     } bind BrukernotifikasjonSender::class
+
+    single(named(MASKINPORTEN)) { AuthClient(env = env, IdentityProvider.MASKINPORTEN) }
 }
 
 private fun EnvOauth2.azureAdConfig(scope: String): ClientProperties =

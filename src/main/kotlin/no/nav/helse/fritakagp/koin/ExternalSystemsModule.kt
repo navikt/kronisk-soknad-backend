@@ -29,8 +29,6 @@ import no.nav.helsearbeidsgiver.altinn.AltinnClient
 import no.nav.helsearbeidsgiver.altinn.CacheConfig
 import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonKlient
 import no.nav.helsearbeidsgiver.dokarkiv.DokArkivClient
-import no.nav.helsearbeidsgiver.maskinporten.MaskinportenClient
-import no.nav.helsearbeidsgiver.maskinporten.MaskinportenClientConfig
 import no.nav.helsearbeidsgiver.pdl.Behandlingsgrunnlag
 import no.nav.helsearbeidsgiver.pdl.PdlClient
 import no.nav.helsearbeidsgiver.tokenprovider.AccessTokenProvider
@@ -65,17 +63,6 @@ enum class AccessScope : Qualifier {
 }
 
 fun Module.externalSystemClients(env: Env, envOauth2: EnvOauth2) {
-    single(named("maskinportenClient")) {
-        MaskinportenClient(
-            MaskinportenClientConfig(
-                env.altinnScope,
-                env.maskinportenClientId,
-                env.maskinportenClientJwk,
-                env.maskinportenIssuer,
-                env.maskinportenUrl
-            )
-        )
-    }
     single {
         val maskinportenAuthClient: AuthClient = get(qualifier = named(MASKINPORTEN))
 

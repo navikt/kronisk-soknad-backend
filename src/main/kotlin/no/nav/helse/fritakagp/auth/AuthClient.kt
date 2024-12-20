@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonValue
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
-import io.ktor.client.engine.apache.Apache
+import io.ktor.client.engine.apache5.Apache5
 import io.ktor.client.plugins.ResponseException
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.forms.submitForm
@@ -112,7 +112,7 @@ fun AuthClient.fetchToken(target: String): () -> String = {
     }
 }
 
-fun createHttpClient(): HttpClient = HttpClient(Apache) {
+fun createHttpClient(): HttpClient = HttpClient(Apache5) {
     expectSuccess = true
     install(ContentNegotiation) {
         register(ContentType.Application.Json, JacksonConverter(customObjectMapper()))

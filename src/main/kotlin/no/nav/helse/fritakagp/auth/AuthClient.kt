@@ -70,7 +70,7 @@ class AuthClient(
                 set("target", target)
                 set("identity_provider", provider.alias)
             }
-        ).body<TokenResponse.Success>()
+        ).body<TokenResponse.Success>().apply { sikkerLogger().info("hentet token expiresInSeconds: $expiresInSeconds") }
     } catch (e: ResponseException) {
         TokenResponse.Error(e.response.body<TokenErrorResponse>(), e.response.status)
     }

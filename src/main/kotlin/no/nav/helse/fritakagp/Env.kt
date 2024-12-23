@@ -51,11 +51,6 @@ sealed class Env private constructor(
     val altinnServiceOwnerApiKey = "altinn.altinn_api_key".prop()
     val altinnScope = "altinn.altinn_scope".prop()
 
-    val maskinportenUrl = "maskinporten.token_endpoint".prop()
-    val maskinportenClientId = "maskinporten.client_id".prop()
-    val maskinportenClientJwk = "maskinporten.client_jwk".prop()
-    val maskinportenIssuer = "maskinporten.client_issuer".prop()
-
     val tokenEndpoint = "auth.token_endpoint".prop()
     val tokenExchangeEndpoint = "auth.token_exchange_endpoint".prop()
     val tokenIntrospectionEndpoint = "auth.token_introspection_endpoint".prop()

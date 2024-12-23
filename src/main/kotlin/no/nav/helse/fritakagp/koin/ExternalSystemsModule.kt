@@ -21,7 +21,6 @@ import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
 import no.nav.helse.fritakagp.koin.AccessScope.AAREG
 import no.nav.helse.fritakagp.koin.AccessScope.ARBEIDSGIVERNOTIFIKASJON
 import no.nav.helse.fritakagp.koin.AccessScope.DOKARKIV
-import no.nav.helse.fritakagp.koin.AccessScope.MASKINPORTEN
 import no.nav.helse.fritakagp.koin.AccessScope.OPPGAVE
 import no.nav.helse.fritakagp.koin.AccessScope.PDL
 import no.nav.helsearbeidsgiver.aareg.AaregClient
@@ -54,8 +53,7 @@ enum class AccessScope : Qualifier {
     OPPGAVE,
     ARBEIDSGIVERNOTIFIKASJON,
     PDL,
-    AAREG,
-    MASKINPORTEN // ikke egentlig et accessScope men en identity provider
+    AAREG
     ;
 
     override val value: QualifierValue
@@ -64,12 +62,12 @@ enum class AccessScope : Qualifier {
 
 fun Module.externalSystemClients(env: Env, envOauth2: EnvOauth2) {
     single {
-        val maskinportenAuthClient: AuthClient = get(qualifier = named(MASKINPORTEN))
+        val maskinportenAuthClient: AuthClient = get()
 
         AltinnClient(
             url = env.altinnServiceOwnerUrl,
             serviceCode = env.altinnServiceOwnerServiceId,
-            getToken = maskinportenAuthClient.fetchToken(env.altinnScope),
+            getToken = maskinportenAuthClient.fetchToken(env.altinnScope, IdentityProvider.MASKINPORTEN),
             altinnApiKey = env.altinnServiceOwnerApiKey,
             cacheConfig = CacheConfig(Duration.ofMinutes(60).toKotlinDuration(), 100)
         )
@@ -185,7 +183,7 @@ fun Module.externalSystemClients(env: Env, envOauth2: EnvOauth2) {
         )
     } bind BrukernotifikasjonSender::class
 
-    single(named(MASKINPORTEN)) { AuthClient(env = env, IdentityProvider.MASKINPORTEN) }
+    single { AuthClient(env = env) }
 }
 
 private fun EnvOauth2.azureAdConfig(scope: String): ClientProperties =

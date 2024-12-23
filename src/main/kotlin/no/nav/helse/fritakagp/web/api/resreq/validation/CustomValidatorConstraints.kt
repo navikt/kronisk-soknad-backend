@@ -3,6 +3,9 @@ package no.nav.helse.fritakagp.web.api.resreq.validation
 import no.nav.helse.fritakagp.domain.Arbeidsgiverperiode
 import no.nav.helse.fritakagp.domain.FravaerData
 import no.nav.helse.fritakagp.domain.GodkjenteFiletyper
+import no.nav.helsearbeidsgiver.utils.pipe.orDefault
+import no.nav.helsearbeidsgiver.utils.wrapper.Fnr
+import no.nav.helsearbeidsgiver.utils.wrapper.Orgnr
 import org.valiktor.Constraint
 import org.valiktor.Validator
 import java.time.LocalDate
@@ -14,11 +17,11 @@ interface CustomConstraint : Constraint {
 }
 class IdentitetsnummerConstraint : CustomConstraint
 fun <E> Validator<E>.Property<String?>.isValidIdentitetsnummer() =
-    this.validate(IdentitetsnummerConstraint()) { FoedselsNrValidator.isValid(it) }
+    this.validate(IdentitetsnummerConstraint()) { it?.let(Fnr::erGyldig).orDefault(false) }
 
 class OrganisasjonsnummerConstraint : CustomConstraint
 fun <E> Validator<E>.Property<String?>.isValidOrganisasjonsnummer() =
-    this.validate(OrganisasjonsnummerConstraint()) { OrganisasjonsnummerValidator.isValid(it) }
+    this.validate(OrganisasjonsnummerConstraint()) { it?.let(Orgnr::erGyldig).orDefault(false) }
 
 class RefusjonsdagerKanIkkeOverstigePeriodelengdenConstraint : CustomConstraint
 fun <E> Validator<E>.Property<Int?>.refusjonsDagerIkkeOverstigerPeriodelengde(ap: Arbeidsgiverperiode) =

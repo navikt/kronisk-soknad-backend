@@ -39,6 +39,7 @@ import no.nav.security.token.support.client.core.oauth2.ClientCredentialsTokenCl
 import no.nav.security.token.support.client.core.oauth2.OAuth2AccessTokenService
 import no.nav.security.token.support.client.core.oauth2.OnBehalfOfTokenClient
 import no.nav.security.token.support.client.core.oauth2.TokenExchangeClient
+import org.apache.cxf.ws.security.trust.STSTokenRetriever.getToken
 import org.koin.core.module.Module
 import org.koin.core.qualifier.Qualifier
 import org.koin.core.qualifier.QualifierValue
@@ -145,24 +146,23 @@ fun Module.externalSystemClients(env: Env, envOauth2: EnvOauth2) {
     } bind AccessTokenProvider::class
 
     single {
-        // val tokenProvider: AccessTokenProvider = get(qualifier = named(PDL))
         val azureAuthClient: AuthClient = get()
         PdlClient(env.pdlUrl, Behandlingsgrunnlag.FRITAKAGP, azureAuthClient.fetchToken(envOauth2.scopePdl, IdentityProvider.AZURE_AD))
     } bind PdlClient::class
 
     single {
-        val tokenProvider: AccessTokenProvider = get(qualifier = named(AAREG))
-        AaregClient(env.aaregUrl, tokenProvider::getToken)
+        val azureAuthClient: AuthClient = get()
+        AaregClient(env.aaregUrl, azureAuthClient.fetchToken(envOauth2.scopeAareg, IdentityProvider.AZURE_AD))
     } bind AaregClient::class
 
     single {
-        val tokenProvider: AccessTokenProvider = get(qualifier = named(DOKARKIV))
-        DokArkivClient(env.dokarkivUrl, 3, tokenProvider::getToken)
+        val azureAuthClient: AuthClient = get()
+        DokArkivClient(env.dokarkivUrl, 3, azureAuthClient.fetchToken(envOauth2.scopeDokarkiv, IdentityProvider.AZURE_AD))
     }
     single { OppgaveKlientImpl(env.oppgavebehandlingUrl, get(qualifier = named(OPPGAVE)), get()) } bind OppgaveKlient::class
     single {
-        val tokenProvider: AccessTokenProvider = get(qualifier = named(ARBEIDSGIVERNOTIFIKASJON))
-        ArbeidsgiverNotifikasjonKlient(env.arbeidsgiverNotifikasjonUrl, tokenProvider::getToken)
+        val azureAuthClient: AuthClient = get()
+        ArbeidsgiverNotifikasjonKlient(env.arbeidsgiverNotifikasjonUrl, azureAuthClient.fetchToken(envOauth2.scopeArbeidsgivernotifikasjon, IdentityProvider.AZURE_AD))
     }
     single {
         ClamavVirusScannerImp(

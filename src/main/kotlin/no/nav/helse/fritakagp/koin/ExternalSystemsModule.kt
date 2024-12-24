@@ -145,8 +145,9 @@ fun Module.externalSystemClients(env: Env, envOauth2: EnvOauth2) {
     } bind AccessTokenProvider::class
 
     single {
-        val tokenProvider: AccessTokenProvider = get(qualifier = named(PDL))
-        PdlClient(env.pdlUrl, Behandlingsgrunnlag.FRITAKAGP, tokenProvider::getToken)
+        // val tokenProvider: AccessTokenProvider = get(qualifier = named(PDL))
+        val azureAuthClient: AuthClient = get()
+        PdlClient(env.pdlUrl, Behandlingsgrunnlag.FRITAKAGP, azureAuthClient.fetchToken(envOauth2.scopePdl, IdentityProvider.AZURE_AD))
     } bind PdlClient::class
 
     single {

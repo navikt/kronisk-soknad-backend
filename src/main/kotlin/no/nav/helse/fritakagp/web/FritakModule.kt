@@ -28,7 +28,7 @@ import org.koin.ktor.ext.get
 fun Application.fritakModule(env: Env) {
     install(IgnoreTrailingSlash)
     install(Authentication) {
-        tokenValidationSupport(name = "idporten", config = env.idportenConfig)
+        tokenValidationSupport(name = "idporten-issuer", config = env.idportenConfig)
     }
 
     configureCORSAccess(env)
@@ -43,7 +43,7 @@ fun Application.fritakModule(env: Env) {
 
     routing {
         route("${env.ktorBasepath}/api/v1") {
-            authenticate {
+            authenticate ("idporten-issuer") {
                 systemRoutes()
                 kroniskRoutes(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
                 gravidRoutes(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())

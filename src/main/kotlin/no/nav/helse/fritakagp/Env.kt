@@ -60,7 +60,7 @@ sealed class Env private constructor(
     val idportenConfig =
         TokenSupportConfig(
             IssuerConfig(
-                name = "idporten",
+                name = "idporten-issuer",
                 discoveryUrl = "idporten_config.discoveryurl".prop(),
                 acceptedAudience = "idporten_config.accepted_audience".prop().let(::listOf)
             )

@@ -43,7 +43,7 @@ fun Application.fritakModule(env: Env) {
 
     routing {
         route("${env.ktorBasepath}/api/v1") {
-            authenticate ("idporten-issuer") {
+            authenticate("idporten-issuer") {
                 systemRoutes()
                 kroniskRoutes(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
                 gravidRoutes(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())

@@ -29,6 +29,7 @@ fun Application.fritakModule(env: Env) {
     install(IgnoreTrailingSlash)
     install(Authentication) {
         tokenValidationSupport(name = "idporten-issuer", config = env.idportenConfig)
+        tokenValidationSupport(name = "tokenx-issuer", config = env.tokenxConfig)
     }
 
     configureCORSAccess(env)
@@ -43,7 +44,7 @@ fun Application.fritakModule(env: Env) {
 
     routing {
         route("${env.ktorBasepath}/api/v1") {
-            authenticate("idporten-issuer") {
+            authenticate("idporten-issuer", "tokenx-issuer") {
                 systemRoutes()
                 kroniskRoutes(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
                 gravidRoutes(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())

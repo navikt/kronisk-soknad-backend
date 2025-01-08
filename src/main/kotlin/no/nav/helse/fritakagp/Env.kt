@@ -66,6 +66,15 @@ sealed class Env private constructor(
             )
         )
 
+    val tokenxConfig =
+        TokenSupportConfig(
+            IssuerConfig(
+                name = "tokenx-issuer",
+                discoveryUrl = "tokenx_config.discoveryurl".prop(),
+                acceptedAudience = "tokenx_config.accepted_audience".prop().let(::listOf)
+            )
+        )
+
     val aaregUrl = "aareg_url".prop()
 
     val arbeidsgiverNotifikasjonUrl = "arbeidsgiver_notifikasjon_api_url".prop()

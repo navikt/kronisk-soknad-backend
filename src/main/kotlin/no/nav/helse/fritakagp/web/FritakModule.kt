@@ -28,7 +28,7 @@ import org.koin.ktor.ext.get
 fun Application.fritakModule(env: Env) {
     install(IgnoreTrailingSlash)
     install(Authentication) {
-        tokenValidationSupport(config = env.config)
+        tokenValidationSupport(name = "idporten", config = env.idportenConfig)
     }
 
     configureCORSAccess(env)

@@ -1,6 +1,8 @@
 package no.nav.helse.fritakagp
 
 import io.ktor.server.config.ApplicationConfig
+import no.nav.security.token.support.v2.IssuerConfig
+import no.nav.security.token.support.v2.TokenSupportConfig
 
 fun readEnv(config: ApplicationConfig): Env =
     when (config.prop("koin.profile")) {
@@ -54,6 +56,15 @@ sealed class Env private constructor(
     val tokenEndpoint = "auth.token_endpoint".prop()
     val tokenExchangeEndpoint = "auth.token_exchange_endpoint".prop()
     val tokenIntrospectionEndpoint = "auth.token_introspection_endpoint".prop()
+
+    val idportenConfig =
+        TokenSupportConfig(
+            IssuerConfig(
+                name = "idporten",
+                discoveryUrl = "idporten_config.discoveryurl".prop(),
+                acceptedAudience = "idporten_config.accepted_audience".prop().let(::listOf)
+            )
+        )
 
     val aaregUrl = "aareg_url".prop()
 

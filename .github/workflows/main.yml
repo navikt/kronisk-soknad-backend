@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - 'preprod/**'
+      - 'dev/**'
 
 env:
   IMAGE: ghcr.io/${{ github.repository }}/${{ github.event.repository.name }}

@@ -55,7 +55,7 @@ sealed class Env private constructor(
     val altinnServiceOwnerApiKey = "altinn.altinn_api_key".prop()
     val altinnScope = "altinn.altinn_scope".prop()
 
-    val fagerScope = "dev-gcp:fager:altinn-tilganger"
+    val fagerScope = "dev-gcp:fager:arbeidsgiver-altinn-tilganger"
 
     val tokenEndpoint = "auth.token_endpoint".prop()
     val tokenExchangeEndpoint = "auth.token_exchange_endpoint".prop()

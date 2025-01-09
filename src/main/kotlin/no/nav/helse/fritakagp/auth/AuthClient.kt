@@ -75,7 +75,7 @@ class AuthClient(
         TokenResponse.Error(e.response.body<TokenErrorResponse>(), e.response.status)
     }
 
-    suspend fun exchange(target: String, userToken: String, provider: IdentityProvider): TokenResponse = try {
+    suspend fun exchange(target: String, userToken: String): TokenResponse = try {
         httpClient.submitForm(
             env.tokenExchangeEndpoint,
             parameters {
@@ -111,6 +111,24 @@ fun AuthClient.fetchToken(target: String): () -> String = {
         }
     }
 }
+
+fun AuthClient.fetchOboToken(
+    target: String,
+    userToken: String
+): () -> String =
+    {
+        runBlocking {
+            exchange(target, userToken).let {
+                when (it) {
+                    is TokenResponse.Success -> it.accessToken
+                    is TokenResponse.Error -> {
+                        sikkerLogger().error("Feilet å hente token status: ${it.status} - ${it.error.errorDescription}")
+                        throw RuntimeException("Feilet å hente token status: ${it.status} - ${it.error.errorDescription}")
+                    }
+                }
+            }
+        }
+    }
 
 fun createHttpClient(): HttpClient = HttpClient(Apache5) {
     expectSuccess = true

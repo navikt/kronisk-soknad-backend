@@ -9,6 +9,8 @@ import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.OpprettOppgaveRequest
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.OpprettOppgaveResponse
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.Prioritet
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.Status
+import no.nav.helse.fritakagp.auth.AuthClient
+import no.nav.helse.fritakagp.auth.TokenResponse
 import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.brreg.MockBrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
@@ -24,8 +26,10 @@ import no.nav.helsearbeidsgiver.aareg.Arbeidsforhold
 import no.nav.helsearbeidsgiver.aareg.Arbeidsgiver
 import no.nav.helsearbeidsgiver.aareg.Opplysningspliktig
 import no.nav.helsearbeidsgiver.aareg.Periode
+import no.nav.helsearbeidsgiver.altinn.Altinn3Client
 import no.nav.helsearbeidsgiver.altinn.AltinnClient
 import no.nav.helsearbeidsgiver.altinn.AltinnOrganisasjon
+import no.nav.helsearbeidsgiver.altinn.TilgangResponse
 import no.nav.helsearbeidsgiver.dokarkiv.DokArkivClient
 import no.nav.helsearbeidsgiver.pdl.PdlClient
 import no.nav.helsearbeidsgiver.pdl.domene.FullPerson
@@ -50,6 +54,29 @@ fun Module.mockExternalDependecies() {
                 altinnOrganisasjons.any {
                     it.orgnr == organisasjonsNr && it.orgnrHovedenhet != null
                 }
+            }
+        }
+    }
+    single(named("tokenx")) {
+        mockk<AuthClient> {
+            coEvery { exchange(any(), any()) } returns
+                TokenResponse.Success(
+                    "",
+                    3659
+                )
+        }
+    }
+
+    single {
+        mockk<Altinn3Client> {
+            val json = Json { ignoreUnknownKeys = true }
+            val jsonFile = "altinn-mock/rettighetene-til-tanja-minge.json".loadFromResources()
+            val tilgangRespons = json.decodeFromString<TilgangResponse>(jsonFile)
+
+            coEvery { hentHierarkiMedTilganger(any(), { "" }) } returns tilgangRespons
+            coEvery { harTilgangTilOrganisasjon(any(), any(), { "" }) } answers {
+                val organisasjonsNr = secondArg<String>()
+                tilgangRespons.tilgangTilOrgNr["4936:1"]?.contains(organisasjonsNr) ?: false
             }
         }
     }

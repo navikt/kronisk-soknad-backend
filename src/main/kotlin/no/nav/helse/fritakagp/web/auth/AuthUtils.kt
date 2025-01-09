@@ -29,7 +29,7 @@ fun hentUtløpsdatoFraLoginToken(request: ApplicationRequest): Date {
     return JwtToken(tokenString).jwtTokenClaims.expirationTime ?: Date.from(Instant.MIN)
 }
 
-private fun getTokenString(request: ApplicationRequest): String {
+fun getTokenString(request: ApplicationRequest): String {
     return request.headers["Authorization"]?.replaceFirst("Bearer ", "")
         ?: throw IllegalAccessException("Du må angi et identitetstoken i Authorization-headeren")
 }

@@ -25,6 +25,7 @@ import no.nav.helse.fritakagp.koin.AccessScope.MASKINPORTEN
 import no.nav.helse.fritakagp.koin.AccessScope.OPPGAVE
 import no.nav.helse.fritakagp.koin.AccessScope.PDL
 import no.nav.helsearbeidsgiver.aareg.AaregClient
+import no.nav.helsearbeidsgiver.altinn.Altinn3Client
 import no.nav.helsearbeidsgiver.altinn.AltinnClient
 import no.nav.helsearbeidsgiver.altinn.CacheConfig
 import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonKlient
@@ -74,6 +75,15 @@ fun Module.externalSystemClients(env: Env, envOauth2: EnvOauth2) {
             cacheConfig = CacheConfig(Duration.ofMinutes(60).toKotlinDuration(), 100)
         )
     } bind AltinnClient::class
+
+    single {
+        Altinn3Client(
+            baseUrl = env.altinnServiceOwnerUrl,
+            serviceCode = env.altinnServiceOwnerServiceId,
+            m2m = false,
+            cacheConfig = CacheConfig(Duration.ofMinutes(60).toKotlinDuration(), 100)
+        )
+    } bind Altinn3Client::class
 
     single { GrunnbeloepClient(env.grunnbeloepUrl, get()) }
 
@@ -186,6 +196,7 @@ fun Module.externalSystemClients(env: Env, envOauth2: EnvOauth2) {
     } bind BrukernotifikasjonSender::class
 
     single(named(MASKINPORTEN)) { AuthClient(env = env, IdentityProvider.MASKINPORTEN) }
+    single(named("tokenx")) { AuthClient(env = env, IdentityProvider.TOKEN_X) }
 }
 
 private fun EnvOauth2.azureAdConfig(scope: String): ClientProperties =

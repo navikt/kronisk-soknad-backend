@@ -78,7 +78,7 @@ fun Module.externalSystemClients(env: Env, envOauth2: EnvOauth2) {
 
     single {
         Altinn3Client(
-            baseUrl = env.altinnServiceOwnerUrl,
+            baseUrl = env.fagerAltinntilgangerBaseUrl,
             serviceCode = env.altinnServiceOwnerServiceId,
             m2m = false,
             cacheConfig = CacheConfig(Duration.ofMinutes(60).toKotlinDuration(), 100)

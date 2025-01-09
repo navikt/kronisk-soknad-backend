@@ -13,12 +13,6 @@ metadata:
 spec:
   image: {{ image }}
   port: 8080
-  idporten:
-    enabled: true
-    sidecar:
-      enabled: true
-  tokenx:
-    enabled: true
   replicas:
     max: 1
     min: 1
@@ -42,6 +36,12 @@ spec:
     periodSeconds: 5
     failureThreshold: 10
 
+  idporten:
+    enabled: true
+    sidecar:
+      enabled: true
+  tokenx:
+    enabled: true
   kafka:
     pool: nav-{{ context }}
   azure:

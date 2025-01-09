@@ -15,6 +15,7 @@ import io.ktor.server.routing.IgnoreTrailingSlash
 import io.ktor.server.routing.route
 import io.ktor.server.routing.routing
 import no.nav.helse.fritakagp.Env
+import no.nav.helse.fritakagp.Issuers
 import no.nav.helse.fritakagp.customObjectMapper
 import no.nav.helse.fritakagp.web.api.altinnRoutes
 import no.nav.helse.fritakagp.web.api.configureExceptionHandling
@@ -28,8 +29,8 @@ import org.koin.ktor.ext.get
 fun Application.fritakModule(env: Env) {
     install(IgnoreTrailingSlash)
     install(Authentication) {
-        tokenValidationSupport(name = "idporten-issuer", config = env.idportenConfig)
-        tokenValidationSupport(name = "tokenx-issuer", config = env.tokenxConfig)
+        tokenValidationSupport(name = Issuers.IDPORTEN, config = env.idportenConfig)
+        tokenValidationSupport(name = Issuers.TOKENX, config = env.tokenxConfig)
     }
 
     configureCORSAccess(env)

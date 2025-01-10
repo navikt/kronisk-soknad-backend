@@ -12,17 +12,15 @@ metadata:
 
 spec:
   image: {{ image }}
-  port: 8080
+  resources:
+    requests:
+      cpu: 50m
+      memory: 1024Mi
+    limits:
+      memory: 2048Mi
   replicas:
     max: 1
     min: 1
-  resources:
-    limits:
-      cpu: 3500m
-      memory: 1000Mi
-    requests:
-      cpu: 400m
-      memory: 200Mi
   liveness:
     path: /health/alive
     initialDelay: 10

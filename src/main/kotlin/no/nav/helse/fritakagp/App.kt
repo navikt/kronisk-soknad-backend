@@ -76,7 +76,7 @@ class FritakAgpApplication(val port: Int = 8080, val runAsDeamon: Boolean = true
 
                 module {
                     if (env is Env.Local) {
-                        localAuthTokenDispenser(env.jwt)
+                        localAuthTokenDispenser(env)
                     }
                     nais()
                     fritakModule(env)

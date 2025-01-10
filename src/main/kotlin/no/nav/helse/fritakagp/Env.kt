@@ -1,6 +1,13 @@
 package no.nav.helse.fritakagp
 
 import io.ktor.server.config.ApplicationConfig
+import no.nav.security.token.support.v2.IssuerConfig
+import no.nav.security.token.support.v2.TokenSupportConfig
+
+object Issuers {
+    const val TOKENX = "tokenx-issuer"
+    const val IDPORTEN = "idporten-issuer"
+}
 
 fun readEnv(config: ApplicationConfig): Env =
     when (config.prop("koin.profile")) {
@@ -19,12 +26,9 @@ sealed class Env private constructor(
 
     class Preprod(config: ApplicationConfig) : Env(config) {
         val oauth2 = EnvOauth2(config)
-        val jwt = EnvJwt(config)
     }
 
-    class Local(config: ApplicationConfig) : Env(config) {
-        val jwt = EnvJwt(config)
-    }
+    class Local(config: ApplicationConfig) : Env(config)
 
     val ktorBasepath = "ktor.application.basepath".prop()
 
@@ -54,6 +58,27 @@ sealed class Env private constructor(
     val tokenEndpoint = "auth.token_endpoint".prop()
     val tokenExchangeEndpoint = "auth.token_exchange_endpoint".prop()
     val tokenIntrospectionEndpoint = "auth.token_introspection_endpoint".prop()
+
+    val idportenDiscoveryUrl = "idporten_config.discoveryurl".prop()
+    val idportenAcceptedAudience = "idporten_config.accepted_audience".prop().let(::listOf)
+
+    val idportenConfig =
+        TokenSupportConfig(
+            IssuerConfig(
+                name = Issuers.IDPORTEN,
+                discoveryUrl = idportenDiscoveryUrl,
+                acceptedAudience = idportenAcceptedAudience
+            )
+        )
+
+    val tokenxConfig =
+        TokenSupportConfig(
+            IssuerConfig(
+                name = Issuers.TOKENX,
+                discoveryUrl = "tokenx_config.discoveryurl".prop(),
+                acceptedAudience = "tokenx_config.accepted_audience".prop().let(::listOf)
+            )
+        )
 
     val aaregUrl = "aareg_url".prop()
 
@@ -97,17 +122,6 @@ class EnvOauth2(mainConfig: ApplicationConfig) {
 
     private fun String.prop(): String =
         oauth2Config.prop(this)
-}
-
-class EnvJwt(mainConfig: ApplicationConfig) {
-    private val jwtIssuerConfig = "no.nav.security.jwt.issuers".let(mainConfig::configList)
-        .first()
-
-    val issuerName = "issuer_name".prop()
-    val audience = "accepted_audience".prop()
-
-    private fun String.prop(): String =
-        jwtIssuerConfig.prop(this)
 }
 
 private fun ApplicationConfig.prop(key: String): String =

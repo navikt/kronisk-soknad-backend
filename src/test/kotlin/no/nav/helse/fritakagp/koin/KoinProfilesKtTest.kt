@@ -33,14 +33,12 @@ import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadKvitterin
 import no.nav.helse.fritakagp.processing.kronisk.soeknad.KroniskSoeknadKvitteringSender
 import no.nav.helse.fritakagp.service.PdlService
 import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonKlient
-import no.nav.helsearbeidsgiver.tokenprovider.AccessTokenProvider
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.koin.core.module.Module
-import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.koin.test.KoinTest
@@ -54,7 +52,7 @@ class KoinProfilesKtTest : KoinTest {
     private val preprod: Env.Preprod = mockk(relaxed = true)
     private val local: Env.Local = mockk(relaxed = true)
     private val bucketStorage: BucketStorage = mockk(relaxed = true)
-    private val accessTokenProvider = mockk<AccessTokenProvider>(relaxed = true)
+
     private val dataSource = mockk<DataSource>(relaxed = true)
     private val brukernotifikasjonSender = mockk<BrukernotifikasjonSender>(relaxed = true)
     private val arbeidsgiverNotifikasjonKlient = mockk<ArbeidsgiverNotifikasjonKlient>(relaxed = true)
@@ -148,11 +146,6 @@ class KoinProfilesKtTest : KoinTest {
         val testModule =
             module {
                 single { dataSource } bind DataSource::class
-                single(named(AccessScope.PDL)) { accessTokenProvider } bind AccessTokenProvider::class
-                single(named(AccessScope.OPPGAVE)) { accessTokenProvider } bind AccessTokenProvider::class
-                single(named(AccessScope.DOKARKIV)) { accessTokenProvider } bind AccessTokenProvider::class
-                single(named(AccessScope.ARBEIDSGIVERNOTIFIKASJON)) { accessTokenProvider } bind AccessTokenProvider::class
-                single(named(AccessScope.AAREG)) { accessTokenProvider } bind AccessTokenProvider::class
                 single { bucketStorage } bind BucketStorage::class
                 single { brukernotifikasjonSender } bind BrukernotifikasjonSender::class
                 single { arbeidsgiverNotifikasjonKlient } bind ArbeidsgiverNotifikasjonKlient::class

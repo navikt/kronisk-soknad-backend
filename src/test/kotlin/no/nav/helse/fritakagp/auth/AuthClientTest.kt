@@ -39,7 +39,7 @@ class AuthClientTest {
             }
             mockkStatic(::createHttpClient) {
                 every { createHttpClient() } returns httpclientMock(mockEngine)
-                val response = AuthClient(env, IdentityProvider.MASKINPORTEN).token("test")
+                val response = AuthClient(env).token(IdentityProvider.MASKINPORTEN, "test")
                 assertTrue(response is TokenResponse.Success)
                 assertEquals("token", (response as TokenResponse.Success).accessToken)
                 assertEquals(3600, response.expiresInSeconds)
@@ -62,7 +62,7 @@ class AuthClientTest {
             mockkStatic(::createHttpClient) {
                 every { createHttpClient() } returns httpclientMock(mockEngine)
 
-                val response = AuthClient(env, IdentityProvider.MASKINPORTEN).token("test")
+                val response = AuthClient(env).token(IdentityProvider.MASKINPORTEN, "test")
                 assertTrue(response is TokenResponse.Error)
                 assertEquals("invalid_request", (response as TokenResponse.Error).error.error)
                 assertEquals("Invalid request", response.error.errorDescription)

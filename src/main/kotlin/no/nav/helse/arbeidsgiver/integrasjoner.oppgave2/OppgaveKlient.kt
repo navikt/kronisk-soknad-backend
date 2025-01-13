@@ -11,7 +11,6 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import io.ktor.http.withCharset
 import kotlinx.coroutines.runBlocking
-import no.nav.helsearbeidsgiver.tokenprovider.AccessTokenProvider
 import no.nav.helsearbeidsgiver.utils.log.logger
 import java.time.LocalDate
 
@@ -27,16 +26,16 @@ interface SyncOppgaveKlient {
 
 class OppgaveKlientImpl(
     private val url: String,
-    private val stsClient: AccessTokenProvider,
+    val getAccessToken: () -> String,
     private val httpClient: HttpClient
 ) : OppgaveKlient, SyncOppgaveKlient {
 
     override suspend fun opprettOppgave(opprettOppgaveRequest: OpprettOppgaveRequest, callId: String): OpprettOppgaveResponse {
         logger().info("Oppretter oppgave for journalpost ${opprettOppgaveRequest.journalpostId} med saksreferanse ${opprettOppgaveRequest.saksreferanse} og X-Correlation-ID $callId")
-        val stsToken = stsClient.getToken()
+        val token = getAccessToken()
         val httpResponse = httpClient.post(url) {
             contentType(ContentType.Application.Json.withCharset(Charsets.UTF_8))
-            header("Authorization", "Bearer $stsToken")
+            header("Authorization", "Bearer $token")
             header("X-Correlation-ID", callId)
             setBody(opprettOppgaveRequest)
         }
@@ -62,10 +61,10 @@ class OppgaveKlientImpl(
     }
 
     override suspend fun hentOppgave(oppgaveId: Int, callId: String): OppgaveResponse {
-        val stsToken = stsClient.getToken()
+        val token = getAccessToken()
         val httpResponse = httpClient.get("$url/$oppgaveId") {
             contentType(ContentType.Application.Json)
-            header("Authorization", "Bearer $stsToken")
+            header("Authorization", "Bearer $token")
             header("X-Correlation-ID", callId)
         }
         return when (httpResponse.status) {

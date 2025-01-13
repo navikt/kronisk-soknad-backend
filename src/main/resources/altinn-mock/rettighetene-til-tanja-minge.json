@@ -97,6 +97,16 @@
           "underenheter": [],
           "navn": "ANSTENDIG PIGGSVIN BRANNVESEN",
           "organisasjonsform": "BEDR"
+        },
+        {
+          "orgnr": "917404437",
+          "altinn3Tilganger": [],
+          "altinn2Tilganger": [
+            "4936:1"
+          ],
+          "underenheter": [],
+          "navn": "ANSTENDIG PIGGSVIN RAKEBYRÅ",
+          "organisasjonsform": "BEDR"
         }
       ],
       "navn": "ANSTENDIG PIGGSVIN BYDEL",
@@ -233,7 +243,8 @@
     "4936:1": [
       "810007842",
       "810007982",
-      "810008032"
+      "810008032",
+      "917404437"
     ],
     "5902:1": [
       "810007842",

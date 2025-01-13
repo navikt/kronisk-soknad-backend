@@ -10,14 +10,14 @@ import no.nav.helse.fritakagp.auth.AuthClient
 import no.nav.helse.fritakagp.auth.fetchOboToken
 import no.nav.helse.fritakagp.web.auth.getTokenString
 import no.nav.helse.fritakagp.web.auth.hentIdentitetsnummerFraLoginToken
-import no.nav.helsearbeidsgiver.altinn.Altinn3Client
+import no.nav.helsearbeidsgiver.altinn.Altinn3OBOClient
 import no.nav.helsearbeidsgiver.altinn.AltinnBrukteForLangTidException
 import no.nav.helsearbeidsgiver.altinn.AltinnClient
 import no.nav.helsearbeidsgiver.utils.log.logger
 
 fun Route.altinnRoutes(
     authRepo: AltinnClient,
-    altinn3Client: Altinn3Client,
+    altinn3OBOClient: Altinn3OBOClient,
     authClient: AuthClient,
     fagerScope: String
 ) {
@@ -50,7 +50,7 @@ fun Route.altinnRoutes(
             }
             logger.info("Henter arbeidsgivertilganger for ${id.take(6)}")
             try {
-                val hierarkiMedTilganger = altinn3Client.hentHierarkiMedTilganger(id, authClient.fetchOboToken(fagerScope, getTokenString(call.request)))
+                val hierarkiMedTilganger = altinn3OBOClient.hentHierarkiMedTilganger(id, authClient.fetchOboToken(fagerScope, getTokenString(call.request)))
                 logger.info("Hentet arbeidsgivertilganger for ${id.take(6)} med ${hierarkiMedTilganger.hierarki.size} arbeidsgivere.")
                 call.respond(hierarkiMedTilganger.hierarki)
             } catch (ae: AltinnBrukteForLangTidException) {

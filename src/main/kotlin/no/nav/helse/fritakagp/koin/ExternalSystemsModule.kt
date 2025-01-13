@@ -14,6 +14,8 @@ import no.nav.helse.fritakagp.integration.gcp.BucketStorageImpl
 import no.nav.helse.fritakagp.integration.kafka.BrukernotifikasjonKafkaProducer
 import no.nav.helse.fritakagp.integration.kafka.BrukernotifikasjonSender
 import no.nav.helse.fritakagp.integration.kafka.brukernotifikasjonKafkaProps
+import no.nav.helse.fritakagp.integration.oauth2.DefaultOAuth2HttpClient
+import no.nav.helse.fritakagp.integration.oauth2.TokenResolver
 import no.nav.helse.fritakagp.integration.virusscan.ClamavVirusScannerImp
 import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
 import no.nav.helse.fritakagp.koin.AccessScope.OPPGAVE
@@ -24,9 +26,15 @@ import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjo
 import no.nav.helsearbeidsgiver.dokarkiv.DokArkivClient
 import no.nav.helsearbeidsgiver.pdl.Behandlingsgrunnlag
 import no.nav.helsearbeidsgiver.pdl.PdlClient
+import no.nav.helsearbeidsgiver.tokenprovider.AccessTokenProvider
+import no.nav.helsearbeidsgiver.tokenprovider.OAuth2TokenProvider
 import no.nav.security.token.support.client.core.ClientAuthenticationProperties
 import no.nav.security.token.support.client.core.ClientProperties
 import no.nav.security.token.support.client.core.OAuth2GrantType
+import no.nav.security.token.support.client.core.oauth2.ClientCredentialsTokenClient
+import no.nav.security.token.support.client.core.oauth2.OAuth2AccessTokenService
+import no.nav.security.token.support.client.core.oauth2.OnBehalfOfTokenClient
+import no.nav.security.token.support.client.core.oauth2.TokenExchangeClient
 import org.koin.core.module.Module
 import org.koin.core.qualifier.Qualifier
 import org.koin.core.qualifier.QualifierValue
@@ -62,6 +70,20 @@ fun Module.externalSystemClients(env: Env, envOauth2: EnvOauth2) {
     } bind AltinnClient::class
 
     single { GrunnbeloepClient(env.grunnbeloepUrl, get()) }
+
+    single(named(OPPGAVE)) {
+        val azureAdConfig = envOauth2.azureAdConfig(envOauth2.scopeOppgave)
+        val tokenResolver = TokenResolver()
+        val oauthHttpClient = DefaultOAuth2HttpClient(get())
+        val accessTokenService = OAuth2AccessTokenService(
+            tokenResolver,
+            OnBehalfOfTokenClient(oauthHttpClient),
+            ClientCredentialsTokenClient(oauthHttpClient),
+            TokenExchangeClient(oauthHttpClient)
+        )
+
+        OAuth2TokenProvider(accessTokenService, azureAdConfig)
+    } bind AccessTokenProvider::class
 
     single {
         val azureAuthClient: AuthClient = get()

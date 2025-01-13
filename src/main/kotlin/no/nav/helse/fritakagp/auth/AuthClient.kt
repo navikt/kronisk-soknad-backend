@@ -61,7 +61,7 @@ class AuthClient(
     private val env: Env
 ) {
     private val httpClient = createHttpClient()
-    suspend fun token(target: String, provider: IdentityProvider): TokenResponse = try {
+    suspend fun token(provider: IdentityProvider, target: String): TokenResponse = try {
         sikkerLogger().info("Requesting token for $target from ${provider.alias} and endpoint ${env.tokenEndpoint}")
         httpClient.submitForm(
             env.tokenEndpoint,
@@ -97,9 +97,9 @@ class AuthClient(
         ).body()
 }
 
-fun AuthClient.fetchToken(target: String, identityProvider: IdentityProvider): () -> String = {
+fun AuthClient.fetchToken(identityProvider: IdentityProvider, target: String): () -> String = {
     runBlocking {
-        token(target, identityProvider).let {
+        token(identityProvider, target).let {
             when (it) {
                 is TokenResponse.Success -> it.accessToken
                 is TokenResponse.Error -> {

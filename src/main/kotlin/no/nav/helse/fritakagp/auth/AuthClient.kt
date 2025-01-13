@@ -112,13 +112,12 @@ fun AuthClient.fetchToken(identityProvider: IdentityProvider, target: String): (
 }
 
 fun AuthClient.fetchOboToken(
-    identityProvider: IdentityProvider,
     target: String,
     userToken: String
 ): () -> String =
     {
         runBlocking {
-            exchange(identityProvider, target, userToken).let {
+            exchange(IdentityProvider.TOKEN_X, target, userToken).let {
                 when (it) {
                     is TokenResponse.Success -> it.accessToken
                     is TokenResponse.Error -> {

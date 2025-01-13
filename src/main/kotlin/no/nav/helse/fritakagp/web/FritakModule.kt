@@ -24,7 +24,6 @@ import no.nav.helse.fritakagp.web.api.kroniskRoutes
 import no.nav.helse.fritakagp.web.api.swaggerRoutes
 import no.nav.helse.fritakagp.web.api.systemRoutes
 import no.nav.security.token.support.v2.tokenValidationSupport
-import org.koin.core.qualifier.named
 import org.koin.ktor.ext.get
 
 fun Application.fritakModule(env: Env) {
@@ -48,9 +47,9 @@ fun Application.fritakModule(env: Env) {
         route("${env.ktorBasepath}/api/v1") {
             authenticate("idporten-issuer", "tokenx-issuer") {
                 systemRoutes()
-                kroniskRoutes(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(qualifier = named("tokenx")), env.fagerScope)
-                gravidRoutes(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(qualifier = named("tokenx")), env.fagerScope)
-                altinnRoutes(get(), get(), get(qualifier = named("tokenx")), env.fagerScope)
+                kroniskRoutes(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), env.fagerScope)
+                gravidRoutes(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), env.fagerScope)
+                altinnRoutes(get(), get(), get(), env.fagerScope)
             }
         }
         swaggerRoutes(env.ktorBasepath)

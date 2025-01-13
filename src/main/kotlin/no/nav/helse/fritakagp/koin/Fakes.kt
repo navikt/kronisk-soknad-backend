@@ -57,9 +57,9 @@ fun Module.mockExternalDependecies() {
             }
         }
     }
-    single(named("tokenx")) {
+    single {
         mockk<AuthClient> {
-            coEvery { exchange(any(), any()) } returns
+            coEvery { exchange(any(), any(), any()) } returns
                 TokenResponse.Success(
                     "",
                     3659

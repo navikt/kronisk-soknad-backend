@@ -58,11 +58,10 @@ data class TokenIntrospectionResponse(
 )
 
 class AuthClient(
-    private val env: Env,
-    private val provider: IdentityProvider
+    private val env: Env
 ) {
     private val httpClient = createHttpClient()
-    suspend fun token(target: String): TokenResponse = try {
+    suspend fun token(provider: IdentityProvider, target: String): TokenResponse = try {
         sikkerLogger().info("Requesting token for $target from ${provider.alias} and endpoint ${env.tokenEndpoint}")
         httpClient.submitForm(
             env.tokenEndpoint,
@@ -75,7 +74,7 @@ class AuthClient(
         TokenResponse.Error(e.response.body<TokenErrorResponse>(), e.response.status)
     }
 
-    suspend fun exchange(target: String, userToken: String): TokenResponse = try {
+    suspend fun exchange(provider: IdentityProvider, target: String, userToken: String): TokenResponse = try {
         httpClient.submitForm(
             env.tokenExchangeEndpoint,
             parameters {
@@ -88,7 +87,7 @@ class AuthClient(
         TokenResponse.Error(e.response.body<TokenErrorResponse>(), e.response.status)
     }
 
-    suspend fun introspect(accessToken: String, provider: IdentityProvider): TokenIntrospectionResponse =
+    suspend fun introspect(provider: IdentityProvider, accessToken: String): TokenIntrospectionResponse =
         httpClient.submitForm(
             env.tokenIntrospectionEndpoint,
             parameters {
@@ -98,9 +97,9 @@ class AuthClient(
         ).body()
 }
 
-fun AuthClient.fetchToken(target: String): () -> String = {
+fun AuthClient.fetchToken(identityProvider: IdentityProvider, target: String): () -> String = {
     runBlocking {
-        token(target).let {
+        token(identityProvider, target).let {
             when (it) {
                 is TokenResponse.Success -> it.accessToken
                 is TokenResponse.Error -> {
@@ -113,12 +112,13 @@ fun AuthClient.fetchToken(target: String): () -> String = {
 }
 
 fun AuthClient.fetchOboToken(
+    identityProvider: IdentityProvider,
     target: String,
     userToken: String
 ): () -> String =
     {
         runBlocking {
-            exchange(target, userToken).let {
+            exchange(identityProvider, target, userToken).let {
                 when (it) {
                     is TokenResponse.Success -> it.accessToken
                     is TokenResponse.Error -> {

@@ -62,7 +62,7 @@ fun Module.mockExternalDependecies() {
             coEvery { exchange(any(), any(), any()) } returns
                 TokenResponse.Success(
                     "",
-                    3659
+                    3599
                 )
         }
     }

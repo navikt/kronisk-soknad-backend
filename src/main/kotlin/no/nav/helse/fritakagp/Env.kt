@@ -64,6 +64,8 @@ sealed class Env private constructor(
 
     val idportenDiscoveryUrl = "idporten_config.discoveryurl".prop()
     val idportenAcceptedAudience = "idporten_config.accepted_audience".prop().let(::listOf)
+    val tokenxDiscoveryUrl = "tokenx_config.discoveryurl".prop()
+    val tokenxAcceptedAudience = "tokenx_config.accepted_audience".prop()
 
     val idportenConfig =
         TokenSupportConfig(
@@ -78,8 +80,8 @@ sealed class Env private constructor(
         TokenSupportConfig(
             IssuerConfig(
                 name = Issuers.TOKENX,
-                discoveryUrl = "tokenx_config.discoveryurl".prop(),
-                acceptedAudience = "tokenx_config.accepted_audience".prop().let(::listOf)
+                discoveryUrl = tokenxDiscoveryUrl,
+                acceptedAudience = tokenxAcceptedAudience.let(::listOf)
             )
         )
 

@@ -14,7 +14,9 @@ import java.util.Date
 
 suspend fun PipelineContext<Unit, ApplicationCall>.authorize(authorizer: Altinn3OBOClient, authClient: AuthClient, scope: String, orgnr: String) {
     val fnr = hentIdentitetsnummerFraLoginToken(call.request)
-    if (!authorizer.harTilgangTilOrganisasjon(fnr, orgnr, authClient.fetchOboToken(scope, getTokenString(call.request)))) {
+    val userTokenString = getTokenString(call.request)
+    val getToken = authClient.fetchOboToken(scope, userTokenString)
+    if (!authorizer.harTilgangTilOrganisasjon(fnr, orgnr, getToken)) {
         throw ManglerAltinnRettigheterException()
     }
 }

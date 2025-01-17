@@ -9,8 +9,11 @@ import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.OpprettOppgaveRequest
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.OpprettOppgaveResponse
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.Prioritet
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.Status
+import no.nav.helse.fritakagp.Issuers
 import no.nav.helse.fritakagp.auth.AuthClient
+import no.nav.helse.fritakagp.auth.IdentityProvider
 import no.nav.helse.fritakagp.auth.TokenResponse
+import no.nav.helse.fritakagp.auth.fetchToken
 import no.nav.helse.fritakagp.integration.brreg.BrregClient
 import no.nav.helse.fritakagp.integration.brreg.MockBrregClient
 import no.nav.helse.fritakagp.integration.gcp.BucketStorage
@@ -34,9 +37,8 @@ import no.nav.helsearbeidsgiver.dokarkiv.DokArkivClient
 import no.nav.helsearbeidsgiver.pdl.PdlClient
 import no.nav.helsearbeidsgiver.pdl.domene.FullPerson
 import no.nav.helsearbeidsgiver.pdl.domene.PersonNavn
-import no.nav.helsearbeidsgiver.tokenprovider.AccessTokenProvider
+import no.nav.security.mock.oauth2.MockOAuth2Server
 import org.koin.core.module.Module
-import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -57,13 +59,25 @@ fun Module.mockExternalDependecies() {
             }
         }
     }
+    single { MockOAuth2Server().apply { start(port = 6668) } }
     single {
         mockk<AuthClient> {
-            coEvery { exchange(any(), any(), any()) } returns
-                TokenResponse.Success(
-                    "",
-                    3599
-                )
+            val mockOAuth2Server: MockOAuth2Server = get()
+            coEvery { exchange(IdentityProvider.TOKEN_X, any(), any()) } returns
+                mockOAuth2Server.issueToken(subject = "", issuerId = Issuers.TOKENX, audience = "").let {
+                    TokenResponse.Success(
+                        it.serialize(),
+                        3599
+                    )
+                }
+            coEvery { token(IdentityProvider.AZURE_AD, any()) } answers {
+                mockOAuth2Server.issueToken(subject = "fritakagp", issuerId = "azure", audience = secondArg<String>()).let {
+                    TokenResponse.Success(
+                        it.serialize(),
+                        3599
+                    )
+                }
+            }
         }
     }
 
@@ -82,14 +96,6 @@ fun Module.mockExternalDependecies() {
     }
 
     single { MockBrukernotifikasjonBeskjedSender() } bind BrukernotifikasjonSender::class
-    single(named("TOKENPROVIDER")) {
-        object : AccessTokenProvider {
-            override fun getToken(): String {
-                return "fake token"
-            }
-        }
-    } bind AccessTokenProvider::class
-
     single {
         mockk<AaregClient> {
             coEvery { hentArbeidsforhold(any(), any()) } returns listOf(
@@ -131,8 +137,8 @@ fun Module.mockExternalDependecies() {
     }
 
     single {
-        val tokenProvider: AccessTokenProvider = get(qualifier = named("TOKENPROVIDER"))
-        DokArkivClient("url", 3, tokenProvider::getToken)
+        val authClient: AuthClient = get()
+        DokArkivClient("url", 3, authClient.fetchToken(IdentityProvider.AZURE_AD, "dokarkiv"))
     } bind DokArkivClient::class
 
     single {

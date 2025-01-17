@@ -18,7 +18,6 @@ import io.ktor.http.parameters
 import io.ktor.serialization.jackson.JacksonConverter
 import io.ktor.serialization.jackson.jackson
 import kotlinx.coroutines.runBlocking
-import no.nav.helse.fritakagp.Env
 import no.nav.helse.fritakagp.customObjectMapper
 import no.nav.helsearbeidsgiver.utils.log.sikkerLogger
 
@@ -58,13 +57,15 @@ data class TokenIntrospectionResponse(
 )
 
 class AuthClient(
-    private val env: Env
+    private val tokenEndpoint: String,
+    private val tokenExchangeEndpoint: String,
+    private val tokenIntrospectionEndpoint: String
 ) {
     private val httpClient = createHttpClient()
     suspend fun token(provider: IdentityProvider, target: String): TokenResponse = try {
-        sikkerLogger().info("Requesting token for $target from ${provider.alias} and endpoint ${env.tokenEndpoint}")
+        sikkerLogger().info("Requesting token for $target from ${provider.alias} and endpoint $tokenEndpoint")
         httpClient.submitForm(
-            env.tokenEndpoint,
+            tokenEndpoint,
             parameters {
                 set("target", target)
                 set("identity_provider", provider.alias)
@@ -76,7 +77,7 @@ class AuthClient(
 
     suspend fun exchange(provider: IdentityProvider, target: String, userToken: String): TokenResponse = try {
         httpClient.submitForm(
-            env.tokenExchangeEndpoint,
+            tokenExchangeEndpoint,
             parameters {
                 set("target", target)
                 set("user_token", userToken)
@@ -89,7 +90,7 @@ class AuthClient(
 
     suspend fun introspect(provider: IdentityProvider, accessToken: String): TokenIntrospectionResponse =
         httpClient.submitForm(
-            env.tokenIntrospectionEndpoint,
+            tokenIntrospectionEndpoint,
             parameters {
                 set("token", accessToken)
                 set("identity_provider", provider.alias)

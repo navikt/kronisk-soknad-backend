@@ -41,7 +41,7 @@ fun Route.altinnRoutes(
         }
     }
     route("/arbeidsgiver-tilganger") {
-        get("/") {
+        get {
             val id = hentIdentitetsnummerFraLoginToken(call.request)
             if (id.isEmpty()) {
                 // Denne sjekken er ikke strengt nødvendig, da tokenValidation som gjøres først, ikke skal tillate at vi kommer hit

@@ -56,7 +56,7 @@ sealed class Env private constructor(
     val altinnScope = "altinn.altinn_scope".prop()
 
     val altinnTilgangerScope = "altinn_tilganger.scope".prop()
-    val altinntilgangerBaseUrl = "altinn_tilganger.base_url".prop()
+    val altinnTilgangerBaseUrl = "altinn_tilganger.base_url".prop()
 
     val tokenEndpoint = "auth.token_endpoint".prop()
     val tokenExchangeEndpoint = "auth.token_exchange_endpoint".prop()

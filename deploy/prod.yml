@@ -20,7 +20,6 @@ accessOutbound:
     - www.altinn.no
     - data.brreg.no
     - g.nav.no
-    - idporten.no
 accessInbound:
   apps:
     - name: fritak-agp-frontend

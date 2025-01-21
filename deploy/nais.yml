@@ -34,10 +34,6 @@ spec:
     periodSeconds: 5
     failureThreshold: 10
 
-  idporten:
-    enabled: true
-    sidecar:
-      enabled: true
   tokenx:
     enabled: true
   kafka:

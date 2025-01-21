@@ -3,7 +3,6 @@ package no.nav.helse.fritakagp.koin
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.OppgaveKlient
 import no.nav.helse.arbeidsgiver.integrasjoner.oppgave2.OppgaveKlientImpl
 import no.nav.helse.fritakagp.Env
-import no.nav.helse.fritakagp.EnvOauth2
 import no.nav.helse.fritakagp.auth.AuthClient
 import no.nav.helse.fritakagp.auth.IdentityProvider
 import no.nav.helse.fritakagp.auth.fetchToken
@@ -28,7 +27,7 @@ import org.koin.dsl.bind
 import java.time.Duration
 import kotlin.time.toKotlinDuration
 
-fun Module.externalSystemClients(env: Env, envOauth2: EnvOauth2) {
+fun Module.externalSystemClients(env: Env) {
     single {
         val maskinportenAuthClient: AuthClient = get()
         AltinnClient(
@@ -52,27 +51,27 @@ fun Module.externalSystemClients(env: Env, envOauth2: EnvOauth2) {
 
     single {
         val azureAuthClient: AuthClient = get()
-        PdlClient(env.pdlUrl, Behandlingsgrunnlag.FRITAKAGP, azureAuthClient.fetchToken(IdentityProvider.AZURE_AD, envOauth2.scopePdl))
+        PdlClient(env.pdlUrl, Behandlingsgrunnlag.FRITAKAGP, azureAuthClient.fetchToken(IdentityProvider.AZURE_AD, env.scopePdl))
     } bind PdlClient::class
 
     single {
         val azureAuthClient: AuthClient = get()
-        AaregClient(env.aaregUrl, azureAuthClient.fetchToken(IdentityProvider.AZURE_AD, envOauth2.scopeAareg))
+        AaregClient(env.aaregUrl, azureAuthClient.fetchToken(IdentityProvider.AZURE_AD, env.scopeAareg))
     } bind AaregClient::class
 
     single {
         val azureAuthClient: AuthClient = get()
-        DokArkivClient(env.dokarkivUrl, 3, azureAuthClient.fetchToken(IdentityProvider.AZURE_AD, envOauth2.scopeDokarkiv))
+        DokArkivClient(env.dokarkivUrl, 3, azureAuthClient.fetchToken(IdentityProvider.AZURE_AD, env.scopeDokarkiv))
     }
 
     single {
         val azureAuthClient: AuthClient = get()
-        OppgaveKlientImpl(env.oppgavebehandlingUrl, azureAuthClient.fetchToken(IdentityProvider.AZURE_AD, envOauth2.scopeOppgave), get())
+        OppgaveKlientImpl(env.oppgavebehandlingUrl, azureAuthClient.fetchToken(IdentityProvider.AZURE_AD, env.scopeOppgave), get())
     } bind OppgaveKlient::class
 
     single {
         val azureAuthClient: AuthClient = get()
-        ArbeidsgiverNotifikasjonKlient(env.arbeidsgiverNotifikasjonUrl, azureAuthClient.fetchToken(IdentityProvider.AZURE_AD, envOauth2.scopeArbeidsgivernotifikasjon))
+        ArbeidsgiverNotifikasjonKlient(env.arbeidsgiverNotifikasjonUrl, azureAuthClient.fetchToken(IdentityProvider.AZURE_AD, env.scopeArbeidsgivernotifikasjon))
     }
 
     single {

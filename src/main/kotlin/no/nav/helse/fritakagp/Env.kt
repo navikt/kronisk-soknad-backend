@@ -6,7 +6,6 @@ import no.nav.security.token.support.v2.TokenSupportConfig
 
 object Issuers {
     const val TOKENX = "tokenx-issuer"
-    const val IDPORTEN = "idporten-issuer"
 }
 
 fun readEnv(config: ApplicationConfig): Env =
@@ -20,14 +19,8 @@ fun readEnv(config: ApplicationConfig): Env =
 sealed class Env private constructor(
     internal val config: ApplicationConfig
 ) {
-    class Prod(config: ApplicationConfig) : Env(config) {
-        val oauth2 = EnvOauth2(config)
-    }
-
-    class Preprod(config: ApplicationConfig) : Env(config) {
-        val oauth2 = EnvOauth2(config)
-    }
-
+    class Prod(config: ApplicationConfig) : Env(config)
+    class Preprod(config: ApplicationConfig) : Env(config)
     class Local(config: ApplicationConfig) : Env(config)
 
     val ktorBasepath = "ktor.application.basepath".prop()
@@ -62,19 +55,8 @@ sealed class Env private constructor(
     val tokenExchangeEndpoint = "auth.token_exchange_endpoint".prop()
     val tokenIntrospectionEndpoint = "auth.token_introspection_endpoint".prop()
 
-    val idportenDiscoveryUrl = "idporten_config.discoveryurl".prop()
-    val idportenAcceptedAudience = "idporten_config.accepted_audience".prop().let(::listOf)
     val tokenxDiscoveryUrl = "tokenx_config.discoveryurl".prop()
     val tokenxAcceptedAudience = "tokenx_config.accepted_audience".prop()
-
-    val idportenConfig =
-        TokenSupportConfig(
-            IssuerConfig(
-                name = Issuers.IDPORTEN,
-                discoveryUrl = idportenDiscoveryUrl,
-                acceptedAudience = idportenAcceptedAudience
-            )
-        )
 
     val tokenxConfig =
         TokenSupportConfig(
@@ -101,24 +83,6 @@ sealed class Env private constructor(
 
     val pdlUrl = "pdl_url".prop()
 
-    private fun String.prop(): String =
-        config.prop(this)
-}
-
-class EnvOauth2(mainConfig: ApplicationConfig) {
-    private val oauth2Config = "no.nav.security.jwt.client.registration.clients".let(mainConfig::configList)
-        .first {
-            it.prop("client_name") == "azure_ad"
-        }
-
-    val tokenEndpointUrl = "token_endpoint_url".prop()
-    val wellKnownUrl = "well_known_url".prop()
-    val grantType = "grant_type".prop()
-
-    val authClientId = "authentication.client_id".prop()
-    val authClientAuthMethod = "authentication.client_auth_method".prop()
-    val authClientSecret = "authentication.client_secret".prop()
-
     val scopeOppgave = "oppgavescope".prop()
     val scopeDokarkiv = "dokarkivscope".prop()
     val scopeArbeidsgivernotifikasjon = "arbeidsgivernotifikasjonscope".prop()
@@ -126,7 +90,7 @@ class EnvOauth2(mainConfig: ApplicationConfig) {
     val scopeAareg = "aaregscope".prop()
 
     private fun String.prop(): String =
-        oauth2Config.prop(this)
+        config.prop(this)
 }
 
 private fun ApplicationConfig.prop(key: String): String =

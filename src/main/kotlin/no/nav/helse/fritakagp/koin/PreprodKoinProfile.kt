@@ -56,7 +56,7 @@ import org.koin.dsl.module
 import javax.sql.DataSource
 
 fun preprodConfig(env: Env.Preprod): Module = module {
-    externalSystemClients(env, env.oauth2)
+    externalSystemClients(env)
 
     single {
         HikariDataSource(

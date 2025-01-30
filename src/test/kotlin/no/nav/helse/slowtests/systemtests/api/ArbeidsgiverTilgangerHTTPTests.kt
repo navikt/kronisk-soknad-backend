@@ -7,6 +7,7 @@ import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
+import no.nav.helse.KroniskTestData
 import no.nav.helse.fritakagp.customObjectMapper
 import no.nav.helsearbeidsgiver.altinn.AltinnTilgang
 import org.assertj.core.api.Assertions
@@ -30,7 +31,7 @@ class ArbeidsgiverTilgangerHTTPTests : SystemTestBase() {
         val response: List<AltinnTilgang> = httpClient.get {
             appUrl(arbeidsgivereUrl)
             contentType(ContentType.Application.Json)
-            loggedInAs("123456789")
+            loggedInAs(KroniskTestData.validIdentitetsnummer)
         }.body()
         Assertions.assertThat(response.size).isGreaterThan(0)
     }
@@ -40,7 +41,7 @@ class ArbeidsgiverTilgangerHTTPTests : SystemTestBase() {
         val response = httpClient.get {
             appUrl(arbeidsgivereUrl)
             contentType(ContentType.Application.Json)
-            loggedInAs("123456789")
+            loggedInAs(KroniskTestData.validIdentitetsnummer)
         }.bodyAsText()
         val expectedKeys = setOf("orgnr", "altinn3Tilganger", "altinn2Tilganger", "underenheter", "navn", "organisasjonsform")
         val result: List<Map<String, Any>> = customObjectMapper().readValue(response)

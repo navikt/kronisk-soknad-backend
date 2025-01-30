@@ -4,10 +4,12 @@ import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.call
 import io.ktor.server.request.ApplicationRequest
 import io.ktor.util.pipeline.PipelineContext
+import no.nav.helse.fritakagp.Issuers
 import no.nav.helse.fritakagp.auth.AuthClient
 import no.nav.helse.fritakagp.auth.fetchOboToken
 import no.nav.helse.fritakagp.integration.altinn.ManglerAltinnRettigheterException
 import no.nav.helsearbeidsgiver.altinn.Altinn3OBOClient
+import no.nav.security.token.support.core.context.TokenValidationContext
 import no.nav.security.token.support.core.jwt.JwtToken
 import java.time.Instant
 import java.util.Date
@@ -36,3 +38,10 @@ fun getTokenString(request: ApplicationRequest): String {
     return request.headers["Authorization"]?.replaceFirst("Bearer ", "")
         ?: throw IllegalAccessException("Du må angi et identitetstoken i Authorization-headeren")
 }
+
+private val pidRegex = Regex("\\d{11}")
+
+fun TokenValidationContext.containsPid(): Boolean =
+    getClaims(Issuers.TOKENX)
+        .getStringClaim("pid")
+        .matches(pidRegex)

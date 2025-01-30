@@ -27,7 +27,7 @@ class GravidSoeknadHTTPTests : SystemTestBase() {
             httpClient.get {
                 appUrl("$soeknadGravidUrl/${GravidTestData.soeknadGravid.id}")
                 contentType(ContentType.Application.Json)
-                loggedInAs("123456789")
+                loggedInAs("12345678910")
             }
 
         assertThat(response.status).isEqualTo(HttpStatusCode.NotFound)
@@ -47,7 +47,7 @@ class GravidSoeknadHTTPTests : SystemTestBase() {
             httpClient.post {
                 appUrl(soeknadGravidUrl)
                 contentType(ContentType.Application.Json)
-                loggedInAs("123456789")
+                loggedInAs(GravidTestData.validIdentitetsnummer)
 
                 setBody(
                     """
@@ -69,7 +69,7 @@ class GravidSoeknadHTTPTests : SystemTestBase() {
         val response = httpClient.post {
             appUrl(soeknadGravidUrl)
             contentType(ContentType.Application.Json)
-            loggedInAs("123456789")
+            loggedInAs(GravidTestData.validIdentitetsnummer)
             setBody(GravidTestData.fullValidSoeknadRequest)
         }
 
@@ -83,7 +83,7 @@ class GravidSoeknadHTTPTests : SystemTestBase() {
         val response = httpClient.post {
             appUrl(soeknadGravidUrl)
             contentType(ContentType.Application.Json)
-            loggedInAs("123456789")
+            loggedInAs(GravidTestData.validIdentitetsnummer)
             setBody(GravidTestData.gravidSoknadMedFil)
         }
 

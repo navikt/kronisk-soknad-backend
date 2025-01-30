@@ -23,13 +23,20 @@ import no.nav.helse.fritakagp.web.api.gravidRoutes
 import no.nav.helse.fritakagp.web.api.kroniskRoutes
 import no.nav.helse.fritakagp.web.api.swaggerRoutes
 import no.nav.helse.fritakagp.web.api.systemRoutes
+import no.nav.helse.fritakagp.web.auth.containsPid
 import no.nav.security.token.support.v2.tokenValidationSupport
 import org.koin.ktor.ext.get
 
 fun Application.fritakModule(env: Env) {
     install(IgnoreTrailingSlash)
     install(Authentication) {
-        tokenValidationSupport(name = Issuers.TOKENX, config = env.tokenxConfig)
+        tokenValidationSupport(
+            name = Issuers.TOKENX,
+            config = env.tokenxConfig,
+            additionalValidation = {
+                it.containsPid()
+            }
+        )
     }
 
     configureCORSAccess(env)
@@ -48,7 +55,7 @@ fun Application.fritakModule(env: Env) {
                 systemRoutes()
                 kroniskRoutes(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), env.altinnTilgangerScope)
                 gravidRoutes(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), env.altinnTilgangerScope)
-                altinnRoutes(get(), get(), get(), env.altinnTilgangerScope)
+                altinnRoutes(get(), get(), env.altinnTilgangerScope)
             }
         }
         swaggerRoutes(env.ktorBasepath)

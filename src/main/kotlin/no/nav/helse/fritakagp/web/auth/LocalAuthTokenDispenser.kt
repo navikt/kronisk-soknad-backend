@@ -26,7 +26,8 @@ fun Application.localAuthTokenDispenser(env: Env) {
             val token = server.issueToken(
                 subject = call.request.queryParameters["subject"].toString(),
                 issuerId = Issuers.TOKENX,
-                audience = env.tokenxAcceptedAudience
+                audience = env.tokenxAcceptedAudience,
+                claims = mapOf("pid" to call.request.queryParameters["subject"].toString())
             )
             call.respondText(token.serialize(), ContentType.Text.Plain, HttpStatusCode.OK)
         }

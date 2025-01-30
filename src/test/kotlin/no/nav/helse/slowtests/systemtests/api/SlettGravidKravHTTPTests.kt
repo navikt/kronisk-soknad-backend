@@ -55,7 +55,7 @@ class SlettGravidKravHTTPTests : SystemTestBase() {
             httpClient.delete {
                 appUrl("$kravGravidUrl/$id")
                 contentType(ContentType.Application.Json)
-                loggedInAs("123456789")
+                loggedInAs("12345678910")
             }
         assertThat(response.status).isEqualTo(HttpStatusCode.Forbidden)
     }

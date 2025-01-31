@@ -23,11 +23,6 @@ fun Route.altinnRoutes(
     route("/arbeidsgiver-tilganger") {
         get {
             val id = hentIdentitetsnummerFraLoginToken(call.request)
-            if (id.isEmpty()) {
-                // Denne sjekken er ikke strengt nødvendig, da tokenValidation som gjøres først, ikke skal tillate at vi kommer hit
-                logger.warn("Bruker er ikke innlogget")
-                call.respond(HttpStatusCode.Forbidden, "Ikke innlogget")
-            }
             logger.info("Henter arbeidsgivertilganger for ${id.take(6)}")
             try {
                 val hierarkiMedTilganger = altinn3OBOClient.hentHierarkiMedTilganger(id, authClient.fetchOboToken(fagerScope, getTokenString(call.request)))

@@ -55,7 +55,7 @@ fun Application.fritakModule(env: Env) {
                 systemRoutes()
                 kroniskRoutes(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), env.altinnTilgangerScope)
                 gravidRoutes(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), env.altinnTilgangerScope)
-                altinnRoutes(get(), get(), env.altinnTilgangerScope)
+                altinnRoutes(altinn3OBOClient = get(), authClient = get(), fagerScope = env.altinnTilgangerScope)
             }
         }
         swaggerRoutes(env.ktorBasepath)

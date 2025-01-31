@@ -12,24 +12,24 @@ import no.nav.helse.fritakagp.auth.fetchOboToken
 import no.nav.helse.fritakagp.web.auth.getTokenString
 import no.nav.helse.fritakagp.web.auth.hentIdentitetsnummerFraLoginToken
 import no.nav.helsearbeidsgiver.altinn.Altinn3OBOClient
-import no.nav.helsearbeidsgiver.utils.log.logger
+import no.nav.helsearbeidsgiver.utils.log.sikkerLogger
 
 fun Route.altinnRoutes(
     altinn3OBOClient: Altinn3OBOClient,
     authClient: AuthClient,
     fagerScope: String
 ) {
-    val logger = "AltinnRoutes".logger()
+    val sikkerlogger = sikkerLogger()
     route("/arbeidsgiver-tilganger") {
         get {
             val id = hentIdentitetsnummerFraLoginToken(call.request)
-            logger.info("Henter arbeidsgivertilganger for ${id.take(6)}")
+            sikkerlogger.info("Henter arbeidsgivertilganger for ${id.take(6)}")
             try {
                 val hierarkiMedTilganger = altinn3OBOClient.hentHierarkiMedTilganger(id, authClient.fetchOboToken(fagerScope, getTokenString(call.request)))
-                logger.info("Hentet arbeidsgivertilganger for ${id.take(6)} med ${hierarkiMedTilganger.hierarki.size} arbeidsgivere.")
+                sikkerlogger.info("Hentet arbeidsgivertilganger for ${id.take(6)} med ${hierarkiMedTilganger.hierarki.size} arbeidsgivere.")
                 call.respond(hierarkiMedTilganger.hierarki)
             } catch (e: ServerResponseException) {
-                logger.warn("Fikk en feilmelding fra altinn-tilganger api", e)
+                sikkerlogger.warn("Fikk en feilmelding fra altinn-tilganger api", e)
                 call.respond(HttpStatusCode.ExpectationFailed, "Uventet feil prøv igjen om litt")
             }
         }

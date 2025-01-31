@@ -58,7 +58,7 @@ class KroniskKravHTTPTests : SystemTestBase() {
             httpClient.post {
                 appUrl(kravKroniskUrl)
                 contentType(ContentType.Application.Json)
-                loggedInAs("123456789")
+                loggedInAs(KroniskTestData.validIdentitetsnummer)
 
                 setBody(
                     """
@@ -84,7 +84,7 @@ class KroniskKravHTTPTests : SystemTestBase() {
         val response = httpClient.post {
             appUrl(kravKroniskUrl)
             contentType(ContentType.Application.Json)
-            loggedInAs("123456789")
+            loggedInAs(KroniskTestData.validIdentitetsnummer)
             setBody(KroniskTestData.kroniskKravRequestValid)
         }
 
@@ -99,7 +99,7 @@ class KroniskKravHTTPTests : SystemTestBase() {
             httpClient.post {
                 appUrl(kravKroniskUrl)
                 contentType(ContentType.Application.Json)
-                loggedInAs("123456789")
+                loggedInAs(KroniskTestData.validIdentitetsnummer)
                 setBody(KroniskTestData.kroniskKravRequestValid.copy(virksomhetsnummer = "123456785"))
             }
 
@@ -112,7 +112,7 @@ class KroniskKravHTTPTests : SystemTestBase() {
             httpClient.post {
                 appUrl(kravKroniskUrl)
                 contentType(ContentType.Application.Json)
-                loggedInAs("123456789")
+                loggedInAs(KroniskTestData.validIdentitetsnummer)
                 setBody(
                     KroniskTestData.kroniskKravRequestInValid.copy(
                         perioder = listOf(

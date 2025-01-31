@@ -16,7 +16,6 @@ import no.nav.helse.fritakagp.integration.virusscan.ClamavVirusScannerImp
 import no.nav.helse.fritakagp.integration.virusscan.VirusScanner
 import no.nav.helsearbeidsgiver.aareg.AaregClient
 import no.nav.helsearbeidsgiver.altinn.Altinn3OBOClient
-import no.nav.helsearbeidsgiver.altinn.AltinnClient
 import no.nav.helsearbeidsgiver.altinn.CacheConfig
 import no.nav.helsearbeidsgiver.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjonKlient
 import no.nav.helsearbeidsgiver.dokarkiv.DokArkivClient
@@ -28,17 +27,6 @@ import java.time.Duration
 import kotlin.time.toKotlinDuration
 
 fun Module.externalSystemClients(env: Env) {
-    single {
-        val maskinportenAuthClient: AuthClient = get()
-        AltinnClient(
-            url = env.altinnServiceOwnerUrl,
-            serviceCode = env.altinnServiceOwnerServiceId,
-            getToken = maskinportenAuthClient.fetchToken(IdentityProvider.MASKINPORTEN, env.altinnScope),
-            altinnApiKey = env.altinnServiceOwnerApiKey,
-            cacheConfig = CacheConfig(Duration.ofMinutes(60).toKotlinDuration(), 100)
-        )
-    } bind AltinnClient::class
-
     single {
         Altinn3OBOClient(
             baseUrl = env.altinnTilgangerBaseUrl,

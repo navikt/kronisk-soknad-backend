@@ -6,6 +6,7 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import no.nav.helse.GravidTestData
+import no.nav.helse.KroniskTestData
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -29,7 +30,7 @@ class AuthenticationTests : SystemTestBase() {
         val response = httpClient.post {
             appUrl(soeknadGravidUrl)
             contentType(ContentType.Application.Json)
-            loggedInAs("123456789")
+            loggedInAs(KroniskTestData.validIdentitetsnummer)
 
             setBody(GravidTestData.fullValidSoeknadRequest)
         }

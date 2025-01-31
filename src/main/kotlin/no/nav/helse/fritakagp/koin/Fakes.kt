@@ -30,8 +30,6 @@ import no.nav.helsearbeidsgiver.aareg.Arbeidsgiver
 import no.nav.helsearbeidsgiver.aareg.Opplysningspliktig
 import no.nav.helsearbeidsgiver.aareg.Periode
 import no.nav.helsearbeidsgiver.altinn.Altinn3OBOClient
-import no.nav.helsearbeidsgiver.altinn.AltinnClient
-import no.nav.helsearbeidsgiver.altinn.AltinnOrganisasjon
 import no.nav.helsearbeidsgiver.altinn.AltinnTilgangRespons
 import no.nav.helsearbeidsgiver.dokarkiv.DokArkivClient
 import no.nav.helsearbeidsgiver.pdl.PdlClient
@@ -44,21 +42,6 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 fun Module.mockExternalDependecies() {
-    single {
-        mockk<AltinnClient> {
-            val json = Json { ignoreUnknownKeys = true }
-            val jsonFile = "altinn-mock/organisasjoner-med-rettighet.json".loadFromResources()
-            val altinnOrganisasjons = json.decodeFromString<List<AltinnOrganisasjon>>(jsonFile).toSet()
-
-            coEvery { hentRettighetOrganisasjoner(any()) } returns altinnOrganisasjons
-            coEvery { harRettighetForOrganisasjon(any(), any()) } answers {
-                val organisasjonsNr = secondArg<String>()
-                altinnOrganisasjons.any {
-                    it.orgnr == organisasjonsNr && it.orgnrHovedenhet != null
-                }
-            }
-        }
-    }
     single { MockOAuth2Server().apply { start(port = 6668) } }
     single {
         mockk<AuthClient> {

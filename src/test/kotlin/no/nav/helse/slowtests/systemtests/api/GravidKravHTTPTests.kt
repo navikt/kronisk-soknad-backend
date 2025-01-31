@@ -82,7 +82,7 @@ class GravidKravHTTPTests : SystemTestBase() {
             httpClient.post {
                 appUrl(kravGravidUrl)
                 contentType(ContentType.Application.Json)
-                loggedInAs("123456789")
+                loggedInAs(GravidTestData.validIdentitetsnummer)
 
                 setBody(
                     """
@@ -106,7 +106,7 @@ class GravidKravHTTPTests : SystemTestBase() {
         val response = httpClient.post {
             appUrl(kravGravidUrl)
             contentType(ContentType.Application.Json)
-            loggedInAs("123456789")
+            loggedInAs(GravidTestData.validIdentitetsnummer)
             setBody(GravidTestData.gravidKravRequestValid)
         }.body<GravidKrav>()
         assertThat(response.status).isEqualTo(KravStatus.OPPRETTET)
@@ -118,7 +118,7 @@ class GravidKravHTTPTests : SystemTestBase() {
         val response = httpClient.post {
             appUrl(kravGravidUrl)
             contentType(ContentType.Application.Json)
-            loggedInAs("123456789")
+            loggedInAs(GravidTestData.validIdentitetsnummer)
             setBody(GravidTestData.gravidKravRequestValidPeriode1Dag)
         }
 
@@ -133,7 +133,7 @@ class GravidKravHTTPTests : SystemTestBase() {
             httpClient.post {
                 appUrl(kravGravidUrl)
                 contentType(ContentType.Application.Json)
-                loggedInAs("123456789")
+                loggedInAs(GravidTestData.validIdentitetsnummer)
                 setBody(GravidTestData.gravidKravRequestValid.copy(virksomhetsnummer = "123456785"))
             }
 
@@ -146,7 +146,7 @@ class GravidKravHTTPTests : SystemTestBase() {
             httpClient.post {
                 appUrl(kravGravidUrl)
                 contentType(ContentType.Application.Json)
-                loggedInAs("123456789")
+                loggedInAs(GravidTestData.validIdentitetsnummer)
                 setBody(
                     GravidTestData.gravidKravRequestInValid.copy(
                         perioder = listOf(
@@ -184,7 +184,7 @@ class GravidKravHTTPTests : SystemTestBase() {
             httpClient.post {
                 appUrl(kravGravidUrl)
                 contentType(ContentType.Application.Json)
-                loggedInAs("123456789")
+                loggedInAs(GravidTestData.validIdentitetsnummer)
                 setBody(
                     GravidTestData.gravidKravRequestInValid.copy(
                         perioder = listOf(

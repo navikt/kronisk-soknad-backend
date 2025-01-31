@@ -29,7 +29,7 @@ class KroniskSoeknadHTTPTests : SystemTestBase() {
             httpClient.get {
                 appUrl("$soeknadKroniskUrl/${KroniskTestData.soeknadKronisk.id}")
                 contentType(ContentType.Application.Json)
-                loggedInAs("123456789")
+                loggedInAs("12345678910")
             }
 
         Assertions.assertThat(response.status).isEqualTo(HttpStatusCode.NotFound)
@@ -49,7 +49,7 @@ class KroniskSoeknadHTTPTests : SystemTestBase() {
             httpClient.post {
                 appUrl(soeknadKroniskUrl)
                 contentType(ContentType.Application.Json)
-                loggedInAs("123456789")
+                loggedInAs(KroniskTestData.validIdentitetsnummer)
 
                 setBody(
                     """
@@ -70,7 +70,7 @@ class KroniskSoeknadHTTPTests : SystemTestBase() {
         val response = httpClient.post {
             appUrl(soeknadKroniskUrl)
             contentType(ContentType.Application.Json)
-            loggedInAs("123456789")
+            loggedInAs(KroniskTestData.validIdentitetsnummer)
             setBody(KroniskTestData.fullValidRequest)
         }
 
@@ -85,7 +85,7 @@ class KroniskSoeknadHTTPTests : SystemTestBase() {
             httpClient.post {
                 appUrl(soeknadKroniskUrl)
                 contentType(ContentType.Application.Json)
-                loggedInAs("123456789")
+                loggedInAs(KroniskTestData.validIdentitetsnummer)
                 setBody(
                     KroniskSoknadRequest(
                         virksomhetsnummer = "lkajsbdfv",
@@ -106,7 +106,7 @@ class KroniskSoeknadHTTPTests : SystemTestBase() {
         val response = httpClient.post {
             appUrl(soeknadKroniskUrl)
             contentType(ContentType.Application.Json)
-            loggedInAs("123456789")
+            loggedInAs(KroniskTestData.validIdentitetsnummer)
             setBody(
                 KroniskTestData.fullValidRequest.copy(
                     ikkeHistoriskFravaer = true,
@@ -124,7 +124,7 @@ class KroniskSoeknadHTTPTests : SystemTestBase() {
         val response = httpClient.post {
             appUrl(soeknadKroniskUrl)
             contentType(ContentType.Application.Json)
-            loggedInAs("123456789")
+            loggedInAs(KroniskTestData.validIdentitetsnummer)
             setBody(KroniskTestData.kroniskSoknadMedFil)
         }
 

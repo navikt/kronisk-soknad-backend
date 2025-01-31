@@ -77,7 +77,7 @@ class OppdaterGravidKravHTTPTests : SystemTestBase() {
             httpClient.patch {
                 appUrl("$kravGravidUrl/${GravidTestData.gravidKrav.id}")
                 contentType(ContentType.Application.Json)
-                loggedInAs("123456789")
+                loggedInAs(GravidTestData.validIdentitetsnummer)
                 setBody(GravidTestData.gravidKravRequestValid.copy(virksomhetsnummer = "123456785"))
             }
         assertThat(response.status).isEqualTo(HttpStatusCode.Forbidden)

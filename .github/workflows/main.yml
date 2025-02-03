@@ -38,7 +38,6 @@ jobs:
         env:
           ORG_GRADLE_PROJECT_githubPassword: ${{ secrets.GITHUB_TOKEN }}
 
-
       - name: Build and push
         uses: nais/docker-build-push@v0
         with:
@@ -46,24 +45,9 @@ jobs:
           identity_provider: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }}
           project_id: ${{ vars.NAIS_MANAGEMENT_PROJECT_ID }}
 
-      - name: Cleanup Gradle Cache
-        # Remove some files from the Gradle cache, so they aren't cached by GitHub Actions.
-        # Restoring these files from a GitHub Actions cache might cause problems for future builds.
-        run: |
-          rm -f ~/.gradle/caches/modules-2/modules-2.lock
-          rm -f ~/.gradle/caches/modules-2/gc.properties
-
-  deploy-to-dev:
-    name: Deploy to dev-gcp
-    needs: buildAndTest
-    runs-on: ubuntu-latest
-    permissions:
-      id-token: write
-    steps:
-      - uses: actions/checkout@v4
-      - uses: nais/deploy/actions/deploy@v2
+      - name: Deploy to DEV
+        uses: nais/deploy/actions/deploy@v2
         env:
           CLUSTER: dev-gcp
-          RESOURCE: deploy/nais.yml
-          VAR: image=${{ env.IMAGE }}:${{ github.sha }}
-          VARS: deploy/dev.yml
+          RESOURCE: deploy/dev.yml
+          VAR: image=${{ steps.docker-build-push.outputs.image }}

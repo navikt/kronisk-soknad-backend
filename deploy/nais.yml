@@ -22,7 +22,7 @@ spec:
     max: 1
     min: 1
   liveness:
-    path: /health/alive
+    path: /health/is-alive
     initialDelay: 10
     timeout: 2
     periodSeconds: 30

@@ -42,8 +42,6 @@ jobs:
       - name: Build and push
         id: docker-build-push
         uses: nais/docker-build-push@v0
-        outputs:
-          image: ${{ steps.docker-build-push.outputs.image }}
         with:
           team: helsearbeidsgiver
           identity_provider: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }}

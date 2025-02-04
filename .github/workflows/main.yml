@@ -7,9 +7,6 @@ on:
       - 'preprod/**'
       - 'dev/**'
 
-env:
-  IMAGE: ghcr.io/${{ github.repository }}/${{ github.event.repository.name }}
-
 jobs:
   buildAndTest:
     runs-on: ubuntu-latest

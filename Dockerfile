@@ -1,3 +1,3 @@
-FROM ghcr.io/navikt/baseimages/temurin:17
+FROM gcr.io/distroless/java17
 
 COPY build/libs/*.jar ./

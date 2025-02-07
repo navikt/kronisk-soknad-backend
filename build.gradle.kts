@@ -210,6 +210,7 @@ dependencies {
     implementation("io.mockk:mockk:$mockkVersion") // Brukes til å mocke eksterne avhengigheter under lokal kjøring
     implementation("no.nav.tms.varsel:kotlin-builder:$tmsVarselKotlinBuilderVersion")
     implementation("io.netty:netty-common:4.1.115.Final")
+    implementation("net.minidev:json-smart:2.4.9")
 
     testImplementation("io.insert-koin:koin-test:$koinVersion")
     testImplementation("io.ktor:ktor-client-mock:$ktorVersion")

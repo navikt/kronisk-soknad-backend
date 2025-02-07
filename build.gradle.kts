@@ -112,13 +112,11 @@ dependencies {
     val coroutinesVersion: String by project
     val cxfVersion: String by project
     val dokarkivKlientVersion: String by project
-    val fellesBackendVersion: String by project
     val flywayVersion: String by project
     val gcpStorageVersion: String by project
     val hikariVersion: String by project
     val jacksonModuleKotlinVersion: String by project
     val jacksonVersion: String by project
-    val janinoVersion: String by project
     val javaxActivationVersion: String by project
     val javaxWsRsApiVersion: String by project
     val jaxwsToolsVersion: String by project
@@ -138,7 +136,6 @@ dependencies {
     val postgresqlVersion: String by project
     val prometheusVersion: String by project
     val slf4jVersion: String by project
-    val tokenProviderVersion: String by project
     val tokenSupportVersion: String by project
     val utilsVersion: String by project
     val valiktorVersion: String by project
@@ -162,6 +159,7 @@ dependencies {
     implementation("io.insert-koin:koin-core-jvm:$koinVersion")
     implementation("io.insert-koin:koin-core:$koinVersion")
     implementation("io.insert-koin:koin-ktor:$koinVersion")
+
     implementation("io.ktor:ktor-server:$ktorVersion")
     implementation("io.ktor:ktor-server-cors:$ktorVersion")
     implementation("io.ktor:ktor-server-auth:$ktorVersion")
@@ -170,6 +168,7 @@ dependencies {
     implementation("io.ktor:ktor-client-core:$ktorVersion")
     implementation("io.ktor:ktor-client-jackson:$ktorVersion")
     implementation("io.ktor:ktor-client-json:$ktorVersion")
+    implementation("io.ktor:ktor-network-tls-jvm:$ktorVersion")
     implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
     implementation("io.ktor:ktor-serialization-jackson:$ktorVersion")
     implementation("io.ktor:ktor-server-content-negotiation:$ktorVersion")
@@ -210,7 +209,6 @@ dependencies {
     implementation("io.mockk:mockk:$mockkVersion") // Brukes til å mocke eksterne avhengigheter under lokal kjøring
     implementation("no.nav.tms.varsel:kotlin-builder:$tmsVarselKotlinBuilderVersion")
     implementation("io.netty:netty-common:4.1.115.Final")
-    implementation("net.minidev:json-smart:2.4.9")
 
     testImplementation("io.insert-koin:koin-test:$koinVersion")
     testImplementation("io.ktor:ktor-client-mock:$ktorVersion")

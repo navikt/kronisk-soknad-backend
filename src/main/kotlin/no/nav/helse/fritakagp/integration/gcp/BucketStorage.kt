@@ -49,7 +49,7 @@ class BucketStorageImpl(
     override fun getDocAsString(uuid: UUID): BucketDocument? {
         val blob = storage[BlobId.of(bucketName, uuid.toString())] ?: return null
         val blobMeta = blob.metadata
-        val ext = blobMeta["ext"] ?: ""
+        val ext = blobMeta?.get("ext") ?: ""
 
         return BucketDocument(blob.getContent().decodeToString(), ext)
     }
@@ -64,7 +64,7 @@ class BucketStorageImpl(
     }
 
     private fun createBlob(bucketName: String, blobName: UUID, ext: String): BlobInfo {
-        val blobMetadata: MutableMap<String, String> = HashMap()
+        val blobMetadata: MutableMap<String, String?> = HashMap()
         blobMetadata["ext"] = ext
         val blobId = BlobId.of(bucketName, blobName.toString())
 

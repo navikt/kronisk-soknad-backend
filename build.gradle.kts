@@ -198,7 +198,7 @@ dependencies {
     implementation("org.apache.cxf:cxf-rt-features-logging:$cxfVersion")
     implementation("org.apache.cxf:cxf-rt-frontend-jaxws:$cxfVersion")
     implementation("org.apache.cxf:cxf-rt-transports-http:$cxfVersion")
-    implementation("org.apache.cxf:cxf-rt-ws-security:$cxfVersion")
+
     implementation("org.apache.kafka:kafka-clients:$kafkaClient")
     implementation("org.apache.pdfbox:pdfbox:$pdfboxVersion")
     implementation("org.codehaus.janino:janino:$janinoVersion")

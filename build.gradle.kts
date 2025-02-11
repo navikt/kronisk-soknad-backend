@@ -176,6 +176,8 @@ dependencies {
     implementation("io.ktor:ktor-server-locations:$ktorVersion")
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
     implementation("io.ktor:ktor-client-apache5:$ktorVersion")
+    implementation("io.ktor:ktor-network-tls-jvm:$ktorVersion")
+
     implementation("io.prometheus:simpleclient_common:$prometheusVersion")
     implementation("io.prometheus:simpleclient_hotspot:$prometheusVersion")
     implementation("javax.ws.rs:javax.ws.rs-api:$javaxWsRsApiVersion")

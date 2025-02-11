@@ -112,7 +112,6 @@ dependencies {
     val coroutinesVersion: String by project
     val cxfVersion: String by project
     val dokarkivKlientVersion: String by project
-    val fellesBackendVersion: String by project
     val flywayVersion: String by project
     val gcpStorageVersion: String by project
     val hikariVersion: String by project
@@ -138,7 +137,6 @@ dependencies {
     val postgresqlVersion: String by project
     val prometheusVersion: String by project
     val slf4jVersion: String by project
-    val tokenProviderVersion: String by project
     val tokenSupportVersion: String by project
     val utilsVersion: String by project
     val valiktorVersion: String by project
@@ -176,6 +174,8 @@ dependencies {
     implementation("io.ktor:ktor-server-locations:$ktorVersion")
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
     implementation("io.ktor:ktor-client-apache5:$ktorVersion")
+    implementation("io.ktor:ktor-network-tls-jvm:$ktorVersion")
+
     implementation("io.prometheus:simpleclient_common:$prometheusVersion")
     implementation("io.prometheus:simpleclient_hotspot:$prometheusVersion")
     implementation("javax.ws.rs:javax.ws.rs-api:$javaxWsRsApiVersion")
@@ -198,10 +198,10 @@ dependencies {
     implementation("org.apache.cxf:cxf-rt-features-logging:$cxfVersion")
     implementation("org.apache.cxf:cxf-rt-frontend-jaxws:$cxfVersion")
     implementation("org.apache.cxf:cxf-rt-transports-http:$cxfVersion")
-    implementation("org.apache.cxf:cxf-rt-ws-security:$cxfVersion")
+    implementation("org.codehaus.janino:janino:$janinoVersion")
     implementation("org.apache.kafka:kafka-clients:$kafkaClient")
     implementation("org.apache.pdfbox:pdfbox:$pdfboxVersion")
-    implementation("org.codehaus.janino:janino:$janinoVersion")
+
     implementation("org.flywaydb:flyway-core:$flywayVersion")
     implementation("org.postgresql:postgresql:$postgresqlVersion")
     implementation("org.slf4j:slf4j-api:$slf4jVersion")

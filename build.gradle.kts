@@ -143,7 +143,7 @@ dependencies {
     val utilsVersion: String by project
     val valiktorVersion: String by project
     val tmsVarselKotlinBuilderVersion: String by project
-
+    val nettyCommonVersion: String by project
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
     implementation("ch.qos.logback:logback-classic:$logback_version")
     implementation("net.logstash.logback:logstash-logback-encoder:$logbackEncoderVersion")
@@ -177,7 +177,8 @@ dependencies {
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
     implementation("io.ktor:ktor-client-apache5:$ktorVersion")
     implementation("io.ktor:ktor-network-tls-jvm:$ktorVersion")
-    implementation("io.netty:netty-common:4.1.115.Final")
+
+    implementation("io.netty:netty-common:$nettyCommonVersion")
     implementation("io.prometheus:simpleclient_common:$prometheusVersion")
     implementation("io.prometheus:simpleclient_hotspot:$prometheusVersion")
     implementation("javax.ws.rs:javax.ws.rs-api:$javaxWsRsApiVersion")
@@ -200,7 +201,7 @@ dependencies {
     implementation("org.apache.cxf:cxf-rt-features-logging:$cxfVersion")
     implementation("org.apache.cxf:cxf-rt-frontend-jaxws:$cxfVersion")
     implementation("org.apache.cxf:cxf-rt-transports-http:$cxfVersion")
-
+    implementation("org.codehaus.janino:janino:$janinoVersion")
     implementation("org.apache.kafka:kafka-clients:$kafkaClient")
     implementation("org.apache.pdfbox:pdfbox:$pdfboxVersion")
 
